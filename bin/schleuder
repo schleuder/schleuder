@@ -1,0 +1,12 @@
+#!/usr/bin/ruby
+
+if ARGV.empty? || ARGV.first.match(/-h|--help/)
+    $stderr.puts "Usage: #{File.basename(__FILE__)} listname < message"
+    exit 1
+end
+
+listname = ARGV.first
+message  = STDIN.read
+
+require_relative '../lib/schleuder.rb'
+Schleuder::Runner.new(message, listname)
