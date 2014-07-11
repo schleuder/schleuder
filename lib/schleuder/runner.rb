@@ -107,6 +107,8 @@ module Schleuder
         msg = t(msg, args)
       end
       # TODO: logging
+      # TODO: Return ErrorsList, let caller transform to_s
+      # TODO: send (selected) errors to admin
       $stderr.puts "#{msg}\n#{t(:greetings)}\n"
       exit 1
     end

@@ -21,12 +21,12 @@ module Schleuder
       subscriptions.where(admin: true)
     end
 
-    def is_admin?(account)
-      admins.map(&:email).include?(account.email)
+    def is_admin?(subscription)
+      admins.map(&:email).include?(subscription.email)
     end
 
-    def is_subscribed?(account)
-      subscriptions.map(&:email).include?(account.email)
+    def is_subscribed?(subscription)
+      subscriptions.map(&:email).include?(subscription.email)
     end
 
     def key
@@ -111,7 +111,7 @@ module Schleuder
         return [errors, nil]
       end
 
-      # TODO: Break if list_dir exists?
+      # TODO: Break if list_dir exists and isn't empty.
       list_dir = listdir(listname)
       if ! File.exists?(list_dir)
         FileUtils.mkdir_p(list_dir)
