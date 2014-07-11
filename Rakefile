@@ -11,3 +11,7 @@ end
 
 # ActiveRecord requires this task to be present
 Rake::Task.define_task("db:environment")
+
+task :console do
+  exec "irb -r #{File.dirname(__FILE__)}/lib/schleuder.rb"
+end
