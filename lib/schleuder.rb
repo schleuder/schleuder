@@ -1,19 +1,26 @@
 # TODO: check if gpg1 is present or if we need to work around the "gpg-agent now mandatory"-fuckup.
 # TODO: logging. log4r?
 
-ENV["SCHLEUDER_ENV"] ||= 'production'
-
-$:.unshift File.dirname(__FILE__)
-
+# Stdlib
 require 'fileutils'
-require 'active_record'
-require 'mail-gpg'
 require 'singleton'
 require 'yaml'
+require 'pathname'
+
+# Setup bundler and bundled gems
+ENV['BUNDLE_GEMFILE'] ||= File.expand_path("../../Gemfile",
+                                             Pathname.new(__FILE__).realpath)
+require 'bundler/setup'
+Bundler.require
+I18n.enforce_available_locales = false
+
+# Setup schleuder
+$:.unshift File.dirname(__FILE__)
+ENV["SCHLEUDER_ENV"] ||= 'production'
 
 require 'schleuder/conf'
-ActiveRecord::Base.logger = Logger.new("log/#{ENV["SCHLEUDER_ENV"]}.log")
 ActiveRecord::Base.establish_connection(Schleuder::Conf.database)
+ActiveRecord::Base.logger = Logger.new("#{File.dirname(__FILE__)}/../log/#{ENV["SCHLEUDER_ENV"]}.log")
 
 # Monkeypatches
 require 'schleuder/mail/message.rb'
@@ -27,6 +34,7 @@ require 'schleuder/errors/file_not_found'
 require 'schleuder/errors/active_model_error'
 require 'schleuder/errors_list'
 
+# The Code[tm]
 require 'schleuder/runner'
 require 'schleuder/list'
 require 'schleuder/subscription'
