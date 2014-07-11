@@ -1,0 +1,53 @@
+#!/usr/bin/ruby
+
+if ![2,3,4].include?(ARGV.size) || ARGV.first.match(/^-h|--help/)
+  puts <<EOF
+This script subscribes an email-address to a schleuder-list.
+The GnuPG-fingerprint is mandatory for encryption, regardless of the presences
+of public keys.
+Usage: #{File.basename(__FILE__)} list@hostname user@example.org [fingerprint] [/path/to/public.key]"
+EOF
+  exit 1
+end
+
+listname, email, fingerprint, keyfile  = ARGV
+
+def error(msgs)
+  Array(msgs).each do |msg|
+    $stderr.puts "Error: #{msg}"
+  end
+  exit 1
+end
+
+if keyfile
+  if ARGV.size != 4
+    error "Fingerprint must be specified if key-file is to be imported."
+  elsif !File.readable?(keyfile)
+    error "File '#{keyfile}' not readable"
+  end
+end
+
+require_relative '../lib/schleuder.rb'
+
+list = List.where(email: listname).first
+
+if list.blank?
+  error "No such list."
+end
+
+if list.subscriptions.map(&:email).include?(email)
+  error "Address is already subscribed."
+end
+
+subscription = list.subscribe(email, fingerprint)
+
+if subscription.errors.present?
+  error ActiveModelError.new(subscription.errors).to_s
+end
+
+# TODO: use gpgme
+puts "#{email} subscribed."
+if keyfile
+  puts "Importing key-file: "
+  puts `gpg --homedir "#{list.listdir}" --import "#{keyfile}"`
+end

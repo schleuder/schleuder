@@ -1,0 +1,35 @@
+#!/usr/bin/ruby
+
+if ![2].include?(ARGV.size) || ARGV.first.match(/^-h|--help/)
+  puts <<EOF
+This script imports a GnuPG-public-key into the list's key-ring.
+No fingerprint is set for any user.
+Usage: #{File.basename(__FILE__)} list@hostname /path/to/public.key"
+EOF
+  exit 1
+end
+
+listname, keyfile  = ARGV
+
+def error(msgs)
+  Array(msgs).each do |msg|
+    $stderr.puts "Error: #{msg}"
+  end
+  exit 1
+end
+
+if !File.readable?(keyfile)
+  error "File '#{keyfile}' not readable"
+end
+
+require_relative '../lib/schleuder.rb'
+
+list = List.where(email: listname).first
+
+if list.blank?
+  error "No such list."
+end
+
+# TODO: use gpgme
+puts "Importing key-file: "
+puts `gpg --homedir "#{list.listdir}" --import "#{keyfile}"`
