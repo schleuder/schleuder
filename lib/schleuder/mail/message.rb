@@ -1,21 +1,32 @@
 module Mail
   # TODO: Test if subclassing breaks integration of mail-gpg.
   class Message
-    attr_reader :recipient
+    attr_accessor :recipient
 
-    # TODO: Fix strange errors about wrong number of arguments when
+    # TODO: Research strange errors about wrong number of arguments when
     # overriding Message#initialize.
     def setup(recipient)
-      @recipient = recipient
-      @orig_message = self.dup
 
       if self.encrypted?
-        # TODO: fix
-        self.decrypt(verify: true)
+        new = self.decrypt(verify: true)
       elsif self.signed?
-        # TODO: test/fix
-        self.verify!
+        # This triggeres the validation
+        self.signature_valid?
+        # Code from Mail::Gpg.decrypt_pgp_mime()
+        new = Mail.new(self.parts.first)
+        %w(from to cc bcc subject reply_to in_reply_to).each do |field|
+          new.send field, self.send(field)
+        end
+        self.header.fields.each do |field|
+          new.header[field.name] = field.value if field.name =~ /^X-/ && new.header[field.name].nil?
+        end
+      else
+        new = self
       end
+
+      new.recipient = recipient
+      new.verify_result = self.verify_result
+      new
     end
 
     def signature
@@ -94,18 +105,17 @@ module Mail
       new = Mail.new
       new.from = list.email
       new.subject = self.subject
-      new['in-reply-to'] = self.header['in-reply-to']
-      new.references =  self.references
+      new['In-Reply-To'] = self.header['in-reply-to']
+      new.references = self.references
       # TODO: attachments
       
       # Insert Meta-Headers
-      # TODO: why is :date blank?
-      meta = [
-        "From: #{self.header[:from].to_s}",
-        "To: #{self.header[:to].to_s}",
-        "Date: #{self.header[:date].to_s}",
-        "Cc: #{self.header[:cc].to_s}"
-      ]
+      # TODO: date-value is being replaced by current date?
+      meta = %w[from to date cc].map do |field|
+        if header[field].present?
+          "#{field.capitalize}: #{self.header[field].to_s}"
+        end
+      end.compact
 
       # Careful to add information about the incoming signature. GPGME throws
       # exceptions if it doesn't know the key.

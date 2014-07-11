@@ -6,7 +6,7 @@ module Schleuder
 
       begin
         # This decrypts, verifies, etc.
-        @mail.setup recipient
+        @mail = @mail.setup recipient
       rescue GPGME::Error::DecryptFailed => exc
         error(:decrypt_failed, key_str: list.key.to_s)
       end
