@@ -5,8 +5,8 @@ module Schleuder
     end
 
     def to_s
-      @errors.map do |error|
-        error.join(' ')
+      @errors.messages.map do |message|
+        message.join(' ')
       end.join("\n")
     end
   end

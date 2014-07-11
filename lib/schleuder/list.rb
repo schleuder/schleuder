@@ -98,8 +98,8 @@ module Schleuder
       end
     end
 
-    def subscribe(email)
-      Subscription.create(email: email, list_id: self.id)
+    def subscribe(email, fingerprint)
+      Subscription.create(list_id: self.id, email: email, fingerprint: fingerprint)
     end
 
     def self.build(listname, adminemail=nil, adminkeypath=nil)
