@@ -14,7 +14,6 @@ rootdir = Pathname.new(__FILE__).dirname.dirname.realpath
 ENV['BUNDLE_GEMFILE'] ||= File.join(rootdir, "Gemfile")
 require 'bundler/setup'
 Bundler.require
-I18n.enforce_available_locales = false
 
 # Load schleuder
 $:.unshift File.join(rootdir, 'lib')
@@ -26,9 +25,11 @@ require 'schleuder/gpgme/key.rb'
 require 'schleuder/gpgme/sub_key.rb'
 
 # The Code[tm]
+require 'schleuder/errors/base'
 require 'schleuder/errors/list_exists'
 require 'schleuder/errors/file_not_found'
 require 'schleuder/errors/active_model_error'
+require 'schleuder/errors/decryption_failed'
 require 'schleuder/errors_list'
 require 'schleuder/conf'
 require 'schleuder/version'
@@ -42,7 +43,13 @@ require 'schleuder/subscription'
 # Setup
 ENV["SCHLEUDER_ENV"] ||= 'production'
 ENV["SCHLEUDER_ROOT"] = rootdir.to_s
+
+
 ActiveRecord::Base.establish_connection(Schleuder::Conf.database)
 ActiveRecord::Base.logger = Schleuder.logger
+
+I18n.load_path += Dir[rootdir.to_s + "/locales/*.yml"]
+I18n.enforce_available_locales = true
+I18n.default_locale = :en
 
 include Schleuder

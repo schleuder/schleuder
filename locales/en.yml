@@ -1,0 +1,27 @@
+en:
+  errors:
+    fatalerror: |
+      A fatal error happened. Administrators have been notified.
+      Please try again later.
+    signoff: |
+
+      Kind regards,
+      Your Schleuder system.
+    decryption_failed: |
+      Decrypting your message failed.
+      Messages to this address must be encrypted with the following key:
+
+      %{key}
+
+      To receive it send an email to
+      <%{email}>.
+    message_unsigned: Messages to this address must be OpenPGP-signed.
+    message_signature_unknown: |
+      Messages to this address must be OpenPGP-signed by the key that is configured
+      for your subscription. If you don't know which one that is, ask an administrator
+      of this list. You can contact the administrators by sending a message to
+      <%{owner_email}>
+      (preferably encrypt it with this addresses' public key:
+      %{list_fingerprint}).
+    list_not_found: "Error: No list found with this address: '%{email}'."
+    list_exists: A list with address '%{email}' is already present.

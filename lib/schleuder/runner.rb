@@ -1,15 +1,18 @@
 module Schleuder
   class Runner
     def initialize(msg, recipient)
-      setup_list(recipient)
-      list.logger.debug "Parsing incoming email."
-      @mail = Mail.new(msg)
+      error = setup_list(recipient)
+      if error
+        return error
+      end
 
+      list.logger.debug "Parsing incoming email."
       begin
         # This decrypts, verifies, etc.
-        @mail = @mail.setup recipient
+        @mail = Mail.new(msg).setup(recipient)
       rescue GPGME::Error::DecryptFailed => exc
-        error(:decrypt_failed, key_str: list.key.to_s)
+        logger.warn "Decryption of incoming message failed.\nOriginal message:\n\n"
+        return Errors::DecryptionFailed.new(list)
       end
 
       send_key if @mail.sendkey_request?
@@ -28,9 +31,10 @@ module Schleuder
         if ! list.receive_signed_only?
           send_to_subscriptions
         else
-          error(:msg_must_be_signed)
+          return Errors::MessageUnsigned.new(list)
         end
       end
+      nil
     end
 
     private
@@ -75,7 +79,12 @@ module Schleuder
         end
         command = keyword.gsub('-', '_')
         if Plugin.respond_to?(command)
-          output << Plugin.send(command, @mail)
+          begin 
+            output << Plugin.send(command, @mail)
+          rescue => exc
+            # TODO: note the plugin-failure in meta-headers?
+            logger.error(exc)
+          end
         end
       end
 
@@ -88,8 +97,6 @@ module Schleuder
           msg += output
         end
       end
-    rescue => exc
-      error(exc)
     end
 
     def keyword_admin_only?(keyword)
@@ -103,20 +110,8 @@ module Schleuder
       end.presence || false
     end
 
-    def error(msg, args={})
-      if msg.is_a?(Symbol)
-        msg = t(msg, args)
-      end
-      # TODO: logging
-      # TODO: Return ErrorsList, let caller transform to_s
-      # TODO: send (selected) errors to admin
-      $stderr.puts "#{msg}\n#{t(:greetings)}\n"
-      exit 1
-    end
-
-    def t(sym, args={})
-      # TODO: Implement rails-less
-      I18n.t(sym, {scope: [:schleuder]}.merge(args))
+    def logger
+      list.present? && list.logger || Schleuder.logger
     end
 
     def setup_plugins
@@ -132,10 +127,11 @@ module Schleuder
       logger.info "Loading list 'recipient'"
       if ! @list = List.by_recipient(recipient)
         logger.info 'List not found'
-        error(:no_such_list)
+        return Errors::ListNotFound.new(recipient)
       end
       # This cannot be put in List, as Mail wouldn't know it then.
       ENV['GNUPGHOME'] = @list.listdir
+      nil
     end
 
   end

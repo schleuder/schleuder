@@ -1,15 +1,13 @@
-class ListExists < StandardError
-  def initialize(listname)
-    @listname = listname
-  end
+module Schleuder
+  module Errors
+    class ListExists < Base
+      def initialize(listname)
+        @listname = listname
+      end
 
-  def message
-    # TODO: i18n
-    "List with name '%s' already present."
-  end
-
-  def to_s
-    message % @listname
+      def message
+        t('errors.list_exists', email: @listname)
+      end
+    end
   end
 end
-

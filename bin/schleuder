@@ -12,5 +12,23 @@ end
 listname = ARGV.first
 message  = STDIN.read
 
-require_relative '../lib/schleuder.rb'
-Schleuder::Runner.new(message, listname)
+begin
+  require_relative '../lib/schleuder.rb'
+
+  error = Schleuder::Runner.new(message, listname)
+  if error
+    puts error
+    exit 1
+  end
+rescue => exc
+  begin
+    Schleuder.logger.fatal(exc.message)
+    puts I18n.t('errors.fatalerror')
+  rescue => e
+    # Give users a clue what to do in case everything blows up.
+    # As apparently even the logging raised exceptions we can't even store
+    # any information in the logs.
+    puts "A serious error happened. Please contact the administrators of this system or service and provide them with the following information:\n\n#{e.message}\n#{e.backtrace.join("\n")}"
+  end
+  exit 1
+end

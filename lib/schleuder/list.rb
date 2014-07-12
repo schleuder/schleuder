@@ -108,7 +108,6 @@ module Schleuder
     end
 
     def self.build(listname, adminemail=nil, adminkeypath=nil)
-      # TODO: decide if this ErrorsList-concept should be used all over.
       errors = ErrorsList.new
 
       if self.where(email: listname).present?

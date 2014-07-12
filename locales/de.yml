@@ -1,0 +1,28 @@
+de:
+  errors:
+    fatalerror: |
+      Es ist ein schwerwiegender Fehler aufgetreten. Administratoren wurden benachrichtigt.
+      Bitte versuche es später noch ein Mal.
+    signoff: |
+
+      Freundliche Grüße,
+      Dein Schleuder-System.
+    decryption_failed: |
+      Deine Email konnnte nicht entschlüsselt werden.
+      Emails an diese Adresse müssen mit diesem Schlüssel verschlüsselt werden:
+
+      %{key}
+
+      Um den Schlüssel zugesandt zu bekommen sende eine Email an
+      <%{sendkey_email}>.
+    message_unsigned: Emails an diese Adresse müssen mit einem OpenPGP-Schlüssel signiert sein.
+    message_signature_unknown: |
+      Emails an diese Adresse müssen mit dem OpenPGP-Schlüssel signiert sein, der für
+      dein Abo eingetragen ist. Wenn du nicht weisst, welcher Schlüssel das ist, frage
+      die Administrator/innen. Die erreichst du per Email an
+      <%{owner_email}>.
+      (Vorzugsweise verschlüssele die Email mit dem Schlüssel dieser Adresse:
+      %{list_fingerprint}).
+    list_not_found: "Fehler: Keine Liste zu dieser Adresse gefunden: '%{email}'."
+    list_exists: Es existiert bereits eine Liste mit der Adresse '%{email}'.
+
