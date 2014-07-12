@@ -1,8 +1,12 @@
 #!/usr/bin/ruby
 
 if ARGV.empty? || ARGV.first.match(/-h|--help/)
-    $stderr.puts "Usage: #{File.basename(__FILE__)} listname < message"
-    exit 1
+  puts "Usage: #{File.basename(__FILE__)} listname < message"
+  exit 1
+elsif ARGV.first.match(/-v|-V|--version/)
+  require_relative '../lib/schleuder/version.rb'
+  puts Schleuder::VERSION
+  exit 0
 end
 
 listname = ARGV.first

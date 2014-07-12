@@ -6,21 +6,18 @@ require 'fileutils'
 require 'singleton'
 require 'yaml'
 require 'pathname'
+require 'logger'
+
+rootdir = Pathname.new(__FILE__).dirname.dirname.realpath
 
 # Setup bundler and bundled gems
-ENV['BUNDLE_GEMFILE'] ||= File.expand_path("../../Gemfile",
-                                             Pathname.new(__FILE__).realpath)
+ENV['BUNDLE_GEMFILE'] ||= File.join(rootdir, "Gemfile")
 require 'bundler/setup'
 Bundler.require
 I18n.enforce_available_locales = false
 
-# Setup schleuder
-$:.unshift File.dirname(__FILE__)
-ENV["SCHLEUDER_ENV"] ||= 'production'
-
-require 'schleuder/conf'
-ActiveRecord::Base.establish_connection(Schleuder::Conf.database)
-ActiveRecord::Base.logger = Logger.new("#{File.dirname(__FILE__)}/../log/#{ENV["SCHLEUDER_ENV"]}.log")
+# Load schleuder
+$:.unshift File.join(rootdir, 'lib')
 
 # Monkeypatches
 require 'schleuder/mail/message.rb'
@@ -28,15 +25,24 @@ require 'schleuder/gpgme/import_status.rb'
 require 'schleuder/gpgme/key.rb'
 require 'schleuder/gpgme/sub_key.rb'
 
-# Error-classes
+# The Code[tm]
 require 'schleuder/errors/list_exists'
 require 'schleuder/errors/file_not_found'
 require 'schleuder/errors/active_model_error'
 require 'schleuder/errors_list'
-
-# The Code[tm]
+require 'schleuder/conf'
+require 'schleuder/version'
+require 'schleuder/logger'
+require 'schleuder/listlogger'
 require 'schleuder/runner'
 require 'schleuder/list'
 require 'schleuder/subscription'
+
+
+# Setup
+ENV["SCHLEUDER_ENV"] ||= 'production'
+ENV["SCHLEUDER_ROOT"] = rootdir.to_s
+ActiveRecord::Base.establish_connection(Schleuder::Conf.database)
+ActiveRecord::Base.logger = Schleuder.logger
 
 include Schleuder

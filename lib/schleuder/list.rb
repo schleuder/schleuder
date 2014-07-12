@@ -13,6 +13,11 @@ module Schleuder
     validates :fingerprint, presence: true
     # TODO: more validations
 
+    def logger
+      @logger ||= Listlogger.new(File.join(self.listdir, 'list.log'),
+                                 self)
+    end
+
     def to_s
       email
     end

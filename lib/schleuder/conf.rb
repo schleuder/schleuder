@@ -27,5 +27,8 @@ module Schleuder
       instance.config['database'][ENV['SCHLEUDER_ENV']]
     end
 
+    def self.superadmin
+      instance.config['superadmin']
+    end
   end
 end

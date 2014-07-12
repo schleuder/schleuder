@@ -2,6 +2,7 @@ module Schleuder
   class Runner
     def initialize(msg, recipient)
       setup_list(recipient)
+      list.logger.debug "Parsing incoming email."
       @mail = Mail.new(msg)
 
       begin
@@ -10,8 +11,6 @@ module Schleuder
       rescue GPGME::Error::DecryptFailed => exc
         error(:decrypt_failed, key_str: list.key.to_s)
       end
-
-      # TODO: use custom logger
 
       send_key if @mail.sendkey_request?
       forward_to_owner if @mail.to_owner?
@@ -42,6 +41,7 @@ module Schleuder
     end
 
     def send_key
+      list.logger.debug "Sending public key as reply."
       @mail.reply_sendkey(list).deliver
       exit
     end
@@ -64,6 +64,7 @@ module Schleuder
 
     def run_plugins
       setup_plugins
+      list.logger.debug "Running plugins"
       # TODO: move strings to locale-files
       output = []
       @mail.keywords.each do |keyword|
@@ -119,6 +120,7 @@ module Schleuder
     end
 
     def setup_plugins
+      list.logger.debug "Loading plugins"
       Dir["#{Conf.plugins_dir}/*.rb"].each do |file|
         require file
       end
@@ -127,7 +129,9 @@ module Schleuder
     def setup_list(recipient)
       return @list if @list
 
+      logger.info "Loading list 'recipient'"
       if ! @list = List.by_recipient(recipient)
+        logger.info 'List not found'
         error(:no_such_list)
       end
       # This cannot be put in List, as Mail wouldn't know it then.
