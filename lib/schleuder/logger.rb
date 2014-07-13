@@ -1,18 +1,15 @@
 module Schleuder
   def logger
-    # TODO: More logging-options (syslog, other path)
-    @logger ||= Logger.new(File.join(ENV['SCHLEUDER_ROOT'],
-                                     'log',
-                                     "#{ENV['SCHLEUDER_ENV']}.log"))
+    @logger ||= Logger.new
   end
   module_function :logger
 
-  class Logger < ::Logger
-    def initialize(filename)
+  class Logger < Syslog::Logger
+    def initialize
       # TODO: Better from-address
       @from = "#{`whoami`.chomp}@#{`hostname`.chomp}"
       @adminaddresses = Conf.superadmin
-      super(filename)
+      super('Schleuder', LOG_MAIL)
     end
 
     def adminaddresses

@@ -7,6 +7,7 @@ require 'singleton'
 require 'yaml'
 require 'pathname'
 require 'logger'
+require 'syslog/logger'
 
 rootdir = Pathname.new(__FILE__).dirname.dirname.realpath
 
