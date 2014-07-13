@@ -2,9 +2,11 @@ module Mail
   # TODO: Test if subclassing breaks integration of mail-gpg.
   class Message
     attr_accessor :recipient
+    attr_reader   :pseudoheaders
 
-    # TODO: Research strange errors about wrong number of arguments when
-    # overriding Message#initialize.
+    # TODO: This should be in initialize(), but I couldn't understand the
+    # strange errors about wrong number of arguments when overriding
+    # Message#initialize.
     def setup(recipient)
 
       if self.encrypted?
@@ -26,6 +28,7 @@ module Mail
 
       new.recipient = recipient
       new.verify_result = self.verify_result
+      new.add_standard_pseudoheaders
       new
     end
 
@@ -112,10 +115,22 @@ module Mail
       new.references = self.references
       # TODO: attachments
 
-      # Insert Meta-Headers
-      meta = %w[from to date cc].map do |field|
-        "#{field.capitalize}: #{self.header[field].to_s}"
-      end.compact
+      new_part = Mail::Part.new
+      new_part.body = self.pseudoheaders.join("\n")
+      new.add_part new_part
+      new.add_part Mail::Part.new(self)
+      new
+    end
+
+    def add_pseudoheader(key, value)
+      @pseudoheaders ||= []
+      @pseudoheaders << "#{key.to_s.capitalize}: #{value}"
+    end
+
+    def add_standard_pseudoheaders
+      %w[from to date cc].each do |field|
+        add_pseudoheader field, self.header[field]
+      end
 
       # Careful to add information about the incoming signature. GPGME throws
       # exceptions if it doesn't know the key.
@@ -129,13 +144,11 @@ module Mail
       else
         msg = "Unsigned"
       end
-      meta << "Sig: #{msg}"
-      # TODO: Enc:
-      meta << "Enc: TODO"
+      add_pseudoheader :sig, msg
 
-      new.add_part Mail::Part.new() { body meta.join("\n") }
-      new.add_part Mail::Part.new(self)
-      new
+      # TODO: Enc:
+      add_pseudoheader :enc, 'TODO'
     end
+
   end
 end

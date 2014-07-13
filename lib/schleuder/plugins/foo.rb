@@ -1,7 +1,8 @@
 module Schleuder
   module Plugins
     def self.foo(arguments, mail)
-      "bar"
+      mail.add_pseudoheader :foo, 'Bar!'
+      nil
     end
   end
 end
