@@ -26,12 +26,12 @@ module Schleuder
       subscriptions.where(admin: true)
     end
 
-    def is_admin?(subscription)
-      admins.map(&:email).include?(subscription.email)
+    def is_admin?(subscription_or_account)
+      admins.map(&:email).include?(subscription_or_account.email)
     end
 
-    def is_subscribed?(subscription)
-      subscriptions.map(&:email).include?(subscription.email)
+    def is_subscribed?(subscription_or_account)
+      subscriptions.map(&:email).include?(subscription_or_account.email)
     end
 
     def key
