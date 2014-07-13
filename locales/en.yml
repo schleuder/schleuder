@@ -5,6 +5,7 @@ en:
       Please try again later.
     signoff: |
 
+
       Kind regards,
       Your Schleuder system.
     decryption_failed: |
@@ -25,3 +26,10 @@ en:
       %{list_fingerprint}).
     list_not_found: "Error: No list found with this address: '%{email}'."
     list_exists: A list with address '%{email}' is already present.
+    keyword_admin_only: The keyword '%{keyword}' may only be used by list-admin.
+  plugins:
+    unknown_keyword: Unknown keyword '%{keyword}'.
+    plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
+
+  output_result_prefix: "Your message resulted in the following:"
+  no_output_result: Your message resulted in no output.

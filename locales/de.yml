@@ -5,6 +5,7 @@ de:
       Bitte versuche es später noch ein Mal.
     signoff: |
 
+
       Freundliche Grüße,
       Dein Schleuder-System.
     decryption_failed: |
@@ -25,4 +26,9 @@ de:
       %{list_fingerprint}).
     list_not_found: "Fehler: Keine Liste zu dieser Adresse gefunden: '%{email}'."
     list_exists: Es existiert bereits eine Liste mit der Adresse '%{email}'.
-
+    keyword_admin_only: Das Schlüsselwort '%{keyword}' darf nur von Listen-Admins verwendet werden.
+  plugins:
+    unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
+    plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
+  output_result_prefix: "Deine Email ergab Folgendes:"
+  no_output_result: Deine Email ergab keinen Ausgabe-Text.

@@ -6,8 +6,8 @@ require 'fileutils'
 require 'singleton'
 require 'yaml'
 require 'pathname'
-require 'logger'
 require 'syslog/logger'
+require 'logger'
 
 rootdir = Pathname.new(__FILE__).dirname.dirname.realpath
 
@@ -27,15 +27,19 @@ require 'schleuder/gpgme/sub_key.rb'
 
 # The Code[tm]
 require 'schleuder/errors/base'
-require 'schleuder/errors/list_exists'
-require 'schleuder/errors/file_not_found'
-require 'schleuder/errors/active_model_error'
-require 'schleuder/errors/decryption_failed'
+Dir[rootdir + "lib/schleuder/errors/*.rb"].each do |file|
+  require file
+end
 require 'schleuder/errors_list'
 require 'schleuder/conf'
 require 'schleuder/version'
+require 'schleuder/logger_notifications'
 require 'schleuder/logger'
 require 'schleuder/listlogger'
+require 'schleuder/plugins'
+Dir[rootdir + "lib/schleuder/plugins/*.rb"].each do |file|
+  require file
+end
 require 'schleuder/runner'
 require 'schleuder/list'
 require 'schleuder/subscription'

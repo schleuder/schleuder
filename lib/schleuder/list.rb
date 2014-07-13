@@ -144,5 +144,23 @@ module Schleuder
       [errors.presence, list.presence]
     end
 
+    def keywords_admin_only
+      Array(@keywords_admin_only)
+    end
+
+    def admins
+      Array(@admins)
+    end
+
+    def admin_only?(keyword)
+      keywords_admin_only.include?(keyword)
+    end
+
+    def from_admin?(mail)
+      return false if ! mail.validly_signed?
+      admins.find do |admin|
+        admin.fingerprint == mail.signature.fingerprint
+      end.presence || false
+    end
   end
 end

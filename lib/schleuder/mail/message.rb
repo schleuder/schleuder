@@ -14,7 +14,7 @@ module Mail
         self.signature_valid?
         # Code from Mail::Gpg.decrypt_pgp_mime()
         new = Mail.new(self.parts.first)
-        %w(from to cc bcc subject reply_to in_reply_to).each do |field|
+        %w(from to cc bcc date subject reply_to in_reply_to).each do |field|
           new.send field, self.send(field)
         end
         self.header.fields.each do |field|
@@ -63,25 +63,28 @@ module Mail
     end
 
     def keywords
-      @keywords ||= begin
-        # Parse only plain text for keywords.
-        return [] if mime_type != 'text/plain'
+      return @keywords if @keywords
 
-        # TODO: collect keywords while creating new mail as base for outgoing mails: that way we wouldn't need to change the body/part but rather filter the old body before assigning it to the new one. (And it helps also with having a distinct msg-id for all subscribers)
+      # Parse only plain text for keywords.
+      return [] if mime_type != 'text/plain'
 
-        # Look only in first part of message.
-        part = multipart? ?  parts.first : body
-        part = part.lines.map do |line|
-          # TODO: find multiline arguments (add-key)
-          # TODO: break after some data to not parse huge amounts
-          if line.match(/^x-([^: ]*)[: ]*(.*)/i)
-            @keywords << {$1.strip.downcase => $2.strip.downcase}
-            nil
-          else
-            line
-          end
-        end.compact.join("\n")
-      end
+      # TODO: collect keywords while creating new mail as base for outgoing mails: that way we wouldn't need to change the body/part but rather filter the old body before assigning it to the new one. (And it helps also with having a distinct msg-id for all subscribers)
+
+      # Look only in first part of message.
+      part = multipart? ?  parts.first : self
+      @keywords = []
+      part.body = part.decoded.lines.map do |line|
+        # TODO: find multiline arguments (add-key)
+        # TODO: break after some data to not parse huge amounts
+        if line.match(/^x-([^: ]*)[: ]*(.*)/i)
+          @keywords << [$1.strip.downcase, $2.strip.downcase]
+          nil
+        else
+          line
+        end
+      end.compact.join
+
+      @keywords
     end
 
     def reply_sendkey(list)
@@ -108,13 +111,10 @@ module Mail
       new['In-Reply-To'] = self.header['in-reply-to']
       new.references = self.references
       # TODO: attachments
-      
+
       # Insert Meta-Headers
-      # TODO: date-value is being replaced by current date?
       meta = %w[from to date cc].map do |field|
-        if header[field].present?
-          "#{field.capitalize}: #{self.header[field].to_s}"
-        end
+        "#{field.capitalize}: #{self.header[field].to_s}"
       end.compact
 
       # Careful to add information about the incoming signature. GPGME throws
@@ -131,9 +131,10 @@ module Mail
       end
       meta << "Sig: #{msg}"
       # TODO: Enc:
+      meta << "Enc: TODO"
 
       new.add_part Mail::Part.new() { body meta.join("\n") }
-      new.add_part Mail::Part.new(self.raw_source)
+      new.add_part Mail::Part.new(self)
       new
     end
   end

@@ -5,39 +5,14 @@ module Schleuder
   module_function :logger
 
   class Logger < Syslog::Logger
+    include LoggerNotifications
     def initialize
-      # TODO: Better from-address
+      # We need some sender-address different from the superadmin-address.
       @from = "#{`whoami`.chomp}@#{`hostname`.chomp}"
       @adminaddresses = Conf.superadmin
-      super('Schleuder', LOG_MAIL)
-    end
-
-    def adminaddresses
-      @adminaddresses.presence || Conf.superadmin.presence || 'root@localhost'
-    end
-
-    def error(string)
-      super
-      notify_admin(string)
-    end
-
-    def fatal(string)
-      super
-      notify_admin(string)
-      exit 2
-    end
-
-    private
-
-    def notify_admin(string)
-      Array(adminaddresses).each do |address|
-        mail = Mail.new
-        mail.from = @from
-        mail.to = address
-        mail.subject = 'Error'
-        mail.body = string
-        mail.deliver
-      end
+      super('Schleuder', Syslog::LOG_MAIL)
     end
   end
+
 end
+

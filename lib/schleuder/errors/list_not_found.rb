@@ -6,7 +6,7 @@ module Schleuder
       end
 
       def message
-        t('errors.list_not_found', email: recipient)
+        t('errors.list_not_found', email: @recipient)
       end
     end
   end
