@@ -20,14 +20,17 @@ module Schleuder
       forward_to_owner if @mail.to_owner?
 
       # TODO: implement receive_*
-      if @mail.validly_signed?
-        output = run_plugins
-        puts output.inspect
+      if @mail.was_encrypted? && @mail.was_validly_signed?
+        output = Plugins::Runner.run(list, @mail).compact
 
         if @mail.request?
           reply_to_sender(output)
         else
-          # TODO: write output to metadata
+          # Any output will be treated as error. Text meant for users should
+          # have been put into the mail by the plugin.
+          output.each do |something|
+            @mail.add_pseudoheader(:error, something.to_s)
+          end
           send_to_subscriptions
         end
       else
@@ -65,7 +68,7 @@ module Schleuder
 
     def send_to_subscriptions(subscriptions=nil)
       subscriptions ||= list.subscriptions
-      new = @mail.clean_copy(list)
+      new = @mail.clean_copy(list, true)
       subscriptions.each do |subscription|
         out = subscription.send_mail(new)
       end
@@ -75,32 +78,8 @@ module Schleuder
       @list
     end
 
-    def run_plugins
-      setup_plugins
-      # TODO: move strings to locale-files
-      output = []
-      @mail.keywords.each do |keyword, arguments|
-        list.logger.debug "Running keyword '#{keyword}'"
-        if list.admin_only?(keyword) && ! list.from_admin?(@mail)
-          list.logger.debug "Error: Keyword is admin-only, sent by non-admin"
-          # TODO: write error to metadata[:errors]?
-          output << Errors::KeywordAdminOnly.new(keyword)
-          next
-        end
-        output << Plugins.run(keyword, arguments, @mail)
-      end
-      output
-    end
-
     def logger
       list.present? && list.logger || Schleuder.logger
-    end
-
-    def setup_plugins
-      list.logger.debug "Loading plugins"
-      Dir["#{Conf.plugins_dir}/*.rb"].each do |file|
-        require file
-      end
     end
 
     def setup_list(recipient)
