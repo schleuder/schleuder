@@ -48,6 +48,7 @@ require 'schleuder/subscription'
 ENV["SCHLEUDER_ENV"] ||= 'production'
 ENV["SCHLEUDER_ROOT"] = rootdir.to_s
 
+Mail.defaults { delivery_method :sendmail }
 
 ActiveRecord::Base.establish_connection(Schleuder::Conf.database)
 ActiveRecord::Base.logger = Schleuder.logger
