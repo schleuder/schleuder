@@ -33,3 +33,4 @@ en:
 
   output_result_prefix: "Your message resulted in the following:"
   no_output_result: Your message resulted in no output.
+  owner_forward_prefix: The following message was received for the list-owners.

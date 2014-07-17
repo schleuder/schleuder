@@ -46,6 +46,8 @@ module Schleuder
     private
 
     def forward_to_owner
+      Schleuder.logger.debug "Forwarding message to admins"
+      @mail.add_pseudoheader(:note, I18n.t(:owner_forward_prefix))
       send_to_subscriptions(list.admins)
       exit
     end
@@ -70,6 +72,7 @@ module Schleuder
       subscriptions ||= list.subscriptions
       new = @mail.clean_copy(list, true)
       subscriptions.each do |subscription|
+        Schleuder.logger.debug "Sending message to #{subscription.inspect}"
         out = subscription.send_mail(new)
       end
     end

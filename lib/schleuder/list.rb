@@ -51,7 +51,7 @@ module Schleuder
     end
 
     def self.by_recipient(recipient)
-      listname = recipient.gsub(/-(sendkey|request)@/, '@')
+      listname = recipient.gsub(/-(sendkey|request|owner)@/, '@')
       where(email: listname).first
     end
 
@@ -146,10 +146,6 @@ module Schleuder
 
     def keywords_admin_only
       Array(@keywords_admin_only)
-    end
-
-    def admins
-      Array(@admins)
     end
 
     def admin_only?(keyword)
