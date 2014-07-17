@@ -9,7 +9,6 @@ module Mail
     # Message#initialize.
     def setup(recipient)
 
-      # TODO: Msg-ID
       if self.encrypted?
         new = self.decrypt(verify: true)
         new.was_encrypted = true
@@ -28,25 +27,34 @@ module Mail
         new = self
       end
 
+      # message_id() returns the value without brackets, but we want those!
+      new.message_id = self['Message-ID'].to_s
       new.recipient = recipient
       new
     end
 
     def clean_copy(list, with_pseudoheaders=false)
-      new = Mail.new
-      new.from = list.email
-      new.subject = self.subject
-      new['In-Reply-To'] = self.header['in-reply-to']
-      new.references = self.references
-      # TODO: attachments
+      clean = Mail.new
+      clean.from = list.email
+      clean.subject = self.subject
+      clean['In-Reply-To'] = self.header['in-reply-to']
+      clean['Message-ID'] = header['Message-ID']
+      clean.references = self.references
+      clean.return_path = list.email.gsub(/@/, '-owner@')
 
+      # TODO: attachments
       if with_pseudoheaders
         new_part = Mail::Part.new
         new_part.body = self.pseudoheaders
-        new.add_part new_part
+        clean.add_part new_part
       end
-      new.add_part Mail::Part.new(self)
-      new
+      clean.add_part Mail::Part.new(self)
+      clean
+    end
+
+    def prepend_part(part)
+      self.add_part(part)
+      self.parts.unshift(parts.delete_at(parts.size-1))
     end
 
     def was_encrypted?
