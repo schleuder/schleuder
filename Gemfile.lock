@@ -1,11 +1,10 @@
 GIT
   remote: https://github.com/jkraemer/mail-gpg
-  revision: af34fe9b06851f4ed80c1e9457f2faf4f4cf32c8
-  branch: verify_result_passing
+  revision: 6092808927d778963fcd28b2c0f5e95c05862a75
   specs:
-    mail-gpg (0.1.3)
-      gpgme (~> 2.0.2)
-      mail (~> 2.5.3)
+    mail-gpg (0.2.0)
+      gpgme (~> 2.0, >= 2.0.2)
+      mail (~> 2.5, >= 2.5.3)
 
 GEM
   remote: https://rubygems.org/
@@ -29,18 +28,13 @@ GEM
       mini_portile (>= 0.5.0, <= 0.6.0)
     i18n (0.6.11)
     json (1.8.1)
-    mail (2.5.4)
-      mime-types (~> 1.16)
-      treetop (~> 1.4.8)
-    mime-types (1.25.1)
+    mail (2.6.1)
+      mime-types (>= 1.16, < 3)
+    mime-types (2.3)
     mini_portile (0.6.0)
     minitest (5.4.0)
-    polyglot (0.3.5)
     sqlite3 (1.3.9)
     thread_safe (0.3.4)
-    treetop (1.4.15)
-      polyglot
-      polyglot (>= 0.3.1)
     tzinfo (1.2.1)
       thread_safe (~> 0.1)
 
