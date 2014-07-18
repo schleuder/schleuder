@@ -16,6 +16,9 @@ ENV['BUNDLE_GEMFILE'] ||= File.join(rootdir, "Gemfile")
 require 'bundler/setup'
 Bundler.require
 
+# An extra from mail-gpg
+require 'hkp'
+
 # Load schleuder
 $:.unshift File.join(rootdir, 'lib')
 

@@ -39,6 +39,12 @@ module Schleuder
         end
       end
 
+      # Helper for plugins
+      def with_split_args(arguments, &block)
+        arguments.split(/[,; ]{1,}/).each do |argument|
+          block.call argument
+        end.join("\n\n")
+      end
     end
   end
 end
