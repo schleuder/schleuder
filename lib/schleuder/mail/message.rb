@@ -8,27 +8,15 @@ module Mail
     # strange errors about wrong number of arguments when overriding
     # Message#initialize.
     def setup(recipient)
-
       if self.encrypted?
         new = self.decrypt(verify: true)
         new.was_encrypted = true
       elsif self.signed?
-        # Note: "inline"-signatures are not (yet?) supported by mail-gpg, so
-        # they're not supported here, neither.
-        # This triggeres the validation.
-        self.signature_valid?
-        # Code from Mail::Gpg.decrypt_pgp_mime()
-        new = Mail.new(self.parts.first)
-        %w(from to cc bcc date subject reply_to in_reply_to references).each do |field|
-          new.send field, self.send(field)
-        end
-        new.verify_result = self.verify_result
+        new = self.verify
       else
         new = self
       end
 
-      # message_id() returns the value without brackets, but we want those!
-      new.message_id = self['Message-ID'].to_s
       new.recipient = recipient
       new
     end
@@ -63,7 +51,7 @@ module Mail
 
     def signature
       # Is there any theoretical case in which there's more than one signature?
-      verify_result.try(:signatures).try(:first)
+      signatures.try(:first)
     end
 
     def was_validly_signed?
@@ -163,12 +151,11 @@ module Mail
 
       # Careful to add information about the incoming signature. GPGME throws
       # exceptions if it doesn't know the key.
-      if self.verify_result && self.verify_result.signatures.present?
-        sig = self.verify_result.signatures.first
+      if self.signature.present?
         msg = begin
-                sig.to_s
+                self.signature.to_s
               rescue EOFError
-                "Unknown signature by #{sig.fpr}"
+                "Unknown signature by #{self.signature.fpr}"
               end
       else
         msg = "Unsigned"
