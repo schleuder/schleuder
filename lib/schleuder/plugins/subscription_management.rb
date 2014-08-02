@@ -1,28 +1,53 @@
 module Schleuder
   module Plugins
     def self.subscribe(arguments, list, mail)
-      list.subscriptions.new email: arguments.first, fingerprint: arguments.last
+      sub = list.subscriptions.new(email: arguments.first, fingerprint: arguments.last)
+      "Subscribed:\n\n#{sub.email} #{sub.fingerprint}"
     end
-    alias_method :add_member, :subscribe
+
+    def self.add_member(*args)
+      self.subscribe(*args)
+    end
 
     # TODO: wasn't there a unsubscribe-keyword before, that behaved
     # differently? We should handle conflicting expectations.
     def self.unsubscribe(arguments, list, mail)
-      with_split_args(arguments).each do |argument|
-        list.subscriptions.where(email: arguments).delete
-      end
-    end
-    alias_method :delete_member, :unsubscribe
-
-    def self.list_subscriptions(arguments, list, mail)
-      with_split_args(arguments).each do |argument|
-        list.subscriptions.where(email: argument).map do |subscription|
-          "#{subscription.email} #{subscription.fingerprint}"
+      arguments.each do |argument|
+        if sub = list.subscriptions.where(email: arguments).delete
+          "#{sub} was unsubscribed from #{list}"
+        else
+          "Unsubscribing #{sub} from #{list} failed!"
         end
       end
     end
-    alias_method :list_members, :list_subscriptions
-    alias_method :list_subscribers, :list_subscriptions
+
+    def self.delete_member(*args)
+      self.unsubscribe(*args)
+    end
+
+    def self.list_subscriptions(arguments, list, mail)
+      out = "List of subscriptions:\n\n"
+
+      subs = if arguments.blank?
+                list.subscriptions.all.to_a
+             else
+               arguments.map do |argument|
+                 list.subscriptions.where("email like ?", "%#{argument}%").to_a
+               end.flatten
+             end
+
+      out << subs.map do |subscription|
+        "#{subscription.email} #{subscription.fingerprint}"
+      end.join("\n")
+    end
+
+    def self.list_members(*args)
+      self.list_subscriptions(*args)
+    end
+
+    def self.list_subscribers(*args)
+      self.list_subscriptions(*args)
+    end
   end
 end
 

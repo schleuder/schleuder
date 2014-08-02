@@ -39,7 +39,7 @@ module Schleuder
         end
       end
       mail.gpg gpg_opts
-      mail.deliver
+      mail
     end
 
   end

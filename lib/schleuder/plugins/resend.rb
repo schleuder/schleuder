@@ -18,10 +18,7 @@ module Schleuder
         return false
       end
 
-      arguments.split(/[,; ]{1,}/).each do |argument|
-        email = argument.chomp
-        next if email.blank?
-
+      arguments.map do |email|
         # Setup encryption
         gpg_opts = {sign: true}
         key = list.keys(email)

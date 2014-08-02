@@ -67,7 +67,7 @@ module Mail
     def reply_to_signer(output)
       # TODO: catch unknown signatures earlier, those are invalid requests
       reply = self.reply
-      reply.body = output(output)
+      reply.body = output
       self.signer.send_mail(reply)
     end
 
@@ -98,7 +98,9 @@ module Mail
         # TODO: find multiline arguments (add-key)
         # TODO: break after some data to not parse huge amounts
         if line.match(/^x-([^: ]*)[: ]*(.*)/i)
-          @keywords << [$1.strip.downcase, $2.strip.downcase]
+          command = $1.strip.downcase
+          arguments = $2.to_s.strip.downcase.split(/[,; ]{1,}/)
+          @keywords << [command, arguments]
           nil
         else
           line

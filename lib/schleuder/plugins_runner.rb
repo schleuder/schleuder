@@ -13,7 +13,7 @@ module Schleuder
             output << Schleuder::Errors::KeywordAdminOnly.new(keyword)
             next
           end
-          output << run_plugin(keyword, arguments)
+          output << run_plugin(keyword, split_args(arguments))
         end
         output
       end
@@ -38,13 +38,7 @@ module Schleuder
           require file
         end
       end
-
-      # Helper for plugins
-      def with_split_args(arguments, &block)
-        arguments.split(/[,; ]{1,}/).each do |argument|
-          block.call argument
-        end.join("\n\n")
-      end
     end
+
   end
 end

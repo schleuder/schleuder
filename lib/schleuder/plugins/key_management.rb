@@ -5,28 +5,28 @@ module Schleuder
     end
 
     def self.delete_key(arguments, list, mail)
-      with_split_args(arguments).each do |argument|
-        list.gpg.delete(argument)
+      arguments.map do |argument|
+        "Deleting #{argument}: #{list.gpg.delete(argument)}"
       end
     end
 
     def self.list_keys(arguments, list, mail)
-      with_split_args(arguments).each do |argument|
+      arguments.map do |argument|
         list.keys(argument).map do |key|
           key.to_s
-        end
+        end.join("\n\n")
       end
     end
 
     def self.get_key(arguments, list, mail)
-      with_split_args(arguments).each do |argument|
+      arguments.map do |argument|
         GPGME::Key.export(argument)
       end
     end
 
     def self.fetch_key(arguments, list, mail)
       hkp = Hkp.new
-      with_split_args(arguments).each do |argument|
+      arguments.map do |argument|
         hkp.fetch_and_import(argument)
       end
     end

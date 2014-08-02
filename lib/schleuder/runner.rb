@@ -19,27 +19,26 @@ module Schleuder
       send_key if @mail.sendkey_request?
       forward_to_owner if @mail.to_owner?
 
-      # TODO: implement receive_*
       if @mail.was_encrypted? && @mail.was_validly_signed?
         output = Plugins::Runner.run(list, @mail).compact
 
         if @mail.request?
-          reply_to_sender(output)
+          list.logger.debug "Request-message, replying with output"
+          reply_to_signer(output)
+          return nil
         else
-          # Any output will be treated as error. Text meant for users should
-          # have been put into the mail by the plugin.
+          # Any output will be treated as error-message. Text meant for users
+          # should have been put into the mail by the plugin.
           output.each do |something|
             @mail.add_pseudoheader(:error, something.to_s)
           end
-          send_to_subscriptions
         end
-      else
-        if list.receive_signed_only?
-          return Errors::MessageUnsigned.new(list)
-        else
-          send_to_subscriptions
-        end
+      # TODO: implement receive_*
+      elsif list.receive_signed_only?
+        return Errors::MessageUnsigned.new(list)
       end
+
+      send_to_subscriptions
       nil
     end
 
@@ -58,14 +57,9 @@ module Schleuder
       exit
     end
 
-    def reply_to_sender(output)
-      if output.empty?
-        msg = I18n.t('no_output_result')
-      else
-        msg = [ I18n.t('output_result_prefix'),
-                output.map(&:to_s) ].flatten.join("\n\n")
-      end
-      @mail.reply_to_sender(msg).deliver
+    def reply_to_signer(output)
+      msg = output.presence || I18n.t('no_output_result')
+      @mail.reply_to_signer(msg).deliver
     end
 
     def send_to_subscriptions(subscriptions=nil)
@@ -73,7 +67,7 @@ module Schleuder
       new = @mail.clean_copy(list, true)
       subscriptions.each do |subscription|
         Schleuder.logger.debug "Sending message to #{subscription.inspect}"
-        out = subscription.send_mail(new)
+        out = subscription.send_mail(new).deliver
       end
     end
 
