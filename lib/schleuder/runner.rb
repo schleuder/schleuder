@@ -30,7 +30,7 @@ module Schleuder
           # Any output will be treated as error-message. Text meant for users
           # should have been put into the mail by the plugin.
           output.each do |something|
-            @mail.add_pseudoheader(:error, something.to_s)
+            @mail.add_pseudoheader(:error, something.to_s) if something.present?
           end
         end
       # TODO: implement receive_*
