@@ -1,6 +1,5 @@
 module Schleuder
   module Plugins
-    # TODO: I18n
     def self.resend(arguments, list, mail)
       resend_it(arguments, list, mail, false) if ! mail.request?
       # Return nil to prevent any erronous output to be interpreted as error.
@@ -25,7 +24,10 @@ module Schleuder
         if key.present?
           gpg_opts.merge!(encrypt: true)
         elsif send_encrypted_only
-          mail.add_pseudoheader(:note, "Not resent to #{email} (no matching key present in keyring and plaintext sending disallowed).")
+          mail.add_pseudoheader(
+            :note,
+            I18n.t("plugins.resend.not_resent_no_key", email: email)
+          )
           next
         end
 
@@ -42,9 +44,9 @@ module Schleuder
     def self.resent_pseudoheader(email, key)
       str = email
       if key.present?
-        str << " (encrypted to #{key.fpr})"
+        str << " (#{I18n.t('plugins.resend.encrypted_with')} #{key.fpr})"
       else
-        str << " (unencrypted)"
+        str << " (#{I18n.t('plugins.resend.unencrypted')})"
       end
     end
   end

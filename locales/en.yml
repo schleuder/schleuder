@@ -30,6 +30,30 @@ en:
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
-
+    key_management:
+      import_result: Import result
+      key_import_status:
+        imported: imported
+        updated: updated
+        unchanged: unchanged
+    resend:
+      not_resent_no_key: Not resent to %{email} (no matching key present in keyring and plaintext sending is disallowed).
+      encrypted_with: encrypted with
+      unencrypted: unencrypted
+    subscription_management:
+      is_not_subscribed: "%{email} is not subscribed."
+      unsubscribed: "%{email} has been unsubscribed."
+      unsubscribing_failed: |
+        Unsubscribing %{email} failed:
+        %{errors}
+      subscribed: "%{email} has been subscribed with fingerprint %{fingerprint}."
+      subscribing_failed: |
+        Subscribing %{email} failed:
+        %{errors}
+      list_of_subscriptions: Subscriptions
+      fingerprint_set: Fingerprint for %{email} set to %{fingerprint}.
+      setting_fingerprint_failed: |
+        Setting fingerprint for %{email} to %{fingerprint} failed:
+        %{errors}.
   no_output_result: Your message resulted in no output.
   owner_forward_prefix: The following message was received for the list-owners.

@@ -1,7 +1,13 @@
 module Schleuder
   module Plugins
     def self.add_key(arguments, list, mail)
-      list.import_key(mail.parts.first || mail.body)
+      import_result = list.import_key(mail.parts.first || mail.body)
+
+      out = [I18n.t('plugins.key_management.import_result')]
+      out << import_result.imports.map do |import_status|
+        action = I18n.t("plugins.key_management.key_import_status.#{import_status.action}")
+        "#{import_status.fpr}: #{action}"
+      end
     end
 
     def self.delete_key(arguments, list, mail)
@@ -14,7 +20,7 @@ module Schleuder
       arguments.map do |argument|
         list.keys(argument).map do |key|
           key.to_s
-        end.join("\n\n")
+        end
       end
     end
 

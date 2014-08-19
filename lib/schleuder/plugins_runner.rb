@@ -13,7 +13,7 @@ module Schleuder
             output << Schleuder::Errors::KeywordAdminOnly.new(keyword)
             next
           end
-          output << run_plugin(keyword, split_args(arguments))
+          output << run_plugin(keyword, arguments)
         end
         output
       end
@@ -21,7 +21,8 @@ module Schleuder
       def self.run_plugin(keyword, arguments)
         command = keyword.gsub('-', '_')
         if Plugins.respond_to?(command)
-          Plugins.send(command, arguments, @list, @mail)
+          out = Plugins.send(command, arguments, @list, @mail)
+          Array(out).flatten.join("\n\n")
         else
           I18n.t('plugins.unknown_keyword', keyword: keyword)
         end

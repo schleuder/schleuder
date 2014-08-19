@@ -30,5 +30,30 @@ de:
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
+    key_management:
+      import_result: Import-Ergebnis
+      key_import_status:
+        imported: importiert
+        updated: aktualisiert
+        unchanged: unverändert
+    resend:
+      not_resent_no_key: Nicht an %{email} versendet (keinen passenden Schlüssel gefunden und unverschlüsseltes Senden ist untersagt).
+      encrypted_with: verschlüsselt mit
+      unencrypted: unverschlüsselt
+    subscription_management:
+      is_not_subscribed: Kein Abo für %{email} gefunden.
+      unsubscribed: Abo für %{email} wurde gelöscht.
+      unsubscribing_failed: |
+        Abo für %{email} nicht gelöscht:
+        %{errors}
+      subscribed: Abo für %{email} mit Fingerabdruck %{fingerprint} eingetragen.
+      subscribing_failed: |
+        Abo für %{email} nicht eingetragen:
+        %{errors}
+      list_of_subscriptions: Abos
+      fingerprint_set: Fingerabdruck für %{email} auf %{fingerprint} gesetzt.
+      setting_fingerprint_failed: |
+        Fingerabdruck für %{email} konnte nicht auf %{fingerprint} gesetzt werden:
+        %{errors}.
   no_output_result: Deine Email ergab keinen Ausgabe-Text.
   owner_forward_prefix: Die folgende Email ging für die Listen-Besitzer/innen ein.
