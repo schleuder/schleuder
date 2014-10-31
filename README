@@ -1,4 +1,4 @@
-SchleudAR — Schleuder on ActiveRecord.
+Schleuder3 — Schleuder on ActiveRecord.
 ======================================
 
 Does not include a web-interface, but provides a ready to use foundation for it.
@@ -12,10 +12,4 @@ Comes with internationalized error-messages.
 4. bundle exec ./bin/schleuder-subscribe list@host user@example.net DEADBEEFDEADBEEFDEADBEEF /tmp/user.asc
 
 Todo:
-* Test if snailgun/snailgun-rr <https://github.com/sherriman/snailgun> might help speeding up startup.
-* Go through all the issues at <https://git.codecoop.org/schleuder/schleuder/issues> and consider fixing/implementing them.
-* Migrations-scripts for schleuder2-based lists.
-* Refactor bin/*
-* Allow list-config-defaults to be set in schleuder.yml
-* Make it a gem.
-* Make more Plugins.
+* See <https://git.codecoop.org/schleuder/schleudar/issues>.
