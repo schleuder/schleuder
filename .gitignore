@@ -1,3 +1,4 @@
 .bundle
 vendor
 *.swp
+db/*.sqlite3

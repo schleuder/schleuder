@@ -13,3 +13,8 @@ Comes with internationalized error-messages.
 
 Todo:
 * See <https://git.codecoop.org/schleuder/schleudar/issues>.
+
+## Testing
+
+    SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bundle exec rake db:create db:schema:load
+    bundle exec rspec
