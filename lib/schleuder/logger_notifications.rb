@@ -14,16 +14,6 @@ module Schleuder
       notify_admin(string, original_message)
     end
 
-    private
-
-    def append_original_message(original_message)
-      if original_message
-        "\n\nOriginal message:\n\n#{original_message.to_s}"
-      else
-        ''
-      end
-    end
-
     def notify_admin(string, original_message=nil)
       Array(adminaddresses).each do |address|
         mail = Mail.new
@@ -38,6 +28,16 @@ module Schleuder
           mail.parts.last.content_description = 'The originally incoming message'
         end
         mail.deliver
+      end
+    end
+
+    private
+
+    def append_original_message(original_message)
+      if original_message
+        "\n\nOriginal message:\n\n#{original_message.to_s}"
+      else
+        ''
       end
     end
   end

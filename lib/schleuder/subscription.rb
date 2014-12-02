@@ -42,5 +42,8 @@ module Schleuder
       mail
     end
 
+    def admin?
+      self.admin == true
+    end
   end
 end

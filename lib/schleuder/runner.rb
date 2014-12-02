@@ -2,9 +2,7 @@ module Schleuder
   class Runner
     def run(msg, recipient)
       error = setup_list(recipient)
-      if error
-        return error
-      end
+      return error if error
 
       list.logger.info "Parsing incoming email."
       begin
@@ -16,9 +14,17 @@ module Schleuder
         return Errors::DecryptionFailed.new(list)
       end
 
-      send_key if @mail.sendkey_request?
-      forward_to_owner if @mail.to_owner?
+      # Filters
+      error = Filters::Runner.run(list, @mail)
+      if error
+        if list.bounces_notify_admins?
+          # TODO: Improve with nicer message
+          list.logger.notify_admin error.to_s, @mail
+        end
+        return error 
+      end
 
+      # Plugins
       if @mail.was_encrypted? && @mail.was_validly_signed?
         output = Plugins::Runner.run(list, @mail).compact
 
@@ -33,39 +39,23 @@ module Schleuder
             @mail.add_pseudoheader(:error, something.to_s) if something.present?
           end
         end
-      # TODO: implement receive_*
-      elsif list.receive_signed_only?
-        return Errors::MessageUnsigned.new(list)
       end
 
+      # Subscriptions
       send_to_subscriptions
       nil
     end
 
     private
 
-    def forward_to_owner
-      Schleuder.logger.debug "Forwarding message to admins"
-      @mail.add_pseudoheader(:note, I18n.t(:owner_forward_prefix))
-      send_to_subscriptions(list.admins)
-      exit
-    end
-
-    def send_key
-      list.logger.debug "Sending public key as reply."
-      @mail.reply_sendkey(list).deliver
-      exit
-    end
-
     def reply_to_signer(output)
       msg = output.presence || I18n.t('no_output_result')
       @mail.reply_to_signer(msg).deliver
     end
 
-    def send_to_subscriptions(subscriptions=nil)
-      subscriptions ||= list.subscriptions
+    def send_to_subscriptions
       new = @mail.clean_copy(list, true)
-      subscriptions.each do |subscription|
+      list.subscriptions.each do |subscription|
         Schleuder.logger.debug "Sending message to #{subscription.inspect}"
         out = subscription.send_mail(new).deliver
       end

@@ -16,7 +16,7 @@ begin
   require_relative '../lib/schleuder.rb'
 
   error = Schleuder::Runner.new.run(message, listname)
-  if error
+  if error.kind_of?(StandardError)
     puts error
     exit 1
   end
