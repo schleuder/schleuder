@@ -1,5 +1,4 @@
 # TODO: check if gpg1 is present or if we need to work around the "gpg-agent now mandatory"-fuckup.
-# TODO: logging. log4r?
 
 # Stdlib
 require 'fileutils'
@@ -9,17 +8,15 @@ require 'pathname'
 require 'syslog/logger'
 require 'logger'
 
-rootdir = Pathname.new(__FILE__).dirname.dirname.realpath
-
-# Setup bundler and bundled gems
-ENV['BUNDLE_GEMFILE'] ||= File.join(rootdir, "Gemfile")
-require 'bundler/setup'
-Bundler.require
+# Require mandatory libs. The database-layer-lib is required below.
+require 'mail-gpg'
+require 'active_record'
 
 # An extra from mail-gpg
 require 'hkp'
 
 # Load schleuder
+rootdir = Pathname.new(__FILE__).dirname.dirname.realpath
 $:.unshift File.join(rootdir, 'lib')
 
 # Monkeypatches
@@ -43,19 +40,26 @@ require 'schleuder/plugins_runner'
 Dir[rootdir + "lib/schleuder/plugins/*.rb"].each do |file|
   require file
 end
+require 'schleuder/filters_runner'
+Dir[rootdir + "lib/schleuder/filters/*.rb"].each do |file|
+  require file
+end
 require 'schleuder/runner'
 require 'schleuder/list'
 require 'schleuder/subscription'
 
-
 # Setup
+ENV["SCHLEUDER_CONFIG"] ||= '/etc/schleuder/schleuder.yml'
 ENV["SCHLEUDER_ENV"] ||= 'production'
 ENV["SCHLEUDER_ROOT"] = rootdir.to_s
 
-Mail.defaults { delivery_method :sendmail }
+# Require lib for database specified in config.
+require Schleuder::Conf.database['adapter']
 
-ActiveRecord::Base.establish_connection(Schleuder::Conf.database)
+ActiveRecord::Base.establish_connection(Schleuder::Conf.databases[ENV["SCHLEUDER_ENV"]])
 ActiveRecord::Base.logger = Schleuder.logger
+
+Mail.defaults { delivery_method :sendmail }
 
 I18n.load_path += Dir[rootdir.to_s + "/locales/*.yml"]
 I18n.enforce_available_locales = true

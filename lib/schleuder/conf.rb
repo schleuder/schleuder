@@ -5,8 +5,7 @@ module Schleuder
     def config
       return @config if @config
 
-      default = '/etc/schleuder/schleuder.yml'
-      config_file = ENV['SCHLEUDER_CONFIG'].presence || default
+      config_file = ENV['SCHLEUDER_CONFIG']
 
       if ! File.readable?(config_file)
         # TODO: raise meaningful exception
@@ -25,6 +24,10 @@ module Schleuder
 
     def self.database
       instance.config['database'][ENV['SCHLEUDER_ENV']]
+    end
+
+    def self.databases
+      instance.config['database']
     end
 
     def self.superadmin
