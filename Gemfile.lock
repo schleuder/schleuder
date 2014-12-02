@@ -1,22 +1,14 @@
-GIT
-  remote: https://github.com/jkraemer/mail-gpg
-  revision: 6092808927d778963fcd28b2c0f5e95c05862a75
-  specs:
-    mail-gpg (0.2.0)
-      gpgme (~> 2.0, >= 2.0.2)
-      mail (~> 2.5, >= 2.5.3)
-
 GEM
   remote: https://rubygems.org/
   specs:
-    activemodel (4.1.4)
-      activesupport (= 4.1.4)
+    activemodel (4.1.5)
+      activesupport (= 4.1.5)
       builder (~> 3.1)
-    activerecord (4.1.4)
-      activemodel (= 4.1.4)
-      activesupport (= 4.1.4)
+    activerecord (4.1.5)
+      activemodel (= 4.1.5)
+      activesupport (= 4.1.5)
       arel (~> 5.0.0)
-    activesupport (4.1.4)
+    activesupport (4.1.5)
       i18n (~> 0.6, >= 0.6.9)
       json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
@@ -31,6 +23,9 @@ GEM
     json (1.8.1)
     mail (2.6.1)
       mime-types (>= 1.16, < 3)
+    mail-gpg (0.2.1)
+      gpgme (~> 2.0, >= 2.0.2)
+      mail (~> 2.5, >= 2.5.3)
     mime-types (2.3)
     mini_portile (0.6.0)
     minitest (5.4.0)
@@ -49,15 +44,15 @@ GEM
     rspec-support (3.1.2)
     sqlite3 (1.3.9)
     thread_safe (0.3.4)
-    tzinfo (1.2.1)
+    tzinfo (1.2.2)
       thread_safe (~> 0.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  activerecord (~> 4.1.0)
-  mail-gpg!
+  activerecord
+  mail-gpg
   rake
   rspec (~> 3.1.0)
   sqlite3
