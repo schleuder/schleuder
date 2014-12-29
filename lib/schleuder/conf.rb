@@ -8,8 +8,8 @@ module Schleuder
       config_file = ENV['SCHLEUDER_CONFIG']
 
       if ! File.readable?(config_file)
-        # TODO: raise meaningful exception
-        raise StandardError, "Not funny!1!"
+        msg = "Error: '#{ENV['SCHLEUDER_CONFIG']}' is not a readable file."
+        raise StandardError, msg
       end
       @config = YAML.load(File.read(config_file))
     end
