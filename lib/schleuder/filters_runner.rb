@@ -5,7 +5,11 @@ module Schleuder
       Filters = %w[
         send_key
         forward_to_owner
+        receive_admin_only
+        receive_authenticated_only
         receive_signed_only
+        receive_encrypted_only
+        receive_from_subscribed_emailaddresses_only
       ]
 
       def self.run(list, mail)
