@@ -12,7 +12,7 @@ Comes with internationalized error-messages.
 4. bundle exec ./bin/schleuder-subscribe list@host user@example.net DEADBEEFDEADBEEFDEADBEEF /tmp/user.asc
 
 Todo:
-* See <https://git.codecoop.org/schleuder/schleudar/issues>.
+* See <https://git.codecoop.org/schleuder/schleuder3/issues>.
 
 ## Testing
 
