@@ -17,13 +17,5 @@ module GPGME
       end
       s
     end
-
-    def to_param
-      fingerprint
-    end
-
-    def id
-      fingerprint
-    end
   end
 end
