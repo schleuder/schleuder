@@ -1,0 +1,126 @@
+# Setting default values for lists upon creation.
+#
+# The configuration format is yaml (http://www.yaml.org).
+---
+# Only send out enrypted emails?
+send_encrypted_only: false
+#
+# Allow receiving unenrypted mails? If false, any other email will be bounced.
+receive_encrypted_only: false
+#
+# Allow receiving mails not validly signed? If false, any other email will be
+# bounced.
+receive_signed_only: false
+#
+# Allow receiving mails that are not validly signed by a list members key? If
+# true, any other email will be bounced.
+receive_authenticated_only: false
+#
+# Only allow mails being sent from a members address? If true, any other sending
+# address will be dropped.
+# NOTE: This is a very weak restriction mechanism on which you should not rely,
+#       as sending addresses can easily be faked! We recommend you to rather
+#       rely on the `receive_authenticated_only` option. Setting the
+#       `receive_authenticated_only` option to true, will authenticated senders
+#       based on the signature on the mail, which is the strongest
+#       authentication mechanism you can get.
+#       This option could be useful, if you would like to have a closed
+#       mailinglist, but could not yet get all members to properly use GPG.
+receive_from_subscribed_emailaddresses_only: false
+#
+# Whether to accept only emails that are validly signed by a list-admin's key
+# This is useful for newsletters, announce or notification lists
+receive_admin_only: false
+#
+# Schleuder can include various metadata from the original mail. You can tweak
+# Schleuder which header fields should be included.
+pseudoheaders:
+- from
+- to
+- cc
+- date
+#
+# Whether to keep the msgids (In-Reply-To:, References:) or not
+# Schleuder will only pass valid schleuder Message-Ids, all the others
+# are filtered out.
+# This setting can lead to information leakage, as replies are connectable
+# and a thread of (encrypted) messages can be built by an eavesdropper.
+#keep_msgid: true
+#
+# Schleuder can be commanded to process various plugins via keywords in signed
+# emails. To restrict the usage of specific keywords to the admin (some can
+# cause fatal damage) list them here.
+#keywords_admin_only: ['ADD-MEMBER', 'DELETE-MEMBER', 'DELETE-KEY', 'SAVE-MEMBERS', 'DEL-KEY']
+#
+# For keywords listed here the list-admin(s) will receive a notice whenever a
+# member triggers a command with it.
+#keywords_admin_notify: ['ADD-KEY']
+#
+# list-specific log-level: ERROR || WARN || INFO || DEBUG
+#log_level: ERROR
+#
+# Log to SYSLOG? To enable set to true.
+#log_syslog: false
+#
+# Log to IO (write into STDIN of another process/executable)? To enable specify
+# executable with full path and optional arguments here.
+# Example: /path/to/multilog tt /var/schleuderlists/listname/log/
+#log_io: false
+#
+# Log to a file? To enable specify a filename, optionally with full path.
+#log_file: false
+#
+# speaks for itself, no?
+#public_footer:
+#
+# A string that the subject of every email that *is* validly signed by a
+# list-member will be prefixed with (unless the string is already present in
+# the subject)
+#prefix: ''
+#
+# A string that the subject of every email that is *not* validly signed by a
+# list-member will be prefixed with.
+#prefix_in: ''
+#
+# A string that the subject of every internal email, that has been resent to
+# the outside, will be prefixed with.
+#prefix_out: ''
+#
+# Drop any bounces (incoming email not passing the receive_*_only-rules)
+#bounces_drop_all: false
+#
+# Drop bounces if they match one of these headers. Must be a hash, keys and
+# values are case insensitive.
+#bounces_drop_on_headers: {'x-spam-flag' => 'yes'}
+#
+# Send a notice to admin(s) on bouncing or dropping
+#bounces_notify_admins: true
+#
+# Include RFC-compliant List-* Headers into member mails
+#include_list_headers: true
+#
+# Include OpenPGP-Header
+#include_openpgp_header: true
+#
+# Prefered way to receive emails to note in OpenPGP-Header ('sign'|'encrypt'|'signencrypt'|'unprotected'|'none')
+# 'none' to not include a preference
+# default: 'signencrypt'
+#openpgp_header_preference: 'signencrypt'
+#
+# If we want to dump the original incoming mail.
+# ATTENTION: this stores the incoming e-mail on disk!
+#dump_incoming_mail: false
+#
+# Maximum size of message allowed on the list in kilobyte. All others will be bounced.
+# Default is 10MB
+#max_message_size: 10240
+#
+# Whether to archive messages sent to list members or not.
+# Setting this option to true will archive every message sent to list members
+# into <listdir>/archive/$YEAR/$MONTH/$DAY/$MESSAGEID.msg
+# The messages are encrypted with the lists' public key and dumped as it would
+# have been handed over to the MTA.
+# Beware that this will archive every communication over that list on a remote
+# box amongst the matching private key and its password!
+# Default: false
+#archive: false
