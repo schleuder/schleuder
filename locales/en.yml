@@ -27,6 +27,7 @@ en:
     list_not_found: "Error: No list found with this address: '%{email}'."
     list_exists: A list with address '%{email}' is already present.
     keyword_admin_only: The keyword '%{keyword}' may only be used by list-admin.
+    reading_config_failed: The file '%{filename}' contains syntax errors and could not be parsed.
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.

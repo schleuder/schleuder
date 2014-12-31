@@ -27,6 +27,7 @@ de:
     list_not_found: "Fehler: Keine Liste zu dieser Adresse gefunden: '%{email}'."
     list_exists: Es existiert bereits eine Liste mit der Adresse '%{email}'.
     keyword_admin_only: Das Schlüsselwort '%{keyword}' darf nur von Listen-Admins verwendet werden.
+    reading_config_failed: Die Datei '%{filename}' enthält Syntaxfehler und konnte nicht eingelesen werden.
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.

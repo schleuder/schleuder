@@ -99,6 +99,7 @@ module Schleuder
       Subscription.create(list_id: self.id, email: email, fingerprint: fingerprint)
     end
 
+    # TODO: Refactor/split this method, it's too long.
     def self.build(listname, adminemail=nil, adminkeypath=nil)
       errors = ErrorsList.new
 
@@ -116,8 +117,20 @@ module Schleuder
       # TODO:
       # * keyring.exists? || create
       
-      # TODO: get defaults from some file, not from database
       list = List.create(email: listname, fingerprint: 'deadbeeff00')
+      config_file = '/etc/schleuder/list-defaults.yml'
+      begin
+        defaults = YAML.parse(File.read(config_file))
+      rescue Psych::SyntaxError => exc
+        errors << ReadingConfigFailed.new(config_file)
+        return [errors, nil]
+      end
+
+      err = list.update(defaults.to_ruby)
+      if err
+        errors << ActiveModelError.new(err.errors)
+        return [errors, nil]
+      end
 
       if adminemail.present?
         sub = list.subscribe(adminemail)
