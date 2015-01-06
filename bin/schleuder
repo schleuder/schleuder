@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-if ARGV.empty? || ARGV.first.match(/-h|--help/)
+if ARGV.empty? || ARGV.first.match(/^(-h|--help)$/)
   puts "Usage: #{File.basename(__FILE__)} listname < message"
   exit 1
 elsif ARGV.first.match(/-v|-V|--version/)
