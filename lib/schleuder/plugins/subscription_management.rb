@@ -1,5 +1,7 @@
 module Schleuder
   module Plugins
+    # TODO: check if incoming mail is a request. Maybe re-think plugin system
+    # and sort plugins by type (list vs. request)?
     def self.subscribe(arguments, list, mail)
       sub = list.subscriptions.new(
         email: arguments.first,

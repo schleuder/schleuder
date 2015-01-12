@@ -25,6 +25,7 @@ module Mail
       clean = Mail.new
       clean.from = list.email
       clean.subject = self.subject
+      # TODO: make keeping of Msg-Ids configurable
       clean['In-Reply-To'] = self.header['in-reply-to']
       clean['Message-ID'] = header['Message-ID']
       clean.references = self.references
@@ -130,6 +131,7 @@ module Mail
         @standard_pseudoheaders = []
       end
 
+      # TODO: make selection configurable
       %w[from to date cc].each do |field|
         @standard_pseudoheaders << make_pseudoheader(field, self.header[field])
       end
