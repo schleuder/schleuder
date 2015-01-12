@@ -58,6 +58,7 @@ module Schleuder
       list.subscriptions.each do |subscription|
         Schleuder.logger.debug "Sending message to #{subscription.inspect}"
         out = subscription.send_mail(new).deliver
+        Schleuder.logger.debug out
       end
     end
 
