@@ -1,7 +1,7 @@
 module Schleuder
   module Plugins
     def self.resend(arguments, list, mail)
-      resend_it(arguments, list, mail, false) if ! mail.request?
+      resend_it(arguments, list, mail, false)
       # Return nil to prevent any erronous output to be interpreted as error.
       nil
     end
