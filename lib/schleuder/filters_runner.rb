@@ -2,7 +2,7 @@ module Schleuder
   module Filters
     class Runner
       # To define priority sort this.
-      Filters = %w[
+      FILTERS = %w[
         send_key
         forward_to_owner
         receive_admin_only
@@ -15,8 +15,8 @@ module Schleuder
       def self.run(list, mail)
         @list = list
         @mail = mail
-        Filters.map do |cmd|
-          Schleuder.logger.debug "Calling filter #{filter}"
+        FILTERS.map do |cmd|
+          Schleuder.logger.debug "Calling filter #{cmd}"
           error = Filters.send(cmd, list, mail)
           return error if bounce?(error)
         end
