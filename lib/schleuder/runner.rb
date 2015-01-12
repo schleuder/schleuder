@@ -9,7 +9,7 @@ module Schleuder
         # This decrypts, verifies, etc.
         @mail = Mail.new(msg)
         @mail = @mail.setup(recipient)
-      rescue GPGME::Error::DecryptFailed => exc
+      rescue GPGME::Error::DecryptFailed
         logger.warn "Decryption of incoming message failed."
         return Errors::DecryptionFailed.new(list)
       end
