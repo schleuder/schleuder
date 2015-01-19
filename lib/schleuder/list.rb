@@ -103,7 +103,7 @@ module Schleuder
       errors = ErrorsList.new
 
       if self.where(email: listname).present?
-        errors << ListExists.new(listname)
+        errors << Errors::ListExists.new(listname)
         return [errors, nil]
       end
 
