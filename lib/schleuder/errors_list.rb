@@ -1,8 +1,8 @@
 module Schleuder
   class ErrorsList
-    def initialize(error)
+    def initialize(error='')
       clear
-      if error
+      if error != ''
         @errors << error
       end
     end
