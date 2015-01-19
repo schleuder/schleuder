@@ -27,7 +27,7 @@ require 'schleuder/gpgme/sub_key.rb'
 
 # The Code[tm]
 require 'schleuder/errors/base'
-Dir[rootdir + "lib/schleuder/errors/*.rb"].each do |file|
+Dir[rootdir.to_s + "/lib/schleuder/errors/*.rb"].each do |file|
   require file
 end
 require 'schleuder/errors_list'
@@ -37,11 +37,11 @@ require 'schleuder/logger_notifications'
 require 'schleuder/logger'
 require 'schleuder/listlogger'
 require 'schleuder/plugins_runner'
-Dir[rootdir + "lib/schleuder/plugins/*.rb"].each do |file|
+Dir[rootdir.to_s + "/lib/schleuder/plugins/*.rb"].each do |file|
   require file
 end
 require 'schleuder/filters_runner'
-Dir[rootdir + "lib/schleuder/filters/*.rb"].each do |file|
+Dir[rootdir.to_s + "/lib/schleuder/filters/*.rb"].each do |file|
   require file
 end
 require 'schleuder/runner'
