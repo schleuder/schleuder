@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 
-if ![2,3].include?(ARGV.size) || ARGV.first.match(/-h|--help/)
+if ![2,3].include?(ARGV.size) || ARGV.first.match(/^(-h|--help)$/)
     $stderr.puts "Usage: #{File.basename(__FILE__)} list@hostname initadmin@example.org [/path/to/initadminkey]"
     exit 1
 end
