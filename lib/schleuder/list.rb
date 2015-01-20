@@ -107,20 +107,39 @@ module Schleuder
         return [errors, nil]
       end
 
-      # TODO: Break if list_dir exists and isn't empty.
       list_dir = listdir(listname)
       if ! File.exists?(list_dir)
-        FileUtils.mkdir_p(list_dir)
+        FileUtils.mkdir_p(list_dir,:mode => 0700)
+      else 
+        # check if listdir is owned by me and empty
+        # TODO use correct error message
+        if ! File.directory?(list_dir)
+          errors << Errors::ListExists.new(list_dir + ' is not a directory')
+        end
+        Dir[list_dir].each do |entry|
+          if (entry == '.') || (entry == '..') 
+            continue
+          end
+          errors << Errors::ListExists.new(list_dir + ' not empty')
+          break
+        end
+        # TODO check ownership
+
+        if ! errors.empty?
+          return [errors,nil]
+        end
       end
 
       # TODO:
-      # * keyring.exists? || create
-      
+      # * generate keypair - in that process create keyrings
+      phrase_container = Passphrase.new
+      phrase = phrase_container.generate(32) # TODO get size from config
+
       # TODO: get defaults from some file, not from database
       list = List.create(email: listname, fingerprint: 'deadbeeff00')
 
       if adminemail.present?
-        sub = list.subscribe(adminemail)
+        sub = list.subscribe(adminemail,'')
         if sub.errors.present?
           errors << ActiveModelError.new(sub.errors)
         end
