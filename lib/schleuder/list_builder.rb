@@ -78,9 +78,11 @@ module Schleuder
     end
 
     def create_key
+      # TODO: fix using a passphrase.
       #phrase_container = Passphrase.new
       #phrase = phrase_container.generate(32) # TODO get size from config
 
+      # TODO: add UIDs for -owner and -request.
       begin
         gpg.generate_key(key_params)
       rescue => exc
