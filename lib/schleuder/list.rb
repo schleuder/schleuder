@@ -107,61 +107,6 @@ module Schleuder
       Subscription.create(list_id: self.id, email: email, fingerprint: fingerprint)
     end
 
-    def self.build(listname, adminemail=nil, adminkeypath=nil)
-      errors = ErrorsList.new
-
-      if self.where(email: listname).present?
-        errors << Errors::ListExists.new(listname)
-        return [errors, nil]
-      end
-
-      list_dir = listdir(listname)
-      if ! File.exists?(list_dir)
-        FileUtils.mkdir_p(list_dir, :mode => 0700)
-      else
-        # Check if listdir is usable.
-        if ! File.directory?(list_dir)
-          errors << Errors::ListdirProblem.new(list_dir, :not_a_directory)
-        end
-
-        if Dir.entries(list_dir).size > 2
-          errors << Errors::ListdirProblem.new(list_dir, :not_empty)
-        end
-
-        if ! File.writable?(list_dir)
-          errors << Errors::ListdirProblem.new(list_dir, :not_writable)
-        end
-
-        if ! errors.empty?
-          return [errors, nil]
-        end
-      end
-
-      # TODO:
-      # * generate keypair - in that process create keyrings
-      phrase_container = Passphrase.new
-      phrase = phrase_container.generate(32) # TODO get size from config
-
-      # TODO: get defaults from some file, not from database
-      list = List.create(email: listname, fingerprint: 'deadbeeff00')
-
-      if adminemail.present?
-        sub = list.subscribe(adminemail,'')
-        if sub.errors.present?
-          errors << ActiveModelError.new(sub.errors)
-        end
-      end
-
-      if adminkeypath.present?
-        if ! File.readable?(adminkeypath)
-          errors << FileNotFound.new(adminkeypath)
-        end
-        list.import_key(File.read(adminkeypath))
-      end
-
-      [errors.presence, list.presence]
-    end
-
     def keywords_admin_only
       Array(@keywords_admin_only)
     end

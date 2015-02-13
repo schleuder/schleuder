@@ -26,7 +26,14 @@ en:
       %{list_fingerprint}).
     list_not_found: "Error: No list found with this address: '%{email}'."
     list_exists: A list with address '%{email}' is already present.
+    listdir_problem:
+      message: "There's a problem with the list-directory: '%{dir}' %{problem}."
+      not_a_directory: is not a directory
+      not_empty: is not empty
+      not_writable: is not writable
     keyword_admin_only: The keyword '%{keyword}' may only be used by list-admin.
+    key_generation_failed: Generating the OpenPGP key pair for %{listname} failed for unknown reasons. Please check the list-directory ('%{listdir}') and the log-files.
+    too_many_keys: "Error: In %{listdir} there's more than one matching OpenPGP-key for %{listname}. Please delete all but one."
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.

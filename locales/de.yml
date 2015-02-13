@@ -26,7 +26,14 @@ de:
       %{list_fingerprint}).
     list_not_found: "Fehler: Keine Liste zu dieser Adresse gefunden: '%{email}'."
     list_exists: Es existiert bereits eine Liste mit der Adresse '%{email}'.
+    listdir_problem:
+      message: "Problem mit dem Listen-Verzeichnis: '%{dir}' %{problem}."
+      not_a_directory: ist kein Verzeichnis
+      not_empty: ist nicht leer
+      not_writable: ist nicht beschreibbar
     keyword_admin_only: Das Schlüsselwort '%{keyword}' darf nur von Listen-Admins verwendet werden.
+    key_generation_failed: Das Erzeugen des OpenPGP-Schlüsselpaares für %{listname} ist aus unbekannten Gründen fehlgeschlagen. Bitte prüfe das Listen-Verzeichnis ('%{listdir}') und die Log-Dateien.
+    too_many_keys: "Fehler: In %{listdir} existieren mehrere OpenPGP-Schlüssel für %{listname}. Bitte lösche alle bis auf einen."
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.

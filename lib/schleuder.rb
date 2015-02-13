@@ -47,6 +47,7 @@ Dir[rootdir.to_s + "/lib/schleuder/filters/*.rb"].each do |file|
 end
 require 'schleuder/runner'
 require 'schleuder/list'
+require 'schleuder/list_builder'
 require 'schleuder/subscription'
 
 # Setup
