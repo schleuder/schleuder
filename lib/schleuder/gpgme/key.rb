@@ -17,5 +17,11 @@ module GPGME
       end
       s
     end
+
+    # Force encoding, some databases save "ASCII-8BIT" as binary data.
+    alias_method :orig_fingerprint, :fingerprint
+    def fingerprint
+      orig_fingerprint.encode(Encoding::US_ASCII)
+    end
   end
 end
