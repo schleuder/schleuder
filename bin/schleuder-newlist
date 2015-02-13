@@ -11,7 +11,7 @@ listname, adminaddr, adminkeypath = ARGV
 require_relative '../lib/schleuder.rb'
 include Schleuder
 
-errors, list = List.build(listname, adminaddr, adminkeypath)
+errors, list = ListBuilder.new(listname, adminaddr, adminkeypath).run
 
 if errors.present?
   $stderr.puts "Error: #{errors}"
