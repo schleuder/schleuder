@@ -117,24 +117,23 @@ module Schleuder
 
       list_dir = listdir(listname)
       if ! File.exists?(list_dir)
-        FileUtils.mkdir_p(list_dir,:mode => 0700)
-      else 
-        # check if listdir is owned by me and empty
-        # TODO use correct error message
+        FileUtils.mkdir_p(list_dir, :mode => 0700)
+      else
+        # Check if listdir is usable.
         if ! File.directory?(list_dir)
-          errors << Errors::ListExists.new(list_dir + ' is not a directory')
+          errors << Errors::ListdirProblem.new(list_dir, :not_a_directory)
         end
-        Dir[list_dir].each do |entry|
-          if (entry == '.') || (entry == '..') 
-            continue
-          end
-          errors << Errors::ListExists.new(list_dir + ' not empty')
-          break
+
+        if Dir.entries(list_dir).size > 2
+          errors << Errors::ListdirProblem.new(list_dir, :not_empty)
         end
-        # TODO check ownership
+
+        if ! File.writable?(list_dir)
+          errors << Errors::ListdirProblem.new(list_dir, :not_writable)
+        end
 
         if ! errors.empty?
-          return [errors,nil]
+          return [errors, nil]
         end
       end
 
