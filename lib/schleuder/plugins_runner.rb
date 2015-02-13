@@ -6,6 +6,11 @@ module Schleuder
         @mail = mail
         setup
         output = []
+        if @mail.request?
+          @plugin_module = RequestPlugins
+        else
+          @plugin_module = ListPlugins
+        end
         mail.keywords.each do |keyword, arguments|
           @list.logger.debug "Running keyword '#{keyword}'"
           if @list.admin_only?(keyword) && ! @list.from_admin?(@mail)
@@ -20,8 +25,8 @@ module Schleuder
 
       def self.run_plugin(keyword, arguments)
         command = keyword.gsub('-', '_')
-        if Plugins.respond_to?(command)
-          out = Plugins.send(command, arguments, @list, @mail)
+        if @plugin_module.respond_to?(command)
+          out = @plugin_module.send(command, arguments, @list, @mail)
           Array(out).flatten.join("\n\n")
         else
           I18n.t('plugins.unknown_keyword', keyword: keyword)

@@ -1,5 +1,5 @@
 module Schleuder
-  module Plugins
+  module RequestPlugins
     def self.add_key(arguments, list, mail)
       import_result = list.import_key(mail.parts.first || mail.body)
 

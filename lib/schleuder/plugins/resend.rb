@@ -1,5 +1,5 @@
 module Schleuder
-  module Plugins
+  module ListPlugins
     def self.resend(arguments, list, mail)
       resend_it(arguments, list, mail, false)
       # Return nil to prevent any erronous output to be interpreted as error.
@@ -12,11 +12,6 @@ module Schleuder
     end
 
     def self.resend_it(arguments, list, mail, send_encrypted_only)
-      if mail.request?
-        list.logger.warn "resend-keyword in request is illegal, ignoring it!"
-        return false
-      end
-
       arguments.map do |email|
         # Setup encryption
         gpg_opts = {sign: true}
