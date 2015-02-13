@@ -1,0 +1,47 @@
+#!/usr/bin/ruby
+
+
+if ![1,2].include?(ARGV.size) || ARGV.first.match(/^(-h|--help)$/)
+    $stderr.puts "Usage: #{File.basename(__FILE__)} list@hostname"
+    exit 1
+end
+
+if ARGV.first == '-f'
+  force = true
+  ARGV.shift
+end
+listname = ARGV.shift
+
+require_relative '../lib/schleuder.rb'
+include Schleuder
+
+lists = List.where(email: listname)
+if lists.empty?
+  $stderr.puts 'List not found.'
+  exit 1
+end
+
+if lists.size > 1
+  $stderr.puts "Error: Multiple matching lists found: #{lists.map(&:email).join(', ')}."
+  exit 1
+end
+
+list = lists.first
+
+if ! list.destroy
+  $stderr.puts "Error: Deleting failed: #{list.errors.inspect}"
+  exit 1
+else
+  puts "List #{list.email} deleted from database."
+end
+
+print "Delete list-directory (#{list.listdir}), too? [yN] "
+if gets.chomp.downcase == 'y'
+  if res = FileUtils.rm_r(list.listdir, secure: true)
+    puts "Done."
+  else
+    $stderr.puts "An unexpected error occurred! Result of deletion: #{res.inspect}"
+    exit 1
+  end
+end
+
