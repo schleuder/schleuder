@@ -57,3 +57,7 @@ de:
         %{errors}.
   no_output_result: Deine Email ergab keinen Ausgabe-Text.
   owner_forward_prefix: Die folgende Email ging für die Listen-Besitzer/innen ein.
+  empty_message_error: |
+    Deine Email enthielt keinen Inhalt, daher wurde sie nicht über die Liste geschickt.
+
+    Falls du ausschließlich Schlüsselwörter gesendet hast beachte, dass administrative Schlüsselwörter an die "request"-Adresse (<%{request_address}>) geschickt werden müssen um berücksichtigt zu werden.

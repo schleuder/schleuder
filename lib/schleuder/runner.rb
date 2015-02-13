@@ -38,6 +38,13 @@ module Schleuder
           output.each do |something|
             @mail.add_pseudoheader(:error, something.to_s) if something.present?
           end
+
+          # Don't send empty messages over the list.
+          if @mail.body.empty?
+            Schleuder.logger.info "Message found empty, not sending it to list. Instead notifying sender."
+            reply_to_signer(I18n.t(:empty_message_error, request_address: @list.request_address))
+            return nil
+          end
         end
       end
 

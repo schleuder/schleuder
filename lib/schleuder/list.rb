@@ -51,6 +51,10 @@ module Schleuder
       @sendkey_address ||= email.gsub('@', '-sendkey@')
     end
 
+    def request_address
+      @request_address ||= email.gsub('@', '-request@')
+    end
+
     def gpg
       @gpg_ctx ||= begin
        # TODO: figure out why the homedir isn't recognized

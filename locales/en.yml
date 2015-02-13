@@ -57,3 +57,7 @@ en:
         %{errors}.
   no_output_result: Your message resulted in no output.
   owner_forward_prefix: The following message was received for the list-owners.
+  empty_message_error: |
+    Your message was found empty and wasn't passed on to the list.
+
+    In case you only sent keywords please note that administrative keywords must be sent to the "request"-address (<%{request_address}>) in order to be respected.
