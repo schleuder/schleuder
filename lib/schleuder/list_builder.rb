@@ -38,6 +38,7 @@ module Schleuder
       return errors if errors?
 
       # TODO: get defaults from some file, not from database
+      
       list = List.create(email: @listname, fingerprint: list_key.fingerprint)
 
       if @adminkeypath.present?
@@ -66,8 +67,7 @@ module Schleuder
         end
       end
 
-      return errors if errors?
-      list
+      [errors, list]
     end
 
     def gpg
@@ -83,6 +83,7 @@ module Schleuder
       #phrase = phrase_container.generate(32) # TODO get size from config
 
       # TODO: add UIDs for -owner and -request.
+      puts "Generating key-pair, this could take a while..."
       begin
         gpg.generate_key(key_params)
       rescue => exc
@@ -96,6 +97,7 @@ module Schleuder
       elsif keys.size > 1
         @errors << Errors::TooManyKeys.new(@list_dir, @listname)
       end
+      puts "Done."
       keys.first
     end
 
