@@ -8,7 +8,7 @@ module Schleuder
       def message
         t('errors.decryption_failed',
           { key: @list.key.to_s,
-            email: @list.email.gsub(/@/, '-sendkey@') })
+            email: @list.sendkey_address })
       end
     end
   end
