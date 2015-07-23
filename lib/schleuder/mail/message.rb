@@ -25,19 +25,28 @@ module Mail
       clean = Mail.new
       clean.from = list.email
       clean.subject = self.subject
-      # TODO: make keeping of Msg-Ids configurable
-      clean['In-Reply-To'] = self.header['in-reply-to']
-      clean['Message-ID'] = header['Message-ID']
-      clean.references = self.references
       clean.return_path = list.email.gsub(/@/, '-owner@')
 
-      # TODO: attachments
+      if list.keep_msgid
+        clean['In-Reply-To'] = self.header['in-reply-to']
+        clean['Message-ID'] = self.header['Message-ID']
+        clean.references = self.references
+      end
+
       if with_pseudoheaders
         new_part = Mail::Part.new
         new_part.body = self.pseudoheaders
         clean.add_part new_part
       end
-      clean.add_part Mail::Part.new(self)
+
+      # Attach body or mime-parts, respectively.
+      if self.multipart?
+        self.parts.each do |part|
+          clean.add_part Mail::Part.new(part)
+        end
+      else
+        clean.add_part Mail::Part.new(self.body)
+      end
       clean
     end
 
@@ -66,7 +75,6 @@ module Mail
     end
 
     def reply_to_signer(output)
-      # TODO: catch unknown signatures earlier, those are invalid requests
       reply = self.reply
       reply.body = output
       self.signer.send_mail(reply)
@@ -124,16 +132,15 @@ module Mail
       @dynamic_pseudoheaders || []
     end
 
-    def standard_pseudoheaders
+    def standard_pseudoheaders(list)
       if @standard_pseudoheaders.present?
         return @standard_pseudoheaders
       else
         @standard_pseudoheaders = []
       end
 
-      # TODO: make selection configurable
-      %w[from to date cc].each do |field|
-        @standard_pseudoheaders << make_pseudoheader(field, self.header[field])
+      Array(list.headers_to_meta).each do |field|
+        @standard_pseudoheaders << make_pseudoheader(field.to_s, self.header[field.to_s])
       end
 
       # Careful to add information about the incoming signature. GPGME throws
@@ -157,8 +164,8 @@ module Mail
       @standard_pseudoheaders
     end
 
-    def pseudoheaders
-      (standard_pseudoheaders + dynamic_pseudoheaders).flatten.join("\n")
+    def pseudoheaders(list)
+      (standard_pseudoheaders(list) + dynamic_pseudoheaders).flatten.join("\n") + "\n"
     end
 
   end
