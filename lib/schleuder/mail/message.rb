@@ -35,7 +35,7 @@ module Mail
 
       if with_pseudoheaders
         new_part = Mail::Part.new
-        new_part.body = self.pseudoheaders
+        new_part.body = self.pseudoheaders(list)
         clean.add_part new_part
       end
 
