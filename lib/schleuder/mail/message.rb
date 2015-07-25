@@ -25,7 +25,7 @@ module Mail
       clean = Mail.new
       clean.from = list.email
       clean.subject = self.subject
-      clean.return_path = list.email.gsub(/@/, '-owner@')
+      clean.return_path = list.owner_address
 
       if list.keep_msgid
         clean['In-Reply-To'] = self.header['in-reply-to']
