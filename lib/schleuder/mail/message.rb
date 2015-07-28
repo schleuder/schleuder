@@ -27,11 +27,9 @@ module Mail
       clean.subject = self.subject
       clean.return_path = list.owner_address
 
-      if list.keep_msgid
-        clean['In-Reply-To'] = self.header['in-reply-to']
-        clean['Message-ID'] = self.header['Message-ID']
-        clean.references = self.references
-      end
+      clean.add_msgids(list, self)
+      clean.add_list_headers(list)
+      clean.add_openpgp_headers(list)
 
       if with_pseudoheaders
         new_part = Mail::Part.new
@@ -166,6 +164,73 @@ module Mail
 
     def pseudoheaders(list)
       (standard_pseudoheaders(list) + dynamic_pseudoheaders).flatten.join("\n") + "\n"
+    end
+
+    def add_msgids(list, orig)
+      if list.keep_msgid
+        self['In-Reply-To'] = orig.header['In-Reply-To']
+        self['Message-ID'] = orig.header['Message-ID']
+        self.references = orig.references
+      end
+    end
+
+    def add_list_headers(list)
+      if list.include_list_headers
+        self['List-Id'] = "<#{list.email.gsub('@', '.')}>"
+        self['List-Owner'] = "<mailto:#{list.owner_address}> (Use list's public key)"
+        self['List-Help'] = '<https://schleuder2.nadir.org/>'
+
+        postmsg = if list.receive_admin_only
+                    "NO (Admins only)"
+                  elsif list.receive_authenticated_only
+                    "<mailto:#{list.email}> (Subscribers only)"
+                  else
+                    "<mailto:#{list.email}>"
+                  end
+
+        self['List-Post'] = postmsg
+      end
+    end
+
+    def add_openpgp_headers(list)
+      if list.include_openpgp_header
+
+        if list.openpgp_header_preference == 'none'
+          pref = ''
+        else
+          pref = "preference=#{list.openpgp_header_preference}"
+
+          # TODO: simplify.
+          pref << ' ('
+          if list.receive_admin_only
+            pref << 'Only encrypted and signed emails by list-admins are accepted'
+          elsif ! list.receive_authenticated_only
+            if list.receive_encrypted_only && list.receive_signed_only
+              pref << 'Only encrypted and signed emails are accepted'
+            elsif list.receive_encrypted_only && ! list.receive_signed_only
+              pref << 'Only encrypted emails are accepted'
+            elsif ! list.receive_encrypted_only && list.receive_signed_only
+              pref << 'Only signed emails are accepted'
+            else
+              pref << 'All kind of emails are accepted'
+            end
+          elsif list.receive_authenticated_only
+            if list.receive_encrypted_only
+              pref << 'Only encrypted and signed emails by list-members are accepted'
+            else
+              pref << 'Only signed emails by list-members are accepted'
+            end
+          else
+            pref << 'All kind of emails are accepted'
+          end
+          pref << ')'
+        end
+
+        fingerprint = list.key.fingerprint
+        comment = "(Send an email to #{list.sendkey_address} to receive the public-key)"
+
+        self['OpenPGP'] = "id=0x#{fingerprint} #{comment}; #{pref}"
+      end
     end
 
   end
