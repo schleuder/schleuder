@@ -1,5 +1,15 @@
 #!/usr/bin/ruby
 
+begin
+  gpg_version = `gpg --version`.lines.first.split.last
+  if gpg_version < "2.1.4"
+    $stderr.puts "Error: Need gnupg version 2.1.4 or later."
+    exit 1
+  end
+rescue Errno::ENOENT
+  $stderr.puts "Error: Need gpg in $PATH"
+  exit 1
+end
 
 if ![2,3].include?(ARGV.size) || ARGV.first.match(/^(-h|--help)$/)
     $stderr.puts "Usage: #{File.basename(__FILE__)} list@hostname initadmin@example.org [/path/to/initadminkey]"
