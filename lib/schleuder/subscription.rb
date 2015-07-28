@@ -27,9 +27,7 @@ module Schleuder
 
     def send_mail(mail)
       mail.to = self.email
-      # TODO: implement attach_incoming
-      gpg_opts = {encrypt: true, sign: true, keys: {self.email => self.fingerprint}}
-      # TODO: catch unusable-key-errors
+      gpg_opts = {encrypt: true, sign: true, keys: {self.email => "0x#{self.fingerprint}"}}
       if self.key.blank?
         if self.list.send_encrypted_only?
           $stderr.puts "Not sending to #{self.email}: no key present and sending plain text not allowed"
