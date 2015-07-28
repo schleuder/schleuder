@@ -30,16 +30,18 @@ module Schleuder
         return errors if errors?
       end
 
+      # TODO: get defaults from some file, not from database
+      list = List.new(email: @listname)
+
       list_key = gpg.keys("<#{@listname}>").first
       if list_key.nil?
-        list_key = create_key
+        list_key = create_key(list)
       end
 
       return errors if errors?
 
-      # TODO: get defaults from some file, not from database
-      
-      list = List.create(email: @listname, fingerprint: list_key.fingerprint)
+      list.fingerprint = list_key.fingerprint
+      list.save!
 
       if @adminkeypath.present?
         if ! File.readable?(@adminkeypath)
@@ -77,39 +79,51 @@ module Schleuder
       end
     end
 
-    def create_key
+    def create_key(list)
       # TODO: fix using a passphrase.
       #phrase_container = Passphrase.new
       #phrase = phrase_container.generate(32) # TODO get size from config
 
-      # TODO: add UIDs for -owner and -request.
       puts "Generating key-pair, this could take a while..."
       begin
-        gpg.generate_key(key_params)
+        gpg.generate_key(key_params(list))
       rescue => exc
         @errors << exc
         return
       end
+
       # Get key without knowing the fingerprint yet.
       keys = gpg.keys("<#{@listname}>")
       if keys.empty?
         @errors << Errors::KeyGenerationFailed.new(@list_dir, @listname)
       elsif keys.size > 1
         @errors << Errors::TooManyKeys.new(@list_dir, @listname)
+      else
+        # Add UIDs for -owner and -request.
+        err, string = keys.first.adduid(list.email, list.request_address, @list_dir)
+        if err > 0
+          @errors << Errors::KeyAdduidFailed.new(string)
+        end
+
+        err, string = keys.first.adduid(list.email, list.owner_address, @list_dir)
+        if err > 0
+          @errors << Errors::KeyAdduidFailed.new(string)
+        end
       end
+
       puts "Done."
       keys.first
     end
 
-    def key_params
+    def key_params(list)
       "
         <GnupgKeyParms format=\"internal\">
         Key-Type: RSA
         Key-Length: 4096
         Subkey-Type: RSA
         Subkey-Length: 4096
-        Name-Real: #{@listname.split('@').first}
-        Name-Email: #{@listname}
+        Name-Real: #{list.email}
+        Name-Email: #{list.email}
         Expire-Date: 0
         %no-protection
         </GnupgKeyParms>

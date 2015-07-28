@@ -7,6 +7,7 @@ require 'yaml'
 require 'pathname'
 require 'syslog/logger'
 require 'logger'
+require 'open3'
 
 # Require mandatory libs. The database-layer-lib is required below.
 require 'mail-gpg'
