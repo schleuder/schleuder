@@ -16,6 +16,21 @@ module Schleuder
       @errors
     end
 
+    def read_default_settings
+      settings = File.read(ENV['SCHLEUDER_LIST_DEFAULTS'])
+      if settings.to_s.empty?
+        {}
+      else
+        hash = YAML.load(settings)
+        if ! hash.kind_of?(Hash)
+          @errors << Errors::LoadingListSettingsFailed.new
+        end
+        hash
+      end
+    rescue Psych::SyntaxError
+      @errors << Errors::LoadingListSettingsFailed.new
+    end
+
     def run
       if List.where(email: @listname).present?
         @errors << Errors::ListExists.new(@listname)
@@ -30,8 +45,17 @@ module Schleuder
         return errors if errors?
       end
 
-      # TODO: get defaults from some file, not from database
-      list = List.new(email: @listname)
+      settings = read_default_settings
+      return errors if errors?
+
+      settings.merge!(email: @listname)
+
+      begin
+        list = List.new(settings)
+      rescue ActiveRecord::UnknownAttributeError => exc
+        @errors << Errors::UnknownListOption.new(exc)
+        return errors
+      end
 
       list_key = gpg.keys("<#{@listname}>").first
       if list_key.nil?

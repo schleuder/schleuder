@@ -35,6 +35,8 @@ de:
     key_generation_failed: Das Erzeugen des OpenPGP-Schlüsselpaares für %{listname} ist aus unbekannten Gründen fehlgeschlagen. Bitte prüfe das Listen-Verzeichnis ('%{listdir}') und die Log-Dateien.
     key_adduid_failed: "Das Hinzufügen einer User-ID zum OpenPGP-Schlüssel ist mit folgender Meldung fehlgeschlagen: '%{errmsg}'."
     too_many_keys: "Fehler: In %{listdir} existieren mehrere OpenPGP-Schlüssel für %{listname}. Bitte lösche alle bis auf einen."
+    unknown_list_option: "Unbekannte Option in %{config_file}: '%{option}'."
+    loading_list_settings_failed: "%{config_file} konnte nicht eingelesen werden, bitte Formatierung auf gültiges YAML prüfen."
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.

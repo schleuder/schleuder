@@ -8,6 +8,7 @@ require 'pathname'
 require 'syslog/logger'
 require 'logger'
 require 'open3'
+require 'yaml'
 
 # Require mandatory libs. The database-layer-lib is required below.
 require 'mail-gpg'
@@ -53,6 +54,7 @@ require 'schleuder/subscription'
 
 # Setup
 ENV["SCHLEUDER_CONFIG"] ||= '/etc/schleuder/schleuder.yml'
+ENV["SCHLEUDER_LIST_DEFAULTS"] ||= '/etc/schleuder/list-defaults.yml'
 ENV["SCHLEUDER_ENV"] ||= 'production'
 ENV["SCHLEUDER_ROOT"] = rootdir.to_s
 
