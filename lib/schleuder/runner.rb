@@ -48,6 +48,8 @@ module Schleuder
         end
       end
 
+      # TODO: implement attach_incoming
+
       # Subscriptions
       send_to_subscriptions
       nil
@@ -63,9 +65,12 @@ module Schleuder
     def send_to_subscriptions
       new = @mail.clean_copy(list, true)
       list.subscriptions.each do |subscription|
-        Schleuder.logger.debug "Sending message to #{subscription.inspect}"
-        out = subscription.send_mail(new).deliver
-        Schleuder.logger.debug out
+        begin
+          Schleuder.logger.debug "Sending message to #{subscription.inspect}"
+          subscription.send_mail(new).deliver
+        rescue => exc
+          Schleuder.logger.error exc
+        end
       end
     end
 
@@ -89,6 +94,7 @@ module Schleuder
       # TODO: check sanity of list: admins, fingerprint, key, all present?
 
       # This cannot be put in List, as Mail wouldn't know it then.
+      Schleuder.logger.debug "Setting GNUPGHOME to #{@list.listdir}"
       ENV['GNUPGHOME'] = @list.listdir
       nil
     end
