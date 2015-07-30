@@ -13,10 +13,15 @@ Requirements
 
 Installation
 ------------
-1. bundle install
-2. bundle exec rake db:setup
-3. bundle exec ./bin/schleuder-newlist list@host admin@example.org [/path/to/public.key]
-4. bundle exec ./bin/schleuder-subscribe list@host user@example.net DEADBEEFDEADBEEFDEADBEEF /tmp/user.asc
+1. mkdir /etc/schleuder /var/schleuder
+2. cp etc/*.yml /etc/schleuder/
+3. bundle install
+4. bundle exec rake db:schema:load
+
+Usage
+-----
+1. bundle exec ./bin/schleuder-newlist list@host admin@example.org [/path/to/public.key]
+2. bundle exec ./bin/schleuder-subscribe list@host user@example.net DEADBEEFDEADBEEFDEADBEEF /tmp/user.asc
 
 Todo:
 * See <https://git.codecoop.org/schleuder/schleuder3/issues>.
