@@ -1,11 +1,7 @@
 #!/usr/bin/env ruby
 
-require 'bundler/setup'
-require 'thor'
-require_relative '../lib/schleuder.rb'
-require 'schleuder/cli/base'
-include Schleuder
-
 trap("INT") { exit 1 }
 
-Cli::Base.start
+require_relative '../lib/schleuder/cli'
+
+Schleuder::Cli.start

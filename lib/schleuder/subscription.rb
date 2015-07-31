@@ -85,5 +85,10 @@ module Schleuder
     def admin?
       self.admin == true
     end
+
+    def delete_key
+      list.delete_key(self.fingerprint)
+    end
+
   end
 end

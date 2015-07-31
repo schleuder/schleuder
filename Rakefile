@@ -17,3 +17,58 @@ Rake::Task.define_task("db:environment")
 task :console do
   exec "irb -r #{File.dirname(__FILE__)}/lib/schleuder.rb"
 end
+
+version = Schleuder::VERSION
+tagname = "schleuder-#{version}"
+tarball = "#{tagname}.tar.gz"
+gpguid = 'schleuder2@nadir.org'
+
+desc 'Release a new version of schleuder.'
+task :release => [:git_tag, :gem, :tarball, :wiki]
+
+task :gem => :check_version
+task :git_tag => :check_version
+task :tarball => :check_version
+
+desc 'Check if version-tag already exists'
+task :check_version do
+  # Check if Schleuder::VERSION has been updated since last release
+  if `git tag`.include?(tagname)
+    $stderr.puts "Warning: Tag '#{tagname}' already exists. Did you forget to update schleuder/version.rb?"
+    $stderr.print "Continue? [yN] "
+    if ! $stdin.gets.match(/^y/i)
+      exit 1
+    end
+  end
+end
+
+desc 'git-tag HEAD as new version and push to origin'
+task :git_tag do
+  `git tag -u #{gpguid} -s -m "Version #{version}" #{tagname}`
+  `git push && git push --tags`
+end
+
+desc 'Build a gem and push it to rubygems'
+task :gem do
+  `gem build schleuder.gemspec`
+  # Cleanup the signing key that's been copied here.
+  `rm ./schleuder-gem-private_key.pem`
+  `gem push #{tagname}.gem`
+end
+
+desc 'Build and sign a tarball'
+task :tarball do
+  `git archive --format tar.gz --prefix "#{tagname}/" -o #{tarball} #{tagname}`
+  `gpg -u schleuder2@nadir.org --detach-sign #{tarball}`
+end
+
+desc 'Describe manual wiki-related release-tasks'
+task :wiki do
+  puts "Please do manually in schleuder-wiki:
+  * Move tarball+signature to download/
+  * Edit download.mdwn, documentation/v$version/changelog.mdwn.
+  * Write release-announcement (news/schleuder-$version.mdwn)
+  * Push changes
+"
+end
+

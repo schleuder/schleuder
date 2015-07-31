@@ -1,10 +1,9 @@
 module Schleuder
   class ListBuilder
-    def initialize(listname, adminemail=nil, adminkeypath=nil)
-      # TODO: test list-name
+    def initialize(listname, adminemail=nil, adminkey=nil)
       @listname = listname
       @adminemail = adminemail
-      @adminkeypath = adminkeypath
+      @adminkey = adminkey
       @errors = ErrorsList.new
     end
 
@@ -32,6 +31,12 @@ module Schleuder
     end
 
     def run
+      # TODO: Improve testing the list-name
+      if @listname !~ /\A.+@.+\z/
+        @errors << Errors::InvalidListname.new(@listname)
+        return ['Kaput', nil]
+      end
+
       if List.where(email: @listname).present?
         @errors << Errors::ListExists.new(@listname)
         return [@errors, nil]
@@ -67,11 +72,8 @@ module Schleuder
       list.fingerprint = list_key.fingerprint
       list.save!
 
-      if @adminkeypath.present?
-        if ! File.readable?(@adminkeypath)
-          errors << FileNotFound.new(@adminkeypath)
-        end
-        imports = list.import_key(File.read(@adminkeypath)).imports
+      if @adminkey.present?
+        imports = list.import_key(@adminkey).imports
         # Get the fingerprint of the imported key if it was exactly one.
         if imports.size == 1
           admin_fpr = imports.first.fingerprint

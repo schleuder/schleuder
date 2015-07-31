@@ -29,6 +29,7 @@ en:
     message_sender_not_subscribed: Only subscribed addresses may send messages to this address.
     message_not_from_admin: Only admins may send messages to this address.
     list_not_found: "Error: No list found with this address: '%{email}'."
+    invalid_listname: "Error: '%{email}' is not a valid address."
     list_exists: A list with address '%{email}' is already present.
     listdir_problem:
       message: "There's a problem with the list-directory: '%{dir}' %{problem}."

@@ -1,0 +1,188 @@
+#!/usr/bin/env ruby
+
+require 'sinatra'
+require 'sinatra/json'
+require 'sinatra/namespace'
+require_relative '../lib/schleuder.rb'
+
+if settings.bind != 'localhost'
+  $stderr.puts "\nWarning: Schleuderd currently enforces binding to localhost only, until connections are mandatorily encrypted and authentication is fixed.\n\n"
+end
+
+#set :environment, :production
+set :bind, 'localhost'
+
+
+after do
+  # Return connection to pool after each request.
+  ActiveRecord::Base.connection.close
+end
+
+helpers do
+  def list(email)
+    list = List.where(email: email).first
+    list || halt(404, "No such list: #{email}")
+  end
+
+  def subscription(listname, email)
+    sub = list(listname).subscriptions.where(email: email).first
+    sub || halt(404, "#{email} is not subscribed to #{listname}")
+  end
+
+  def parsed_body
+    @parsed_body ||= JSON.parse(request.body.read)
+  end
+
+  def server_error(msg)
+    status 500
+    logger.warn msg
+    json error: msg
+  end
+
+  def client_error(obj_or_msg)
+    text = case obj_or_msg
+            when String
+              obj_or_msg
+            when Array
+              obj_or_msg.join("\n")
+            else
+              obj_or_msg.errors.full_messages
+            end
+    status 400
+    logger.error text
+    json error: text
+  end
+
+end
+
+error do
+  "Error: #{env['sinatra.error'].message}"
+end
+
+get '/status' do
+  json status: :ok
+end
+
+get '/version' do
+  json version: Schleuder::VERSION
+end
+
+namespace '/lists' do
+  get '/' do
+    json List.select :id, :email
+  end
+
+  get '/:listname' do |listname|
+    json list(listname)
+  end
+
+  post '/' do
+    listname = parsed_body['listname']
+    adminaddress = parsed_body['adminaddress']
+    adminkey = parsed_body['adminkey']
+    errors, list = ListBuilder.new(listname, adminaddress, adminkey).run
+    if errors
+      client_error(errors.to_s)
+    else
+      json list
+    end
+  end
+
+  put '/:listname' do |listname|
+    list = list(listname)
+    if list.update(parsed_body)
+      200
+    else
+      client_error(list)
+    end
+  end
+
+  delete '/:listname' do |listname|
+    list = list(listname)
+    if list.destroy
+      200
+    else
+      client_error(list)
+    end
+  end
+
+  get '/:listname/keys' do |listname|
+    keys = list(listname).keys.map do |key|
+      {key.fingerprint => key.email}
+    end
+    json keys
+  end
+
+  post '/:listname/keys' do |listname|
+    res = list(listname).import_key(request.body.read)
+    if res
+      json res
+    else
+      400
+    end
+  end
+
+  get '/:listname/keys/:fingerprint' do |listname, fingerprint|
+    if text = list(listname).export_key(fingerprint)
+      json fingerprint => text
+    else
+      404
+    end
+  end
+
+  delete '/:listname/keys/:fingerprint' do |listname, fingerprint|
+    json list(listname).delete_key(fingerprint)
+  end
+
+  get '/:listname/check_keys' do |listname|
+    json result: list(listname).check_keys
+  end
+
+  get '/:listname/subscriptions' do |listname|
+    json list(listname).subscriptions
+  end
+
+  post '/:listname/subscriptions' do |listname|
+    data = parsed_body
+    sub = list(listname).subscribe(data['email'], data['fingerprint'])
+    if sub
+      json sub
+    else
+      client_error(sub)
+    end
+  end
+
+  get '/:listname/subscriptions/:email' do |listname, email|
+    json subscription(listname, email)
+  end
+
+  put '/:listname/subscriptions/:email' do |listname, email|
+    sub = subscription(listname, email)
+    if sub.update(parsed_body)
+      200
+    else
+      client_error(sub)
+    end
+  end
+
+  delete '/:listname/subscriptions/:email' do |listname, email|
+    res = list(listname).unsubscribe(email)
+    if res == true
+      200
+    else
+      client_error(res)
+    end
+  end
+
+  post '/:listname/run' do |listname|
+    message = request.body.read
+    error = Schleuder::Runner.new.run(message, listname)
+    if error.kind_of?(StandardError)
+      status 500
+      json error
+    else
+      200
+    end
+  end
+
+end

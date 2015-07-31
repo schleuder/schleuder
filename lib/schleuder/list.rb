@@ -2,6 +2,7 @@ module Schleuder
   class List < ActiveRecord::Base
 
     has_many :subscriptions, dependent: :destroy
+    before_destroy :delete_listdir
 
     serialize :headers_to_meta, JSON
     serialize :bounces_drop_on_headers, JSON
@@ -101,12 +102,8 @@ module Schleuder
       subscriptions.where(admin: true)
     end
 
-    def key
+    def key(fingerprint=self.fingerprint)
       keys(fingerprint).first
-    end
-
-    def armored_key
-      GPGME::Key.export self.fingerprint, armor: true
     end
 
     def keys(identifier='')
@@ -114,7 +111,57 @@ module Schleuder
     end
 
     def import_key(importable)
-      GPGME::Key.import importable
+      gpg.import_key GPGME::Data.new(importable)
+    end
+
+    def delete_key(fingerprint)
+      gpg.keys(fingerprint).first.delete!
+    end
+
+    def export_key(fingerprint=self.fingerprint)
+      key = keys(fingerprint).first
+      if key.blank?
+        return false
+      end
+      key.armored
+    end
+
+    def check_keys
+      now = Time.now
+      checkdate = now + (60 * 60 * 24 * 14) # two weeks
+      unusable = []
+      expiring = []
+
+      keys.each do |key|
+        expiry = key.subkeys.first.expires
+        if expiry && expiry > now && expiry < checkdate
+          # key expires in the near future
+          expdays = ((exp - now)/86400).to_i
+          expiring << [key, expdays]
+        end
+
+        if key.trust
+          unusable << [key, key.trust]
+        end
+      end
+
+      text = ''
+      expiring.each do |key,days|
+        text << I18n.t('key_expires', {
+                          days: days,
+                          fingerprint: key.fingerprint,
+                          email: key.email
+                      })
+      end
+
+      unusable.each do |key,trust|
+        text << I18n.t('key_unusable', {
+                          trust: Array(trust).join(', '),
+                          fingerprint: key.fingerprint,
+                          email: key.email
+                      })
+      end
+      text
     end
 
     def self.by_recipient(recipient)
@@ -141,8 +188,9 @@ module Schleuder
     def gpg
       @gpg_ctx ||= begin
        # TODO: figure out why the homedir isn't recognized
+        # Set GNUPGHOME when list is created.
         ENV['GNUPGHOME'] = listdir
-        GPGME::Ctx.new
+        GPGME::Ctx.new armor: true
       end
     end
 
@@ -174,7 +222,24 @@ module Schleuder
     end
 
     def subscribe(email, fingerprint)
-      Subscription.create(list_id: self.id, email: email, fingerprint: fingerprint)
+      Subscription.new(
+          list_id: self.id,
+          email: email,
+          fingerprint: fingerprint
+        ).save
+    end
+
+    def unsubscribe(email, delete_key=false)
+      sub = subscriptions.where(email: email).first
+      if sub.blank?
+        false
+      end
+
+      if res = sub.unsubscribe(delete_key)
+        true
+      else
+        res
+      end
     end
 
     def keywords_admin_notify
@@ -195,5 +260,17 @@ module Schleuder
         admin.fingerprint == mail.signature.fingerprint
       end.presence || false
     end
+
+    private
+
+      def delete_listdir
+        if err = FileUtils.rm_r(self.listdir, secure: true)
+          logger.info "Deleted listdir"
+          return true
+        else
+          logger.error "Error while deleting listdir: #{err}"
+          return false
+        end
+      end
   end
 end

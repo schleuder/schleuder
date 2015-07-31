@@ -29,6 +29,7 @@ de:
     message_sender_not_subscribed: Nur Absender mit Abo dürfen Emails an diese Adresse schicken.
     message_not_from_admin: Nur Admins dürfen Emails an diese Adresse schicken.
     list_not_found: "Fehler: Keine Liste zu dieser Adresse gefunden: '%{email}'."
+    invalid_listname: "Fehler: '%{email}' ist kein gültige Listen-Adresse."
     list_exists: Es existiert bereits eine Liste mit der Adresse '%{email}'.
     listdir_problem:
       message: "Problem mit dem Listen-Verzeichnis: '%{dir}' %{problem}."

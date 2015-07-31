@@ -13,15 +13,25 @@ Requirements
 
 Installation
 ------------
-1. mkdir /etc/schleuder /var/schleuder
-2. cp etc/*.yml /etc/schleuder/
 3. bundle install
 4. bundle exec rake db:schema:load
+5. bundle exec ./bin/schleuder install
 
 Usage
 -----
-1. bundle exec ./bin/schleuder-newlist list@host admin@example.org [/path/to/public.key]
-2. bundle exec ./bin/schleuder-subscribe list@host user@example.net DEADBEEFDEADBEEFDEADBEEF /tmp/user.asc
+
+See `schleuder help`.
+
+E.g.:
+
+    Commands:
+      schleuder check_keys                    # Check all lists for unusable or expiring keys and send the results to the list-admins. (This is supposed...
+      schleuder help [COMMAND]                # Describe available commands or one specific command
+      schleuder install                       # Set up Schleuder initially. Create folders, copy files, fill the database, etc.
+      schleuder version                       # Show version of schleuder
+      schleuder work list@hostname < message  # Run a message through a list.
+
+You probably want to install schleuder-conf, too. Otherwise you'd need to edit the database-records manually to change list-settings, subscribe addresses, etc.
 
 Todo:
 * See <https://git.codecoop.org/schleuder/schleuder3/issues>.

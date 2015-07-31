@@ -18,6 +18,10 @@ module GPGME
       s
     end
 
+    def armored
+      "#{self.to_s}\n\n#{export(armor: true).read}"
+    end
+
     # Force encoding, some databases save "ASCII-8BIT" as binary data.
     alias_method :orig_fingerprint, :fingerprint
     def fingerprint

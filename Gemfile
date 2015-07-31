@@ -9,4 +9,6 @@ end
 
 group :development do
   gem 'sqlite3'
+  gem 'hirb'
+  gem 'thin'
 end
