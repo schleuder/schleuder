@@ -7,7 +7,6 @@ ActiveRecord::Tasks::DatabaseTasks.tap do |config|
   config.root = File.dirname(__FILE__)
   config.db_dir = 'db'
   config.migrations_paths = ['db/migrate']
-  # TODO: Check for SCHLEUDER_ENV being present
   config.env = ENV['SCHLEUDER_ENV']
   config.database_configuration = Schleuder::Conf.databases
 end
