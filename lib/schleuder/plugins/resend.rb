@@ -29,6 +29,14 @@ module Schleuder
         # Compose and send email
         new = mail.clean_copy(list)
         new.to = email
+
+        # Add public_footer unless it's empty?.
+        if ! list.public_footer.to_s.strip.empty?
+          footer_part = Mail::Part.new
+          footer_part.body = list.public_footer.strip
+          new.add_part footer_part
+        end
+
         new.gpg gpg_opts
         if new.deliver
           mail.add_pseudoheader('resent-to', resent_pseudoheader(email, key))
