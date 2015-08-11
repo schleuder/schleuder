@@ -5,6 +5,7 @@ module Schleuder
       FILTERS = %w[
         send_key
         forward_to_owner
+        max_message_size
         receive_admin_only
         receive_authenticated_only
         receive_signed_only
@@ -30,17 +31,18 @@ module Schleuder
 
         # TODO: notify admins
         if @list.bounces_drop_all
-          Schleuder.log.info "Dropping bounce as configurated"
+          logger.debug "Dropping bounce as configurated"
           return false
         end
 
         @list.bounces_drop_on_headers.each do |key, value|
-          if @mail.headers[key].match(/${value}/i)
-            Schleuder.log.info "Incoming message header key '#{key}' matches value '#{value}': dropping the bounce."
+          if @mail.headers[key].to_s.match(/${value}/i)
+            logger.debug "Incoming message header key '#{key}' matches value '#{value}': dropping the bounce."
             return false
           end
         end
 
+        logger.debug "Bouncing message"
         true
       end
     end

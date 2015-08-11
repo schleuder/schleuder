@@ -37,6 +37,7 @@ en:
     too_many_keys: "Error: In %{listdir} there's more than one matching OpenPGP-key for %{listname}. Please delete all but one."
     unknown_list_option: "Unknown option in %{config_file}: '%{option}'."
     loading_list_settings_failed: "%{config_file} could not be parsed, please check its formatting to be valid YAML."
+    message_too_big: "Your message was too big. Allowed are up to %{allowed_size}KB."
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
