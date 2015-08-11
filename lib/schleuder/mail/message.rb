@@ -58,12 +58,12 @@ module Mail
     end
 
     def signature
-      # Is there any theoretical case in which there's more than one signature?
+      # Theoretically there might be more than one signing key, in practice this is neglectable.
       signatures.try(:first)
     end
 
     def was_validly_signed?
-      signature.valid? && signer.present?
+      signature.present? && signature.valid? && signer.present?
     end
 
     def signer
@@ -147,13 +147,13 @@ module Mail
         @standard_pseudoheaders << make_pseudoheader(field.to_s, self.header[field.to_s])
       end
 
-      # Careful to add information about the incoming signature. GPGME throws
-      # exceptions if it doesn't know the key.
+      # Careful to add information about the incoming signature. GPGME
+      # throws exceptions if it doesn't know the key.
       if self.signature.present?
         msg = begin
                 self.signature.to_s
               rescue EOFError
-                "Unknown signature by #{self.signature.fpr}"
+                "Unknown signature by 0x#{self.signature.fingerprint}"
               end
       else
         msg = "Unsigned"
