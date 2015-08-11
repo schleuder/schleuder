@@ -117,6 +117,12 @@ module Mail
       @keywords
     end
 
+    def add_subject_prefix(string)
+      if ! string.to_s.strip.empty?
+        self.subject = "#{string} #{self.subject}"
+      end
+    end
+
     def add_pseudoheader(key, value)
       @dynamic_pseudoheaders ||= []
       @dynamic_pseudoheaders << make_pseudoheader(key, value)

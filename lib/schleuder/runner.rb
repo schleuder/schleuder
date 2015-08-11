@@ -48,7 +48,12 @@ module Schleuder
         end
       end
 
-      # TODO: implement attach_incoming
+      # Add subject-prefixes (Mail::Message tests if the string is
+      # present).
+      if ! @mail.was_validly_signed?
+        @mail.add_subject_prefix(list.subject_prefix_in)
+      end
+      @mail.add_subject_prefix(list.subject_prefix)
 
       # Subscriptions
       send_to_subscriptions

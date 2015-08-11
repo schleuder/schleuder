@@ -40,6 +40,7 @@ module Schleuder
         new.gpg gpg_opts
         if new.deliver
           mail.add_pseudoheader('resent-to', resent_pseudoheader(email, key))
+          mail.add_subject_prefix(list.subject_prefix_out)
         end
       end
     end
