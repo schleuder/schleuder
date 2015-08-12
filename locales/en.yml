@@ -41,6 +41,7 @@ en:
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
+    keyword_admin_notify: "%{signer} sent keyword '%{keyword}' and received this response:"
     key_management:
       import_result: Import result
       key_import_status:

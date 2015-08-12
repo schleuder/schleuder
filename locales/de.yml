@@ -41,6 +41,7 @@ de:
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
+    keyword_admin_notify: "%{signer} schickte das Schlüsselwort '%{keyword}' und erhielt dies als Antwort:"
     key_management:
       import_result: Import-Ergebnis
       key_import_status:

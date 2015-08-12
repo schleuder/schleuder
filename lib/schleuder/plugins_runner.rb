@@ -27,7 +27,16 @@ module Schleuder
         command = keyword.gsub('-', '_')
         if @plugin_module.respond_to?(command)
           out = @plugin_module.send(command, arguments, @list, @mail)
-          Array(out).flatten.join("\n\n")
+          response = Array(out).flatten.join("\n\n")
+          if @list.keywords_admin_notify.include?(keyword)
+            explanation = I18n.t('plugins.keyword_admin_notify', 
+                                    signer: @mail.signer,
+                                    keyword: keyword,
+                                    response: response
+                                )
+            @list.logger.notify_admin("#{explanation}\n\n#{response}\n", nil, 'Notice')
+          end
+          response
         else
           I18n.t('plugins.unknown_keyword', keyword: keyword)
         end

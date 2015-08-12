@@ -14,12 +14,12 @@ module Schleuder
       notify_admin(string, original_message)
     end
 
-    def notify_admin(string, original_message=nil)
+    def notify_admin(string, original_message=nil, subject='Error')
       Array(adminaddresses).each do |address|
         mail = Mail.new
         mail.from = @from
         mail.to = address
-        mail.subject = 'Error'
+        mail.subject = subject
         msgpart = Mail::Part.new
         msgpart.body = string.to_s
         mail.add_part msgpart

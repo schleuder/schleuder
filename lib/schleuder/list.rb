@@ -111,6 +111,10 @@ module Schleuder
       Subscription.create(list_id: self.id, email: email, fingerprint: fingerprint)
     end
 
+    def keywords_admin_notify
+      Array(read_attribute(:keywords_admin_notify))
+    end
+
     def keywords_admin_only
       Array(read_attribute(:keywords_admin_only))
     end
