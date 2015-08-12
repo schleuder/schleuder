@@ -2,6 +2,7 @@
 superadmin: root@localhost
 lists_dir: /var/schleuder/lists
 plugins_dir: /etc/schleuder/plugins
+log_level: warn
 database:
   production:
     adapter:  'sqlite3'

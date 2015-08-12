@@ -99,16 +99,16 @@ openpgp_header_preference: signencrypt
 # bounced.
 max_message_size_kb: 10240
 
+# How verbose to log on the list-level (Notifications will be sent to
+# list-admins)? Error, warn, info, or debug.
+log_level: warn
 
-#
+
 # TODO:
 #
 # Which pgp encoding? Chose out of PLAIN (text/plain), APPL (application/pgp)
 # and MIME (pgp/mime)
 #default_mime: MIME
-#
-# list-specific log-level: ERROR || WARN || INFO || DEBUG
-#log_level: ERROR
 #
 # Whether to archive messages sent to subscribed addresses or not.
 # Setting this option to true will archive every message sent to subscribed
