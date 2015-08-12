@@ -1,7 +1,12 @@
 module Schleuder
   module RequestPlugins
     def self.add_key(arguments, list, mail)
-      import_result = list.import_key(mail.parts.first || mail.body)
+      key_material = if mail.parts.first.present?
+                       mail.parts.first.body
+                     else
+                       mail.body
+                     end.to_s
+      import_result = list.import_key(key_material)
 
       out = [I18n.t('plugins.key_management.import_result')]
       out << import_result.imports.map do |import_status|
