@@ -33,5 +33,9 @@ module Schleuder
     def self.superadmin
       instance.config['superadmin']
     end
+
+    def self.log_level
+      instance.config['log_level'] || 'WARN'
+    end
   end
 end

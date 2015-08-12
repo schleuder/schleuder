@@ -7,10 +7,11 @@ module Schleuder
   class Logger < Syslog::Logger
     include LoggerNotifications
     def initialize
+      super('Schleuder', Syslog::LOG_MAIL)
       # We need some sender-address different from the superadmin-address.
       @from = "#{`whoami`.chomp}@#{`hostname`.chomp}"
       @adminaddresses = Conf.superadmin
-      super('Schleuder', Syslog::LOG_MAIL)
+      @level = ::Logger.const_get(Conf.log_level.upcase)
     end
   end
 
