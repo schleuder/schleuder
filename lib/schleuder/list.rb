@@ -112,7 +112,7 @@ module Schleuder
     end
 
     def keywords_admin_only
-      Array(@keywords_admin_only)
+      Array(read_attribute(:keywords_admin_only))
     end
 
     def admin_only?(keyword)
