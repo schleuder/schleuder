@@ -81,3 +81,5 @@ de:
   bounces_drop_on_headers: "Die angehängte Email hätte zurückgewiesen (bounce) werden sollen, wurde aber stillschweigend fallen gelassen, weil diese Kopfzeile gefunden wurde: %{key}: %{value}"
   bounces_notify_admins: "Die angehängte Email wurde mit folgender Nachricht zurückgewiesen:"
   notice: Hinweis
+  incoming_message: Eingehende Email
+  forward_all_incoming_to_admins: Die angehängte Email ging ein.

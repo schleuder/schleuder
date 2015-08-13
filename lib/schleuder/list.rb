@@ -8,7 +8,6 @@ module Schleuder
     serialize :keywords_admin_only, JSON
     serialize :keywords_admin_notify, JSON
 
-    # TODO: validate email to be a valid address
     # TODO: I18n
     validates :email,
               presence: true,
@@ -30,7 +29,8 @@ module Schleuder
         :bounces_drop_all,
         :bounces_notify_admins,
         :include_list_headers,
-        :include_openpgp_header do |record, attrib, value|
+        :include_openpgp_header,
+        :forward_all_incoming_to_admins do |record, attrib, value|
           if ! [true, false].include?(value)
             record.errors.add(attrib, 'must be true or false')
           end

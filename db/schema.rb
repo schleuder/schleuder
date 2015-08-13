@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150812165700) do
+ActiveRecord::Schema.define(version: 20150813235800) do
 
   create_table "lists", force: true do |t|
     t.datetime "created_at"
@@ -43,6 +43,7 @@ ActiveRecord::Schema.define(version: 20150812165700) do
     t.boolean  "include_openpgp_header",                      default: true
     t.integer  "max_message_size_kb",                         default: 10240
     t.string   "language",                                    default: "en"
+    t.boolean  "forward_all_incoming_to_admins",              default: false
   end
 
   create_table "subscriptions", force: true do |t|

@@ -81,3 +81,5 @@ en:
   bounces_drop_on_headers: "The attached message should have been bounced but was dropped without further notice because it matched this header-line: %{key}: %{value}"
   bounces_notify_admins: "The attached message was bounced with the following notice:"
   notice: Notice
+  incoming_message: Incoming message
+  forward_all_incoming_to_admins: The attached message was received.
