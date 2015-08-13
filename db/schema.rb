@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 20150812165700) do
     t.boolean  "include_list_headers",                        default: true
     t.boolean  "include_openpgp_header",                      default: true
     t.integer  "max_message_size_kb",                         default: 10240
+    t.string   "language",                                    default: "en"
   end
 
   create_table "subscriptions", force: true do |t|

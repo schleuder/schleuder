@@ -97,6 +97,11 @@ module Schleuder
       end
 
       # TODO: check sanity of list: admins, fingerprint, key, all present?
+      
+      # Set locale
+      if I18n.available_locales.include?(@list.language.to_sym)
+        I18n.locale = @list.language.to_sym
+      end
 
       # This cannot be put in List, as Mail wouldn't know it then.
       Schleuder.logger.debug "Setting GNUPGHOME to #{@list.listdir}"
