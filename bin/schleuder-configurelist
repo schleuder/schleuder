@@ -12,6 +12,15 @@ def error(msgs)
   exit 1
 end
 
+def show(value)
+  if value.is_a?(Array)
+    puts "[#{value.join(', ')}]"
+  else
+    puts value
+  end
+  exit
+end
+
 if ! ARGV.size.between?(1,3) || ARGV.first.match(/^(-h|--help)$/)
   usage
 end
@@ -40,16 +49,20 @@ end
 if value.blank?
   # Show stored value.
   if list.respond_to?(option)
-    puts list.send(option).to_json
+    show list.send(option)
   else
     error "No such config-option: '#{option}'"
   end
 
 else
   # Store new value.
-  list[option] = JSON.parse(value)
+  if value.strip =~ /\A\[.*\]\z/
+    # Convert input into Array
+    value = value.gsub('[', '').gsub(']', '').split(/,\s/)
+  end
+  list[option] = value
   if list.save
-    puts list.send(option).to_json
+    show value
   else
     list.errors.each do |attrib, message|
       puts "#{attrib} #{message}"
