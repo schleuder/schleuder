@@ -24,8 +24,11 @@ module Schleuder
         msgpart.body = string.to_s
         mail.add_part msgpart
         if original_message
-          mail.add_part Mail::Part.new(original_message)
-          mail.parts.last.content_description = 'The originally incoming message'
+          orig_part = Mail::Part.new
+          orig_part.content_type = 'message/rfc822'
+          orig_part.content_description = 'The originally incoming message'
+          orig_part.body = original_message.to_s
+          mail.add_part orig_part
         end
         mail.deliver
       end
