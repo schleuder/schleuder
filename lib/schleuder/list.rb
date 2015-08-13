@@ -9,9 +9,74 @@ module Schleuder
     serialize :keywords_admin_notify, JSON
 
     # TODO: validate email to be a valid address
-    validates :email, presence: true, uniqueness: true
-    validates :fingerprint, presence: true
-    # TODO: more validations
+    # TODO: I18n
+    validates :email,
+              presence: true,
+              uniqueness: true,
+              format: {
+                with: /\A.+@.+\z/i,
+                message: 'is not a valid email address'
+              }
+    validates :fingerprint,
+                presence: true,
+                format: { with: /\A[a-f0-9]+\z/i }
+    validates_each :send_encrypted_only,
+        :receive_encrypted_only,
+        :receive_signed_only,
+        :receive_authenticated_only,
+        :receive_from_subscribed_emailaddresses_only,
+        :receive_admin_only,
+        :keep_msgid,
+        :bounces_drop_all,
+        :bounces_notify_admins,
+        :include_list_headers,
+        :include_openpgp_header do |record, attrib, value|
+          if ! [true, false].include?(value)
+            record.errors.add(attrib, 'must be true or false')
+          end
+        end
+    validates_each :headers_to_meta,
+        :keywords_admin_only,
+        :keywords_admin_notify do |record, attrib, value|
+          value.each do |word|
+            if word !~ /\A[a-z_-]+\z/i
+              record.errors.add(attrib, 'contains invalid characters')
+            end
+          end
+        end
+    validates_each :subject_prefix,
+        :subject_prefix_in,
+        :subject_prefix_out do |record, attrib, value|
+          # Accept everything but newlines
+          if value !~ /./
+            record.errors.add(attrib, 'must not include line-breaks')
+          end
+        end
+    validates :openpgp_header_preference,
+                presence: true,
+                inclusion: {
+                  in: %w(sign encrypt signencrypt unprotected none),
+                  message: 'must be one of: sign, encrypt, signencrypt, unprotected, none'
+                }
+    validates :max_message_size_kb,
+              presence: true,
+              format: {
+                with: /\A[0-9]+\z/,
+                message: 'must be a number'
+              }
+    validates :log_level,
+              presence: true,
+              inclusion: {
+                in: %w(debug info warn error),
+                message: 'must be one of: debug, info, warn, error'
+              }
+    validates :language,
+              presence: true,
+              inclusion: {
+                # TODO: find out why we break translations and available_locales if we use I18n.available_locales here.
+                in: %w(de en),
+                message: "must be one of: en, de"
+              }
 
     def logger
       @logger ||= Listlogger.new(File.join(self.listdir, 'list.log'),
