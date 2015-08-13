@@ -78,6 +78,13 @@ module Schleuder
                 message: "must be one of: en, de"
               }
 
+    def self.configurable_attributes
+      @configurable_attributes ||= begin
+        all = self.validators.map(&:attributes).flatten.uniq.compact.sort
+        all - [:email, :fingerprint]
+      end
+    end
+
     def logger
       @logger ||= Listlogger.new(File.join(self.listdir, 'list.log'),
                                  self)
