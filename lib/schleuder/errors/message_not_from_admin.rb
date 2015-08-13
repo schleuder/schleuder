@@ -1,12 +1,12 @@
 module Schleuder
   module Errors
-    class MessageUnsigned < Base
+    class MessageNotFromAdmin < Base
       def initialize(list)
         @list = list
       end
 
       def message
-        t('errors.message_unsigned')
+        t('errors.message_not_from_admin')
       end
     end
   end

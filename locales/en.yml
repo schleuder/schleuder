@@ -24,6 +24,10 @@ en:
       <%{owner_email}>
       (preferably encrypt it with this addresses' public key:
       %{list_fingerprint}).
+    message_unencrypted: Messages to this address must be encrypted conforming to OpenPGP.
+    message_unauthenticated: Messages to this address must be encrypted and signed by the key associated with a subscribed address.
+    message_sender_not_subscribed: Only subscribed addresses may send messages to this address.
+    message_not_from_admin: Only admins may send messages to this address.
     list_not_found: "Error: No list found with this address: '%{email}'."
     list_exists: A list with address '%{email}' is already present.
     listdir_problem:

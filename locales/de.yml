@@ -24,6 +24,10 @@ de:
       <%{owner_email}>.
       (Vorzugsweise verschlüssele die Email mit dem Schlüssel dieser Adresse:
       %{list_fingerprint}).
+    message_unencrypted: Emails an diese Adresse müssen OpenPGP-konform verschlüsselt sein.
+    message_unauthenticated: Emails an diese Adresse müssen verschlüsselt und mit einem OpenPGP-Schlüssel signiert sein, der für ein Abo eingetragen ist.
+    message_sender_not_subscribed: Nur Absender mit Abo dürfen Emails an diese Adresse schicken.
+    message_not_from_admin: Nur Admins dürfen Emails an diese Adresse schicken.
     list_not_found: "Fehler: Keine Liste zu dieser Adresse gefunden: '%{email}'."
     list_exists: Es existiert bereits eine Liste mit der Adresse '%{email}'.
     listdir_problem:

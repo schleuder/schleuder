@@ -33,5 +33,3 @@ module Schleuder
     end
   end
 end
-
-

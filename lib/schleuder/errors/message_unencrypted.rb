@@ -1,12 +1,12 @@
 module Schleuder
   module Errors
-    class MessageUnsigned < Base
+    class MessageUnencrypted < Base
       def initialize(list)
         @list = list
       end
 
       def message
-        t('errors.message_unsigned')
+        t('errors.message_unencrypted')
       end
     end
   end
