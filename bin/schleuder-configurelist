@@ -13,8 +13,9 @@ def error(msgs)
 end
 
 def show(value)
-  if value.is_a?(Array)
-    puts "[#{value.join(', ')}]"
+  case value
+  when Array, Hash
+    puts value.inspect
   else
     puts value
   end
@@ -56,13 +57,22 @@ if value.blank?
 
 else
   # Store new value.
-  if value.strip =~ /\A\[.*\]\z/
+  case value.strip
+  when /\A\[.*\]\z/
     # Convert input into Array
     value = value.gsub('[', '').gsub(']', '').split(/,\s/)
+  when /\A\{.*\}\z/
+    # Convert input into Hash
+    tmp = value.gsub('{', '').gsub('}', '').split(/,\s/)
+    value = tmp.inject({}) do |hash, pair|
+      k,v = pair.split(/:\s|=>\s/)
+      hash[k.strip] = v.strip
+      hash
+    end
   end
   list[option] = value
   if list.save
-    show value
+    show list.send(option)
   else
     list.errors.each do |attrib, message|
       puts "#{attrib} #{message}"
