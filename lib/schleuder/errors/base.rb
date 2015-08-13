@@ -8,6 +8,10 @@ module Schleuder
       def to_s
         message + t('errors.signoff')
       end
+
+      def set_default_locale
+        I18n.locale = I18n.default_locale
+      end
     end
   end
 end

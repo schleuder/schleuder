@@ -2,6 +2,7 @@ module Schleuder
   module Errors
     class DecryptionFailed < Base
       def initialize(list)
+        set_default_locale
         @list = list
       end
 

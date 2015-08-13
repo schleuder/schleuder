@@ -2,7 +2,7 @@ module Schleuder
   module Errors
     class MessageUnsigned < Base
       def initialize(list)
-        @list = list
+        set_default_locale
       end
 
       def message

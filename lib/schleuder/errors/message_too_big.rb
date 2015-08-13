@@ -2,6 +2,7 @@ module Schleuder
   module Errors
     class MessageTooBig < Base
       def initialize(list)
+        set_default_locale
         @allowed_size = list.max_message_size_kb
       end
 
