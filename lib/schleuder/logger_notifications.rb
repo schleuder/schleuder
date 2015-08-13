@@ -21,6 +21,7 @@ module Schleuder
         mail.to = address
         mail.subject = subject
         msgpart = Mail::Part.new
+        msgpart.charset = 'UTF-8'
         msgpart.body = string.to_s
         mail.add_part msgpart
         if original_message
