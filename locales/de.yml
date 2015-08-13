@@ -77,3 +77,7 @@ de:
     Deine Email enthielt keinen Inhalt, daher wurde sie nicht über die Liste geschickt.
 
     Falls du ausschließlich Schlüsselwörter gesendet hast beachte, dass administrative Schlüsselwörter an die "request"-Adresse (<%{request_address}>) geschickt werden müssen um berücksichtigt zu werden.
+  bounces_drop_all: Die angehängte Email hätte zurückgewiesen (bounced) werden sollen, wurde aber stillschweigend fallen gelassen, weil die Konfiguration dieser Liste definiert, dass für diese Liste nie Email zurückgewiesen werden soll.
+  bounces_drop_on_headers: "Die angehängte Email hätte zurückgewiesen (bounce) werden sollen, wurde aber stillschweigend fallen gelassen, weil diese Kopfzeile gefunden wurde: %{key}: %{value}"
+  bounces_notify_admins: "Die angehängte Email wurde mit folgender Nachricht zurückgewiesen:"
+  notice: Hinweis

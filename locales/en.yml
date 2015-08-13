@@ -77,3 +77,7 @@ en:
     Your message was found empty and wasn't passed on to the list.
 
     In case you only sent keywords please note that administrative keywords must be sent to the "request"-address (<%{request_address}>) in order to be respected.
+  bounces_drop_all: The attached message should have been bounced but was dropped without further notice because the list's configuration defines that no message should ever be bounced.
+  bounces_drop_on_headers: "The attached message should have been bounced but was dropped without further notice because it matched this header-line: %{key}: %{value}"
+  bounces_notify_admins: "The attached message was bounced with the following notice:"
+  notice: Notice

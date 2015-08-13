@@ -18,10 +18,10 @@ module Schleuder
       error = Filters::Runner.run(list, @mail)
       if error
         if list.bounces_notify_admins?
-          # TODO: Improve with nicer message
-          list.logger.notify_admin error.to_s, @mail
+          text = "#{I18n.t('.bounces_notify_admins')}\n\n#{error}"
+          list.logger.notify_admin text, @mail.raw_source, I18n.t('notice')
         end
-        return error 
+        return error
       end
 
       # Plugins
@@ -97,7 +97,7 @@ module Schleuder
       end
 
       # TODO: check sanity of list: admins, fingerprint, key, all present?
-      
+
       # Set locale
       if I18n.available_locales.include?(@list.language.to_sym)
         I18n.locale = @list.language.to_sym
