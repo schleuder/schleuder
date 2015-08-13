@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140501112859) do
+ActiveRecord::Schema.define(version: 20150812165700) do
 
   create_table "lists", force: true do |t|
     t.datetime "created_at"
@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 20140501112859) do
     t.text     "public_footer",                               default: ""
     t.text     "headers_to_meta",                             default: "[\"from\",\"to\",\"date\",\":cc\"]"
     t.text     "bounces_drop_on_headers",                     default: "{\"x-spam-flag\":\"yes\"}"
-    t.text     "keywords_admin_only",                         default: "[\"unsubscribe\", \"unsubscribe\", \"delete-key\"]"
+    t.text     "keywords_admin_only",                         default: "[\"subscribe\", \"unsubscribe\", \"delete-key\"]"
     t.text     "keywords_admin_notify",                       default: "[\"add-key\"]"
     t.boolean  "send_encrypted_only",                         default: false
     t.boolean  "receive_encrypted_only",                      default: false
