@@ -103,6 +103,9 @@ max_message_size_kb: 10240
 # list-admins)? Error, warn, info, or debug.
 log_level: warn
 
+# Which language to use for automated replies, error-messages, etc.
+# Available: en, de.
+language: en
 
 # TODO:
 #
