@@ -106,7 +106,7 @@ module Schleuder
       GPGME::Key.export self.fingerprint, armor: true
     end
 
-    def keys(identifier='.')
+    def keys(identifier='')
       gpg.keys(identifier)
     end
 
