@@ -85,3 +85,7 @@ en:
   forward_all_incoming_to_admins: The attached message was received.
   forward_bounce_to_admins: The attached message was received as bounce.
   bounce: Bounced message
+  check_keys: Keys check
+  check_keys_intro: "Please take care of these keys for list %{email}.\n"
+  key_expires: "Expires in %{days} days:\n0x%{fingerprint} %{email}"
+  key_unusable: "Is %{trust}:\n0x%{fingerprint} %{email}"

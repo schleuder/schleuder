@@ -85,3 +85,7 @@ de:
   forward_all_incoming_to_admins: Die angehängte Email ging ein.
   forward_bounce_to_admins: Die angehängte Email ging als zurückgewiesen (bounce) ein.
   bounce: Zurückgewiesene Nachricht
+  check_keys: Schlüsselprüfung
+  check_keys_intro: "Bitte kümmere dich um die folgenden Schlüssel für Liste %{email}."
+  key_expires: "Läuft in %{days} Tagen ab:\n0x%{fingerprint} %{email}"
+  key_unusable: "Ist %{trust}:\n0x%{fingerprint} %{email}"
