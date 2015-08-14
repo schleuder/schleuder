@@ -22,13 +22,13 @@ begin
   end
 rescue => exc
   begin
-    Schleuder.logger.fatal(exc.to_s, message)
+    Schleuder.logger.fatal(exc.message_with_backtrace, message)
     puts I18n.t('errors.fatalerror')
   rescue => e
     # Give users a clue what to do in case everything blows up.
     # As apparently even the logging raised exceptions we can't even store
     # any information in the logs.
-    puts "A serious, unhandleable error happened. Please contact the administrators of this system or service and provide them with the following information:\n\n#{e}"
+    puts "A serious, unhandleable error happened. Please contact the administrators of this system or service and provide them with the following information:\n\n#{e.message}"
   end
   exit 1
 end
