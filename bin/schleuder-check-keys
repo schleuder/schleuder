@@ -22,6 +22,8 @@ unusable = []
 expiring = []
 
 List.all.each do |list|
+  I18n.locale = list.language
+
   list.keys.each do |key|
     expiry = key.subkeys.first.expires
     if expiry && expiry > now && expiry < checkdate
@@ -30,7 +32,7 @@ List.all.each do |list|
       expiring << [key, expdays]
     end
 
-    if [:revoked, :expired, :disabled, :invalid].include?(key.trust)
+    if key.trust
       unusable << [key, key.trust]
     end
   end
@@ -40,20 +42,20 @@ List.all.each do |list|
     msg << I18n.t('key_expires', {
                       days: days,
                       fingerprint: key.fingerprint,
-                      email: key.uids.first.to_s
+                      email: key.email
                   })
   end
 
   unusable.each do |key,trust|
     msg << I18n.t('key_unusable', {
-                      trust: trust.join(', '),
+                      trust: Array(trust).join(', '),
                       fingerprint: key.fingerprint,
-                      email: key.uids.first.to_s
+                      email: key.email
                   })
   end
 
   if msg.present?
     text = "#{I18n.t('check_keys_intro', email: list.email)}\n\n#{msg}"
-    list.logger.notify_admin(text, nil, I18n.t('keys'))
+    list.logger.notify_admin(text, nil, I18n.t('check_keys'))
   end
 end
