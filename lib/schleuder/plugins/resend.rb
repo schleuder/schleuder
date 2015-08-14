@@ -19,6 +19,7 @@ module Schleuder
         if key.present?
           gpg_opts.merge!(encrypt: true)
         elsif send_encrypted_only
+          # TODO: rather send a note to the sender that the command failed. Chances are high that he/she will try again anyways and other subscribers don't need to see the noise.
           mail.add_pseudoheader(
             :note,
             I18n.t("plugins.resend.not_resent_no_key", email: email)
@@ -43,6 +44,7 @@ module Schleuder
           mail.add_subject_prefix(list.subject_prefix_out)
         end
       end
+      # TODO: catch and handle SMTPFatalError (is raised when recipient is rejected by remote)
     end
 
     def self.resent_pseudoheader(email, key)
