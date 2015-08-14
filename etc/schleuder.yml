@@ -3,6 +3,8 @@ superadmin: root@localhost
 lists_dir: /var/schleuder/lists
 plugins_dir: /etc/schleuder/plugins
 log_level: warn
+smtp_host: localhost
+smtp_port: 25
 database:
   production:
     adapter:  'sqlite3'

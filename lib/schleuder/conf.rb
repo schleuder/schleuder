@@ -37,5 +37,13 @@ module Schleuder
     def self.log_level
       instance.config['log_level'] || 'WARN'
     end
+
+    def self.smtp_host
+      instance.config['smtp_host'] || 'localhost'
+    end
+
+    def self.smtp_port
+      instance.config['smtp_port'] || 25
+    end
   end
 end
