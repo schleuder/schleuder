@@ -45,5 +45,9 @@ module Schleuder
     def self.smtp_port
       instance.config['smtp_port'] || 25
     end
+
+    def self.smtp_helo_domain
+      instance.config['smtp_helo_domain'] || 'localhost'
+    end
   end
 end

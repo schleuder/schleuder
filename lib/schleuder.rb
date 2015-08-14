@@ -64,11 +64,14 @@ require Schleuder::Conf.database['adapter']
 ActiveRecord::Base.establish_connection(Schleuder::Conf.databases[ENV["SCHLEUDER_ENV"]])
 ActiveRecord::Base.logger = Schleuder.logger
 
-Mail.defaults {
-    delivery_method :smtp,
-    address: Schleuder::Conf.smtp_host,
-    port: Schleuder::Conf.smtp_port
-  }
+Mail.defaults do
+  delivery_method :smtp,
+                  {
+                    address: Schleuder::Conf.smtp_host,
+                    port: Schleuder::Conf.smtp_port,
+                    domain: Schleuder::Conf.smtp_helo_domain
+                  }
+end
 
 I18n.load_path += Dir[rootdir.to_s + "/locales/*.yml"]
 I18n.enforce_available_locales = true
