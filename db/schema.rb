@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(version: 20150813235800) do
     t.text     "bounces_drop_on_headers",                     default: "{\"x-spam-flag\":\"yes\"}"
     t.text     "keywords_admin_only",                         default: "[\"subscribe\", \"unsubscribe\", \"delete-key\"]"
     t.text     "keywords_admin_notify",                       default: "[\"add-key\"]"
-    t.boolean  "send_encrypted_only",                         default: false
+    t.boolean  "send_encrypted_only",                         default: true
     t.boolean  "receive_encrypted_only",                      default: false
     t.boolean  "receive_signed_only",                         default: false
     t.boolean  "receive_authenticated_only",                  default: false
