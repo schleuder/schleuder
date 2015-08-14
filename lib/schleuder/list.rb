@@ -115,7 +115,7 @@ module Schleuder
     end
 
     def self.by_recipient(recipient)
-      listname = recipient.gsub(/-(sendkey|request|owner)@/, '@')
+      listname = recipient.gsub(/-(sendkey|request|owner|bounce)@/, '@')
       where(email: listname).first
     end
 
@@ -129,6 +129,10 @@ module Schleuder
 
     def owner_address
       @owner_address ||= email.gsub('@', '-owner@')
+    end
+
+    def bounce_address
+      @bounce_address ||= email.gsub('@', '-bounce@')
     end
 
     def gpg

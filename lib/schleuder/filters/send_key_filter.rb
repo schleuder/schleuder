@@ -7,6 +7,8 @@ module Schleuder
 
       out = mail.reply
       out.from = list.email
+      # We're not sending to a subscribed address, so we need to specify a return-path manually.
+      out.return_path = list.bounce_address
       out.body = list.key.to_s
       # TODO: clean this up, there must be an easier way to attach inline-disposited content.
       filename = "#{list.email}.asc"

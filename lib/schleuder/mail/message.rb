@@ -25,7 +25,6 @@ module Mail
       clean = Mail.new
       clean.from = list.email
       clean.subject = self.subject
-      clean.return_path = list.owner_address
 
       clean.add_msgids(list, self)
       clean.add_list_headers(list)
@@ -88,6 +87,14 @@ module Mail
 
     def request?
       @recipient.match(/-request@/)
+    end
+
+    def bounce?
+      @recipient.match(/-bounce@/) ||
+          # Empty Return-Path
+          self.return_path.to_s == '<>' ||
+          # Auto-Submitted exists and does not equal 'no'
+          ( self['Auto-Submitted'].present? && self['Auto-Submitted'].to_s.downcase != 'no' )
     end
 
     def keywords

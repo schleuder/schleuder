@@ -27,6 +27,7 @@ module Schleuder
 
     def send_mail(mail)
       mail.to = self.email
+      mail.return_path = self.list.bounce_address
       gpg_opts = {encrypt: true, sign: true, keys: {self.email => "0x#{self.fingerprint}"}}
       if self.key.blank?
         if self.list.send_encrypted_only?

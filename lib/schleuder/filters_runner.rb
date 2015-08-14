@@ -3,6 +3,7 @@ module Schleuder
     class Runner
       # To define priority sort this.
       FILTERS = %w[
+        forward_bounce_to_admins
         forward_all_incoming_to_admins
         send_key
         forward_to_owner

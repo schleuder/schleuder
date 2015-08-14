@@ -83,3 +83,5 @@ en:
   notice: Notice
   incoming_message: Incoming message
   forward_all_incoming_to_admins: The attached message was received.
+  forward_bounce_to_admins: The attached message was received as bounce.
+  bounce: Bounced message
