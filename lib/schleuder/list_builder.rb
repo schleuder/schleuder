@@ -145,6 +145,8 @@ module Schleuder
           @errors << Errors::KeyAdduidFailed.new(string)
         end
       end
+    rescue Errno::ENOENT
+      @errors << Errors::KeyAdduidFailed.new('Need gpg in $PATH')
     end
 
     def key_params(list)
