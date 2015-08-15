@@ -48,7 +48,7 @@ module Schleuder
         :subject_prefix_in,
         :subject_prefix_out do |record, attrib, value|
           # Accept everything but newlines
-          if value !~ /./
+          if value.to_s !~ /.*/
             record.errors.add(attrib, 'must not include line-breaks')
           end
         end
