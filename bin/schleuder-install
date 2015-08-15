@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+require 'rubygems'
+
+if `id -u`.to_i > 0
+  $stderr.puts "Error: root-privileges required"
+  exit 1
+end
+
+begin
+
+  case ARGV.first
+  when nil, /\A-h|\A--help|\A--step2/
+    $stderr.puts "Usage: $(basename $0) --gem | /path/to/schleuder/ [ --step2 ]"
+    exit 1
+  when '--gem'
+    spec = Gem::Specification.find_by_name('schleuder')
+    path = spec.gem_dir
+  else
+    if ! File.directory?(ARGV.first)
+      $stderr.puts "Error: No such directory '#{ARGV.first}'"
+      exit 1
+    end
+    path = ARGV.first
+  end
+
+  if ARGV.last != '--step2'
+    FileUtils.mkdir_p %w[/var/schleuder /var/schleuder/lists /etc/schleuder]
+    Dir[File.join(path, "etc/*")].each do |file|
+      target = "/etc/schleuder/#{File.basename(file)}"
+      if ! File.exists?(target)
+        FileUtils.cp file, target
+      end
+    end
+    puts "Please adapt /etc/schleuder/schleuder.yml to your needs. If you choose a different DBMS than sqlite (e.g. mysql, postgresql) don't forget to create the database you configured and install the ruby-bindings (e.g. `gem install mysql`). Then run step 2: `#{$0} #{ARGV.join(' ')} --step2`"
+
+  else
+
+    # Step 2
+    puts "Step 2: Preparing the database."
+    print "Ready? [yN] "
+    if $stdin.gets.chomp.downcase != 'y'
+      puts "Cancelled."
+      exit
+    end
+
+    puts `cd #{path} && rake db:schema:load`
+
+    puts "
+    Schleuder has been set up. You can now create a new list using schleuder-newlist.
+    We hope you enjoy!"
+  end
+
+rescue => exc
+  $stderr.puts "Error: #{exc.message}"
+end
+
