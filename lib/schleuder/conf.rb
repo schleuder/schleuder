@@ -5,7 +5,7 @@ module Schleuder
     def config
       return @config if @config
 
-      config_file = ENV['SCHLEUDER_CONFIG']
+      config_file = ENV['SCHLEUDER_CONFIG'].to_s
 
       if ! File.readable?(config_file)
         msg = "Error: '#{ENV['SCHLEUDER_CONFIG']}' is not a readable file."
