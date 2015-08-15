@@ -161,10 +161,6 @@ module Schleuder
         @errors << Errors::ListdirProblem.new(@list_dir, :not_a_directory)
       end
 
-      if Dir.entries(@list_dir).size > 2
-        @errors << Errors::ListdirProblem.new(@list_dir, :not_empty)
-      end
-
       if ! File.writable?(@list_dir)
         @errors << Errors::ListdirProblem.new(@list_dir, :not_writable)
       end
