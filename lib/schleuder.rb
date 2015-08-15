@@ -1,5 +1,3 @@
-# TODO: check if gpg1 is present or if we need to work around the "gpg-agent now mandatory"-fuckup.
-
 # Stdlib
 require 'fileutils'
 require 'singleton'
