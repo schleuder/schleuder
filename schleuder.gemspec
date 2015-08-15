@@ -8,10 +8,10 @@ Gem::Specification.new do |s|
   s.version      = Schleuder::VERSION
   s.authors      = %w(lunar ng paz)
   s.email        = "schleuder2@nadir.org"
-  s.homepage     = "http://schleuder.nadir.org"
-  s.summary      = "Schleuder is a group's gateway: a gpg-enabled mailinglist with remailing-capabilities."
-  s.description  = "Schleuder is a group's gateway: subscribers can communicate encrypted (and pseudonymously) among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.\n\nSchleuder takes care of all decryption and encryption, stripping of headers, formatting conversions, etc. Schleuder can also send out its own public key upon request and process administrative commands by email."
-  s.files        = `git ls-files lib locales`.split + %w(README.md)
+  s.homepage     = "http://schleuder.nadir.org/"
+  s.summary      = "Schleuder is a gpg-enabled mailinglist with remailing-capabilities."
+  s.description  = "Schleuder is a group's email-gateway: subscribers can exchange encrypted emails among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.\n\nSchleuder takes care of all decryption and (re-)encryption, stripping of headers, and more. Schleuder can also send out its own public key upon request and process administrative commands by email."
+  s.files        = `git ls-files lib locales etc db/schema.rb README.md Rakefile`.split
   s.executables =  `git ls-files bin`.split.map {|file| File.basename(file) }
   s.platform     = Gem::Platform::RUBY
   s.require_path = 'lib'
@@ -22,4 +22,11 @@ Gem::Specification.new do |s|
   s.license = 'GPL-3'
   s.add_runtime_dependency 'mail-gpg', '~> 0'
   s.add_runtime_dependency 'activerecord', '~> 4.1'
+  s.add_runtime_dependency 'rake', '~> 10'
+  s.add_runtime_dependency 'sqlite3', '~> 1'
+  s.post_install_message = "
+
+    To set up Schleuder please run schleuder-install as root.
+
+  "
 end
