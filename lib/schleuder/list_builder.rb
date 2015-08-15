@@ -123,20 +123,27 @@ module Schleuder
       elsif keys.size > 1
         @errors << Errors::TooManyKeys.new(@list_dir, @listname)
       else
-        # Add UIDs for -owner and -request.
-        err, string = keys.first.adduid(list.email, list.request_address, @list_dir)
-        if err > 0
-          @errors << Errors::KeyAdduidFailed.new(string)
-        end
+        adduids(list, keys.first)
+      end
 
-        err, string = keys.first.adduid(list.email, list.owner_address, @list_dir)
+      keys.first
+    end
+
+    def adduids(list, key)
+      # Add UIDs for -owner and -request.
+      gpg_version = `gpg --version`.lines.first.split.last
+      if gpg_version < "2.1.4"
+        string = "Couldn't add additionaly UIDs to the list's key automatically (GnuPG version 2.1.4 or later is required for that). Please add these UIDs to the list's key manually: #{list.request_address}, #{list.owner_address}."
+        @errors << Errors::KeyAdduidFailed.new(string)
+        return false
+      end
+
+      [list.request_address, list.owner_address].each do |address|
+        err, string = key.adduid(list.email, address, list.listdir)
         if err > 0
           @errors << Errors::KeyAdduidFailed.new(string)
         end
       end
-
-      puts "Done."
-      keys.first
     end
 
     def key_params(list)
