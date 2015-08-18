@@ -22,7 +22,7 @@ begin
   end
 rescue => exc
   begin
-    Schleuder.logger.fatal(exc.message_with_backtrace, message)
+    Schleuder.logger.fatal(exc.message, message)
     puts I18n.t('errors.fatalerror')
   rescue => e
     # Give users a clue what to do in case everything blows up.
