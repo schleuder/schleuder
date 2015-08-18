@@ -71,6 +71,7 @@ de:
       setting_fingerprint_failed: |
         Fingerabdruck für %{email} konnte nicht auf %{fingerprint} gesetzt werden:
         %{errors}.
+    signatures_attached: Die Signaturen hängen an.
   no_output_result: Deine Email ergab keinen Ausgabe-Text.
   owner_forward_prefix: Die folgende Email ging für die Listen-Besitzer/innen ein.
   empty_message_error: |
