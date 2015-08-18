@@ -100,13 +100,17 @@ module Mail
     def keywords
       return @keywords if @keywords
 
+      # Look only in first part of message.
+      part = multipart? ?  parts.first : self
+
       # Parse only plain text for keywords.
-      return [] if mime_type != 'text/plain'
+      if part.mime_type != 'text/plain'
+        Schleuder.logger.debug "First part of message is not text/plain, not collecting keywords"
+        return []
+      end
 
       # TODO: collect keywords while creating new mail as base for outgoing mails: that way we wouldn't need to change the body/part but rather filter the old body before assigning it to the new one. (And it helps also with having a distinct msg-id for all subscribers)
 
-      # Look only in first part of message.
-      part = multipart? ?  parts.first : self
       @keywords = []
       part.body = part.decoded.lines.map do |line|
         # TODO: find multiline arguments (add-key)
