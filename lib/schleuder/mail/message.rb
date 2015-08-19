@@ -108,8 +108,6 @@ module Mail
         return []
       end
 
-      # TODO: collect keywords while creating new mail as base for outgoing mails: that way we wouldn't need to change the body/part but rather filter the old body before assigning it to the new one. (And it helps also with having a distinct msg-id for all subscribers)
-
       @keywords = []
       part.body = part.decoded.lines.map do |line|
         # TODO: find multiline arguments (add-key)
