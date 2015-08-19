@@ -105,7 +105,6 @@ module Mail
 
       # Parse only plain text for keywords.
       if part.mime_type != 'text/plain'
-        Schleuder.logger.debug "First part of message is not text/plain, not collecting keywords"
         return []
       end
 
