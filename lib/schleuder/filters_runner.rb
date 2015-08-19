@@ -19,7 +19,7 @@ module Schleuder
         @list = list
         @mail = mail
         FILTERS.map do |cmd|
-          Schleuder.logger.debug "Calling filter #{cmd}"
+          @list.logger.debug "Calling filter #{cmd}"
           response = Filters.send(cmd, list, mail)
           if stop?(response)
             if bounce?(response)
@@ -38,20 +38,20 @@ module Schleuder
 
       def self.bounce?(response)
         if @list.bounces_drop_all
-          logger.debug "Dropping bounce as configurated"
+          @list.logger.debug "Dropping bounce as configurated"
           notify_admins(I18n.t('.bounces_drop_all'))
           return false
         end
 
         @list.bounces_drop_on_headers.each do |key, value|
           if @mail.headers[key].to_s.match(/${value}/i)
-            logger.debug "Incoming message header key '#{key}' matches value '#{value}': dropping the bounce."
+            @list.logger.debug "Incoming message header key '#{key}' matches value '#{value}': dropping the bounce."
             notify_admins(I18n.t('.bounces_drop_on_headers', key: key, value: value))
             return false
           end
         end
 
-        logger.debug "Bouncing message"
+        @list.logger.debug "Bouncing message"
         true
       end
 

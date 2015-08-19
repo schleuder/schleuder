@@ -31,7 +31,7 @@ module Schleuder
       gpg_opts = {encrypt: true, sign: true, keys: {self.email => "0x#{self.fingerprint}"}}
       if self.key.blank?
         if self.list.send_encrypted_only?
-          Schleuder.logger.error "Not sending to #{self.email}: no key present and sending plain text not allowed"
+          self.list.logger.error "Not sending to #{self.email}: no key present and sending plain text not allowed"
           return false
         else
           gpg_opts.merge!(encrypt: false)

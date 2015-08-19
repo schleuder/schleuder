@@ -4,13 +4,16 @@ module Schleuder
       if mail.parts.empty? && mail.body.to_s.present?
         # Single text/plain-output is handled by the plugin-runner well, we
         # don't need to take care of the reply.
+        list.logger.debug "Clear-signing text/plain body"
         clearsign(mail)
       else
         # Here we need to send our reply manually because we're sending
         # attachments. Maybe move this ability into the plugin-runner?
+        list.logger.debug "Signing each attachment's body"
         out = multipart(mail.reply, list, mail)
+        list.logger.info "Replying directly to sender"
         reply(out)
-        Schleuder.logger.info "Exiting."
+        list.logger.info "Exiting."
         exit
       end
     end
@@ -19,7 +22,7 @@ module Schleuder
       mail.parts.each do |part|
         next if part.body.to_s.strip.blank?
         file_basename = part.filename.presence || Digest::SHA256.hexdigest(part.body.to_s)
-        Schleuder.logger.debug "Signing #{file_basename}"
+        list.logger.debug "Signing #{file_basename}"
         filename = "#{file_basename}.sig"
         out.add_file({
             filename: filename,
@@ -30,11 +33,10 @@ module Schleuder
       out
     end
 
-    def reply(out)
+    def self.reply(out)
       out.from = list.email
       out.return_path = list.bounce_address
       out.body = I18n.t('plugins.signatures_attached')
-      Schleuder.logger.info "Replying directly to sender"
       out.gpg sign: true, encrypt: true
       out.deliver
     end
@@ -47,7 +49,6 @@ module Schleuder
     end
 
     def self.clearsign(mail)
-      Schleuder.logger.debug "Clear-signing text/plain body"
       return crypto.clearsign(mail.body.to_s).to_s
     end
 

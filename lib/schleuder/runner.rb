@@ -4,7 +4,7 @@ module Schleuder
       error = setup_list(recipient)
       return error if error
 
-      list.logger.info "Parsing incoming email."
+      logger.info "Parsing incoming email."
       begin
         # This decrypts, verifies, etc.
         @mail = Mail.new(msg)
@@ -19,7 +19,7 @@ module Schleuder
       if error
         if list.bounces_notify_admins?
           text = "#{I18n.t('.bounces_notify_admins')}\n\n#{error}"
-          list.logger.notify_admin text, @mail.raw_source, I18n.t('notice')
+          logger.notify_admin text, @mail.raw_source, I18n.t('notice')
         end
         return error
       end
@@ -29,7 +29,7 @@ module Schleuder
         output = Plugins::Runner.run(list, @mail).compact
 
         if @mail.request?
-          list.logger.debug "Request-message, replying with output"
+          logger.debug "Request-message, replying with output"
           reply_to_signer(output)
           return nil
         end
@@ -42,7 +42,7 @@ module Schleuder
 
         # Don't send empty messages over the list.
         if @mail.body.empty?
-          Schleuder.logger.info "Message found empty, not sending it to list. Instead notifying sender."
+          logger.info "Message found empty, not sending it to list. Instead notifying sender."
           reply_to_signer(I18n.t(:empty_message_error, request_address: @list.request_address))
           return nil
         end
@@ -71,10 +71,10 @@ module Schleuder
       new = @mail.clean_copy(list, true)
       list.subscriptions.each do |subscription|
         begin
-          Schleuder.logger.debug "Sending message to #{subscription.inspect}"
+          logger.debug "Sending message to #{subscription.inspect}"
           subscription.send_mail(new).deliver
         rescue => exc
-          Schleuder.logger.error exc
+          logger.error exc
         end
       end
     end
@@ -104,7 +104,7 @@ module Schleuder
       end
 
       # This cannot be put in List, as Mail wouldn't know it then.
-      Schleuder.logger.debug "Setting GNUPGHOME to #{@list.listdir}"
+      logger.debug "Setting GNUPGHOME to #{@list.listdir}"
       ENV['GNUPGHOME'] = @list.listdir
       nil
     end
