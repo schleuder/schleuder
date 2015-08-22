@@ -16,7 +16,7 @@ module Schleuder
         filename: filename,
         content: list.armored_key.to_s
       })
-      out.attachments[filename].content_disposition = 'inline'
+      out.attachments[filename].content_type = 'application/pgp-keys'
       out.attachments[filename].content_description = 'OpenPGP public key'
       # TODO: find out why the gpg-module puts all the headers into the first mime-part, too
       out.gpg sign: true
