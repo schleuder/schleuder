@@ -85,9 +85,12 @@ module Schleuder
       end
     end
 
+    def logfile
+      @logfile ||= File.join(self.listdir, 'list.log')
+    end
+
     def logger
-      @logger ||= Listlogger.new(File.join(self.listdir, 'list.log'),
-                                 self)
+      @logger ||= Listlogger.new(self)
     end
 
     def to_s

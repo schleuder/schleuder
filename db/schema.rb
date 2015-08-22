@@ -13,45 +13,46 @@
 
 ActiveRecord::Schema.define(version: 20150813235800) do
 
-  create_table "lists", force: true do |t|
+  create_table "lists", force: :cascade do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "email"
-    t.string   "fingerprint"
-    t.string   "gpg_passphrase"
-    t.string   "log_level",                                   default: "warn"
-    t.string   "default_mime",                                default: "mime"
-    t.string   "subject_prefix",                              default: ""
-    t.string   "subject_prefix_in",                           default: ""
-    t.string   "subject_prefix_out",                          default: ""
-    t.string   "openpgp_header_preference",                   default: "signencrypt"
-    t.text     "public_footer",                               default: ""
-    t.text     "headers_to_meta",                             default: "[\"from\",\"to\",\"date\",\":cc\"]"
-    t.text     "bounces_drop_on_headers",                     default: "{\"x-spam-flag\":\"yes\"}"
-    t.text     "keywords_admin_only",                         default: "[\"subscribe\", \"unsubscribe\", \"delete-key\"]"
-    t.text     "keywords_admin_notify",                       default: "[\"add-key\"]"
-    t.boolean  "send_encrypted_only",                         default: true
-    t.boolean  "receive_encrypted_only",                      default: false
-    t.boolean  "receive_signed_only",                         default: false
-    t.boolean  "receive_authenticated_only",                  default: false
-    t.boolean  "receive_from_subscribed_emailaddresses_only", default: false
-    t.boolean  "receive_admin_only",                          default: false
-    t.boolean  "keep_msgid",                                  default: true
-    t.boolean  "bounces_drop_all",                            default: false
-    t.boolean  "bounces_notify_admins",                       default: true
-    t.boolean  "include_list_headers",                        default: true
-    t.boolean  "include_openpgp_header",                      default: true
-    t.integer  "max_message_size_kb",                         default: 10240
-    t.string   "language",                                    default: "en"
-    t.boolean  "forward_all_incoming_to_admins",              default: false
+    t.string   "email",                                       limit: 255
+    t.string   "fingerprint",                                 limit: 255
+    t.string   "gpg_passphrase",                              limit: 255
+    t.string   "log_level",                                   limit: 255, default: "warn"
+    t.string   "default_mime",                                limit: 255, default: "mime"
+    t.string   "subject_prefix",                              limit: 255, default: ""
+    t.string   "subject_prefix_in",                           limit: 255, default: ""
+    t.string   "subject_prefix_out",                          limit: 255, default: ""
+    t.string   "openpgp_header_preference",                   limit: 255, default: "signencrypt"
+    t.text     "public_footer",                                           default: ""
+    t.text     "headers_to_meta",                                         default: "[\"from\",\"to\",\"date\",\":cc\"]"
+    t.text     "bounces_drop_on_headers",                                 default: "{\"x-spam-flag\":\"yes\"}"
+    t.text     "keywords_admin_only",                                     default: "[\"subscribe\", \"unsubscribe\", \"delete-key\"]"
+    t.text     "keywords_admin_notify",                                   default: "[\"add-key\"]"
+    t.boolean  "send_encrypted_only",                                     default: true
+    t.boolean  "receive_encrypted_only",                                  default: false
+    t.boolean  "receive_signed_only",                                     default: false
+    t.boolean  "receive_authenticated_only",                              default: false
+    t.boolean  "receive_from_subscribed_emailaddresses_only",             default: false
+    t.boolean  "receive_admin_only",                                      default: false
+    t.boolean  "keep_msgid",                                              default: true
+    t.boolean  "bounces_drop_all",                                        default: false
+    t.boolean  "bounces_notify_admins",                                   default: true
+    t.boolean  "include_list_headers",                                    default: true
+    t.boolean  "include_openpgp_header",                                  default: true
+    t.integer  "max_message_size_kb",                                     default: 10240
+    t.string   "language",                                    limit: 255, default: "en"
+    t.boolean  "forward_all_incoming_to_admins",                          default: false
+    t.integer  "logfiles_to_keep",                                        default: 2
   end
 
-  create_table "subscriptions", force: true do |t|
+  create_table "subscriptions", force: :cascade do |t|
     t.integer  "list_id"
-    t.string   "email"
-    t.string   "fingerprint"
-    t.boolean  "admin",             default: false
-    t.boolean  "delivery_disabled", default: false
+    t.string   "email",             limit: 255
+    t.string   "fingerprint",       limit: 255
+    t.boolean  "admin",                         default: false
+    t.boolean  "delivery_disabled",             default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
