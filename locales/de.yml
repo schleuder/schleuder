@@ -42,6 +42,7 @@ de:
     unknown_list_option: "Unbekannte Option in %{config_file}: '%{option}'."
     loading_list_settings_failed: "%{config_file} konnte nicht eingelesen werden, bitte Formatierung auf gültiges YAML prüfen."
     message_too_big: "Deine Email war zu groß. Erlaubt sind für diese Liste %{allowed_size}KB."
+    file_not_found: "Die Datei existiert nicht: '%{file}'."
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
