@@ -8,7 +8,7 @@ module Schleuder
       cleanmail = mail.clean_copy(list, true)
       list.admins.each do |admin|
         list.logger.debug "Forwarding message to #{admin}"
-        admin.send_mail(cleanmail).deliver
+        admin.send_mail(cleanmail)
       end
       exit
     end

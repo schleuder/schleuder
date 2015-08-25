@@ -64,7 +64,7 @@ module Schleuder
 
     def reply_to_signer(output)
       msg = output.presence || I18n.t('no_output_result')
-      @mail.reply_to_signer(msg).deliver
+      @mail.reply_to_signer(msg)
     end
 
     def send_to_subscriptions
@@ -72,7 +72,7 @@ module Schleuder
       list.subscriptions.each do |subscription|
         begin
           logger.debug "Sending message to #{subscription.inspect}"
-          subscription.send_mail(new).deliver
+          subscription.send_mail(new)
         rescue => exc
           logger.error exc
         end

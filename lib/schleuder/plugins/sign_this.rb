@@ -9,16 +9,17 @@ module Schleuder
       else
         # Here we need to send our reply manually because we're sending
         # attachments. Maybe move this ability into the plugin-runner?
-        list.logger.debug "Signing each attachment's body"
         out = multipart(mail.reply, list, mail)
+        out.body = I18n.t('plugins.signatures_attached')
         list.logger.info "Replying directly to sender"
-        reply(out, list)
+        signer.send_mail(out)
         list.logger.info "Exiting."
         exit
       end
     end
 
     def self.multipart(out, list, mail)
+      list.logger.debug "Signing each attachment's body"
       mail.parts.each do |part|
         next if part.body.to_s.strip.blank?
         file_basename = part.filename.presence || Digest::SHA256.hexdigest(part.body.to_s)
@@ -31,14 +32,6 @@ module Schleuder
         out.attachments[filename].content_description = "OpenPGP signature for '#{file_basename}'"
       end
       out
-    end
-
-    def self.reply(out, list)
-      out.from = list.email
-      out.return_path = list.bounce_address
-      out.body = I18n.t('plugins.signatures_attached')
-      out.gpg sign: true, encrypt: true
-      out.deliver
     end
 
     def self.sign_each_part(list, mail)
