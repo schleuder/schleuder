@@ -31,6 +31,7 @@ module Schleuder
       if self.key.blank?
         if self.list.send_encrypted_only?
           self.list.logger.error "Not sending to #{self.email}: no key present and sending plain text not allowed"
+          notify_of_missed_message
           return false
         else
           gpg_opts.merge!(encrypt: false)
@@ -45,6 +46,14 @@ module Schleuder
       mail.from = self.list.email
       mail.return_path = self.list.bounce_address
       mail
+    end
+
+    def notify_of_missed_message
+      mail = ensure_headers(Mail.new)
+      mail.subject = I18n.t('notice')
+      mail.body = I18n.t("missed_message_due_to_absent_key", list_email: self.list.email) + I18n.t('errors.signoff')
+      mail.gpg({encrypt: false, sign: true})
+      mail.deliver
     end
 
     def admin?

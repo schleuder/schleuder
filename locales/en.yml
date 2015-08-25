@@ -91,3 +91,4 @@ en:
   check_keys_intro: "Please take care of these keys for list %{email}.\n"
   key_expires: "Expires in %{days} days:\n0x%{fingerprint} %{email}"
   key_unusable: "Is %{trust}:\n0x%{fingerprint} %{email}"
+  missed_message_due_to_absent_key: "You missed an email from %{list_email} because your subscription isn't associated with a (usable) OpenPGP key. Please fix this."
