@@ -21,7 +21,6 @@ module Schleuder
       Pathname.glob("#{list.logfile}.????????").each do |file|
         if file.basename.to_s.match(/\.([0-9]{8})$/)
           if del_older_than.to_i >= $1.to_i
-            list.logger.debug "Deleting #{file.basename}"
             file.unlink
           end
         end
