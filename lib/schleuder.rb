@@ -37,7 +37,6 @@ require 'schleuder/logger_notifications'
 require 'schleuder/logger'
 require 'schleuder/listlogger'
 require 'schleuder/plugins_runner'
-require 'schleuder/passphrase'
 Dir[rootdir.to_s + "/lib/schleuder/plugins/*.rb"].each do |file|
   require file
 end

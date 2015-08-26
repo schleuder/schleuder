@@ -142,7 +142,6 @@ module Schleuder
       @gpg_ctx ||= begin
        # TODO: figure out why the homedir isn't recognized
         ENV['GNUPGHOME'] = listdir
-        setup_gpg_agent if self.gpg_passphrase.present?
         GPGME::Ctx.new
       end
     end
@@ -172,18 +171,6 @@ module Schleuder
 
     def listdir
       @listdir ||= self.class.listdir(self.email)
-    end
-
-    def setup_gpg_agent
-      # TODO: move this to gpgme/mail-gpg
-      require 'open3'
-      ENV['GPG_AGENT_INFO'] = `eval $(gpg-agent --allow-preset-passphrase --daemon) && echo $GPG_AGENT_INFO`
-      @gpg_agent_pid = ENV['GPG_AGENT_INFO'].split(':')[1]
-      `gpgconf --list-dir`.match(/libexecdir:(.*)/)
-      gppbin = File.join($1, 'gpg-preset-passphrase')
-      Open3.popen3(gppbin, '--preset', self.fingerprint) do |stdin, stdout, stderr|
-        stdin.puts self.gpg_passphrase
-      end
     end
 
     def subscribe(email, fingerprint)

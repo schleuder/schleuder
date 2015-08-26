@@ -104,10 +104,6 @@ module Schleuder
     end
 
     def create_key(list)
-      # TODO: fix using a passphrase.
-      #phrase_container = Passphrase.new
-      #phrase = phrase_container.generate(32) # TODO get size from config
-
       puts "Generating key-pair, this could take a while..."
       begin
         gpg.generate_key(key_params(list))

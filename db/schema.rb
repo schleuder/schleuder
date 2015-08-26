@@ -18,7 +18,6 @@ ActiveRecord::Schema.define(version: 20150813235800) do
     t.datetime "updated_at"
     t.string   "email",                                       limit: 255
     t.string   "fingerprint",                                 limit: 255
-    t.string   "gpg_passphrase",                              limit: 255
     t.string   "log_level",                                   limit: 255, default: "warn"
     t.string   "default_mime",                                limit: 255, default: "mime"
     t.string   "subject_prefix",                              limit: 255, default: ""
