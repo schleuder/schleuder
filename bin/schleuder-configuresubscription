@@ -1,0 +1,87 @@
+#!/usr/bin/ruby
+
+def usage
+  $stderr.puts "Usage: #{File.basename(__FILE__)} --list-options || [ list@hostname user@hostname option ['value'] ] "
+  exit 1
+end
+
+def error(msgs)
+  Array(msgs).each do |msg|
+    $stderr.puts "Error: #{msg}"
+  end
+  exit 1
+end
+
+def show(value)
+  case value
+  when Array, Hash
+    puts value.inspect
+  else
+    puts value
+  end
+  exit
+end
+
+if ! ARGV.size.between?(1,4) || ARGV.first.match(/^(-h|--help)$/)
+  usage
+end
+
+require_relative '../lib/schleuder.rb'
+include Schleuder
+
+# List available options.
+if ARGV.first.to_s.downcase == '--list-options'
+  # TODO: list available values?
+  puts "Available options:\n\n#{Subscription.configurable_attributes.join("\n")}"
+  exit 0
+end
+
+listname, email, option, value = ARGV
+if option.blank?
+  usage
+end
+
+list = List.where(email: listname).first
+subscription = Subscription.where(list: list, email: email).first
+
+if list.blank?
+  error "No such list."
+end
+
+if subscription.blank?
+  error "Address not subscribed to list."
+end
+
+if value.blank?
+  # Show stored value.
+  if subscription.respond_to?(option)
+    show subscription.send(option)
+  else
+    error "No such config-option: '#{option}'"
+  end
+
+else
+  # Store new value.
+  case value.strip
+  when /\A\[.*\]\z/
+    # Convert input into Array
+    value = value.gsub('[', '').gsub(']', '').split(/,\s/)
+  when /\A\{.*\}\z/
+    # Convert input into Hash
+    tmp = value.gsub('{', '').gsub('}', '').split(/,\s/)
+    value = tmp.inject({}) do |hash, pair|
+      k,v = pair.split(/:\s|=>\s/)
+      hash[k.strip] = v.strip
+      hash
+    end
+  end
+  subscription[option] = value
+  if subscription.save
+    show subscription.send(option)
+  else
+    subscription.errors.each do |attrib, message|
+      puts "#{attrib} #{message}"
+    end
+  end
+end
+

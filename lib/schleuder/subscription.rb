@@ -3,12 +3,30 @@ module Schleuder
     belongs_to :list
 
     validates  :list_id, inclusion: { in: -> (id) { List.pluck(:id) } }
-    validates  :email, presence: true
+    # TODO: refactor with validations in List.
+    validates :email,
+              presence: true,
+              format: {
+                with: /\A.+@.+\z/i,
+                message: 'is not a valid email address'
+              }
+    validates :fingerprint,
+                presence: true,
+                format: { with: /\A[a-f0-9]+\z/i }
+    validates_each :delivery_disabled do |record, attrib, value|
+          if ! [true, false].include?(value)
+            record.errors.add(attrib, 'must be true or false')
+          end
+        end
 
     default_scope { order(:email) }
 
     def to_s
       email
+    end
+
+    def self.configurable_attributes
+      [:fingerprint, :admin, :delivery_disabled]
     end
 
     def fingerprint=(arg)
