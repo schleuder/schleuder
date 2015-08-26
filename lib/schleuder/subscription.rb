@@ -13,7 +13,7 @@ module Schleuder
     validates :fingerprint,
                 presence: true,
                 format: { with: /\A[a-f0-9]+\z/i }
-    validates_each :delivery_disabled do |record, attrib, value|
+    validates_each :delivery_enabled do |record, attrib, value|
           if ! [true, false].include?(value)
             record.errors.add(attrib, 'must be true or false')
           end
@@ -26,7 +26,7 @@ module Schleuder
     end
 
     def self.configurable_attributes
-      [:fingerprint, :admin, :delivery_disabled]
+      [:fingerprint, :admin, :delivery_enabled]
     end
 
     def fingerprint=(arg)
@@ -46,7 +46,7 @@ module Schleuder
     def send_mail(mail)
       list.logger.debug "Preparing sending to #{self.inspect}"
 
-      if self.delivery_disabled
+      if ! self.delivery_enabled
         self.list.logger.info "Not sending to #{self.email}: delivery is disabled."
         return false
       end

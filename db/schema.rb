@@ -49,10 +49,10 @@ ActiveRecord::Schema.define(version: 20150813235800) do
 
   create_table "subscriptions", force: :cascade do |t|
     t.integer  "list_id"
-    t.string   "email",             limit: 255
-    t.string   "fingerprint",       limit: 255
-    t.boolean  "admin",                         default: false
-    t.boolean  "delivery_disabled",             default: false
+    t.string   "email",            limit: 255
+    t.string   "fingerprint",      limit: 255
+    t.boolean  "admin",                        default: false
+    t.boolean  "delivery_enabled",             default: true
     t.datetime "created_at"
     t.datetime "updated_at"
   end
