@@ -44,6 +44,8 @@ module Schleuder
     end
 
     def send_mail(mail)
+      list.logger.debug "Preparing sending to #{self.inspect}"
+
       if self.delivery_disabled
         self.list.logger.info "Not sending to #{self.email}: delivery is disabled."
         return false
@@ -53,13 +55,14 @@ module Schleuder
       gpg_opts = {encrypt: true, sign: true, keys: {self.email => "0x#{self.fingerprint}"}}
       if self.key.blank?
         if self.list.send_encrypted_only?
-          self.list.logger.error "Not sending to #{self.email}: no key present and sending plain text not allowed"
+          self.list.logger.warn "Not sending to #{self.email}: no key present and sending plain text not allowed"
           notify_of_missed_message
           return false
         else
           gpg_opts.merge!(encrypt: false)
         end
       end
+      list.logger.info "Sending message to #{self.email}"
       mail.gpg gpg_opts
       mail.deliver
     end

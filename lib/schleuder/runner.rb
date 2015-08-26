@@ -71,7 +71,6 @@ module Schleuder
       new = @mail.clean_copy(list, true)
       list.subscriptions.each do |subscription|
         begin
-          logger.debug "Sending message to #{subscription.inspect}"
           subscription.send_mail(new)
         rescue => exc
           logger.error exc
