@@ -114,10 +114,6 @@ language: en
 
 # TODO:
 #
-# Which pgp encoding? Chose out of PLAIN (text/plain), APPL (application/pgp)
-# and MIME (pgp/mime)
-#default_mime: MIME
-#
 # Whether to archive messages sent to subscribed addresses or not.
 # Setting this option to true will archive every message sent to subscribed
 # addresses into <listdir>/archive/$YEAR/$MONTH/$DAY/$MESSAGEID.msg The

@@ -19,7 +19,6 @@ ActiveRecord::Schema.define(version: 20150813235800) do
     t.string   "email",                                       limit: 255
     t.string   "fingerprint",                                 limit: 255
     t.string   "log_level",                                   limit: 255, default: "warn"
-    t.string   "default_mime",                                limit: 255, default: "mime"
     t.string   "subject_prefix",                              limit: 255, default: ""
     t.string   "subject_prefix_in",                           limit: 255, default: ""
     t.string   "subject_prefix_out",                          limit: 255, default: ""
