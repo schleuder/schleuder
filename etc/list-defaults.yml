@@ -115,14 +115,3 @@ language: en
 # Forward a raw copy of all incoming emails to the list-admins?
 # Mainly useful for debugging.
 forward_all_incoming_to_admins: false
-
-# TODO:
-#
-# Whether to archive messages sent to subscribed addresses or not.
-# Setting this option to true will archive every message sent to subscribed
-# addresses into <listdir>/archive/$YEAR/$MONTH/$DAY/$MESSAGEID.msg The
-# messages are encrypted with the lists' public key and dumped as it would have
-# been handed over to the MTA.
-# Beware that this will archive every communication over that list on a remote
-# box amongst the matching private key and its password!
-#archive: false
