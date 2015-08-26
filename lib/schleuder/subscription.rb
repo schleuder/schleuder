@@ -44,6 +44,11 @@ module Schleuder
     end
 
     def send_mail(mail)
+      if self.delivery_disabled
+        self.list.logger.info "Not sending to #{self.email}: delivery is disabled."
+        return false
+      end
+
       mail = ensure_headers(mail)
       gpg_opts = {encrypt: true, sign: true, keys: {self.email => "0x#{self.fingerprint}"}}
       if self.key.blank?
