@@ -1,34 +1,11 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
-if ARGV.empty? || ARGV.first.match(/^(-h|--help)$/)
-  puts "Usage: #{File.basename(__FILE__)} listname < message"
-  exit 1
-elsif ARGV.first.match(/^(-v|-V|--version)$/)
-  require_relative '../lib/schleuder/version.rb'
-  puts Schleuder::VERSION
-  exit 0
-end
+require 'bundler/setup'
+require 'thor'
+require_relative '../lib/schleuder.rb'
+require 'schleuder/cli/base'
+include Schleuder
 
-listname = ARGV.first
-message  = STDIN.read
+trap("INT") { exit 1 }
 
-begin
-  require_relative '../lib/schleuder.rb'
-
-  error = Schleuder::Runner.new.run(message, listname)
-  if error.kind_of?(StandardError)
-    puts error
-    exit 1
-  end
-rescue => exc
-  begin
-    Schleuder.logger.fatal(exc.message, message)
-    puts I18n.t('errors.fatalerror')
-  rescue => e
-    # Give users a clue what to do in case everything blows up.
-    # As apparently even the logging raised exceptions we can't even store
-    # any information in the logs.
-    puts "A serious, unhandleable error happened. Please contact the administrators of this system or service and provide them with the following information:\n\n#{e.message}"
-  end
-  exit 1
-end
+Cli::Base.start

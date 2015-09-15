@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'activerecord', '~> 4.1'
   s.add_runtime_dependency 'rake', '~> 10'
   s.add_runtime_dependency 'sqlite3', '~> 1'
+  s.add_runtime_dependency 'thor', '~> 0'
   s.post_install_message = "
 
     To set up Schleuder please run schleuder-install as root.
