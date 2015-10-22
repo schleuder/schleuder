@@ -109,9 +109,13 @@ module Mail
       end
 
       @keywords = []
-      part.body = part.decoded.lines.map do |line|
-        # TODO: find multiline arguments (add-key)
-        # TODO: break after some data to not parse huge amounts
+      part.body = part.decoded.lines.map.with_index do |line, i|
+        # Break after some lines to not run all the way through maybe huge emails.
+        if i > 1000
+          break
+        end
+        # TODO: Find multiline arguments (add-key). Currently add-key has to
+        # read the whole body and hope for the best.
         if line.match(/^x-([^: ]*)[: ]*(.*)/i)
           command = $1.strip.downcase
           arguments = $2.to_s.strip.downcase.split(/[,; ]{1,}/)
