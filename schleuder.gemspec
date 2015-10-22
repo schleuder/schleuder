@@ -20,7 +20,6 @@ Gem::Specification.new do |s|
   #s.signing_key = "#{ENV['HOME']}/.gem/schleuder-gem-private_key.pem"
   #s.cert_chain  = ['gem-public_cert.pem']
   s.license = 'GPL-3'
-  s.add_runtime_dependency 'schleuder-conf', '~> 0'
   s.add_runtime_dependency 'mail-gpg', '~> 0'
   s.add_runtime_dependency 'activerecord', '~> 4.1'
   s.add_runtime_dependency 'rake', '~> 10'
@@ -30,7 +29,10 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'thor', '~> 0'
   s.post_install_message = "
 
-    To set up Schleuder please run schleuder-install as root.
+    Please consider additionallly installing schleuder-conf (allows to
+    configure lists from the command line).
+
+    To set up Schleuder on this system please run `schleuder install` as root.
 
   "
 end
