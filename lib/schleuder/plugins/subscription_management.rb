@@ -26,13 +26,15 @@ module Schleuder
     end
 
     def self.unsubscribe(arguments, list, mail)
-      email = if list.admin?(mail.signer.email)
-                arguments.first
-              else
-                # TODO: send error message if signer tried to unsubscribe
-                # another address than hir own.
-                mail.signer.email
-              end
+      # If no address was given we unsubscribe the sender.
+      email = arguments.first.presence || mail.signer.email
+
+      if ! list.admin?(mail.signer.email) && email != mail.signer.email
+        # Only admins may unsubscribe others.
+        return I18n.t(
+          "plugins.subscription_management.forbidden", email: email
+        )
+      end
 
       sub = list.subscriptions.where(email: email)
 

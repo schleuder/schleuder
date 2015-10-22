@@ -59,6 +59,7 @@ de:
       encrypted_with: verschlüsselt mit
       unencrypted: unverschlüsselt
     subscription_management:
+      forbidden: "Fehler: Du bist nicht berechtigt, das Abo für %{email} zu löschen."
       is_not_subscribed: Kein Abo für %{email} gefunden.
       unsubscribed: Abo für %{email} wurde gelöscht.
       unsubscribing_failed: |

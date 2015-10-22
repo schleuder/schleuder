@@ -59,6 +59,7 @@ en:
       encrypted_with: encrypted with
       unencrypted: unencrypted
     subscription_management:
+      forbidden: "Error: You're not allowed to unsubscribe %{email}."
       is_not_subscribed: "%{email} is not subscribed."
       unsubscribed: "%{email} has been unsubscribed."
       unsubscribing_failed: |
