@@ -55,7 +55,7 @@ en:
         updated: updated
         unchanged: unchanged
     resend:
-      not_resent_no_key: Not resent to %{email} (no matching key present in keyring and plaintext sending is disallowed).
+      not_resent_no_keys: Resending failed. For the following recipients no matching key was found and unencrypted sending was disallowed: %{emails}.
       encrypted_with: encrypted with
       unencrypted: unencrypted
     subscription_management:

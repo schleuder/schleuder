@@ -12,19 +12,25 @@ module Schleuder
     end
 
     def self.resend_it(arguments, list, mail, send_encrypted_only)
+      # If we must encrypt, first test if there's a key for every recipient.
+      found_keys = {}
+      if send_encrypted_only
+        arguments.each do |email|
+          if key = list.keys(email)
+            found_keys[email] = key
+          end
+        end
+
+        if missing = arguments.keys - found_keys.keys
+          return I18n.t("plugins.resend.not_resent_no_keys", emails: missing.join(', '))
+        end
+      end
+
       arguments.map do |email|
         # Setup encryption
         gpg_opts = {sign: true}
-        key = list.keys(email)
-        if key.present?
+        if found_keys[email].present?
           gpg_opts.merge!(encrypt: true)
-        elsif send_encrypted_only
-          # TODO: rather send a note to the sender that the command failed. Chances are high that he/she will try again anyways and other subscribers don't need to see the noise.
-          mail.add_pseudoheader(
-            :note,
-            I18n.t("plugins.resend.not_resent_no_key", email: email)
-          )
-          next
         end
 
         # Compose and send email

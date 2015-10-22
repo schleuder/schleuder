@@ -55,7 +55,7 @@ de:
         updated: aktualisiert
         unchanged: unverändert
     resend:
-      not_resent_no_key: Nicht an %{email} versendet (keinen passenden Schlüssel gefunden und unverschlüsseltes Senden ist untersagt).
+      not_resent_no_keys: Das Versenden schlug fehl. Für die folgenden Adressen wurde kein Schlüssel gefunden und unverschlüsseltes Senden war untersagt: %{emails}.
       encrypted_with: verschlüsselt mit
       unencrypted: unverschlüsselt
     subscription_management:
