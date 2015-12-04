@@ -222,11 +222,13 @@ module Schleuder
     end
 
     def subscribe(email, fingerprint)
-      Subscription.new(
+      sub = Subscription.new(
           list_id: self.id,
           email: email,
           fingerprint: fingerprint
-        ).save
+        )
+      sub.save
+      sub
     end
 
     def unsubscribe(email, delete_key=false)
