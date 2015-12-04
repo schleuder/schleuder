@@ -4,70 +4,53 @@ module Schleuder
       @listname = listname
       @adminemail = adminemail
       @adminkey = adminkey
-      @errors = ErrorsList.new
-    end
-
-    def errors?
-      ! @errors.empty?
-    end
-
-    def errors
-      @errors
     end
 
     def read_default_settings
       settings = File.read(ENV['SCHLEUDER_LIST_DEFAULTS'])
       if settings.to_s.empty?
-        {}
+        [nil, {}]
       else
         hash = YAML.load(settings)
         if ! hash.kind_of?(Hash)
-          @errors << Errors::LoadingListSettingsFailed.new
+          raise Errors::LoadingListSettingsFailed.new
         end
-        hash
+        [nil, hash]
       end
     rescue Psych::SyntaxError
-      @errors << Errors::LoadingListSettingsFailed.new
+      raise Errors::LoadingListSettingsFailed.new
     end
 
     def run
-      # TODO: Improve testing the list-name
       if @listname !~ /\A.+@.+\z/
-        @errors << Errors::InvalidListname.new(@listname)
-        return ['Kaput', nil]
+        raise Errors::InvalidListname.new(@listname)
       end
 
       if List.where(email: @listname).present?
-        @errors << Errors::ListExists.new(@listname)
-        return [@errors, nil]
+        raise Errors::ListExists.new(@listname)
       end
 
       @list_dir = List.listdir(@listname)
-      if ! File.exists?(@list_dir)
-        FileUtils.mkdir_p(@list_dir, :mode => 0700)
-      else
+      if File.exists?(@list_dir)
         test_list_dir
-        return errors if errors?
+      else
+        FileUtils.mkdir_p(@list_dir, :mode => 0700)
       end
 
       settings = read_default_settings
-      return errors if errors?
 
       settings.merge!(email: @listname)
 
       begin
         list = List.new(settings)
       rescue ActiveRecord::UnknownAttributeError => exc
-        @errors << Errors::UnknownListOption.new(exc)
-        return errors
+        raise Errors::UnknownListOption.new(exc)
       end
 
       list_key = gpg.keys("<#{@listname}>").first
       if list_key.nil?
         list_key = create_key(list)
       end
-
-      return errors if errors?
 
       list.fingerprint = list_key.fingerprint
       list.save!
@@ -91,11 +74,11 @@ module Schleuder
         end
         sub = list.subscribe(@adminemail, admin_fpr)
         if sub.errors.present?
-          errors << ActiveModelError.new(sub.errors)
+          raise ActiveModelError.new(sub.errors)
         end
       end
 
-      [errors, list]
+      list
     end
 
     def gpg
@@ -107,19 +90,14 @@ module Schleuder
 
     def create_key(list)
       puts "Generating key-pair, this could take a while..."
-      begin
-        gpg.generate_key(key_params(list))
-      rescue => exc
-        @errors << exc
-        return
-      end
+      gpg.generate_key(key_params(list))
 
       # Get key without knowing the fingerprint yet.
       keys = gpg.keys("<#{@listname}>")
       if keys.empty?
-        @errors << Errors::KeyGenerationFailed.new(@list_dir, @listname)
+        raise Errors::KeyGenerationFailed.new(@list_dir, @listname)
       elsif keys.size > 1
-        @errors << Errors::TooManyKeys.new(@list_dir, @listname)
+        raise Errors::TooManyKeys.new(@list_dir, @listname)
       else
         adduids(list, keys.first)
       end
@@ -140,11 +118,11 @@ module Schleuder
       [list.request_address, list.owner_address].each do |address|
         err, string = key.adduid(list.email, address, list.listdir)
         if err > 0
-          @errors << Errors::KeyAdduidFailed.new(string)
+          raise Errors::KeyAdduidFailed.new(string)
         end
       end
     rescue Errno::ENOENT
-      @errors << Errors::KeyAdduidFailed.new('Need gpg in $PATH')
+      raise Errors::KeyAdduidFailed.new('Need gpg in $PATH')
     end
 
     def key_params(list)
@@ -166,11 +144,11 @@ module Schleuder
     def test_list_dir
       # Check if listdir is usable.
       if ! File.directory?(@list_dir)
-        @errors << Errors::ListdirProblem.new(@list_dir, :not_a_directory)
+        raise Errors::ListdirProblem.new(@list_dir, :not_a_directory)
       end
 
       if ! File.writable?(@list_dir)
-        @errors << Errors::ListdirProblem.new(@list_dir, :not_writable)
+        raise Errors::ListdirProblem.new(@list_dir, :not_writable)
       end
     end
 
