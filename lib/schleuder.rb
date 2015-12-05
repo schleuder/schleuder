@@ -30,7 +30,6 @@ require 'schleuder/errors/base'
 Dir[rootdir.to_s + "/lib/schleuder/errors/*.rb"].each do |file|
   require file
 end
-require 'schleuder/errors_list'
 require 'schleuder/conf'
 require 'schleuder/version'
 require 'schleuder/logger_notifications'
