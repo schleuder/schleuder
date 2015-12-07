@@ -111,7 +111,7 @@ module Schleuder
     end
 
     def import_key(importable)
-      gpg.import_key GPGME::Data.new(importable)
+      GPGME::Key.import(importable)
     end
 
     def delete_key(fingerprint)
