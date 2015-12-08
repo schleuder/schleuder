@@ -5,8 +5,8 @@ PATH
       activerecord (~> 4.1)
       mail-gpg (~> 0)
       rake (~> 10)
-      sinatra
-      sinatra-contrib
+      sinatra (~> 1)
+      sinatra-contrib (~> 1)
       sqlite3 (~> 1)
       thor (~> 0)
 
