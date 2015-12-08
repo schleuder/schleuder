@@ -237,10 +237,12 @@ module Schleuder
         false
       end
 
-      if res = sub.unsubscribe(delete_key)
-        true
-      else
-        res
+      if ! sub.destroy
+        return sub
+      end
+
+      if delete_key
+        sub.delete_key
       end
     end
 

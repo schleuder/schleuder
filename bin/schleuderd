@@ -155,13 +155,15 @@ namespace '/subscriptions' do
   end
 
   post '.json' do
-    data = parsed_body
-    list_id = data['list_id'] || halt(400, 'Need list_id')
+    logger.info "parsed_body: #{parsed_body.inspect}"
+    list_id = parsed_body['list_id'] || halt(400, 'Need list_id')
     begin
-      sub = list(list_id).subscribe(data['email'], data['fingerprint'])
-      if sub
-        redirect to("/subscriptions/#{sub.id}.json")
+      sub = list(list_id).subscribe(parsed_body['email'], parsed_body['fingerprint'])
+      logger.info "sub: #{sub.inspect}"
+      if sub.valid?
+        redirect to("/subscriptions/#{sub.id}.json"), 201
       else
+        status 422
         json errors: sub.errors
       end
     rescue ActiveRecord::RecordNotUnique
@@ -176,7 +178,11 @@ namespace '/subscriptions' do
   end
 
   get '/:id.json' do |id|
-    json subscription(id)
+    if id == 'new'
+      json Subscription.new
+    else
+      json subscription(id)
+    end
   end
 
   put '/:id.json' do |id|
@@ -198,11 +204,10 @@ namespace '/subscriptions' do
   end
 
   delete '/:id.json' do |id|
-    res = list.unsubscribe(subscription(id))
-    if res == true
+    if sub = subscription(id).destroy
       200
     else
-      client_error(res)
+      client_error(sub)
     end
   end
 end
@@ -221,8 +226,9 @@ namespace '/keys' do
 
   post '.json' do
     # ActiveResource doesn't want to use query-params with create(), so here
-    # list_id is included in the request-body.
-    res = list(parsed_body['list_id']).import_key(parsed_body['ascii'])
+    # list_id might be included in the request-body.
+    list_id = params['list-id'] || parsed_body['list_id']
+    res = list(list_id).import_key(parsed_body['ascii'])
     if res
       json res
     else
