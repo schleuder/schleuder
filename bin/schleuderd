@@ -151,15 +151,23 @@ namespace '/subscriptions' do
       filterkeys.include?(param.to_sym)
     end
 
+    if filter['list_id'] && filter['list_id'].to_i == 0
+      # Value is an email-address
+      if list = List.where(email: filter['list_id']).first
+        filter['list_id'] = list.id
+      else
+        status 404
+        return json(errors: 'No such list')
+      end
+    end
+
     json Subscription.where(filter)
   end
 
   post '.json' do
-    logger.info "parsed_body: #{parsed_body.inspect}"
     list_id = parsed_body['list_id'] || halt(400, 'Need list_id')
     begin
       sub = list(list_id).subscribe(parsed_body['email'], parsed_body['fingerprint'])
-      logger.info "sub: #{sub.inspect}"
       if sub.valid?
         redirect to("/subscriptions/#{sub.id}.json"), 201
       else
