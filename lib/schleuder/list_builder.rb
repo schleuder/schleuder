@@ -9,13 +9,13 @@ module Schleuder
     def read_default_settings
       settings = File.read(ENV['SCHLEUDER_LIST_DEFAULTS'])
       if settings.to_s.empty?
-        [nil, {}]
+        {}
       else
         hash = YAML.load(settings)
         if ! hash.kind_of?(Hash)
           raise Errors::LoadingListSettingsFailed.new
         end
-        [nil, hash]
+        hash
       end
     rescue Psych::SyntaxError
       raise Errors::LoadingListSettingsFailed.new
