@@ -111,11 +111,30 @@ module Schleuder
     end
 
     def import_key(importable)
-      GPGME::Key.import(importable)
+      stati = {}
+      GPGME::Key.import(importable).imports.each do |import_status|
+        stati[import_status.fpr] =
+          if import_status.status > 0
+            'imported'
+          elsif import_status.result == 0
+            'unchanged'
+          else
+            # An error happened.
+            # TODO: Give details by going through the list of errors in
+            # "gpg-errors.h" and find out which is present here.
+            'not imported'
+          end
+      end
+      stati
     end
 
     def delete_key(fingerprint)
-      gpg.keys(fingerprint).first.delete!
+      if key = gpg.keys(fingerprint).first
+        key.delete!
+        true
+      else
+        false
+      end
     end
 
     def export_key(fingerprint=self.fingerprint)

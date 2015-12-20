@@ -57,6 +57,7 @@ ENV["SCHLEUDER_ROOT"] = rootdir.to_s
 # Require lib for database specified in config.
 require Schleuder::Conf.database['adapter']
 
+# TODO: Test if database is writable if sqlite.
 ActiveRecord::Base.establish_connection(Schleuder::Conf.databases[ENV["SCHLEUDER_ENV"]])
 ActiveRecord::Base.logger = Schleuder.logger
 
