@@ -24,7 +24,7 @@ tarball = "#{tagname}.tar.gz"
 gpguid = 'schleuder2@nadir.org'
 
 desc 'Release a new version of schleuder.'
-task :release => [:git_tag, :gem, :tarball, :wiki]
+task :release => [:git_tag, :gem, :publish_gem, :tarball, :wiki]
 
 task :gem => :check_version
 task :git_tag => :check_version
@@ -48,11 +48,16 @@ task :git_tag do
   `git push && git push --tags`
 end
 
-desc 'Build a gem and push it to rubygems'
+desc 'Build a gem-file.'
 task :gem do
   `gem build schleuder.gemspec`
   # Cleanup the signing key that's been copied here.
-  `rm ./schleuder-gem-private_key.pem`
+  filename = './schleuder-gem-private_key.pem'
+  File.rm(filename) if File.exists?(filename)
+end
+
+desc 'Publish gem-file to rubygems.org'
+task :publish_gem do
   `gem push #{tagname}.gem`
 end
 
@@ -64,11 +69,10 @@ end
 
 desc 'Describe manual wiki-related release-tasks'
 task :wiki do
-  puts "Please do manually in schleuder-wiki:
-  * Move tarball+signature to download/
-  * Edit download.mdwn, documentation/v$version/changelog.mdwn.
-  * Write release-announcement (news/schleuder-$version.mdwn)
-  * Push changes
+  puts "Please update the website:
+  * Upload tarball+signature.
+  * Edit download- and changelog-pages.
+  * Publish release-announcement.
 "
 end
 
