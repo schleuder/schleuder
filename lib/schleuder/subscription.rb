@@ -11,8 +11,7 @@ module Schleuder
                 message: 'is not a valid email address'
               }
     validates :fingerprint,
-                presence: true,
-                format: { with: /\A[a-f0-9]+\z/i }
+                format: { with: /\A[a-f0-9]+\z/i, allow_blank: true }
     validates_each :delivery_enabled do |record, attrib, value|
           if ! [true, false].include?(value)
             record.errors.add(attrib, 'must be true or false')
