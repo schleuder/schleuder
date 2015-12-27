@@ -234,9 +234,9 @@ module Mail
             end
           elsif list.receive_authenticated_only
             if list.receive_encrypted_only
-              pref << 'Only encrypted and signed emails by list-members are accepted'
+              pref << 'Only encrypted and signed emails by subscribers are accepted'
             else
-              pref << 'Only signed emails by list-members are accepted'
+              pref << 'Only signed emails by subscribers are accepted'
             end
           else
             pref << 'All kind of emails are accepted'
