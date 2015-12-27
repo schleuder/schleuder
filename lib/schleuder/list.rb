@@ -38,10 +38,16 @@ module Schleuder
         end
     validates_each :headers_to_meta,
         :keywords_admin_only,
-        :keywords_admin_notify,
-        :bounces_drop_on_headers do |record, attrib, value|
+        :keywords_admin_notify do |record, attrib, value|
           value.each do |word|
             if word !~ /\A[a-z_-]+\z/i
+              record.errors.add(attrib, 'contains invalid characters')
+            end
+          end
+        end
+    validates_each :bounces_drop_on_headers do |record, attrib, value|
+          value.each do |key, val|
+            if key.to_s !~ /\A[a-z-]+\z/i || val.to_s !~ /\A[[:graph:]]+\z/i
               record.errors.add(attrib, 'contains invalid characters')
             end
           end
@@ -62,8 +68,8 @@ module Schleuder
                 }
     validates_each :max_message_size_kb,
         :logfiles_to_keep do |record, attrib, value|
-          if value !~ /\A[0-9]+\z/i
-            record.errors.add(attrib, 'must be a number')
+          if value.to_i == 0
+            record.errors.add(attrib, 'must be a number greater than zero')
           end
         end
     validates :log_level,
@@ -82,7 +88,7 @@ module Schleuder
     validates :public_footer,
               allow_blank: true,
               format: { 
-                with: /\A[[:graph:]]\z/i,
+                with: /\A[[:graph:]]*\z/i,
                 message: 'includes non-printable characters'
               }
 
