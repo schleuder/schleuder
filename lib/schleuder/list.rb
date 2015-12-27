@@ -38,7 +38,8 @@ module Schleuder
         end
     validates_each :headers_to_meta,
         :keywords_admin_only,
-        :keywords_admin_notify do |record, attrib, value|
+        :keywords_admin_notify,
+        :bounces_drop_on_headers do |record, attrib, value|
           value.each do |word|
             if word !~ /\A[a-z_-]+\z/i
               record.errors.add(attrib, 'contains invalid characters')
@@ -59,12 +60,12 @@ module Schleuder
                   in: %w(sign encrypt signencrypt unprotected none),
                   message: 'must be one of: sign, encrypt, signencrypt, unprotected, none'
                 }
-    validates :max_message_size_kb,
-              presence: true,
-              format: {
-                with: /\A[0-9]+\z/,
-                message: 'must be a number'
-              }
+    validates_each :max_message_size_kb,
+        :logfiles_to_keep do |record, attrib, value|
+          if value !~ /\A[0-9]+\z/i
+            record.errors.add(attrib, 'must be a number')
+          end
+        end
     validates :log_level,
               presence: true,
               inclusion: {
@@ -77,6 +78,12 @@ module Schleuder
                 # TODO: find out why we break translations and available_locales if we use I18n.available_locales here.
                 in: %w(de en),
                 message: "must be one of: en, de"
+              }
+    validates :public_footer,
+              allow_blank: true,
+              format: { 
+                with: /\A[[:graph:]]\z/i,
+                message: 'includes non-printable characters'
               }
 
     def self.configurable_attributes
@@ -283,6 +290,10 @@ module Schleuder
       admins.find do |admin|
         admin.fingerprint == mail.signature.fingerprint
       end.presence || false
+    end
+
+    def set_attribute(attrib, value)
+      self.send("#{attrib}=", value)
     end
 
     private
