@@ -119,7 +119,8 @@ module Schleuder
 
     def import_key(importable)
       stati = {}
-      GPGME::Key.import(importable).imports.each do |import_status|
+      gpg.import_keys(GPGME::Data.new(importable))
+      gpg.import_result.imports.each do |import_status|
         stati[import_status.fpr] =
           if import_status.status > 0
             'imported'
