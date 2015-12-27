@@ -131,10 +131,17 @@ module Schleuder
 
       # Set list-options.
       List.configurable_attributes.each do |option|
+        option = option.to_s
         if conf[option]
-          list.set_attribute(option, conf[option])
+          value = if option.match(/^keywords_/)
+                    filter_keywords(conf[option])
+                  else
+                    conf[option]
+                  end
+          list.set_attribute(option, value)
         end
       end
+
       # Set changed options.
       { 'prefix' => 'subject_prefix',
         'prefix_in' => 'subject_prefix_in',
@@ -171,15 +178,24 @@ module Schleuder
       end
 
       # Notify of removed options
-      say "Note: the following options have been *removed*:
+      say "Please note: the following options have been *removed*:
 * `default_mime` for lists (we only support pgp/mime for now),
 * `archive` for lists,
 * `gpg_passphrase` for lists,
-* `log_file`, `log_io`, `log_syslog` for lists (we only log to 
+* `log_file`, `log_io`, `log_syslog` for lists (we only log to
          syslog (before list-creation) and a file (after it) for now),
 * `mime` for subscriptions/members (we only support pgp/mime for now),
 * `send_encrypted_only` for members/subscriptions.
-If you really miss any of them please tell us."
+
+If you really miss any of them please tell us.
+
+Please also note that the following keywords have been renamed:
+* list-members  => list-subscriptions
+* add-member    => subscribe
+* delete-member => unsubscribe
+
+Please notify the users and admins of this list of these changes.
+"
 
       say "\nList #{listname} migrated to schleuder v3."
     rescue => exc
@@ -190,6 +206,27 @@ If you really miss any of them please tell us."
       def fatal(msg)
         error(msg)
         exit 1
+      end
+
+      KEYWORDS = {
+        'add-member' => 'subscribe',
+        'delete-member' => 'unsubscribe',
+        'list-members' => 'list-subscriptions',
+        'subscribe' => 'subscribe',
+        'unsubscribe' => 'unsubscribe',
+        'list-subscriptions' => 'list-subscriptions',
+        'set-finterprint' => 'set-fingerprint',
+        'add-key' => 'add-key',
+        'delete-key' => 'delete-key',
+        'list-keys' => 'list-keys',
+        'get-key' => 'get-key',
+        'fetch-key' => 'fetch-key'
+      }
+
+      def filter_keywords(value)
+        Array(value).map do |keyword|
+          KEYWORDS[keyword.downcase]
+        end.compact
       end
     end
   end
