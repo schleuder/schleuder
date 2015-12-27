@@ -97,9 +97,10 @@ module Schleuder
 
       # Check basic sanity of list.
       %w[fingerprint key admins].each do |attrib|
-      if @list.send(attrib).blank?
-        logger.error "list's #{attrib} is blank or missing"
-        return Errors::ListPropertyMissing.new(attrib)
+        if @list.send(attrib).blank?
+          logger.error "list's #{attrib} is blank or missing"
+          return Errors::ListPropertyMissing.new(attrib)
+        end
       end
 
       # Set locale
