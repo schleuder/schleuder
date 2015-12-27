@@ -1,4 +1,7 @@
+require_relative '../schleuder'
 require 'thor'
+require 'yaml'
+require 'gpgme'
 
 module Schleuder
   class Cli < Thor
@@ -10,7 +13,6 @@ module Schleuder
 
     desc 'work list@hostname < message', 'Run a message through a list.'
     def work(listname)
-      require_relative '../schleuder'
 
       message  = STDIN.read
 
@@ -33,7 +35,6 @@ module Schleuder
 
     desc 'check_keys', 'Check all lists for unusable or expiring keys and send the results to the list-admins. (This is supposed to be run from cron weekly.)'
     def check_keys(listname=nil)
-      require_relative '../schleuder'
 
       Schleuder::List.all.each do |list|
         I18n.locale = list.language
@@ -91,7 +92,101 @@ module Schleuder
       fatal exc.message
     end
 
-    no_commands do 
+    desc 'migrate-v2-list /path/to/listdir', 'Migrate list from v2.2 to v3.'
+    def migrate_v2_list(path)
+      dir = Pathname.new(path)
+      if ! dir.readable? || ! dir.directory?
+        fatal "Not a readable directory: `#{path}`."
+      end
+
+      %w[list.conf members.conf pubring.gpg].each do |file|
+        if ! (dir + file).exist?
+          fatal "Not a complete schleuder v2.2 listdir: missing #{file}"
+        end
+      end
+
+      conf = YAML.load(File.read(dir + 'list.conf'))
+      if conf.nil? || conf.empty?
+        fatal "list.conf is blank"
+      end
+      listname = conf['myaddr']
+      if listname.nil? || listname.empty?
+        fatal "myaddr is blank in list.conf"
+      end
+
+      # Identify list-fingerprint.
+      ENV['GNUPGHOME'] = dir.to_s
+      # Save all the keys for later import, we shouldn't change ENV['GNUPGHOME'] later.
+      #allkeys = GPGME::Key.find(:public, '')
+      listkey = GPGME::Key.find(:public, "<#{listname}>")
+      if listkey.size == 1
+        fingerprint = listkey.first.fingerprint
+      else
+        fingerprint = nil
+        error 'Failed to identify fingerprint of GnuPG key for list, you must set it manually to make the list operational!'
+      end
+
+      # Create list.
+      list = Schleuder::ListBuilder.new(listname, nil, nil, fingerprint).run
+
+      # Set list-options.
+      List.configurable_attributes.each do |option|
+        if conf[option]
+          list.set_attribute(option, conf[option])
+        end
+      end
+      # Set changed options.
+      { 'prefix' => 'subject_prefix',
+        'prefix_in' => 'subject_prefix_in',
+        'prefix_out' => 'subject_prefix_out',
+        'dump_incoming_mail' => 'forward_all_incoming_to_admins',
+        'receive_from_member_emailaddresses_only' => 'receive_from_subscribed_emailaddresses_only',
+        'bounces_notify_admin' => 'bounces_notify_admins',
+        'max_message_size' => 'max_message_size_kb'
+      }.each do |old, new|
+        if conf[old] && ! conf[old].to_s.empty?
+          list.set_attribute(new, conf[old])
+        end
+      end
+      list.save!
+
+      # Import keys
+      list.import_key(File.read(dir + 'pubring.gpg'))
+
+      # Subscribe members
+      YAML.load(File.read(dir + 'members.conf')).each do |member|
+        list.subscribe(member['email'], member['fingerprint'])
+      end
+
+      # Subscribe or flag admins
+      conf['admins'].each do |member|
+        sub = list.subscriptions.where(email: member['email']).first
+        if sub
+          sub.admin = true
+          sub.save!
+        else
+          adminfpr = member['fingerprint'] || list.keys(member['email']).first.fingerprint
+          list.subscribe(member['email'], adminfpr, true)
+        end
+      end
+
+      # Notify of removed options
+      say "Note: the following options have been *removed*:
+* `default_mime` for lists (we only support pgp/mime for now),
+* `archive` for lists,
+* `gpg_passphrase` for lists,
+* `log_file`, `log_io`, `log_syslog` for lists (we only log to 
+         syslog (before list-creation) and a file (after it) for now),
+* `mime` for subscriptions/members (we only support pgp/mime for now),
+* `send_encrypted_only` for members/subscriptions.
+If you really miss any of them please tell us."
+
+      say "\nList #{listname} migrated to schleuder v3."
+    rescue => exc
+      fatal [exc, exc.backtrace.slice(0,2)].join("\n")
+    end
+
+    no_commands do
       def fatal(msg)
         error(msg)
         exit 1
