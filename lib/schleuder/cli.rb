@@ -40,7 +40,7 @@ module Schleuder
 
         text = list.check_keys
 
-        if text.present?
+        if text && ! text.empty?
           msg = "#{I18n.t('check_keys_intro', email: list.email)}\n\n#{text}"
           list.logger.notify_admin(msg, nil, I18n.t('check_keys'))
         end
