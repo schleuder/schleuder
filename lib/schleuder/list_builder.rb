@@ -75,7 +75,7 @@ module Schleuder
             admin_fpr = keys.first.fingerprint
           end
         end
-        sub = list.subscribe(@adminemail, admin_fpr)
+        sub = list.subscribe(@adminemail, admin_fpr, true)
         if sub.errors.present?
           raise ActiveModelError.new(sub.errors)
         end

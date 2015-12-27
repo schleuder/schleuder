@@ -240,11 +240,12 @@ module Schleuder
       @listdir ||= self.class.listdir(self.email)
     end
 
-    def subscribe(email, fingerprint)
+    def subscribe(email, fingerprint=nil, adminflag=false)
       sub = Subscription.new(
           list_id: self.id,
           email: email,
-          fingerprint: fingerprint
+          fingerprint: fingerprint,
+          admin: adminflag
         )
       sub.save
       sub
