@@ -4,6 +4,7 @@ module Schleuder
       @listname = listname
       @adminemail = adminemail
       @adminkey = adminkey
+      @fingerprint = fingerprint
     end
 
     def read_default_settings
@@ -47,15 +48,16 @@ module Schleuder
         raise Errors::UnknownListOption.new(exc)
       end
 
-      if ! fingerprint
+      if @fingerprint
+        list.fingerprint = @fingerprint
+      else
         list_key = gpg.keys("<#{@listname}>").first
         if list_key.nil?
           list_key = create_key(list)
         end
-        fingerprint = list_key.fingerprint
+        list.fingerprint = list_key.fingerprint
       end
 
-      list.fingerprint = fingerprint
       list.save!
 
       if @adminkey.present?
