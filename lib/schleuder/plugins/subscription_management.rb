@@ -21,10 +21,6 @@ module Schleuder
       end
     end
 
-    def self.add_member(*args)
-      self.subscribe(*args)
-    end
-
     def self.unsubscribe(arguments, list, mail)
       # If no address was given we unsubscribe the sender.
       email = arguments.first.presence || mail.signer.email
@@ -57,10 +53,6 @@ module Schleuder
       end
     end
 
-    def self.delete_member(*args)
-      self.unsubscribe(*args)
-    end
-
     def self.list_subscriptions(arguments, list, mail)
       out = [
         "#{I18n.t("plugins.subscription_management.list_of_subscriptions")}:"
@@ -79,14 +71,6 @@ module Schleuder
         # exceed 80 characters if possible.
         "#{subscription.email.rjust(37)} 0x#{subscription.fingerprint}"
       end
-    end
-
-    def self.list_members(*args)
-      self.list_subscriptions(*args)
-    end
-
-    def self.list_subscribers(*args)
-      self.list_subscriptions(*args)
     end
 
     def self.set_fingerprint(arguments, list, mail)
