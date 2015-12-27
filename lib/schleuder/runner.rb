@@ -95,7 +95,12 @@ module Schleuder
         return Errors::ListNotFound.new(recipient)
       end
 
-      # TODO: check sanity of list: admins, fingerprint, key, all present?
+      # Check basic sanity of list.
+      %w[fingerprint key admins].each do |attrib|
+      if @list.send(attrib).blank?
+        logger.error "list's #{attrib} is blank or missing"
+        return Errors::ListPropertyMissing.new(attrib)
+      end
 
       # Set locale
       if I18n.available_locales.include?(@list.language.to_sym)

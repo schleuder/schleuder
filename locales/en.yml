@@ -1,5 +1,8 @@
 en:
   errors:
+    list_fingerprint_missing: "List has no fingerprint configured, cannot run!"
+    list_key_missing: "List-key is missing in keyring, cannot run!"
+    list_admins_missing: "List has no admins configured, cannot run!"
     fatalerror: |
       A fatal error happened. Administrators have been notified.
       Please try again later.
