@@ -1,6 +1,6 @@
 module Schleuder
   class ListBuilder
-    def initialize(listname, adminemail=nil, adminkey=nil)
+    def initialize(listname, adminemail=nil, adminkey=nil, fingerprint=nil)
       @listname = listname
       @adminemail = adminemail
       @adminkey = adminkey
@@ -47,12 +47,15 @@ module Schleuder
         raise Errors::UnknownListOption.new(exc)
       end
 
-      list_key = gpg.keys("<#{@listname}>").first
-      if list_key.nil?
-        list_key = create_key(list)
+      if ! fingerprint
+        list_key = gpg.keys("<#{@listname}>").first
+        if list_key.nil?
+          list_key = create_key(list)
+        end
+        fingerprint = list_key.fingerprint
       end
 
-      list.fingerprint = list_key.fingerprint
+      list.fingerprint = fingerprint
       list.save!
 
       if @adminkey.present?
