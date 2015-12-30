@@ -176,10 +176,18 @@ class Schleuderd < Sinatra::Application
 
     post '.json' do
       begin
-        sub = list(requested_list_id).subscribe(parsed_body['email'], parsed_body['fingerprint'])
+        list = list(requested_list_id)
+        sub = list.subscribe(
+            parsed_body['email'],
+            parsed_body['fingerprint'],
+            parsed_body['admin'],
+            parsed_body['delivery_enabled']
+          )
         if sub.valid?
+          logger.debug "Subscribed: #{sub.inspect}"
           redirect to("/subscriptions/#{sub.id}.json"), 201
         else
+          logger.debug "Subscribing failed: #{sub.inspect}"
           status 422
           json errors: sub.errors
         end
