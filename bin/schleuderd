@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+# Make sinatra use production as default-environment
+ENV['RACK_ENV'] ||= 'production'
+
 require 'sinatra'
 require 'sinatra/json'
 require 'sinatra/namespace'
@@ -11,7 +14,6 @@ class Schleuderd < Sinatra::Application
     $stderr.puts "\nWarning: Schleuderd currently enforces binding to localhost only, until connections are mandatorily encrypted and authentication is fixed.\n\n"
   end
 
-  set :environment, :production
   set :bind, 'localhost'
 
   after do
