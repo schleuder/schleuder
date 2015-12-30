@@ -15,6 +15,13 @@ class Schleuderd < Sinatra::Application
   end
 
   set :bind, 'localhost'
+  configure :development do
+    set :logging, Logger::DEBUG
+  end
+
+  configure :production do
+    set :logging, Logger::WARN
+  end
 
   after do
     # Return connection to pool after each request.
