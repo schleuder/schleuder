@@ -10,11 +10,13 @@ require_relative '../lib/schleuder.rb'
 
 class Schleuderd < Sinatra::Application
 
+  # Don't allow binding to anything but localhost to bar communication over the
+  # network until ssl is implemented.
   if settings.bind != 'localhost'
     $stderr.puts "\nWarning: Schleuderd currently enforces binding to localhost only, until connections are mandatorily encrypted and authentication is fixed.\n\n"
+    set :bind, 'localhost'
   end
 
-  set :bind, 'localhost'
   configure :development do
     set :logging, Logger::DEBUG
   end
