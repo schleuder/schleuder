@@ -113,7 +113,8 @@ module Schleuder
     def adduids(list, key)
       # Add UIDs for -owner and -request.
       gpg_version = `gpg --version`.lines.first.split.last
-      if gpg_version < "2.1.4"
+      # Gem::Version knows that e.g. ".10" is higher than ".4", String doesn't.
+      if Gem::Version.new(gpg_version) < Gem::Version.new("2.1.4")
         string = "Couldn't add additional UIDs to the list's key automatically\n(GnuPG version 2.1.4 or later is required for that).\nPlease add these UIDs to the list's key manually: #{list.request_address}, #{list.owner_address}."
         # Don't add to errors because then the list isn't saved.
         $stderr.puts Errors::KeyAdduidFailed.new(string)
