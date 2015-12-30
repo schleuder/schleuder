@@ -19,7 +19,6 @@ class Schleuderd < Sinatra::Application
     ActiveRecord::Base.connection.close
   end
 
-
   error do
     "Error: #{env['sinatra.error'].message}"
   end
@@ -75,7 +74,11 @@ class Schleuderd < Sinatra::Application
     end
 
     def parsed_body
-      @parsed_body ||= JSON.parse(request.body.read)
+      @parsed_body ||= begin
+          b = JSON.parse(request.body.read)
+          logger.debug "parsed body: #{b.inspect}"
+          b
+        end
     end
 
     def server_error(msg)
