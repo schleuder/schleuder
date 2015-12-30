@@ -61,10 +61,10 @@ module Schleuder
       list.save!
 
       if @adminkey.present?
-        imports = list.import_key(@adminkey).imports
+        result = list.import_key(@adminkey)
         # Get the fingerprint of the imported key if it was exactly one.
-        if imports.size == 1
-          admin_fpr = imports.first.fingerprint
+        if result.keys.size == 1
+          admin_fpr = result.keys.first
         end
       end
 

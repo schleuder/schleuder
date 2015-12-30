@@ -6,12 +6,12 @@ module Schleuder
                      else
                        mail.body
                      end.to_s
-      import_result = list.import_key(key_material)
+      result = list.import_key(key_material)
 
       out = [I18n.t('plugins.key_management.import_result')]
-      out << import_result.imports.map do |import_status|
-        action = I18n.t("plugins.key_management.key_import_status.#{import_status.action}")
-        "#{import_status.fpr}: #{action}"
+      out << result.map do |fpr, action|
+        str = I18n.t("plugins.key_management.key_import_status.#{action}")
+        "#{fpr}: #{str}"
       end
     end
 
