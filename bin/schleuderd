@@ -25,6 +25,10 @@ class Schleuderd < Sinatra::Application
     set :logging, Logger::WARN
   end
 
+  before do
+    cast_param_values
+  end
+
   after do
     # Return connection to pool after each request.
     ActiveRecord::Base.connection.close
@@ -113,6 +117,20 @@ class Schleuderd < Sinatra::Application
       halt(400, json(errors: text))
     end
 
+    # poor persons type casting
+    def cast_param_values
+      params.each do |key, value|
+        params[key] =
+            case value
+            when 'true' then true
+            when 'false' then false
+            when '0' then 0
+            when value.to_i > 0 then value.to_i
+            else value
+            end
+      end
+    end
+
   end
 
   namespace '/lists' do
@@ -175,6 +193,7 @@ class Schleuderd < Sinatra::Application
         filterkeys.include?(param.to_sym)
       end
 
+      logger.debug "Subscription filter: #{filter.inspect}"
       if filter['list_id'] && filter['list_id'].to_i == 0
         # Value is an email-address
         if list = List.where(email: filter['list_id']).first
