@@ -9,12 +9,12 @@ module Schleuder
       out.from = list.email
       # We're not sending to a subscribed address, so we need to specify a return-path manually.
       out.return_path = list.bounce_address
-      out.body = list.key.to_s
+      out.body = I18n.t(:list_public_key_attached)
       # TODO: clean this up, there must be an easier way to attach inline-disposited content.
       filename = "#{list.email}.asc"
       out.add_file({
         filename: filename,
-        content: list.armored_key.to_s
+        content: list.export_key
       })
       out.attachments[filename].content_type = 'application/pgp-keys'
       out.attachments[filename].content_description = 'OpenPGP public key'

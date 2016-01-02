@@ -78,6 +78,7 @@ en:
         Setting fingerprint for %{email} to %{fingerprint} failed:
         %{errors}.
     signatures_attached: Find the signatures attached.
+  list_public_key_attached: Find the key for this address attached.
   no_output_result: Your message resulted in no output.
   owner_forward_prefix: The following message was received for the list-owners.
   empty_message_error: |
