@@ -12,7 +12,7 @@ module Schleuder
         out = multipart(mail.reply, list, mail)
         out.body = I18n.t('plugins.signatures_attached')
         list.logger.info "Replying directly to sender"
-        signer.send_mail(out)
+        mail.signer.send_mail(out)
         list.logger.info "Exiting."
         exit
       end

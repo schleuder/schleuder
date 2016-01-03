@@ -9,14 +9,14 @@ module Schleuder
       if sub
         I18n.t(
           "plugins.subscription_management.subscribed",
-          email: email,
+          email: sub.email,
           fingerprint: sub.fingerprint
         )
       else
         I18n.t(
           "plugins.subscription_management.subscribing_failed",
           email: sub.email,
-          error: sub.errors.to_a
+          errors: sub.errors.full_messages
         )
       end
     end
@@ -25,14 +25,15 @@ module Schleuder
       # If no address was given we unsubscribe the sender.
       email = arguments.first.presence || mail.signer.email
 
-      if ! list.admin?(mail.signer.email) && email != mail.signer.email
+      # TODO: May signers have multiple UIDs? We don't match those currently.
+      if ! list.from_admin?(mail) && email != mail.signer.email
         # Only admins may unsubscribe others.
         return I18n.t(
           "plugins.subscription_management.forbidden", email: email
         )
       end
 
-      sub = list.subscriptions.where(email: email)
+      sub = list.subscriptions.where(email: email).first
 
       if sub.blank?
         return I18n.t(

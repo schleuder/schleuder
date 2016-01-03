@@ -14,14 +14,23 @@ module Schleuder
     def self.resend_it(arguments, list, mail, send_encrypted_only)
       # If we must encrypt, first test if there's a key for every recipient.
       found_keys = {}
-      if send_encrypted_only
-        arguments.each do |email|
-          if key = list.keys(email)
-            found_keys[email] = key
-          end
+      arguments.each do |email|
+        keys = list.key(email)
+        case keys.size
+        when 0
+          # TODO: I18n.
+          mail.add_pseudoheader(:note, "No key found for #{email}.")
+        when 1
+          found_keys[email] = keys.first
+        else
+          # TODO: I18n.
+          mail.add_pseudoheader(:note, "Multiple keys found for #{email}, not using any.")
         end
+      end
 
-        if missing = arguments.keys - found_keys.keys
+      if send_encrypted_only
+        missing = arguments.keys - found_keys.keys
+        if missing.present?
           return I18n.t("plugins.resend.not_resent_no_keys", emails: missing.join(', '))
         end
       end
@@ -46,7 +55,7 @@ module Schleuder
 
         new.gpg gpg_opts
         if new.deliver
-          mail.add_pseudoheader('resent-to', resent_pseudoheader(email, key))
+          mail.add_pseudoheader('resent-to', resent_pseudoheader(email, found_keys[email]))
           mail.add_subject_prefix(list.subject_prefix_out)
         end
       end
@@ -56,7 +65,7 @@ module Schleuder
     def self.resent_pseudoheader(email, key)
       str = email
       if key.present?
-        str << " (#{I18n.t('plugins.resend.encrypted_with')} #{key.fpr})"
+        str << " (#{I18n.t('plugins.resend.encrypted_with')} #{key.fingerprint})"
       else
         str << " (#{I18n.t('plugins.resend.unencrypted')})"
       end

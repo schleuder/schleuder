@@ -17,12 +17,18 @@ module Schleuder
 
     def self.delete_key(arguments, list, mail)
       arguments.map do |argument|
-        "Deleting #{argument}: #{list.gpg.delete(argument)}"
+        # TODO: I18n
+        if list.gpg.delete(argument)
+          "Deleted: #{argument}."
+        else
+          "Not found: #{argument}."
+        end
       end
     end
 
     def self.list_keys(arguments, list, mail)
-      arguments.map do |argument|
+      args = arguments.presence || ['']
+      args.map do |argument|
         list.keys(argument).map do |key|
           key.to_s
         end
@@ -31,7 +37,7 @@ module Schleuder
 
     def self.get_key(arguments, list, mail)
       arguments.map do |argument|
-        GPGME::Key.export(argument)
+        list.export_key(argument)
       end
     end
 
