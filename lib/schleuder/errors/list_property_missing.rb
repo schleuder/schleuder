@@ -6,7 +6,7 @@ module Schleuder
       end
 
       def to_s
-        t("errors.list_#{property}_missing")
+        t("errors.list_#{@property}_missing")
       end
     end
   end
