@@ -73,7 +73,7 @@ module Mail
 
     def reply_to_signer(output)
       reply = self.reply
-      reply.body = output
+      reply.body = Array(output).join("\n")
       self.signer.send_mail(reply)
     end
 
