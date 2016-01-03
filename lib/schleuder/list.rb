@@ -294,7 +294,7 @@ module Schleuder
     end
 
     def from_admin?(mail)
-      return false if ! mail.validly_signed?
+      return false if ! mail.was_validly_signed?
       admins.find do |admin|
         admin.fingerprint == mail.signature.fingerprint
       end.presence || false
