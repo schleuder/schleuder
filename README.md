@@ -18,18 +18,25 @@ Installation
 ------------
 1. Download and verify the gem:
 
-        wget https://schleuder.nadir.org/download/schleuder-3.0.0.beta1.gem
-        wget https://schleuder.nadir.org/download/schleuder-3.0.0.beta1.gem.sig
-        gpg --recv-key 0x75C9B62688F93AC6574BDE7ED8A6EF816E1C6F25
-        gpg --verify schleuder-3.0.0.beta1.gem.sig
+   ```
+   wget https://schleuder.nadir.org/download/schleuder-3.0.0.beta1.gem
+   wget https://schleuder.nadir.org/download/schleuder-3.0.0.beta1.gem.sig
+   gpg --recv-key 0x75C9B62688F93AC6574BDE7ED8A6EF816E1C6F25
+   gpg --verify schleuder-3.0.0.beta1.gem.sig
+   ```
 
 2. If all went well install the gem:
    ```
    sudo gem install --no-user-install schleuder-3.0.0.beta1.gem
    ```
-   * Explanation for advanced admins: schleuder should be installed as root system-wide because it must be executable for both, root (to complete the setup) and an ordinary user (to run schleuder). Alternatively you could install it for both users separately or do the setup-steps manually (TODO: document the setup-steps).
+   * Explanation for advanced admins: schleuder should be installed as root system-wide because it must be executable for both, root (to complete the setup, see next step) and an ordinary user (to run schleuder). Alternatively you could install it for both users separately or do the setup-steps manually (TODO: document the setup-steps).
 
-3. sudo schleuder install
+3. Set up schleuder:
+  ```
+  sudo schleuder install
+  ```
+  This creates neccessary directories, copies example configs, etc.
+
 
 Command line usage
 -----------------
