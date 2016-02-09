@@ -17,7 +17,6 @@ Requirements
 Installation
 ------------
 1. Download and verify the gem:
-
    ```
    wget https://schleuder.nadir.org/download/schleuder-3.0.0.beta1.gem
    wget https://schleuder.nadir.org/download/schleuder-3.0.0.beta1.gem.sig
