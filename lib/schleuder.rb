@@ -24,6 +24,7 @@ require 'schleuder/mail/message.rb'
 require 'schleuder/gpgme/import_status.rb'
 require 'schleuder/gpgme/key.rb'
 require 'schleuder/gpgme/sub_key.rb'
+require 'schleuder/gpgme/ctx.rb'
 
 # The Code[tm]
 require 'schleuder/errors/base'

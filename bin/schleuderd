@@ -287,12 +287,7 @@ class Schleuderd < Sinatra::Application
     end
 
     post '.json' do
-      res = list(requested_list_id).import_key(parsed_body['ascii'])
-      if res && ! res.empty?
-        json res
-      else
-        client_error "No keys in input"
-      end
+      list(requested_list_id).import_key(parsed_body['ascii'])
     end
 
     get '/:fingerprint.json' do |fingerprint|
@@ -320,3 +315,5 @@ class Schleuderd < Sinatra::Application
     end
   end
 end
+
+Schleuderd.run!
