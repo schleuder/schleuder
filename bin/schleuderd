@@ -156,6 +156,10 @@ class Schleuderd < Sinatra::Application
       json List.configurable_attributes
     end
 
+    get '/new.json' do
+      json List.new
+    end
+
     get '/:id.json' do |id|
       json list(id)
     end
@@ -235,12 +239,12 @@ class Schleuderd < Sinatra::Application
       json Subscription.configurable_attributes
     end
 
+    get '/new.json' do
+      json Subscription.new
+    end
+
     get '/:id.json' do |id|
-      if id == 'new'
-        json Subscription.new
-      else
-        json subscription(id)
-      end
+      json subscription(id)
     end
 
     put '/:id.json' do |id|
