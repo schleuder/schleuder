@@ -1,4 +1,3 @@
-require_relative '../schleuder'
 require 'thor'
 require 'yaml'
 require 'gpgme'
@@ -8,11 +7,13 @@ module Schleuder
 
     desc 'version', 'Show version of schleuder'
     def version
+      require_relative '../schleuder'
       say Schleuder::VERSION
     end
 
     desc 'work list@hostname < message', 'Run a message through a list.'
     def work(listname)
+      require_relative '../schleuder'
 
       message  = STDIN.read
 
@@ -35,6 +36,7 @@ module Schleuder
 
     desc 'check_keys', 'Check all lists for unusable or expiring keys and send the results to the list-admins. (This is supposed to be run from cron weekly.)'
     def check_keys(listname=nil)
+      require_relative '../schleuder'
 
       Schleuder::List.all.each do |list|
         I18n.locale = list.language
@@ -94,6 +96,8 @@ module Schleuder
 
     desc 'migrate-v2-list /path/to/listdir', 'Migrate list from v2.2 to v3.'
     def migrate_v2_list(path)
+      require_relative '../schleuder'
+
       dir = Pathname.new(path)
       if ! dir.readable? || ! dir.directory?
         fatal "Not a readable directory: `#{path}`."
