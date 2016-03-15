@@ -146,15 +146,11 @@ class Schleuderd < Sinatra::Application
     end
 
     post '.json' do
-      begin
-        listname = parsed_body['listname']
-        adminaddress = parsed_body['adminaddress']
-        adminkey = parsed_body['adminkey']
-        list = ListBuilder.new(listname, adminaddress, adminkey).run
-        json(list)
-      rescue => exc
-        client_error(exc.to_s)
-      end
+      listname = parsed_body['listname']
+      adminaddress = parsed_body['adminaddress']
+      adminkey = parsed_body['adminkey']
+      list = ListBuilder.new(listname, adminaddress, adminkey).run
+      json(list)
     end
 
     options '.json' do
