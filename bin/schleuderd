@@ -108,8 +108,7 @@ class Schleuderd < Sinatra::Application
       halt(500, json(error: msg))
     end
 
-    def client_error(obj_or_msg)
-      logger.debug "obj_or_msg: #{obj_or_msg.inspect}"
+    def client_error(obj_or_msg, http_code=400)
       text = case obj_or_msg
              when String, Symbol
                obj_or_msg.to_s
@@ -120,8 +119,8 @@ class Schleuderd < Sinatra::Application
              else
                obj_or_msg
              end
-      logger.error text
-      halt(400, json(errors: text))
+      logger.error "Sending error to client: #{text.inspect}"
+      halt(http_code, json(errors: text))
     end
 
     # poor persons type casting
@@ -223,9 +222,7 @@ class Schleuderd < Sinatra::Application
           logger.debug "Subscribed: #{sub.inspect}"
           redirect to("/subscriptions/#{sub.id}.json"), 201
         else
-          logger.debug "Subscribing failed: #{sub.inspect}"
-          status 422
-          json errors: sub.errors
+          client_error(sub, 422)
         end
       rescue ActiveRecord::RecordNotUnique
         logger.error "Already subscribed"
@@ -251,7 +248,7 @@ class Schleuderd < Sinatra::Application
       if sub.update(parsed_body)
         200
       else
-        client_error(sub)
+        client_error(sub, 422)
       end
     end
 
