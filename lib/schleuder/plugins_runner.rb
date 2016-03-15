@@ -43,7 +43,7 @@ module Schleuder
       rescue => exc
         # Log to system, this information is probably more useful for
         # system-admins than for list-admins.
-        Schleuder.logger.error(exc)
+        Schleuder.logger.error(exc.message_with_backtrace)
         I18n.t("plugins.plugin_failed", keyword: keyword)
       end
 
