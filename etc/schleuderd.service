@@ -1,0 +1,9 @@
+[Unit]
+Description=Schleuder API daemon
+
+[Service]
+ExecStart=/usr/local/bin/schleuderd
+User=schleuder
+
+[Install]
+WantedBy=multi-user.target
