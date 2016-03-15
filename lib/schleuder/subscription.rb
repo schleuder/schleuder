@@ -29,10 +29,8 @@ module Schleuder
     end
 
     def fingerprint=(arg)
-      if arg.present?
-        # Strip whitespace from incoming arg.
-        write_attribute(:fingerprint, arg.gsub(/\s*/, '').chomp)
-      end
+      # Strip whitespace from incoming arg.
+      write_attribute(:fingerprint, arg.to_s.gsub(/\s*/, '').chomp)
     end
 
     def key
