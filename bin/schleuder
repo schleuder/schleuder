@@ -2,6 +2,11 @@
 
 trap("INT") { exit 1 }
 
-require_relative '../lib/schleuder/cli'
 
-Schleuder::Cli.start
+begin
+  require_relative '../lib/schleuder/cli'
+  Schleuder::Cli.start
+rescue => exc
+  $stderr.puts exc.to_s
+  exit 1
+end
