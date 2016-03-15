@@ -35,7 +35,14 @@ class Schleuderd < Sinatra::Application
   end
 
   error do
-    "Error: #{env['sinatra.error'].message}"
+    exc = env['sinatra.error']
+    logger.error "Error: #{env['sinatra.error'].message}"
+    case exc
+    when Errno::EACCES
+      server_error(exc.message)
+    else
+      client_error(exc.to_s)
+    end
   end
 
   error 404 do
