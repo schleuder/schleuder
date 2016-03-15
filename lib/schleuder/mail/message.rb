@@ -174,7 +174,7 @@ module Mail
 
       @standard_pseudoheaders << make_pseudoheader(
             :enc,
-            was_encrypted? ? 'encrypted' : 'unencrypted'
+            was_encrypted? ? 'Encrypted' : 'Unencrypted'
         )
 
       @standard_pseudoheaders
