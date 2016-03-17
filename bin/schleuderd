@@ -143,10 +143,10 @@ namespace '/lists' do
   end
 
   post '.json' do
-    listname = parsed_body['listname']
+    listname = parsed_body['email']
     adminaddress = parsed_body['adminaddress']
     adminkey = parsed_body['adminkey']
-    list = ListBuilder.new(listname, adminaddress, adminkey).run
+    list = ListBuilder.new({email: listname}, adminaddress, adminkey).run
     json(list)
   end
 

@@ -131,7 +131,7 @@ module Schleuder
       end
 
       # Create list.
-      list = Schleuder::ListBuilder.new(listname, nil, nil, fingerprint).run
+      list = Schleuder::ListBuilder.new({email: listname, fingerprint: fingerprint}).run
 
       # Set list-options.
       List.configurable_attributes.each do |option|

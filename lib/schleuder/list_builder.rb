@@ -1,10 +1,11 @@
 module Schleuder
   class ListBuilder
-    def initialize(listname, adminemail=nil, adminkey=nil, fingerprint=nil)
-      @listname = listname
+    def initialize(list_attributes, adminemail=nil, adminkey=nil)
+      @list_attributes = list_attributes.with_indifferent_access
+      @listname = list_attributes[:email]
+      @fingerprint = list_attributes[:fingerprint]
       @adminemail = adminemail
       @adminkey = adminkey
-      @fingerprint = fingerprint
     end
 
     def read_default_settings
@@ -40,7 +41,7 @@ module Schleuder
 
       settings = read_default_settings
 
-      settings.merge!(email: @listname)
+      settings.merge!(@list_attributes)
 
       begin
         list = List.new(settings)
