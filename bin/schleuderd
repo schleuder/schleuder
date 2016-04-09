@@ -291,11 +291,11 @@ end
     end
 
     get '/:fingerprint.json' do |fingerprint|
-      if text = list.export_key(fingerprint)
+      if key = list.key(fingerprint)
         json({
           fingerprint: fingerprint,
-          email: list.email,
-          ascii: text
+          email: key.email,
+          ascii: key.armored
         })
       else
         404
