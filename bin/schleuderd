@@ -137,6 +137,16 @@ end
       end
     end
 
+    def key_to_json(key)
+      {
+        fingerprint: key.fingerprint,
+        email: key.email,
+        ascii: key.armored,
+        expiry: key.expires,
+        trust_issues: key.trust
+      }
+    end
+
   end
 
   namespace '/lists' do
@@ -277,11 +287,7 @@ end
   namespace '/keys' do
     get '.json' do
       keys = list.keys.map do |key|
-        {
-          fingerprint: key.fingerprint,
-          email: key.email,
-          ascii: key.armored
-        }
+        key_to_json(key)
       end
       json keys
     end
@@ -292,11 +298,7 @@ end
 
     get '/:fingerprint.json' do |fingerprint|
       if key = list.key(fingerprint)
-        json({
-          fingerprint: fingerprint,
-          email: key.email,
-          ascii: key.armored
-        })
+        json key_to_json(key)
       else
         404
       end
