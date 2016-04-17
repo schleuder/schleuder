@@ -6,12 +6,22 @@ module Schleuder
       return @config if @config
 
       config_file = ENV['SCHLEUDER_CONFIG'].to_s
-
-      if ! File.readable?(config_file)
-        msg = "Error: '#{ENV['SCHLEUDER_CONFIG']}' is not a readable file."
-        raise StandardError, msg
+      gem_config_file = ENV['SCHLEUDER_GEM_CONFIG'].to_s
+      unless File.readable?(gem_config_file) || File.readable?(config_file)
+        error("None of the config files is readable: #{gem_config_file}, #{config_file}"
       end
-      @config = YAML.load(File.read(config_file))
+
+      @config = if File.readable?(config_file)
+        YAML.load_file(config_file)
+      else
+        {}
+      end
+
+      if File.readable?(gem_config_file)
+        @config.merge!(YAML.load_file(gem_config_file))
+      end
+
+      @config
     end
 
     def self.lists_dir
@@ -48,6 +58,10 @@ module Schleuder
 
     def self.smtp_helo_domain
       instance.config['smtp_helo_domain'] || 'localhost'
+    end
+    private
+    def error(msg)
+      raise StandardError, "Error: #{msg}"
     end
   end
 end

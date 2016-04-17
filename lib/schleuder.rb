@@ -49,8 +49,20 @@ require 'schleuder/list_builder'
 require 'schleuder/subscription'
 
 # Setup
-ENV["SCHLEUDER_CONFIG"] ||= '/etc/schleuder/schleuder.yml'
-ENV["SCHLEUDER_LIST_DEFAULTS"] ||= '/etc/schleuder/list-defaults.yml'
+sys_config = '/etc/schleuder/schleuder.yml'
+ENV['SCHLEUDER_GEM_CONFIG'] ||= rootdir + 'etc/schleuder.yml'
+ENV["SCHLEUDER_CONFIG"] ||= if File.readable?(sys_config)
+  sys_config
+else
+  ENV['SCHLEUDER_GEM_CONFIG']
+end
+sys_defaults = '/etc/schleuder/list-defaults.yml'
+ENV["SCHLEUDER_GEM_LIST_DEFAULTS"] ||= rootdir + 'etc/list-defaults.yml'
+ENV["SCHLEUDER_LIST_DEFAULTS"] ||= if File.readable?(sys_config)
+  sys_defaults
+else
+  ENV["SCHLEUDER_GEM_LIST_DEFAULTS"]
+end
 ENV["SCHLEUDER_ENV"] ||= 'production'
 ENV["SCHLEUDER_ROOT"] = rootdir.to_s
 
