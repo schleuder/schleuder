@@ -34,16 +34,33 @@ module Schleuder
       instance.config['log_level'] || 'WARN'
     end
 
+    # Three legacy options
     def self.smtp_host
-      instance.config['smtp_host'] || 'localhost'
+      instance.config['smtp_host']
     end
 
     def self.smtp_port
-      instance.config['smtp_port'] || 25
+      instance.config['smtp_port']
     end
 
     def self.smtp_helo_domain
-      instance.config['smtp_helo_domain'] || 'localhost'
+      instance.config['smtp_helo_domain']
+    end
+
+    def self.smtp_settings
+      settings = instance.config['smtp_settings'] || {}
+      # Support previously used config-options.
+      # Remove this in future versions.
+      %w[smtp_host smtp_port smtp_helo_domain].each do |word|
+        value = self.send(word)
+        if value.present?
+          key = word.to_s.strip.gsub(/^smtp_(.*)$/, '\1')
+          Schleuder.logger.warn "Deprecation warning: In schleuder.yml #{word} should be changed to smtp_settings[#{key}]."
+          settings[key] = value
+        end
+      end
+      settings
+    end
 
     private
 

@@ -63,12 +63,7 @@ ActiveRecord::Base.establish_connection(Schleuder::Conf.databases[ENV["SCHLEUDER
 ActiveRecord::Base.logger = Schleuder.logger
 
 Mail.defaults do
-  delivery_method :smtp,
-                  {
-                    address: Schleuder::Conf.smtp_host,
-                    port: Schleuder::Conf.smtp_port,
-                    domain: Schleuder::Conf.smtp_helo_domain
-                  }
+  delivery_method :smtp, Schleuder::Conf.smtp_settings
 end
 
 I18n.load_path += Dir[rootdir.to_s + "/locales/*.yml"]

@@ -3,8 +3,16 @@ superadmin: root@localhost
 lists_dir: /var/schleuder/lists
 plugins_dir: /etc/schleuder/plugins
 log_level: warn
-smtp_host: localhost
-smtp_port: 25
+smtp_settings:
+  # For explanation see documentation for ActionMailer::smtp_settings, e.g. <http://api.rubyonrails.org/classes/ActionMailer/Base.html>.
+  host: localhost
+  port: 25
+  #domain:
+  #enable_starttls_auto:
+  #openssl_verify_mode:
+  #authentication:
+  #user_name:
+  #password:
 database:
   production:
     adapter:  'sqlite3'
