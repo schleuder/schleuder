@@ -88,7 +88,7 @@ module Schleuder
     validates :public_footer,
               allow_blank: true,
               format: { 
-                with: /\A[[:graph:]]*\z/i,
+                with: /\A[[:graph:]\s]*\z/i,
                 message: 'includes non-printable characters'
               }
 
