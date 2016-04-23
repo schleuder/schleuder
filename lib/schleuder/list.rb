@@ -88,7 +88,7 @@ module Schleuder
     validates :public_footer,
               allow_blank: true,
               format: { 
-                with: /\A[[:graph:]\s]*\z/i,
+                with: /\A[[:graph:]]*\z/i,
                 message: 'includes non-printable characters'
               }
 
@@ -97,27 +97,6 @@ module Schleuder
         all = self.validators.map(&:attributes).flatten.uniq.compact.sort
         all - [:email, :fingerprint]
       end
-    end
-
-    def initialize
-      # Check basic sanity of environment
-      listlog = Pathname.new(self.listdir).join('list.log')
-      if ! listlog.readable?
-        raise RuntimeError, "'#{listlog}' is not readable."
-      end
-
-      if Gem::Version.new(GPGME::Engine.info.first.version) >= Gem::Version.new('2.1.0')
-        # TODO: does gpg2.1 use pubring.gpg?
-        gpg_files << %w[ pubring.kbx trustdb.gpg private-keys-v1.d/* openpgp-revocs.d/* ]
-      end
-      # Fix: check for gnupg-files.
-      %w[ pubring.gpg pubring.kbx secring.gpg trustdb.gpg ].each do |basename|
-        file = listdir.join(basename)
-        if file.exists? && ! file.readable?
-          raise RuntimeError, "'#{file}' is not readable."
-        end
-      end
-
     end
 
     def logfile
