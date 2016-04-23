@@ -33,6 +33,7 @@ module Schleuder
         end
         mail.deliver
       end
+      true
     end
 
     private
