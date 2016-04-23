@@ -3,15 +3,11 @@ module Schleuder
     include Singleton
 
     def config
-      return @config if @config
+      @config ||= self.class.load_config('schleuder', ENV['SCHLEUDER_CONFIG'])
+    end
 
-      config_file = ENV['SCHLEUDER_CONFIG'].to_s
-
-      if ! File.readable?(config_file)
-        msg = "Error: '#{ENV['SCHLEUDER_CONFIG']}' is not a readable file."
-        raise StandardError, msg
-      end
-      @config = YAML.load(File.read(config_file))
+    def self.load_config(defaults_basename, filename)
+      load_defaults(defaults_basename).deep_merge(load_config_file(filename))
     end
 
     def self.lists_dir
@@ -48,6 +44,24 @@ module Schleuder
 
     def self.smtp_helo_domain
       instance.config['smtp_helo_domain'] || 'localhost'
+
+    private
+
+    def self.load_config_file(filename)
+      file = Pathname.new(filename)
+      if file.readable?
+        YAML.load(file.read)
+      else
+        {}
+      end
+    end
+
+    def self.load_defaults(basename)
+      file = Pathname.new(ENV['SCHLEUDER_ROOT']).join("etc/#{basename}.yml")
+      if ! file.readable?
+        raise RuntimError, "Error: '#{file}' is not a readable file."
+      end
+      load_config_file(file)
     end
   end
 end
