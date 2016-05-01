@@ -15,11 +15,15 @@ module Schleuder
               uniqueness: true,
               format: {
                 with: /\A.+@.+\z/i,
+                allow_blank: true,
                 message: 'is not a valid email address'
               }
     validates :fingerprint,
                 presence: true,
-                format: { with: /\A[a-f0-9]+\z/i }
+                format: {
+                  with: /\A[a-f0-9]+\z/i,
+                  allow_blank: true
+                }
     validates_each :send_encrypted_only,
         :receive_encrypted_only,
         :receive_signed_only,
