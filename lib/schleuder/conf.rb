@@ -51,12 +51,11 @@ module Schleuder
       settings = instance.config['smtp_settings'] || {}
       # Support previously used config-options.
       # Remove this in future versions.
-      %w[smtp_host smtp_port smtp_helo_domain].each do |word|
-        value = self.send(word)
+      {smtp_host: :address, smtp_port: :port, smtp_helo_domain: :domain}.each do |old, new|
+        value = self.send(old)
         if value.present?
-          key = word.to_s.strip.gsub(/^smtp_(.*)$/, '\1')
-          Schleuder.logger.warn "Deprecation warning: In schleuder.yml #{word} should be changed to smtp_settings[#{key}]."
-          settings[key] = value
+          Schleuder.logger.warn "Deprecation warning: In schleuder.yml #{old} should be changed to smtp_settings[#{new}]."
+          settings[new] = value
         end
       end
       settings
