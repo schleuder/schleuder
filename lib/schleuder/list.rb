@@ -248,6 +248,8 @@ module Schleuder
     end
 
     def subscribe(email, fingerprint=nil, adminflag=false, deliveryflag=true)
+      adminflag ||= false
+      deliveryflag ||= true
       sub = Subscription.new(
           list_id: self.id,
           email: email,
