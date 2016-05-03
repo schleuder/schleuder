@@ -286,7 +286,7 @@ end
 
   namespace '/keys' do
     get '.json' do
-      keys = list.keys.map do |key|
+      keys = list.keys.sort_by(&:email).map do |key|
         key_to_json(key)
       end
       json keys
