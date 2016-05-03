@@ -127,6 +127,10 @@ module Schleuder
       gpg.keys(identifier)
     end
 
+    def keys_by_email(address)
+      keys("<#{address}>")
+    end
+
     def import_key(importable)
       gpg.keyimport(GPGME::Data.new(importable))
     end
