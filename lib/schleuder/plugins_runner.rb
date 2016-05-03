@@ -2,6 +2,7 @@ module Schleuder
   module Plugins
     class Runner
       def self.run(list, mail)
+        logger.debug "Running plugins"
         @list = list
         @mail = mail
         setup

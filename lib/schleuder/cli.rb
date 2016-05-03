@@ -131,6 +131,7 @@ module Schleuder
       end
 
       # Create list.
+      # TODO: Check for errors!
       list = Schleuder::ListBuilder.new({email: listname, fingerprint: fingerprint}).run
 
       # Set list-options.
