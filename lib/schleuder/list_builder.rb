@@ -19,58 +19,43 @@ module Schleuder
     end
 
     def run
-      if @listname !~ /\A.+@.+\z/
-        raise Errors::InvalidListname.new(@listname)
-      end
 
-      if List.where(email: @listname).present?
-        raise Errors::ListExists.new(@listname)
-      end
+      settings = read_default_settings.merge(@list_attributes)
+      list = List.new(settings)
 
-      @list_dir = List.listdir(@listname)
-      if File.exists?(@list_dir)
-        test_list_dir
-      else
-        FileUtils.mkdir_p(@list_dir, :mode => 0700)
-      end
+      @list_dir = list.listdir
+      create_or_test_list_dir
 
-      settings = read_default_settings
-
-      settings.merge!(@list_attributes)
-
-      begin
-        list = List.new(settings)
-      rescue ActiveRecord::UnknownAttributeError => exc
-        raise Errors::UnknownListOption.new(exc)
-      end
-
-      if @fingerprint
-        list.fingerprint = @fingerprint
-      else
-        list_key = gpg.keys("<#{@listname}>").first
+      if list.fingerprint.blank?
+        list_key = gpg.keys("<#{list.email}>").first
         if list_key.nil?
           list_key = create_key(list)
         end
         list.fingerprint = list_key.fingerprint
       end
 
+      if ! list.valid?
+        return list
+      end
+
       list.save!
 
       if @adminkey.present?
-        result = list.import_key(@adminkey)
-        # Get the fingerprint of the imported key if it was exactly one.
-        if result.keys.size == 1
-          admin_fpr = result.keys.first
+        import_result = list.import_key(@adminkey)
+        # Get the fingerprint of the imported key if it was exactly one. If it
+        # was imported or was already present doesn't matter.
+        if import_result.considered == 1
+          admin_fpr = import_result.imports.first.fpr
         end
       end
 
       if @adminemail.present?
         # Try if we can find the admin-key "manually". Maybe it's present
         # in the keyring aleady.
-        if ! admin_fpr
-          keys = gpg.keys("<#{@adminemail}>")
-          if keys.size == 1
-            admin_fpr = keys.first.fingerprint
+        if admin_fpr.blank?
+          admin_key = list.keys_by_email(@adminemail).first
+          if admin_key.present?
+            admin_fpr = admin_key.fingerprint
           end
         end
         sub = list.subscribe(@adminemail, admin_fpr, true)
@@ -94,7 +79,7 @@ module Schleuder
       gpg.generate_key(key_params(list))
 
       # Get key without knowing the fingerprint yet.
-      keys = gpg.keys("<#{@listname}>")
+      keys = list.keys_by_email(@listname)
       if keys.empty?
         raise Errors::KeyGenerationFailed.new(@list_dir, @listname)
       elsif keys.size > 1
@@ -143,14 +128,17 @@ module Schleuder
       "
     end
 
-    def test_list_dir
-      # Check if listdir is usable.
-      if ! File.directory?(@list_dir)
-        raise Errors::ListdirProblem.new(@list_dir, :not_a_directory)
-      end
+    def create_or_test_list_dir
+      if File.exists?(@list_dir)
+        if ! File.directory?(@list_dir)
+          raise Errors::ListdirProblem.new(@list_dir, :not_a_directory)
+        end
 
-      if ! File.writable?(@list_dir)
-        raise Errors::ListdirProblem.new(@list_dir, :not_writable)
+        if ! File.writable?(@list_dir)
+          raise Errors::ListdirProblem.new(@list_dir, :not_writable)
+        end
+      else
+        FileUtils.mkdir_p(@list_dir, mode: 0700)
       end
     end
 

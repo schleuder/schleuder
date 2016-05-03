@@ -160,7 +160,11 @@ end
       adminaddress = parsed_body['adminaddress']
       adminkey = parsed_body['adminkey']
       list = ListBuilder.new({email: listname}, adminaddress, adminkey).run
-      json(list)
+      if list.valid?
+        json(list)
+      else
+        client_error(list, 422)
+      end
     end
 
     options '.json' do
