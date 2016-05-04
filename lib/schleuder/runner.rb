@@ -19,40 +19,41 @@ module Schleuder
       if error
         if list.bounces_notify_admins?
           text = "#{I18n.t('.bounces_notify_admins')}\n\n#{error}"
+          # TODO: raw_source is mostly blank?
           logger.notify_admin text, @mail.raw_source, I18n.t('notice')
         end
         return error
       end
 
-      # Plugins
-      if @mail.was_encrypted? && @mail.was_validly_signed?
-        output = Plugins::Runner.run(list, @mail).compact
+      if ! @mail.was_encrypted?
+        logger.debug "Message was not encrypted, skipping plugins"
+      else
+        logger.debug "Message was encrypted."
+        if ! @mail.was_validly_signed?
+          logger.debug "Message was not validly signed, adding subject_prefix_in and skipping plugins"
+          @mail.add_subject_prefix(list.subject_prefix_in)
+        else
+          # Plugins
+          logger.debug "Message was encrypted and validly signed"
+          output = Plugins::Runner.run(list, @mail).compact
 
-        if @mail.request?
-          logger.debug "Request-message, replying with output"
-          reply_to_signer(output)
-          return nil
-        end
-
-        # Any output will be treated as error-message. Text meant for users
-        # should have been put into the mail by the plugin.
-        output.each do |something|
-          @mail.add_pseudoheader(:error, something.to_s) if something.present?
-        end
-
-        # Don't send empty messages over the list.
-        if @mail.body.empty?
-          logger.info "Message found empty, not sending it to list. Instead notifying sender."
-          reply_to_signer(I18n.t(:empty_message_error, request_address: @list.request_address))
-          return nil
+          # Any output will be treated as error-message. Text meant for users
+          # should have been put into the mail by the plugin.
+          output.each do |something|
+            @mail.add_pseudoheader(:error, something.to_s) if something.present?
+          end
         end
       end
 
-      # Add subject-prefixes (Mail::Message tests if the string is
-      # present).
-      if ! @mail.was_validly_signed?
-        @mail.add_subject_prefix(list.subject_prefix_in)
+      # TODO: check parts?
+      # Don't send empty messages over the list.
+      if @mail.body.empty?
+        logger.debug "Message found empty, not sending it to list. Instead notifying sender."
+        @mail.reply_to_signer(I18n.t(:empty_message_error, request_address: @list.request_address))
+        return nil
       end
+
+      logger.debug "Adding subject_prefix"
       @mail.add_subject_prefix(list.subject_prefix)
 
       # Subscriptions
@@ -62,12 +63,9 @@ module Schleuder
 
     private
 
-    def reply_to_signer(output)
-      msg = output.presence || I18n.t('no_output_result')
-      @mail.reply_to_signer(msg)
-    end
-
     def send_to_subscriptions
+      logger.debug "Sending to subscriptions."
+      logger.debug "Creating clean copy of message"
       new = @mail.clean_copy(list, true)
       list.subscriptions.each do |subscription|
         begin

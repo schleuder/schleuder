@@ -47,6 +47,7 @@ en:
     loading_list_settings_failed: "%{config_file} could not be parsed, please check its formatting to be valid YAML."
     message_too_big: "Your message was too big. Allowed are up to %{allowed_size}KB."
     file_not_found: "File not found: '%{file}'."
+    not_pgp_mime: "Message was not encrypted in the pgp/mime-format."
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
@@ -85,6 +86,7 @@ en:
     Your message was found empty and wasn't passed on to the list.
 
     In case you only sent keywords please note that administrative keywords must be sent to the "request"-address (<%{request_address}>) in order to be respected.
+  no_keywords_error: Your message didn't contain any keywords, thus there was nothing to do.
   bounces_drop_all: The attached message should have been bounced but was dropped without further notice because the list's configuration defines that no message should ever be bounced.
   bounces_drop_on_headers: "The attached message should have been bounced but was dropped without further notice because it matched this header-line: %{key}: %{value}"
   bounces_notify_admins: "The attached message was bounced with the following notice:"

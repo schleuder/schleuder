@@ -47,6 +47,7 @@ de:
     loading_list_settings_failed: "%{config_file} konnte nicht eingelesen werden, bitte Formatierung auf gültiges YAML prüfen."
     message_too_big: "Deine Email war zu groß. Erlaubt sind für diese Liste %{allowed_size}KB."
     file_not_found: "Die Datei existiert nicht: '%{file}'."
+    not_pgp_mime: "Deine Email war nicht im pgp/mime-Format verschlüsselt."
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
@@ -82,9 +83,9 @@ de:
   no_output_result: Deine Email ergab keinen Ausgabe-Text.
   owner_forward_prefix: Die folgende Email ging für die Listen-Besitzer/innen ein.
   empty_message_error: |
-    Deine Email enthielt keinen Inhalt, daher wurde sie nicht über die Liste geschickt.
 
     Falls du ausschließlich Schlüsselwörter gesendet hast beachte, dass administrative Schlüsselwörter an die "request"-Adresse (<%{request_address}>) geschickt werden müssen um berücksichtigt zu werden.
+  no_keywords_error: Deine Email enthielt keine Schlüsselwörter, daher gab es nichts zu tun.
   bounces_drop_all: Die angehängte Email hätte zurückgewiesen (bounced) werden sollen, wurde aber stillschweigend fallen gelassen, weil die Konfiguration dieser Liste definiert, dass für diese Liste nie Email zurückgewiesen werden soll.
   bounces_drop_on_headers: "Die angehängte Email hätte zurückgewiesen (bounce) werden sollen, wurde aber stillschweigend fallen gelassen, weil diese Kopfzeile gefunden wurde: %{key}: %{value}"
   bounces_notify_admins: "Die angehängte Email wurde mit folgender Nachricht zurückgewiesen:"

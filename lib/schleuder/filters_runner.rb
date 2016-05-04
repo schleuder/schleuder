@@ -3,6 +3,7 @@ module Schleuder
     class Runner
       # To define priority sort this.
       FILTERS = %w[
+        request
         forward_bounce_to_admins
         forward_all_incoming_to_admins
         send_key
@@ -59,6 +60,23 @@ module Schleuder
         if @list.bounces_notify_admins?
           @list.logger.notify_admin reason, @mail, I18n.t('notice')
         end
+      end
+
+      def self.reply_to_sender(msg)
+        sender_addr = @mail.from.first
+        logger.debug "Replying to #{sender_addr.inspect}"
+        reply = @mail.reply
+        reply.from = @list.email
+        reply.return_path = @list.bounce_address
+        reply.body = msg
+        gpg_opts = {sign: true}
+        if @list.keys("<#{sender_addr}>").present?
+          logger.debug "Found key for address"
+          gpg_opts[encrypt] = true
+        end
+        reply.gpg gpg_opts
+        list.logger.info "Sending message to #{sender_addr}"
+        reply.deliver
       end
     end
   end
