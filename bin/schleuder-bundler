@@ -1,5 +1,6 @@
-#!/bin/sh
+#!/bin/bash -l
 
+export HOME=/home/$(id -nu)
 # Little helper script to call schleuder through bundler. Useful e.g. for
 # hooking up development code into postfix.
 
