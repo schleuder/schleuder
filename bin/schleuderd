@@ -237,6 +237,7 @@ end
             parsed_body['admin'],
             parsed_body['delivery_enabled']
           )
+        logger.debug "subcription: #{sub.inspect}"
         if sub.valid?
           logger.debug "Subscribed: #{sub.inspect}"
           redirect to("/subscriptions/#{sub.id}.json"), 201

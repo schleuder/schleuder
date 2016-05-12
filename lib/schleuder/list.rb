@@ -213,7 +213,7 @@ module Schleuder
 
     def gpg
       @gpg_ctx ||= begin
-       # TODO: figure out why the homedir isn't recognized
+        # TODO: figure out why set it again...
         # Set GNUPGHOME when list is created.
         ENV['GNUPGHOME'] = listdir
         GPGME::Ctx.new armor: true

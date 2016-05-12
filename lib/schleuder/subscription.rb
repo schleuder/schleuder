@@ -44,7 +44,7 @@ module Schleuder
       list.logger.debug "Preparing sending to #{self.inspect}"
 
       if ! self.delivery_enabled
-        self.list.logger.info "Not sending to #{self.email}: delivery is disabled."
+        list.logger.info "Not sending to #{self.email}: delivery is disabled."
         return false
       end
 
