@@ -1,7 +1,7 @@
 module Schleuder
   module Errors
     class MessageUnauthenticated < Base
-      def initialize(list)
+      def initialize
         set_default_locale
       end
 
