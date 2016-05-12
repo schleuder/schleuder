@@ -23,7 +23,7 @@ module Schleuder
     end
 
     def self.receive_from_subscribed_emailaddresses_only(list, mail)
-      if list.receive_from_subscribed_emailaddresses_only? && Subscription.where(email: mail.from.first).blank?
+      if list.receive_from_subscribed_emailaddresses_only? && list.subscriptions.where(email: mail.from.first).blank?
         list.logger.info "Rejecting mail as not from subscribed address."
         return Errors::MessageSenderNotSubscribed.new(list)
       end

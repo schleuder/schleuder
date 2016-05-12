@@ -43,7 +43,7 @@ module Schleuder
         end
 
         # Compose and send email
-        new = mail.clean_copy(list)
+        new = mail.clean_copy
         new.to = email
 
         # Add public_footer unless it's empty?.

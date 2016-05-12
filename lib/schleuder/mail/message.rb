@@ -3,11 +3,12 @@ module Mail
   class Message
     attr_accessor :recipient
     attr_writer :was_encrypted
+    attr_accessor :list
 
     # TODO: This should be in initialize(), but I couldn't understand the
     # strange errors about wrong number of arguments when overriding
     # Message#initialize.
-    def setup(recipient)
+    def setup(recipient, list)
       if self.encrypted?
         new = self.decrypt(verify: true)
         new.was_encrypted = true
@@ -17,11 +18,12 @@ module Mail
         new = self
       end
 
+      new.list = list
       new.recipient = recipient
       new
     end
 
-    def clean_copy(list, with_pseudoheaders=false)
+    def clean_copy(with_pseudoheaders=false)
       clean = Mail.new
       clean.from = list.email
       clean.subject = self.subject
@@ -67,7 +69,7 @@ module Mail
 
     def signer
       if fingerprint = self.signature.try(:fpr)
-        Subscription.where(fingerprint: fingerprint).first
+        list.subscription.where(fingerprint: fingerprint).first
       end
     end
 

@@ -8,7 +8,7 @@ module Schleuder
       begin
         # This decrypts, verifies, etc.
         @mail = Mail.new(msg)
-        @mail = @mail.setup(recipient)
+        @mail = @mail.setup(recipient, list)
       rescue GPGME::Error::DecryptFailed
         logger.warn "Decryption of incoming message failed."
         return Errors::DecryptionFailed.new(list)
@@ -66,7 +66,7 @@ module Schleuder
     def send_to_subscriptions
       logger.debug "Sending to subscriptions."
       logger.debug "Creating clean copy of message"
-      new = @mail.clean_copy(list, true)
+      new = @mail.clean_copy(true)
       list.subscriptions.each do |subscription|
         begin
           subscription.send_mail(new)

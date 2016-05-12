@@ -81,7 +81,7 @@ end
         if params[:list_id].blank?
           client_error "Parameter list_id is required when using email as identifier for subscriptions."
         else
-          sub = Subscription.where(email: id_or_email).first
+          sub = list.subscriptions.where(email: id_or_email).first
         end
       else
         sub = Subscription.where(id: id_or_email.to_i).first
