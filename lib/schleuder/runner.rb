@@ -20,7 +20,7 @@ module Schleuder
         if list.bounces_notify_admins?
           text = "#{I18n.t('.bounces_notify_admins')}\n\n#{error}"
           # TODO: raw_source is mostly blank?
-          logger.notify_admin text, @mail.raw_source, I18n.t('notice')
+          logger.notify_admin text, @mail.original_message, I18n.t('notice')
         end
         return error
       end

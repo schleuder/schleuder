@@ -58,7 +58,7 @@ module Schleuder
 
       def self.notify_admins(reason)
         if @list.bounces_notify_admins?
-          @list.logger.notify_admin reason, @mail, I18n.t('notice')
+          @list.logger.notify_admin reason, @mail.original_message, I18n.t('notice')
         end
       end
 

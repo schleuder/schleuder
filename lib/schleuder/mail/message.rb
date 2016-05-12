@@ -2,7 +2,7 @@ module Mail
   # TODO: Test if subclassing breaks integration of mail-gpg.
   class Message
     attr_accessor :recipient
-    attr_writer :was_encrypted
+    attr_accessor :original_message
     attr_accessor :list
 
     # TODO: This should be in initialize(), but I couldn't understand the
@@ -11,7 +11,6 @@ module Mail
     def setup(recipient, list)
       if self.encrypted?
         new = self.decrypt(verify: true)
-        new.was_encrypted = true
       elsif self.signed?
         new = self.verify
       else
@@ -19,6 +18,7 @@ module Mail
       end
 
       new.list = list
+      new.original_message = self.dup.freeze
       new.recipient = recipient
       new
     end
@@ -55,7 +55,11 @@ module Mail
     end
 
     def was_encrypted?
-      @was_encrypted
+      Mail::Gpg.encrypted?(original_message)
+    end
+
+    def was_encrypted_mime?
+      Mail::Gpg.encrypted_mime?(original_message)
     end
 
     def signature

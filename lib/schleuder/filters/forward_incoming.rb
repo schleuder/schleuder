@@ -3,7 +3,7 @@ module Schleuder
 
     def self.forward_all_incoming_to_admins(list, mail)
       if list.forward_all_incoming_to_admins
-        list.logger.notify_admin I18n.t(:forward_all_incoming_to_admins), mail.raw_source, I18n.t('incoming_message')
+        list.logger.notify_admin I18n.t(:forward_all_incoming_to_admins), mail.original_message, I18n.t('incoming_message')
       end
     end
 
