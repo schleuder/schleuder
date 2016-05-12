@@ -299,7 +299,11 @@ end
     end
 
     post '.json' do
-      json list(requested_list_id).import_key(parsed_body['ascii'])
+      input = parsed_body['keymaterial']
+      if ! input.match('BEGIN PGP')
+        input = Base64.decode64(input)
+      end
+      json list(requested_list_id).import_key(input)
     end
 
     get '/:fingerprint.json' do |fingerprint|
