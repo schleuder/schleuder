@@ -137,7 +137,11 @@ module Mail
 
     def add_subject_prefix(string)
       if ! string.to_s.strip.empty?
-        self.subject = "#{string} #{self.subject}"
+        prefix = "#{string} "
+        # Only insert prefix if it's not present already.
+        if ! self.subject.include?(prefix)
+          self.subject = "#{string} #{self.subject}"
+        end
       end
     end
 
