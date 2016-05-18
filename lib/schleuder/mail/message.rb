@@ -73,7 +73,7 @@ module Mail
 
     def signer
       if fingerprint = self.signature.try(:fpr)
-        list.subscription.where(fingerprint: fingerprint).first
+        list.subscriptions.where(fingerprint: fingerprint).first
       end
     end
 
