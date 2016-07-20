@@ -26,15 +26,14 @@ Installation
 
 2. If all went well install the gem:
    ```
-   sudo gem install --no-user-install schleuder-3.0.0.beta2.gem
+   gem install schleuder-3.0.0.beta2.gem
    ```
-   * Explanation for advanced admins: schleuder should be installed as root system-wide because it must be executable for both, root (to complete the setup, see next step) and an ordinary user (to run schleuder). Alternatively you could install it for both users separately or do the setup-steps manually (TODO: document the setup-steps).
 
 3. Set up schleuder:
   ```
-  sudo schleuder install
+  schleuder install
   ```
-  This creates neccessary directories, copies example configs, etc.
+  This creates neccessary directories, copies example configs, etc. If you see errors about missing write permissions please follow the advice given.
 
 
 Command line usage
