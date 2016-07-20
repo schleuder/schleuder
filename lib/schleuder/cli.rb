@@ -50,46 +50,39 @@ module Schleuder
       end
     end
 
-    method_option :schleuderpath, banner: '/path/to/code', desc: 'Path to code of schleuder (if not installed from gem)'
-    desc 'install [ --schleuderpath=/path/to/code ]', "Set up Schleuder initially. Create folders, copy files, fill the database."
+    desc 'install', "Set-up or update Schleuder environment (create folders, copy files, fill the database)."
     def install
-      if `id -u`.to_i > 0
-        fatal "root-privileges required"
+      require_relative '../schleuder'
+      %w[/var/schleuder/lists /etc/schleuder].each do |dir|
+        dir = Pathname.new(dir)
+        if ! dir.exist?
+          if dir.dirname.writable?
+            dir.mkpath
+          else
+            fatal "Cannot create required directory due to lacking write permissions, please create manually and then run this command again:\n#{dir}"
+          end
+        end
       end
 
-      if options[:schleuderpath]
-        if ! File.directory?(options[:schleuderpath])
-          fatal "No such directory '#{options[:schleuderpath]}'"
+      Pathname.glob(Pathname.new(root_dir).join("etc").join("*.yml")).each do |file|
+        target = Pathname.new("/etc/schleuder/").join(file.basename)
+        if ! target.exist?
+          if target.dirname.writable?
+            FileUtils.cp file, target
+          else
+            fatal "Cannot copy default config file due to lacking write permissions, please copy manually and then run this command again:\n#{file.realpath} → #{target}"
+          end
         end
-        path = options[:schleuderpath]
+      end
+
+      if ActiveRecord::SchemaMigration.table_exists?
+        say `cd #{root_dir} && rake db:migrate`
       else
-        spec = Gem::Specification.find_by_name('schleuder')
-        path = spec.gem_dir
+        say `cd #{root_dir} && rake db:schema:load`
+        say "NOTE: The database was prepared using sqlite. If you prefer to use a different DBMS please edit the 'database'-section in /etc/schleuder/schleuder.yml, create the database, install the corresponding ruby-library (e.g. `gem install mysql`) and run this current command again"
       end
 
-      FileUtils.mkdir_p %w[/var/schleuder /var/schleuder/lists /etc/schleuder]
-      Dir[File.join(path, "etc/*")].each do |file|
-        target = "/etc/schleuder/#{File.basename(file)}"
-        if ! File.exists?(target)
-          FileUtils.cp file, target
-        end
-      end
-      say "Now please adapt /etc/schleuder/schleuder.yml to your needs. If you choose a different DBMS than sqlite (e.g. mysql, postgresql) don't forget to create the database you configured and install the ruby-bindings (e.g. `gem install mysql`)."
-
-      # TODO: test if database exists and is prepared already.
-      # Step 2
-      say "Next: Filling the database."
-      answer = ask "Ready? [yN] "
-      if answer.downcase != 'y'
-        say "Cancelled."
-        exit
-      end
-
-      say `cd #{path} && rake db:schema:load`
-
-      say "
-      Schleuder has been set up. You can now create a new list using schleuder-conf.
-      We hope you enjoy!"
+      say "Schleuder has been set up. You can now create a new list using `schleuder-conf`.\nWe hope you enjoy!"
     rescue => exc
       fatal exc.message
     end
@@ -209,7 +202,7 @@ Please notify the users and admins of this list of these changes.
 
     no_commands do
       def fatal(msg)
-        error(msg)
+        error("Error: #{msg}")
         exit 1
       end
 
@@ -232,6 +225,10 @@ Please notify the users and admins of this list of these changes.
         Array(value).map do |keyword|
           KEYWORDS[keyword.downcase]
         end.compact
+      end
+
+      def root_dir
+        Pathname.new(__FILE__).dirname.dirname.dirname.realpath
       end
     end
   end
