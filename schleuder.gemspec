@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
     Please consider additionallly installing schleuder-conf (allows to
     configure lists from the command line).
 
-    To set up Schleuder on this system please run `schleuder install` as root.
+    To set up Schleuder on this system please run `schleuder install`.
 
   "
 end
