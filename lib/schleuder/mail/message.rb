@@ -196,9 +196,12 @@ module Mail
 
     def add_msgids(list, orig)
       if list.keep_msgid
-        self['In-Reply-To'] = orig.header['In-Reply-To']
-        self['Message-ID'] = orig.header['Message-ID']
-        self.references = orig.references
+        # Don't use orig['in-reply-to'] here, because that sometimes fails to
+        # parse the original value and then returns it without the
+        # angle-brackets.
+        self.in_reply_to = "<#{orig.in_reply_to}>"
+        self.message_id = "<#{orig.message_id}>"
+        self.references = orig.references.map { |r| "<#{r}>" }.join(' ')
       end
     end
 
