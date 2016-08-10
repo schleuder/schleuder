@@ -196,12 +196,12 @@ module Mail
 
     def add_msgids(list, orig)
       if list.keep_msgid
-        # Don't use orig['in-reply-to'] here, because that sometimes fails to
+        # Don't use `orig['in-reply-to']` here, because that sometimes fails to
         # parse the original value and then returns it without the
         # angle-brackets.
-        self.in_reply_to = "<#{orig.in_reply_to}>"
-        self.message_id = "<#{orig.message_id}>"
-        self.references = orig.references.map { |r| "<#{r}>" }.join(' ')
+        self.message_id = clutch_anglebrackets(orig.message_id)
+        self.in_reply_to = clutch_anglebrackets(orig.in_reply_to)
+        self.references = clutch_anglebrackets(orig.references)
       end
     end
 
@@ -264,5 +264,18 @@ module Mail
       end
     end
 
+
+    private
+
+
+    def clutch_anglebrackets(input)
+      Array(input).map do |string|
+        if string.first == '<'
+          string
+        else
+          "<#{string}>"
+        end
+      end.join(' ')
+    end
   end
 end
