@@ -106,11 +106,8 @@ module Mail
     def keywords
       return @keywords if @keywords
 
-      # Look only in first part of message.
-      part = multipart? ?  parts.first : self
-
-      # Parse only plain text for keywords.
-      if part.mime_type != 'text/plain'
+      part = first_plaintext_part
+      if part.blank?
         return []
       end
 
@@ -267,6 +264,17 @@ module Mail
 
     private
 
+
+    def first_plaintext_part(part=nil)
+      part ||= self
+      if part.multipart?
+        first_plaintext_part(part.parts.first)
+      elsif part.mime_type == 'text/plain'
+        part
+      else
+        nil
+      end
+    end
 
     def clutch_anglebrackets(input)
       Array(input).map do |string|
