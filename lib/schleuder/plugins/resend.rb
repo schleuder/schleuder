@@ -29,7 +29,7 @@ module Schleuder
       end
 
       if send_encrypted_only
-        missing = arguments.keys - found_keys.keys
+        missing = arguments - found_keys.keys
         if missing.present?
           return I18n.t("plugins.resend.not_resent_no_keys", emails: missing.join(', '))
         end
