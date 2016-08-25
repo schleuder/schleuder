@@ -15,7 +15,7 @@ module Schleuder
       # If we must encrypt, first test if there's a key for every recipient.
       found_keys = {}
       arguments.each do |email|
-        keys = list.keys(email)
+        keys = list.keys_by_email(email)
         case keys.size
         when 0
           # TODO: I18n.
