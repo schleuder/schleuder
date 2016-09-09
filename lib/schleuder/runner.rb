@@ -101,6 +101,16 @@ module Schleuder
         end
       end
 
+      # Check neccessary permissions of crucial files.
+      if ! File.readalbe?(@list.listdir)
+        return Errors::ListdirProblem.new(@list.listdir, :not_readable)
+      elsif ! File.directory?(@list.listdir)
+        return Errors::ListdirProblem.new(@list.listdir, :not_a_directory)
+      end
+      if ! File.writable?(@list.logfile)
+        return Errors::ListdirProblem.new(@list.logfile, :not_writable)
+      end
+
       # Set locale
       if I18n.available_locales.include?(@list.language.to_sym)
         I18n.locale = @list.language.to_sym

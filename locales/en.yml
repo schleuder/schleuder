@@ -39,6 +39,7 @@ en:
       not_a_directory: is not a directory
       not_empty: is not empty
       not_writable: is not writable
+      not_readable: is not readable
     keyword_admin_only: The keyword '%{keyword}' may only be used by list-admin.
     key_generation_failed: Generating the OpenPGP key pair for %{listname} failed for unknown reasons. Please check the list-directory ('%{listdir}') and the log-files.
     key_adduid_failed: "Adding a user-ID to the OpenPGP key failed with this message:\n%{errmsg}."
