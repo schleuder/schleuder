@@ -124,7 +124,7 @@ module Schleuder
     end
 
     def secret_key
-      keys(self.fingerprint, true).first
+      gpg.keys(self.fingerprint, true).first
     end
 
     def keys(identifier='')
