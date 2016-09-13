@@ -16,15 +16,15 @@ Requirements
 
 Installation
 ------------
-1. Download [the gem](https://schleuder.nadir.org/download/schleuder-3.0.0.beta3.gem) and [the OpenPGP-signature](https://schleuder.nadir.org/download/schleuder-3.0.0.beta3.gem.sig) and verify:
+1. Download [the gem](https://schleuder.nadir.org/download/schleuder-3.0.0.beta4.gem) and [the OpenPGP-signature](https://schleuder.nadir.org/download/schleuder-3.0.0.beta4.gem.sig) and verify:
    ```
    gpg --recv-key 0x75C9B62688F93AC6574BDE7ED8A6EF816E1C6F25
-   gpg --verify schleuder-3.0.0.beta3.gem.sig
+   gpg --verify schleuder-3.0.0.beta4.gem.sig
    ```
 
 2. If all went well install the gem:
    ```
-   gem install schleuder-3.0.0.beta3.gem
+   gem install schleuder-3.0.0.beta4.gem
    ```
 
 3. Set up schleuder:
