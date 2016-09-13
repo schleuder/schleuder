@@ -94,9 +94,9 @@ module Schleuder
       end
 
       # Check basic sanity of list.
-      %w[fingerprint key admins].each do |attrib|
+      %w[fingerprint key secret_key admins].each do |attrib|
         if @list.send(attrib).blank?
-          logger.error "list's #{attrib} is blank or missing"
+          logger.error "list-attribute #{attrib} is blank or missing"
           return Errors::ListPropertyMissing.new(attrib)
         end
       end

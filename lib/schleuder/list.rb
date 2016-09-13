@@ -123,6 +123,10 @@ module Schleuder
       keys(fingerprint).first
     end
 
+    def secret_key
+      keys(self.fingerprint, true).first
+    end
+
     def keys(identifier='')
       gpg.keys(identifier)
     end

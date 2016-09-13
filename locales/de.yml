@@ -2,6 +2,7 @@ de:
   errors:
     fingerprint_blank: 'Fingerprint der Liste ist nicht gesetzt, kann nicht arbeiten!'
     list_key_missing: 'Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten!'
+    list_secret_key_missing: 'Geheimer Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten!'
     admins_missing: 'List hat keine Admins konfiguriert, kann nicht arbeiten!'
     fatalerror: |
       Es ist ein schwerwiegender Fehler aufgetreten. Administratoren wurden benachrichtigt.
