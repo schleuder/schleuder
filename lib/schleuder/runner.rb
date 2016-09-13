@@ -102,7 +102,7 @@ module Schleuder
       end
 
       # Check neccessary permissions of crucial files.
-      if ! File.readalbe?(@list.listdir)
+      if ! File.readable?(@list.listdir)
         return Errors::ListdirProblem.new(@list.listdir, :not_readable)
       elsif ! File.directory?(@list.listdir)
         return Errors::ListdirProblem.new(@list.listdir, :not_a_directory)
