@@ -30,30 +30,37 @@ task :gem => :check_version
 task :git_tag => :check_version
 task :tarball => :check_version
 
-desc 'Check if version-tag already exists'
-task :check_version do
-  # Check if Schleuder::VERSION has been updated since last release
-  if `git tag`.include?(tagname)
-    $stderr.puts "Warning: Tag '#{tagname}' already exists. Did you forget to update schleuder/version.rb?"
-    $stderr.print "Continue? [yN] "
-    if ! $stdin.gets.match(/^y/i)
-      exit 1
-    end
+desc "Build new version: git-tag and gem-file"
+task :build => [:gem, :edit_readme, :git_commit, :git_tag] do
+
+end
+
+desc "Edit README"
+task :edit_readme do
+  if system('gvim -f README.md')
+    `git add README.md`
+  else
+    exit 1
   end
 end
 
-desc 'git-tag HEAD as new version and push to origin'
+desc 'git-tag HEAD as new version'
 task :git_tag do
   `git tag -u #{gpguid} -s -m "Version #{version}" #{tagname}`
-  `git push && git push --tags`
 end
 
-desc 'Build a gem-file.'
+desc "Commit changes as new version"
+task :git_commit do
+  `git commit -m "Version #{version} (README, gems)"`
+end
+
+desc 'Build, sign and commit a gem-file.'
 task :gem do
+  gemfile = "#{tagname}.gem"
   `gem build schleuder.gemspec`
-  # Cleanup the signing key that's been copied here.
-  filename = './schleuder-gem-private_key.pem'
-  File.rm(filename) if File.exists?(filename)
+  `mv -iv #{gemfile} gems/`
+  `cd gems && gpg -u #{gpguid} -b #{gemfile}`
+  `git add gems/#{gemfile}*`
 end
 
 desc 'Publish gem-file to rubygems.org'
@@ -74,5 +81,17 @@ task :wiki do
   * Edit download- and changelog-pages.
   * Publish release-announcement.
 "
+end
+
+desc 'Check if version-tag already exists'
+task :check_version do
+  # Check if Schleuder::VERSION has been updated since last release
+  if `git tag`.include?(tagname)
+    $stderr.puts "Warning: Tag '#{tagname}' already exists. Did you forget to update schleuder/version.rb?"
+    $stderr.print "Continue? [yN] "
+    if ! $stdin.gets.match(/^y/i)
+      exit 1
+    end
+  end
 end
 
