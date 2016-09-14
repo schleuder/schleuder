@@ -37,7 +37,7 @@ end
 
 desc "Edit README"
 task :edit_readme do
-  say "Please edit the README to refer to version #{version}"
+  puts "Please edit the README to refer to version #{version}"
   if system('gvim -f README.md')
     `git add README.md`
   else
