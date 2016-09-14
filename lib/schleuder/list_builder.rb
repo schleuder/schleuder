@@ -20,6 +20,7 @@ module Schleuder
     end
 
     def run
+      Schleuder.logger.info "Building new list"
 
       settings = read_default_settings.merge(@list_attributes)
       list = List.new(settings)
@@ -76,7 +77,7 @@ module Schleuder
     end
 
     def create_key(list)
-      puts "Generating key-pair, this could take a while..."
+      Schleuder.logger.info "Generating key-pair, this could take a while..."
       gpg.generate_key(key_params(list))
 
       # Get key without knowing the fingerprint yet.
