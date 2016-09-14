@@ -31,12 +31,12 @@ task :git_tag => :check_version
 task :tarball => :check_version
 
 desc "Build new version: git-tag and gem-file"
-task :build => [:gem, :edit_readme, :git_commit, :git_tag] do
-
+task :new_version => [:gem, :edit_readme, :git_commit_version, :git_tag] do
 end
 
 desc "Edit README"
 task :edit_readme do
+  puts "Please edit the README to refer to version #{version}"
   if system('gvim -f README.md')
     `git add README.md`
   else
@@ -50,7 +50,8 @@ task :git_tag do
 end
 
 desc "Commit changes as new version"
-task :git_commit do
+task :git_commit_version do
+  `git add lib/schleuder/version.rb`
   `git commit -m "Version #{version} (README, gems)"`
 end
 
