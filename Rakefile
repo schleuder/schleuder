@@ -1,4 +1,10 @@
-require_relative 'lib/schleuder.rb'
+project = 'schleuder-conf'
+require_relative "lib/#{project}.rb"
+
+version = Schleuder::VERSION
+tagname = "#{project}-#{version}"
+gpguid = 'schleuder2@nadir.org'
+tarball = "#{tagname}.tar.gz"
 
 load "active_record/railties/databases.rake"
 
@@ -18,11 +24,6 @@ task :console do
   exec "irb -r #{File.dirname(__FILE__)}/lib/schleuder.rb"
 end
 
-version = Schleuder::VERSION
-tagname = "schleuder-#{version}"
-tarball = "#{tagname}.tar.gz"
-gpguid = 'schleuder2@nadir.org'
-
 desc 'Release a new version of schleuder.'
 task :release => [:git_tag, :gem, :publish_gem, :tarball, :wiki]
 
@@ -36,7 +37,7 @@ end
 
 desc "Edit README"
 task :edit_readme do
-  puts "Please edit the README to refer to version #{version}"
+  say "Please edit the README to refer to version #{version}"
   if system('gvim -f README.md')
     `git add README.md`
   else
@@ -51,14 +52,14 @@ end
 
 desc "Commit changes as new version"
 task :git_commit_version do
-  `git add lib/schleuder/version.rb`
+  `git add lib/#{project}/version.rb`
   `git commit -m "Version #{version} (README, gems)"`
 end
 
 desc 'Build, sign and commit a gem-file.'
 task :gem do
   gemfile = "#{tagname}.gem"
-  `gem build schleuder.gemspec`
+  `gem build #{project}.gemspec`
   `mv -iv #{gemfile} gems/`
   `cd gems && gpg -u #{gpguid} -b #{gemfile}`
   `git add gems/#{gemfile}*`
@@ -88,9 +89,11 @@ desc 'Check if version-tag already exists'
 task :check_version do
   # Check if Schleuder::VERSION has been updated since last release
   if `git tag`.include?(tagname)
-    $stderr.puts "Warning: Tag '#{tagname}' already exists. Did you forget to update schleuder/version.rb?"
+    $stderr.puts "Warning: Tag '#{tagname}' already exists. Did you forget to update #{project}/version.rb?"
     $stderr.print "Continue? [yN] "
-    if ! $stdin.gets.match(/^y/i)
+    if $stdin.gets.match(/^y/i)
+      `git tag -d #{tagname}`
+    else
       exit 1
     end
   end
