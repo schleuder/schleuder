@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    schleuder (3.0.0.beta3)
+    schleuder (3.0.0.beta5)
       activerecord (~> 4.1)
       mail-gpg (~> 0)
       rake (~> 10)
