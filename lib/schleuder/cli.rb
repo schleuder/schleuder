@@ -125,7 +125,7 @@ module Schleuder
 
       # Create list.
       # TODO: Check for errors!
-      list = Schleuder::ListBuilder.new({email: listname, fingerprint: fingerprint}).run
+      list, messages = Schleuder::ListBuilder.new({email: listname, fingerprint: fingerprint}).run
 
       # Set list-options.
       List.configurable_attributes.each do |option|
@@ -196,6 +196,9 @@ Please notify the users and admins of this list of these changes.
 "
 
       say "\nList #{listname} migrated to schleuder v3."
+      if messages.present?
+        say messages.gsub(' // ', "\n")
+      end
     rescue => exc
       fatal [exc, exc.backtrace.slice(0,2)].join("\n")
     end

@@ -6,6 +6,7 @@ module Schleuder
       @fingerprint = list_attributes[:fingerprint]
       @adminemail = adminemail
       @adminkey = adminkey
+      @messages = []
     end
 
     def read_default_settings
@@ -64,7 +65,7 @@ module Schleuder
         end
       end
 
-      list
+      [list, @messages]
     end
 
     def gpg
@@ -98,7 +99,7 @@ module Schleuder
       if Gem::Version.new(gpg_version) < Gem::Version.new("2.1.4")
         string = "Couldn't add additional UIDs to the list's key automatically\n(GnuPG version >= 2.1.4 is required, using 'gpg' in PATH).\nPlease add these UIDs to the list's key manually: #{list.request_address}, #{list.owner_address}."
         # Don't add to errors because then the list isn't saved.
-        $stderr.puts Errors::KeyAdduidFailed.new(string)
+        @messages << Errors::KeyAdduidFailed.new(string).message
         return false
       end
 

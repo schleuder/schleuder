@@ -159,9 +159,12 @@ end
       listname = parsed_body['email']
       adminaddress = parsed_body['adminaddress']
       adminkey = parsed_body['adminkey']
-      list = ListBuilder.new({email: listname}, adminaddress, adminkey).run
+      list, messages = ListBuilder.new({email: listname}, adminaddress, adminkey).run
       if list.valid?
-        json(list)
+        if messages.present?
+          headers 'X-Messages' => messages.join(' // ')
+        end
+        body json(list)
       else
         client_error(list, 422)
       end
