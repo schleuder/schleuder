@@ -14,6 +14,20 @@ Requirements
 * gnupg >=2.1
 * and some ruby gems
 
+Entropy
+-------
+...is required especially during GPG key generation, and at the same time frequently limited on (headless) servers doing cryptographic tasks, like 
+serving HTTPS. To speed up key generation and ensure that the various entropy pools are filled, you probably want to install a daemon which takes care of 
+this, for example [haveged](http://www.issihosts.com/haveged/), which   
+  
+  > is an attempt to provide an easy-to-use, unpredictable random number 
+  generator based upon an adaptation of the [HAVEGE](http://www.irisa.fr/caps/projects/hipsor/) algorithm.
+  
+On Debian based systems, install it via 
+    
+    apt-get install haveged
+
+
 Installation
 ------------
 1. Download [the gem](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta5.gem) and [the OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta5.gem.sig) and verify:
