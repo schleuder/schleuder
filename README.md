@@ -3,7 +3,7 @@ Schleuder, version 3
 
 Schleuder is a gpg-enabled mailinglist with remailing-capabilities. Subscribers can communicate encrypted (and pseudonymously) among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.
 
-Version 3 of schleuder is a complete rewrite, which aims to be more robust, flexible, and internationalized. It 
+Version 3 of schleuder is a complete rewrite, which aims to be more robust, flexible, and internationalized. It
 also provides an API for the optional web interface called [webschleuder](https://git.codecoop.org/schleuder/webschleuder3).
 
 For more details or documentation see <https://schleuder2.nadir.org/documentation/v2.2/index.html> (for now).
@@ -16,15 +16,12 @@ Requirements
 
 
 ### Entropy
-...is required especially during GPG key generation, and at the same time frequently limited on (headless) servers doing cryptographic tasks, like 
-serving HTTPS. To speed up key generation and ensure that the various entropy pools are filled, you probably want to install a daemon which takes care of 
-this, for example [haveged](http://www.issihosts.com/haveged/), which   
-  
-  > is an attempt to provide an easy-to-use, unpredictable random number 
-  generator based upon an adaptation of the [HAVEGE](http://www.irisa.fr/caps/projects/hipsor/) algorithm.
-  
-On Debian based systems, install it via 
-    
+...is required especially during GPG key generation, and at the same time frequently limited on (headless) servers doing cryptographic tasks, like serving HTTPS. To speed up key generation and ensure that the various entropy pools are filled, you probably want to install a daemon which takes care of this, for example [haveged](http://www.issihosts.com/haveged/), which
+
+> is an attempt to provide an easy-to-use, unpredictable random number generator based upon an adaptation of the [HAVEGE](http://www.irisa.fr/caps/projects/hipsor/) algorithm.
+
+On Debian based systems, install it via
+
     apt-get install haveged
 
 
