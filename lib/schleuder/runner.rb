@@ -45,9 +45,8 @@ module Schleuder
         end
       end
 
-      # TODO: check parts?
       # Don't send empty messages over the list.
-      if @mail.body.empty?
+      if @mail.empty?
         logger.debug "Message found empty, not sending it to list. Instead notifying sender."
         @mail.reply_to_signer(I18n.t(:empty_message_error, request_address: @list.request_address))
         return nil
