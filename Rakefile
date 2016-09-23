@@ -1,4 +1,4 @@
-project = 'schleuder-conf'
+project = 'schleuder'
 require_relative "lib/#{project}.rb"
 
 version = Schleuder::VERSION
