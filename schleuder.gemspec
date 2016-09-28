@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   #s.signing_key = "#{ENV['HOME']}/.gem/schleuder-gem-private_key.pem"
   #s.cert_chain  = ['gem-public_cert.pem']
   s.license = 'GPL-3.0'
-  s.add_runtime_dependency 'mail-gpg', '~> 0'
+  s.add_runtime_dependency 'mail-gpg', '~> 0.2.7'
   s.add_runtime_dependency 'activerecord', '~> 4.1'
   s.add_runtime_dependency 'rake', '~> 10'
   s.add_runtime_dependency 'sqlite3', '~> 1'
