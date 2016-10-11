@@ -1,14 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'rake'
+# Specify your gem's dependencies in schleuder.gemspec
 gemspec
 
-group :test do
-  gem 'rspec', '~> 3.1.0'
-end
-
-group :development do
-  gem 'sqlite3'
-  gem 'hirb'
-  gem 'thin'
-end
