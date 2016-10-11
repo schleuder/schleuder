@@ -261,6 +261,13 @@ module Mail
       end
     end
 
+    def empty?
+      if self.multipart?
+        self.parts.empty?
+      else
+        self.body.empty?
+      end
+    end
 
     private
 
