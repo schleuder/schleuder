@@ -11,8 +11,16 @@ For more details or documentation see <https://schleuder2.nadir.org/documentatio
 Requirements
 ------------
 * ruby  >=2.1
-* gnupg >=2.1
-* and some ruby gems
+* gnupg >=2.0 (if possible use >= 2.1.14)
+* gpgme
+* And these rubygems (will be installed automatically):
+  * rake
+  * active_record
+  * sqlite3
+  * thor
+  * mail-gpg
+  * sinatra
+  * sinatra-contrib
 
 
 ### Entropy
