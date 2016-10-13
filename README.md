@@ -13,28 +13,34 @@ Requirements
 * ruby  >=2.1
 * gnupg >=2.0 (if possible use >= 2.1.14)
 * gpgme
-* And these rubygems (will be installed automatically):
-  * rake
-  * active_record
-  * sqlite3
-  * thor
-  * mail-gpg
-  * sinatra
-  * sinatra-contrib
+* sqlite3
+
+On Debian-based systems, install these via
+
+    apt-get install ruby2.1-dev gnupg2 libgpgme11-dev libsqlite3-dev
 
 
-### Entropy
-...is required especially during GPG key generation, and at the same time frequently limited on (headless) servers doing cryptographic tasks, like serving HTTPS. To speed up key generation and ensure that the various entropy pools are filled, you probably want to install a daemon which takes care of this, for example [haveged](http://www.issihosts.com/haveged/), which
-
-> is an attempt to provide an easy-to-use, unpredictable random number generator based upon an adaptation of the [HAVEGE](http://www.irisa.fr/caps/projects/hipsor/) algorithm.
+We **recommend** to also run a random number generator like [haveged](http://www.issihosts.com/haveged/). This ensures Schleuder won't be blocked by lacking entropy, which otherwise might happen especially during key generation.
 
 On Debian based systems, install it via
 
     apt-get install haveged
 
 
-Installation
+Additionally these **rubygems** are required (will be installed automatically unless present):
+
+* rake
+* active_record
+* sqlite3
+* thor
+* mail-gpg
+* sinatra
+* sinatra-contrib
+
+
+Installing Schleuder
 ------------
+
 1. Download [the gem](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta5.gem) and [the OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta5.gem.sig) and verify:
    ```
    gpg --recv-key 0x75C9B62688F93AC6574BDE7ED8A6EF816E1C6F25
