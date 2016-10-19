@@ -4,10 +4,6 @@ module Schleuder
       return if ! mail.request?
 
       list.logger.debug "Request-message"
-      if ! mail.was_encrypted_mime?
-        list.logger.debug "Error: Message is not pgp/mime-encrypted."
-        return Errors::NotPgpMime.new
-      end
 
       if ! mail.was_encrypted? || ! mail.was_validly_signed?
         list.logger.debug "Error: Message was not encrypted and validly signed"
