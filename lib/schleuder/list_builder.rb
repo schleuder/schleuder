@@ -102,7 +102,7 @@ module Schleuder
       gpg_version = `gpg --version`.lines.first.split.last
       # Gem::Version knows that e.g. ".10" is higher than ".4", String doesn't.
       if Gem::Version.new(gpg_version) < Gem::Version.new("2.1.4")
-        string = "Couldn't add additional UIDs to the list's key automatically\n(GnuPG version >= 2.1.4 is required, using 'gpg' in PATH).\nPlease add these UIDs to the list's key manually: #{list.request_address}, #{list.owner_address}."
+        string = "Couldn't add additional UIDs to the list's key automatically (GnuPG version >= 2.1.4 is required for that, using 'gpg' in PATH).\nPlease add these UIDs to the list's key manually: #{list.request_address}, #{list.owner_address}."
         # Don't add to errors because then the list isn't saved.
         @messages << Errors::KeyAdduidFailed.new(string).message
         return false
