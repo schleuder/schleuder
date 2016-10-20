@@ -237,7 +237,9 @@ module Schleuder
 
     def fingerprint=(arg)
       # Strip whitespace from incoming arg.
-      write_attribute(:fingerprint, arg.gsub(/\s*/, '').chomp)
+      if arg
+        write_attribute(:fingerprint, arg.gsub(/\s*/, '').chomp)
+      end
     end
 
     def self.listdir(listname)

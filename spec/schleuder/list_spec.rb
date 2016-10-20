@@ -59,5 +59,32 @@ describe Schleuder::List do
     expect(list).not_to be_valid
     expect(list.errors.messages[:email]).to include("is not a valid email address")
   end
+
+  it "normalizes the fingerprint" do
+    fingerprint = " 99 991 1000 10"
+    list = Schleuder::List.new(fingerprint: fingerprint)
+
+    expect(list.fingerprint).to eq "99991100010"
+  end
+
+  it "is invalid when fingerprint is blank" do
+    list = Schleuder::List.new(
+      email: "foo@bar.org",
+      fingerprint: "",
+    )
+
+    expect(list).not_to be_valid
+    expect(list.errors.messages[:fingerprint]).to include("can't be blank")
+  end
+
+  it "is invalid when fingerprint is nil" do
+    list = Schleuder::List.new(
+      email: "foo@bar.org",
+      fingerprint: nil
+    )
+
+    expect(list).not_to be_valid
+    expect(list.errors.messages[:fingerprint]).to include("can't be blank")
+  end
 end
 
