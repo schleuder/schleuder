@@ -2,6 +2,8 @@ module Schleuder
   class Conf
     include Singleton
 
+    EMAIL_REGEXP = /\A.+@.+\z/i
+
     def config
       @config ||= self.class.load_config('schleuder', ENV['SCHLEUDER_CONFIG'])
     end

@@ -2,14 +2,12 @@ module Schleuder
   class Subscription < ActiveRecord::Base
     belongs_to :list
 
-    EMAIL_REGEXP = /\A.+@.+\z/i
-
     validates  :list_id, inclusion: { in: -> (id) { List.pluck(:id) } }
     # TODO: refactor with validations in List.
     validates :email,
               presence: true,
               format: {
-                with: EMAIL_REGEXP,
+                with: Conf::EMAIL_REGEXP,
                 message: 'is not a valid email address'
               }
     validates :fingerprint,
