@@ -14,7 +14,7 @@ module Schleuder
               presence: true,
               uniqueness: true,
               format: {
-                with: /\A.+@.+\z/i,
+                with: Subscription::EMAIL_REGEXP,
                 allow_blank: true,
                 message: 'is not a valid email address'
               }

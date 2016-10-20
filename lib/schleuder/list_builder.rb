@@ -22,6 +22,10 @@ module Schleuder
     def run
       Schleuder.logger.info "Building new list"
 
+      if @listname.blank? || ! @listname.match(Subscription::EMAIL_REGEXP)
+        return [nil, "Given 'listname' is not a valid email address."]
+      end
+
       settings = read_default_settings.merge(@list_attributes)
       list = List.new(settings)
 
