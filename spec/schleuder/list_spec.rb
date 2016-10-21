@@ -1,6 +1,15 @@
 require "spec_helper"
 
 describe Schleuder::List do
+  BOOLEAN_LIST_ATTRIBUTES =
+    [
+      :send_encrypted_only, :receive_encrypted_only, :receive_signed_only,
+      :receive_authenticated_only, :receive_from_subscribed_emailaddresses_only,
+      :receive_admin_only, :keep_msgid, :bounces_drop_all,
+      :bounces_notify_admins, :include_list_headers, :include_list_headers,
+      :include_openpgp_header, :forward_all_incoming_to_admins
+  ].freeze
+
   it { is_expected.to respond_to :subscriptions }
   it { is_expected.to respond_to :email }
   it { is_expected.to respond_to :fingerprint }
@@ -85,6 +94,36 @@ describe Schleuder::List do
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:fingerprint]).to include("can't be blank")
+  end
+
+  BOOLEAN_LIST_ATTRIBUTES.each do |list_attribute|
+    it "casts string values in #{list_attribute} to false" do
+      list = Schleuder::List.new("#{list_attribute}": "foobar")
+
+      expect(list.method(list_attribute).call).to eq false
+    end
+
+    it "is invalid if #{list_attribute} is nil" do
+      list = Schleuder::List.new(
+        email: "foo@bar.org",
+        fingerprint: nil,
+        "#{list_attribute}": nil
+      )
+
+      expect(list).not_to be_valid
+      expect(list.errors.messages[list_attribute]).to include("must be true or false")
+    end
+
+    it "is invalid if #{list_attribute} is blank" do
+      list = Schleuder::List.new(
+        email: "foo@bar.org",
+        fingerprint: nil,
+        "#{list_attribute}": ""
+      )
+
+      expect(list).not_to be_valid
+      expect(list.errors.messages[list_attribute]).to include("must be true or false")
+    end
   end
 end
 
