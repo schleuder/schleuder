@@ -23,6 +23,3 @@ database:
   production:
     adapter:  'sqlite3'
     database: /var/schleuder/db.sqlite
-  test:
-    adapter: 'sqlite3'
-    database: db/test.sqlite
