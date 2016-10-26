@@ -125,5 +125,39 @@ describe Schleuder::List do
       expect(list.errors.messages[list_attribute]).to include("must be true or false")
     end
   end
+
+  [:headers_to_meta, :keywords_admin_only, :keywords_admin_notify].each do |list_attribute|
+    it "is invalid if #{list_attribute} contains special characters" do
+      list = Schleuder::List.new(
+        email: "foo@bar.org",
+        fingerprint: "aaaadddd0000999",
+        "#{list_attribute}": ["$from", "to", "date", "cc"],
+      )
+
+      expect(list).not_to be_valid
+      expect(list.errors.messages[list_attribute]).to include("contains invalid characters")
+    end
+
+    it "is valid if #{list_attribute} does not contain special characters" do
+      list = Schleuder::List.new(
+        email: "foo@bar.org",
+        fingerprint: "aaaadddd0000999",
+        "#{list_attribute}": ["foobar"],
+      )
+
+      expect(list).to be_valid
+    end
+  end
+
+  it "is invalid if bounces_drop_on_headers contains special characters" do
+    list = Schleuder::List.new(
+      email: "foo@bar.org",
+      fingerprint: "aaaadddd0000999",
+      bounces_drop_on_headers: {"$": "%"},
+    )
+
+    expect(list).not_to be_valid
+    expect(list.errors.messages[:bounces_drop_on_headers]).to include("contains invalid characters")
+  end
 end
 
