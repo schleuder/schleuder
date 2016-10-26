@@ -12,7 +12,7 @@ module Schleuder
               }
     validates :fingerprint,
                 format: { with: /\A[a-f0-9]+\z/i, allow_blank: true }
-    validates_each :delivery_enabled do |record, attrib, value|
+    validates_each :delivery_enabled, :admin do |record, attrib, value|
           if ! [true, false].include?(value)
             record.errors.add(attrib, 'must be true or false')
           end
