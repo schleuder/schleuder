@@ -1,7 +1,7 @@
 Schleuder, version 3
 ======================================
 
-Schleuder is a gpg-enabled mailinglist with remailing-capabilities. Subscribers can communicate encrypted (and pseudonymously) among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.
+Schleuder is a gpg-enabled mailing list manager with resending-capabilities. Subscribers can communicate encrypted (and pseudonymously) among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.
 
 Version 3 of schleuder is a complete rewrite, which aims to be more robust, flexible, and internationalized. It
 also provides an API for the optional web interface called [webschleuder](https://git.codecoop.org/schleuder/webschleuder3).
