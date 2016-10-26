@@ -106,7 +106,7 @@ describe Schleuder::List do
     it "is invalid if #{list_attribute} is nil" do
       list = Schleuder::List.new(
         email: "foo@bar.org",
-        fingerprint: nil,
+        fingerprint: "aaaadddd0000999",
         "#{list_attribute}": nil
       )
 
@@ -117,7 +117,7 @@ describe Schleuder::List do
     it "is invalid if #{list_attribute} is blank" do
       list = Schleuder::List.new(
         email: "foo@bar.org",
-        fingerprint: nil,
+        fingerprint: "aaaadddd0000999",
         "#{list_attribute}": ""
       )
 
