@@ -2,7 +2,10 @@ module Schleuder
   class Subscription < ActiveRecord::Base
     belongs_to :list
 
-    validates  :list_id, inclusion: { in: -> (id) { List.pluck(:id) } }
+    validates :list_id, inclusion: {
+                          in: -> (id) { List.pluck(:id) },
+                          message: "must refer to an existing list"
+                        }
     # TODO: refactor with validations in List.
     validates :email,
               presence: true,
