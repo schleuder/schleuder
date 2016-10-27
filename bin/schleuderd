@@ -6,23 +6,45 @@ ENV['RACK_ENV'] ||= 'production'
 require 'sinatra/base'
 require 'sinatra/json'
 require 'sinatra/namespace'
+require 'thin'
 require_relative '../lib/schleuder.rb'
 
-class Schleuderd < Sinatra::Application
-# Don't allow binding to anything but localhost to bar communication over the
-# network until ssl is implemented.
-if settings.bind != 'localhost'
-  $stderr.puts "\nWarning: Schleuderd currently enforces binding to localhost only, until connections are mandatorily encrypted and authentication is fixed.\n\n"
-  set :bind, 'localhost'
-end
+TLS_CERT = Conf.api['tls_cert_file']
+TLS_KEY = Conf.api['tls_key_file']
 
-
-  configure :development do
-    set :logging, Logger::DEBUG
+class Schleuderd < Sinatra::Base
+  register Sinatra::Namespace
+  configure do
+    set :server, :thin
+    set :port, Schleuder::Conf.api['port'] || 4443
+    set :bind, Schleuder::Conf.api['bind'] || '0.0.0.0'
+    if settings.development?
+      set :logging, Logger::DEBUG
+    else
+      set :logging, Logger::WARN
+    end
   end
 
-  configure :production do
-    set :logging, Logger::WARN
+  # TODO: Move this into a method, call that in the configure block
+  @use_tls = Conf.api_use_tls?
+  if @use_tls
+    [TLS_CERT, TLS_KEY].each do |const|
+      if const.nil?
+        @use_tls = false
+      elsif ! File.readable?(const)
+        $stderr.puts "Error: '#{const}' is not a readable file."
+        exit 1
+      end
+    end
+  end
+
+  if @use_tls
+    use Rack::Auth::Basic, "Schleuder API Daemon" do |username, key|
+      username == 'schleuder' && Conf.api_valid_api_keys.include?(key)
+    end
+  else
+    $stderr.puts "\nWarning: Without TLS Schleuderd enforces binding to localhost only!\nExecute `schleuder cert generate` and follow the instructions.\n\n"
+    set :bind, 'localhost'
   end
 
   before do
@@ -147,7 +169,6 @@ end
         trust_issues: key.trust
       }
     end
-
   end
 
   namespace '/lists' do
@@ -329,6 +350,18 @@ end
 
     get '/check_keys.json' do
       json result: list.check_keys
+    end
+  end
+
+  def self.run!
+    super do |server|
+      if @use_tls == true
+        server.ssl = true
+        server.ssl_options = {
+          :cert_chain_file  => TLS_CERT,
+          :private_key_file => TLS_KEY
+        }
+      end
     end
   end
 

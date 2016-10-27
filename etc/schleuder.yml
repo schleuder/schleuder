@@ -23,3 +23,16 @@ database:
   production:
     adapter:  'sqlite3'
     database: /var/schleuder/db.sqlite
+
+# Note: The API-daemon will bind only to localhost if no TLS-cert+keys are available.
+api:
+  port: 4443
+  bind: 0.0.0.0
+  tls_cert_file: /etc/schleuder/schleuder-certificate.pem
+  tls_key_file: /etc/schleuder/schleuder-private-key.pem
+  # List of api_keys to allow access to the API.
+  # Example:
+  # valid_api_keys:
+  #   - abcdef...
+  #   - zyxwvu...
+  valid_api_keys:

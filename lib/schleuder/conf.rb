@@ -36,6 +36,18 @@ module Schleuder
       instance.config['log_level'] || 'WARN'
     end
 
+    def self.api
+      instance.config['api'] || {}
+    end
+
+    def self.api_use_tls?
+      api['use_tls'].to_s == 'true'
+    end
+
+    def self.api_valid_api_keys
+      Array(api['valid_api_keys'])
+    end
+
     # Three legacy options
     def self.smtp_host
       instance.config['smtp_host']
