@@ -36,6 +36,10 @@ module Schleuder
       instance.config['log_level'] || 'WARN'
     end
 
+    def self.api
+      instance.config['api'] || {}
+    end
+
     # Three legacy options
     def self.smtp_host
       instance.config['smtp_host']

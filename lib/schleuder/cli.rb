@@ -2,21 +2,28 @@ require 'thor'
 require 'yaml'
 require 'gpgme'
 
+require_relative '../schleuder'
+require 'schleuder/cli/subcommand_fix'
+require 'schleuder/cli/schleuder_cert_manager'
+require 'schleuder/cli/cert'
+
 module Schleuder
   class Cli < Thor
+
+    register(Cert,
+             'cert',
+             'cert ...',
+             'Generate TLS-certificate and show fingerprint')
 
     map '-v' => :version
     map '--version' => :version
     desc 'version', 'Show version of schleuder'
     def version
-      require_relative '../schleuder'
       say Schleuder::VERSION
     end
 
     desc 'work list@hostname < message', 'Run a message through a list.'
     def work(listname)
-      require_relative '../schleuder'
-
       message  = STDIN.read
 
       error = Schleuder::Runner.new.run(message, listname)
@@ -38,8 +45,6 @@ module Schleuder
 
     desc 'check_keys', 'Check all lists for unusable or expiring keys and send the results to the list-admins. (This is supposed to be run from cron weekly.)'
     def check_keys(listname=nil)
-      require_relative '../schleuder'
-
       Schleuder::List.all.each do |list|
         I18n.locale = list.language
 
@@ -54,7 +59,6 @@ module Schleuder
 
     desc 'install', "Set-up or update Schleuder environment (create folders, copy files, fill the database)."
     def install
-      require_relative '../schleuder'
       %w[/var/schleuder/lists /etc/schleuder].each do |dir|
         dir = Pathname.new(dir)
         if ! dir.exist?
@@ -91,8 +95,6 @@ module Schleuder
 
     desc 'migrate-v2-list /path/to/listdir', 'Migrate list from v2.2 to v3.'
     def migrate_v2_list(path)
-      require_relative '../schleuder'
-
       dir = Pathname.new(path)
       if ! dir.readable? || ! dir.directory?
         fatal "Not a readable directory: `#{path}`."

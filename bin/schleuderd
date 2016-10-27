@@ -3,29 +3,49 @@
 # Make sinatra use production as default-environment
 ENV['RACK_ENV'] ||= 'production'
 
+TLS_CERT_FILE = ENV['TLS_CERT_FILE']
+TLS_KEY_FILE = ENV['TLS_KEY_FILE']
+
 require 'sinatra/base'
 require 'sinatra/json'
 require 'sinatra/namespace'
+require 'thin'
 require_relative '../lib/schleuder.rb'
 
-class Schleuderd < Sinatra::Application
-# Don't allow binding to anything but localhost to bar communication over the
-# network until ssl is implemented.
-if settings.bind != 'localhost'
-  $stderr.puts "\nWarning: Schleuderd currently enforces binding to localhost only, until connections are mandatorily encrypted and authentication is fixed.\n\n"
-  set :bind, 'localhost'
-end
+TLS_CERT = Conf.api['tls_cert_file']
+TLS_KEY = Conf.api['tls_key_file']
+CLIENT_CERT_FINGERPRINTS = Conf.api['client_fingerprints'].map(&:downcase)
 
+class Schleuderd < Sinatra::Base
+  register Sinatra::Namespace
 
-  configure :development do
-    set :logging, Logger::DEBUG
+  configure do
+    set :server, :thin
+    set :port, Schleuder::Conf.api['port'] || 4443
+    set :bind, Schleuder::Conf.api['bind'] || '0.0.0.0'
+    if settings.development?
+      set :logging, Logger::DEBUG
+    else
+      set :logging, Logger::WARN
+    end
   end
 
-  configure :production do
-    set :logging, Logger::WARN
+  @use_tls = true
+  [TLS_CERT, TLS_KEY].each do |const|
+    if const.nil?
+      @use_tls = false
+    elsif ! File.readable?(const)
+      $stderr.puts "Error: '#{const}' is not a readable file."
+      exit 1
+    end
+  end
+  if ! @use_tls
+    $stderr.puts "\nWarning: Without TLS Schleuderd enforces binding to localhost only!\nTo set up TLS generate a TLS certificate and configure the files paths of cert+key in #{ENV['SCHLEUDER_CONFIG']}.\n\n"
+    set :bind, 'localhost'
   end
 
   before do
+    authenticate_client
     cast_param_values
   end
 
@@ -148,6 +168,21 @@ end
       }
     end
 
+    def authenticate_client
+      if ! @use_tls
+        return true
+      end
+      cert_data = @request.env['rack.peer_cert']
+      if cert_data.nil?
+        logger.error "Client didn't send a certificate"
+        halt(403)
+      end
+      cert = OpenSSL::X509::Certificate.new(cert_data)
+      fingerprint = OpenSSL::Digest::SHA256.new(cert.to_der).to_s
+      if ! CLIENT_CERT_FINGERPRINTS.include?(fingerprint)
+        halt(403)
+      end
+    end
   end
 
   namespace '/lists' do
@@ -329,6 +364,21 @@ end
 
     get '/check_keys.json' do
       json result: list.check_keys
+    end
+  end
+
+  def self.run!
+    super do |server|
+      if @use_tls == true
+        server.ssl = true
+        server.ssl_options = {
+          :cert_chain_file  => TLS_CERT,
+          :private_key_file => TLS_KEY,
+          # Enable verify_peer (which is not really verifying anything) to have
+          # later peer_cert in the request's env.
+          :verify_peer      => true
+        }
+      end
     end
   end
 
