@@ -159,5 +159,18 @@ describe Schleuder::List do
     expect(list).not_to be_valid
     expect(list.errors.messages[:bounces_drop_on_headers]).to include("contains invalid characters")
   end
+
+  [:subject_prefix, :subject_prefix_in, :subject_prefix_out].each do |list_attribute|
+    it "is invalid if #{list_attribute} contains a linebreak" do
+      list = Schleuder::List.new(
+        email: "foo@bar.org",
+        fingerprint: "aaaadddd0000999",
+        "#{list_attribute}": "Foo\nbar",
+      )
+
+      expect(list).not_to be_valid
+      expect(list.errors.messages[list_attribute]).to include("must not include line-breaks")
+    end
+  end
 end
 
