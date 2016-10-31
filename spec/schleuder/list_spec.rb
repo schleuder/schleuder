@@ -172,5 +172,61 @@ describe Schleuder::List do
       expect(list.errors.messages[list_attribute]).to include("must not include line-breaks")
     end
   end
-end
 
+  it "is invalid if openpgp_header_preference is foobar" do
+    list = Schleuder::List.new(
+      email: "foo@bar.org",
+      fingerprint: "aaaadddd0000999",
+      openpgp_header_preference: "foobar",
+    )
+
+    expect(list).not_to be_valid
+    expect(list.errors.messages[:openpgp_header_preference]).to include("must be one of: sign, encrypt, signencrypt, unprotected, none")
+  end
+
+  [:max_message_size_kb, :logfiles_to_keep].each do |list_attribute|
+    it "is invalid if #{list_attribute} is 0" do
+      list = Schleuder::List.new(
+        email: "foo@bar.org",
+        fingerprint: "aaaadddd0000999",
+        "#{list_attribute}": 0,
+      )
+
+      expect(list).not_to be_valid
+      expect(list.errors.messages[list_attribute]).to include("must be a number greater than zero")
+    end
+  end
+
+  it "is invalid if log_level is foobar" do
+    list = Schleuder::List.new(
+      email: "foo@bar.org",
+      fingerprint: "aaaadddd0000999",
+      log_level: "foobar",
+    )
+
+    expect(list).not_to be_valid
+    expect(list.errors.messages[:log_level]).to include("must be one of: debug, info, warn, error")
+  end
+
+  it "is invalid if language is jp" do
+    list = Schleuder::List.new(
+      email: "foo@bar.org",
+      fingerprint: "aaaadddd0000999",
+      language: "jp",
+    )
+
+    expect(list).not_to be_valid
+    expect(list.errors.messages[:language]).to include("must be one of: en, de")
+  end
+
+  it "is invalid if public footer include a non-printable characters" do
+    list = Schleuder::List.new(
+      email: "foo@bar.org",
+      fingerprint: "aaaadddd0000999",
+      public_footer: "\a",
+    )
+
+    expect(list).not_to be_valid
+    expect(list.errors.messages[:public_footer]).to include("includes non-printable characters")
+  end
+end
