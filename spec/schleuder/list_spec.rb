@@ -229,4 +229,58 @@ describe Schleuder::List do
     expect(list).not_to be_valid
     expect(list.errors.messages[:public_footer]).to include("includes non-printable characters")
   end
+
+  describe ".configurable_attributes" do
+    it "returns an array that contains the configurable attributes" do
+      expect(Schleuder::List.configurable_attributes).to eq [
+       :bounces_drop_all, :bounces_drop_on_headers, :bounces_notify_admins,
+       :forward_all_incoming_to_admins, :headers_to_meta, :include_list_headers,
+       :include_openpgp_header, :keep_msgid, :keywords_admin_notify, :keywords_admin_only,
+       :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :openpgp_header_preference,
+       :public_footer, :receive_admin_only, :receive_authenticated_only, :receive_encrypted_only,
+       :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,
+       :subject_prefix, :subject_prefix_in, :subject_prefix_out,
+      ]
+    end
+
+    it "does not contain the attributes email and fingerprint" do
+      expect(Schleuder::List.configurable_attributes).to_not include(:email)
+      expect(Schleuder::List.configurable_attributes).to_not include(:fingerprint)
+    end
+  end
+
+  describe "#logfile" do
+    it "returns the logfile path" do
+      list = Schleuder::List.new(
+        email: "foo@bar.org",
+        fingerprint: "aaaadddd0000999",
+      )
+
+      expect(list.logfile).to eq "/var/schleuder/lists/bar.org/foo/list.log"
+    end
+  end
+
+  describe "#logger" do
+    it "calls the ListLogger" do
+      list = Schleuder::List.new(
+        email: "foo@bar.org",
+        fingerprint: "aaaadddd0000999",
+      )
+
+      expect(Listlogger).to receive(:new).with(list)
+
+      list.logger
+    end
+  end
+
+  describe "#to_s" do
+    it "returns the email" do
+      list = Schleuder::List.new(
+        email: "foo@bar.org",
+        fingerprint: "aaaadddd0000999",
+      )
+
+      expect(list.email).to eq "foo@bar.org"
+    end
+  end
 end
