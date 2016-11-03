@@ -30,6 +30,7 @@ GEM
     backports (3.6.8)
     builder (3.2.2)
     daemons (1.2.3)
+    database_cleaner (1.5.3)
     diff-lcs (1.2.5)
     eventmachine (1.2.0.1)
     gpgme (2.0.12)
@@ -93,10 +94,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  database_cleaner
   hirb
   rspec (~> 3.5.0)
   schleuder!
   thin
 
 BUNDLED WITH
-   1.13.2
+   1.13.5
