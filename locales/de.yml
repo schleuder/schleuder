@@ -1,5 +1,16 @@
 de:
   errors:
+    attributes:
+      email:
+        invalid: "ist keine valide E-Mail-Adresse"
+      language:
+        inclusion: "muss einem der folgenden Werte entsprechen: en, de"
+      log_level:
+        inclusion: "muss einem der folgenden Werte entsprechen: debug, info, warn, error"
+      openpgp_header_preference:
+        inclusion: "muss einem der folgenden Werte entsprechen: sign, encrypt, signencrypt, unprotected, none"
+      public_footer:
+        invalid: "enthält nicht druckbare Zeichen"
     fingerprint_blank: 'Fingerprint der Liste ist nicht gesetzt, kann nicht arbeiten!'
     list_key_missing: 'Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten!'
     list_secret_key_missing: 'Geheimer Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten!'
@@ -33,6 +44,8 @@ de:
     message_sender_not_subscribed: Nur Absender mit Abo dürfen Emails an diese Adresse schicken.
     message_not_from_admin: Nur Admins dürfen Emails an diese Adresse schicken.
     list_not_found: "Fehler: Keine Liste zu dieser Adresse gefunden: '%{email}'."
+    no_linebreaks: "Darf keine Zeilenumbrüche enthalten"
+    invalid_characters: "enthält ungültige Zeichen"
     invalid_listname: "Fehler: '%{email}' ist kein gültige Listen-Adresse."
     list_exists: Es existiert bereits eine Liste mit der Adresse '%{email}'.
     listdir_problem:
@@ -48,6 +61,8 @@ de:
     unknown_list_option: "Unbekannte Option in %{config_file}: '%{option}'."
     loading_list_settings_failed: "%{config_file} konnte nicht eingelesen werden, bitte Formatierung auf gültiges YAML prüfen."
     message_too_big: "Deine Email war zu groß. Erlaubt sind für diese Liste %{allowed_size}KB."
+    must_be_boolean: "muss true oder false sein"
+    must_be_greater_than_zero: "muss größer als null sein"
     file_not_found: "Die Datei existiert nicht: '%{file}'."
     not_pgp_mime: "Deine Email war nicht im pgp/mime-Format verschlüsselt."
   plugins:

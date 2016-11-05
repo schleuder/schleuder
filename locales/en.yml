@@ -1,5 +1,16 @@
 en:
   errors:
+    attributes:
+      email:
+        invalid: "is not a valid email address"
+      language:
+        inclusion: "must be one of: en, de"
+      log_level:
+        inclusion: "must be one of: debug, info, warn, error"
+      openpgp_header_preference:
+        inclusion: "must be one of: sign, encrypt, signencrypt, unprotected, none"
+      public_footer:
+        invalid: "includes non-printable characters"
     list_fingerprint_missing: "List has no fingerprint configured, cannot run!"
     list_key_missing: "List-key is missing in keyring, cannot run!"
     list_secret_key_missing: 'Secret key of list is missing in keyring, cannot run!'
@@ -32,8 +43,10 @@ en:
     message_unauthenticated: Messages to this address must be encrypted and signed by the key associated with a subscribed address.
     message_sender_not_subscribed: Only subscribed addresses may send messages to this address.
     message_not_from_admin: Only admins may send messages to this address.
+    no_linebreaks: "must not include line-breaks"
     list_not_found: "Error: No list found with this address: '%{email}'."
     invalid_listname: "Error: '%{email}' is not a valid address."
+    invalid_characters: "contains invalid characters"
     list_exists: A list with address '%{email}' is already present.
     listdir_problem:
       message: "There's a problem with the list-directory: '%{dir}' %{problem}."
@@ -48,6 +61,8 @@ en:
     unknown_list_option: "Unknown option in %{config_file}: '%{option}'."
     loading_list_settings_failed: "%{config_file} could not be parsed, please check its formatting to be valid YAML."
     message_too_big: "Your message was too big. Allowed are up to %{allowed_size}KB."
+    must_be_boolean: "must be true or false"
+    must_be_greater_than_zero: "must be a number greater than zero"
     file_not_found: "File not found: '%{file}'."
     not_pgp_mime: "Message was not encrypted in the pgp/mime-format."
   plugins:
