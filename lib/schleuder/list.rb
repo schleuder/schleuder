@@ -9,14 +9,12 @@ module Schleuder
     serialize :keywords_admin_only, JSON
     serialize :keywords_admin_notify, JSON
 
-    # TODO: I18n
     validates :email,
               presence: true,
               uniqueness: true,
               format: {
                 with: Conf::EMAIL_REGEXP,
-                allow_blank: true,
-                message: 'is not a valid email address'
+                allow_blank: true
               }
     validates :fingerprint,
                 presence: true,
@@ -37,7 +35,7 @@ module Schleuder
         :include_openpgp_header,
         :forward_all_incoming_to_admins do |record, attrib, value|
           if ! [true, false].include?(value)
-            record.errors.add(attrib, 'must be true or false')
+            record.errors.add(attrib, I18n.t("errors.must_be_boolean"))
           end
         end
     validates_each :headers_to_meta,
@@ -45,14 +43,14 @@ module Schleuder
         :keywords_admin_notify do |record, attrib, value|
           value.each do |word|
             if word !~ /\A[a-z_-]+\z/i
-              record.errors.add(attrib, 'contains invalid characters')
+              record.errors.add(attrib, I18n.t("errors.invalid_characters"))
             end
           end
         end
     validates_each :bounces_drop_on_headers do |record, attrib, value|
           value.each do |key, val|
             if key.to_s !~ /\A[a-z-]+\z/i || val.to_s !~ /\A[[:graph:]]+\z/i
-              record.errors.add(attrib, 'contains invalid characters')
+              record.errors.add(attrib, I18n.t("errors.invalid_characters"))
             end
           end
         end
@@ -61,39 +59,35 @@ module Schleuder
         :subject_prefix_out do |record, attrib, value|
           # Accept everything but newlines
           if value.include?("\n")
-            record.errors.add(attrib, 'must not include line-breaks')
+            record.errors.add(attrib, I18n.t("errors.no_linebreaks") )
           end
         end
     validates :openpgp_header_preference,
                 presence: true,
                 inclusion: {
                   in: %w(sign encrypt signencrypt unprotected none),
-                  message: 'must be one of: sign, encrypt, signencrypt, unprotected, none'
                 }
     validates_each :max_message_size_kb,
         :logfiles_to_keep do |record, attrib, value|
           if value.to_i == 0
-            record.errors.add(attrib, 'must be a number greater than zero')
+            record.errors.add(attrib, I18n.t("errors.must_be_greater_than_zero"))
           end
         end
     validates :log_level,
               presence: true,
               inclusion: {
                 in: %w(debug info warn error),
-                message: 'must be one of: debug, info, warn, error'
               }
     validates :language,
               presence: true,
               inclusion: {
                 # TODO: find out why we break translations and available_locales if we use I18n.available_locales here.
                 in: %w(de en),
-                message: "must be one of: en, de"
               }
     validates :public_footer,
               allow_blank: true,
-              format: { 
+              format: {
                 with: /\A[[:graph:]\s]*\z/i,
-                message: 'includes non-printable characters'
               }
 
     def self.configurable_attributes
