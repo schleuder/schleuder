@@ -47,9 +47,8 @@ module Schleuder
 
       # Don't send empty messages over the list.
       if @mail.empty?
-        logger.debug "Message found empty, not sending it to list. Instead notifying sender."
-        @mail.reply_to_signer(I18n.t(:empty_message_error, request_address: @list.request_address))
-        return nil
+        logger.info "Message found empty, not sending it to list."
+        return Errors::MessageEmpty.new(@list)
       end
 
       logger.debug "Adding subject_prefix"

@@ -43,6 +43,10 @@ de:
     message_unauthenticated: Emails an diese Adresse müssen verschlüsselt und mit einem OpenPGP-Schlüssel signiert sein, der für ein Abo eingetragen ist.
     message_sender_not_subscribed: Nur Absender mit Abo dürfen Emails an diese Adresse schicken.
     message_not_from_admin: Nur Admins dürfen Emails an diese Adresse schicken.
+    message_empty: |
+      Deine Email enthielt keinen Text, daher wurde sie nicht über die Liste verteilt.
+
+      Falls du ausschließlich Schlüsselwörter gesendet hast beachte, dass administrative Schlüsselwörter an die "request"-Adresse (<%{request_address}>) geschickt werden müssen um berücksichtigt zu werden.
     list_not_found: "Fehler: Keine Liste zu dieser Adresse gefunden: '%{email}'."
     no_linebreaks: "Darf keine Zeilenumbrüche enthalten"
     invalid_characters: "enthält ungültige Zeichen"
@@ -99,10 +103,6 @@ de:
   list_public_key_attached: Der Schlüssel zu dieser Adresse hängt an.
   no_output_result: Deine Email ergab keinen Ausgabe-Text.
   owner_forward_prefix: Die folgende Email ging für die Listen-Besitzer/innen ein.
-  empty_message_error: |
-    Deine Email enthielt keinen Text, daher wurde sie nicht über die Liste verteilt.
-
-    Falls du ausschließlich Schlüsselwörter gesendet hast beachte, dass administrative Schlüsselwörter an die "request"-Adresse (<%{request_address}>) geschickt werden müssen um berücksichtigt zu werden.
   no_keywords_error: Deine Email enthielt keine Schlüsselwörter, daher gab es nichts zu tun.
   bounces_drop_all: Die angehängte Email hätte zurückgewiesen (bounced) werden sollen, wurde aber stillschweigend fallen gelassen, weil die Konfiguration dieser Liste definiert, dass für diese Liste nie Email zurückgewiesen werden soll.
   bounces_drop_on_headers: "Die angehängte Email hätte zurückgewiesen (bounce) werden sollen, wurde aber stillschweigend fallen gelassen, weil diese Kopfzeile gefunden wurde: %{key}: %{value}"
