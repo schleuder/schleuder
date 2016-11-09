@@ -263,9 +263,15 @@ module Mail
 
     def empty?
       if self.multipart?
-        self.parts.empty?
+        if self.parts.empty?
+          return true
+        else
+          # Test parts recursively. E.g. Thunderbird with activated
+          # memoryhole-headers send nested parts that might still be empty.
+          return self.parts.reduce { |result, part| result && part.empty? }
+        end
       else
-        self.body.empty?
+        return self.body.empty?
       end
     end
 
