@@ -22,7 +22,7 @@ module Schleuder
                   with: /\A[a-f0-9]+\z/i,
                   allow_blank: true
                 }
-    validates_each :send_encrypted_only,
+    validates :send_encrypted_only,
         :receive_encrypted_only,
         :receive_signed_only,
         :receive_authenticated_only,
@@ -33,11 +33,7 @@ module Schleuder
         :bounces_notify_admins,
         :include_list_headers,
         :include_openpgp_header,
-        :forward_all_incoming_to_admins do |record, attrib, value|
-          if ! [true, false].include?(value)
-            record.errors.add(attrib, I18n.t("errors.must_be_boolean"))
-          end
-        end
+        :forward_all_incoming_to_admins, boolean: true
     validates_each :headers_to_meta,
         :keywords_admin_only,
         :keywords_admin_notify do |record, attrib, value|
