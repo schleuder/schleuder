@@ -41,15 +41,15 @@ Additionally these **rubygems** are required (will be installed automatically un
 Installing Schleuder
 ------------
 
-1. Download [the gem](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta5.gem) and [the OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta5.gem.sig) and verify:
+1. Download [the gem](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta6.gem) and [the OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta6.gem.sig) and verify:
    ```
    gpg --recv-key 0x75C9B62688F93AC6574BDE7ED8A6EF816E1C6F25
-   gpg --verify schleuder-3.0.0.beta5.gem.sig
+   gpg --verify schleuder-3.0.0.beta6.gem.sig
    ```
 
 2. If all went well install the gem:
    ```
-   gem install schleuder-3.0.0.beta5.gem
+   gem install schleuder-3.0.0.beta6.gem
    ```
 
 3. Set up schleuder:
