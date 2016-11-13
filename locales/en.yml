@@ -1,8 +1,6 @@
 en:
   errors:
     attributes:
-      email:
-        invalid: "is not a valid email address"
       language:
         inclusion: "must be one of: en, de"
       log_level:
@@ -11,6 +9,7 @@ en:
         inclusion: "must be one of: sign, encrypt, signencrypt, unprotected, none"
       public_footer:
         invalid: "includes non-printable characters"
+    invalid_email: "is not a valid email address"
     list_fingerprint_missing: "List has no fingerprint configured, cannot run!"
     list_key_missing: "List-key is missing in keyring, cannot run!"
     list_secret_key_missing: 'Secret key of list is missing in keyring, cannot run!'

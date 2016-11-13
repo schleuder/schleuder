@@ -45,6 +45,9 @@ require 'schleuder/filters_runner'
 Dir[rootdir.to_s + "/lib/schleuder/filters/*.rb"].each do |file|
   require file
 end
+Dir[rootdir.to_s + "/lib/schleuder/validators/*.rb"].each do |file|
+  require file
+end
 require 'schleuder/runner'
 require 'schleuder/list'
 require 'schleuder/list_builder'

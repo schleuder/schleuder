@@ -6,20 +6,10 @@ module Schleuder
                           in: -> (id) { List.pluck(:id) },
                           message: "must refer to an existing list"
                         }
-    # TODO: refactor with validations in List.
-    validates :email,
-              presence: true,
-              format: {
-                with: Conf::EMAIL_REGEXP,
-                message: 'is not a valid email address'
-              }
+    validates :email, presence: true, email: true
     validates :fingerprint,
                 format: { with: /\A[a-f0-9]+\z/i, allow_blank: true }
-    validates_each :delivery_enabled, :admin do |record, attrib, value|
-          if ! [true, false].include?(value)
-            record.errors.add(attrib, 'must be true or false')
-          end
-        end
+    validates :delivery_enabled, :admin, boolean: true
 
     default_scope { order(:email) }
 
