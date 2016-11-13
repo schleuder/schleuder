@@ -5,6 +5,8 @@ require 'gpgme'
 module Schleuder
   class Cli < Thor
 
+    map '-v' => :version
+    map '--version' => :version
     desc 'version', 'Show version of schleuder'
     def version
       require_relative '../schleuder'
