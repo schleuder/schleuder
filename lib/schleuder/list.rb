@@ -9,13 +9,7 @@ module Schleuder
     serialize :keywords_admin_only, JSON
     serialize :keywords_admin_notify, JSON
 
-    validates :email,
-              presence: true,
-              uniqueness: true,
-              format: {
-                with: Conf::EMAIL_REGEXP,
-                allow_blank: true
-              }
+    validates :email, presence: true, uniqueness: true, email: true
     validates :fingerprint,
                 presence: true,
                 format: {
