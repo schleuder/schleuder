@@ -96,6 +96,16 @@ describe Schleuder::List do
     expect(list.errors.messages[:fingerprint]).to include("can't be blank")
   end
 
+  it "is invalid when fingerprint contains invalid characters" do
+    list = Schleuder::List.new(
+      email: "foo@bar.org",
+      fingerprint: "&$$$$67923AAA",
+    )
+
+    expect(list).not_to be_valid
+    expect(list.errors.messages[:fingerprint]).to include("is not a valid fingerprint")
+  end
+
   BOOLEAN_LIST_ATTRIBUTES.each do |list_attribute|
     it "casts string values in #{list_attribute} to false" do
       list = Schleuder::List.new("#{list_attribute}": "foobar")
