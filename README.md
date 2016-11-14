@@ -6,7 +6,7 @@ Schleuder is a gpg-enabled mailing list manager with resending-capabilities. Sub
 Version 3 of schleuder is a complete rewrite, which aims to be more robust, flexible, and internationalized. It
 also provides an API for the optional web interface called [webschleuder](https://git.codecoop.org/schleuder/webschleuder3).
 
-For more details or documentation see <https://schleuder2.nadir.org/documentation/v2.2/index.html> (for now).
+For more details see <https://schleuder.nadir.org/docs/>.
 
 Requirements
 ------------
