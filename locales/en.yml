@@ -10,6 +10,7 @@ en:
       public_footer:
         invalid: "includes non-printable characters"
     invalid_email: "is not a valid email address"
+    invalid_fingerprint: "is not a valid fingerprint"
     list_fingerprint_missing: "List has no fingerprint configured, cannot run!"
     list_key_missing: "List-key is missing in keyring, cannot run!"
     list_secret_key_missing: 'Secret key of list is missing in keyring, cannot run!'

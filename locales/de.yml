@@ -10,6 +10,7 @@ de:
       public_footer:
         invalid: "enthält nicht druckbare Zeichen"
     invalid_email: "ist keine valide E-Mail-Adresse"
+    invalid_fingerprint: "ist kein valider Fingerprint"
     fingerprint_blank: 'Fingerprint der Liste ist nicht gesetzt, kann nicht arbeiten!'
     list_key_missing: 'Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten!'
     list_secret_key_missing: 'Geheimer Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten!'

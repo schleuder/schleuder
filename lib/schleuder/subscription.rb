@@ -7,8 +7,7 @@ module Schleuder
                           message: "must refer to an existing list"
                         }
     validates :email, presence: true, email: true
-    validates :fingerprint,
-                format: { with: /\A[a-f0-9]+\z/i, allow_blank: true }
+    validates :fingerprint, allow_blank: true, fingerprint: true
     validates :delivery_enabled, :admin, boolean: true
 
     default_scope { order(:email) }

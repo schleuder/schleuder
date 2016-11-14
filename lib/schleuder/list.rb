@@ -10,12 +10,7 @@ module Schleuder
     serialize :keywords_admin_notify, JSON
 
     validates :email, presence: true, uniqueness: true, email: true
-    validates :fingerprint,
-                presence: true,
-                format: {
-                  with: /\A[a-f0-9]+\z/i,
-                  allow_blank: true
-                }
+    validates :fingerprint, presence: true, fingerprint: true
     validates :send_encrypted_only,
         :receive_encrypted_only,
         :receive_signed_only,

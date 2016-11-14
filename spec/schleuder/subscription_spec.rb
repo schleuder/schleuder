@@ -89,6 +89,17 @@ describe Schleuder::Subscription do
     expect(subscription.errors.messages[:fingerprint]).to be_blank
   end
 
+  it "is invalid when fingerprint contains invalid characters" do
+    subscription = Schleuder::Subscription.new(
+      list_id: @list.id,
+      email: "foo@bar.org",
+      fingerprint: "&$$$$123AAA",
+    )
+
+    expect(subscription).not_to be_valid
+    expect(subscription.errors.messages[:fingerprint]).to include("is not a valid fingerprint")
+  end
+
   BOOLEAN_SUBSCRIPTION_ATTRIBUTES.each do |subscription_attribute|
     it "casts string values in #{subscription_attribute} to false" do
       subscription = Schleuder::Subscription.new("#{subscription_attribute}": "foobar")
