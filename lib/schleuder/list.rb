@@ -39,14 +39,10 @@ module Schleuder
             end
           end
         end
-    validates_each :subject_prefix,
+    validates :subject_prefix,
         :subject_prefix_in,
-        :subject_prefix_out do |record, attrib, value|
-          # Accept everything but newlines
-          if value.include?("\n")
-            record.errors.add(attrib, I18n.t("errors.no_linebreaks") )
-          end
-        end
+        :subject_prefix_out,
+        no_line_breaks: true
     validates :openpgp_header_preference,
                 presence: true,
                 inclusion: {
