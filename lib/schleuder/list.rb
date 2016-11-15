@@ -39,25 +39,16 @@ module Schleuder
             end
           end
         end
-    validates_each :subject_prefix,
+    validates :subject_prefix,
         :subject_prefix_in,
-        :subject_prefix_out do |record, attrib, value|
-          # Accept everything but newlines
-          if value.include?("\n")
-            record.errors.add(attrib, I18n.t("errors.no_linebreaks") )
-          end
-        end
+        :subject_prefix_out,
+        no_line_breaks: true
     validates :openpgp_header_preference,
                 presence: true,
                 inclusion: {
                   in: %w(sign encrypt signencrypt unprotected none),
                 }
-    validates_each :max_message_size_kb,
-        :logfiles_to_keep do |record, attrib, value|
-          if value.to_i == 0
-            record.errors.add(attrib, I18n.t("errors.must_be_greater_than_zero"))
-          end
-        end
+    validates :max_message_size_kb, :logfiles_to_keep, greater_than_zero: true
     validates :log_level,
               presence: true,
               inclusion: {
