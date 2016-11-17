@@ -35,5 +35,65 @@ module GPGME
     def self.gpg_engine
       GPGME::Engine.info.find {|e| e.protocol == GPGME::PROTOCOL_OpenPGP }
     end
+
+    def refresh_keys
+      exitcode, output = exec_gpg_cli("--refresh-keys --batch")
+      output
+    end
+
+    def check_keys
+      now = Time.now
+      checkdate = now + (60 * 60 * 24 * 14) # two weeks
+      unusable = []
+      expiring = []
+
+      keys('').each do |key|
+        expiry = key.subkeys.first.expires
+        if expiry && expiry > now && expiry < checkdate
+          # key expires in the near future
+          expdays = ((exp - now)/86400).to_i
+          expiring << [key, expdays]
+        end
+
+        if key.trust
+          unusable << [key, key.trust]
+        end
+      end
+
+      text = ''
+      expiring.each do |key,days|
+        text << I18n.t('key_expires', {
+                          days: days,
+                          fingerprint: key.fingerprint,
+                          email: key.email
+                      })
+      end
+
+      unusable.each do |key,trust|
+        text << I18n.t('key_unusable', {
+                          trust: Array(trust).join(', '),
+                          fingerprint: key.fingerprint,
+                          email: key.email
+                      })
+      end
+      text
+    end
+  
+
+    private
+
+
+    # TODO: refactor with Key#adduid
+    def exec_gpg_cli(args)
+      output = ''
+      exitcode = -1
+      cmd = "gpg #{args}"
+      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
+        output = stdout_err.readlines.join
+        exitcode = wait_thr.value
+      end
+      [exitcode, output]
+    end
+
   end
 end

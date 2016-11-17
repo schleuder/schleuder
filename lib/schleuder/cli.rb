@@ -36,11 +36,23 @@ module Schleuder
       exit 1
     end
 
-    desc 'check_keys', 'Check all lists for unusable or expiring keys and send the results to the list-admins. (This is supposed to be run from cron weekly.)'
+    # TODO: Move this to a subcommand?
+    desc 'refresh_keys', 'Refresh all keys of the given list or all lists from a keyserver. (This is supposed to be run from cron weekly.)'
+    def refresh_keys(listname=nil)
+      require_relative '../schleuder'
+      find_lists(listname).each do |list|
+        text = list.refresh_keys
+        if text && ! text.empty?
+          msg = "#{I18n.t('refresh_keys_intro', email: list.email)}\n\n#{text}"
+          list.logger.notify_admin(msg, nil, I18n.t('refresh_keys'))
+        end
+      end
+    end
+
+    desc 'check_keys', 'Check the given list or all lists for unusable or expiring keys and send the results to the list-admins. (This is supposed to be run from cron weekly.)'
     def check_keys(listname=nil)
       require_relative '../schleuder'
-
-      Schleuder::List.all.each do |list|
+      find_lists(listname).each do |list|
         I18n.locale = list.language
 
         text = list.check_keys
@@ -234,6 +246,18 @@ Please notify the users and admins of this list of these changes.
 
       def root_dir
         Pathname.new(__FILE__).dirname.dirname.dirname.realpath
+      end
+
+      def find_lists(listname)
+        if listname
+          lists = List.find_by_email(listname)
+          if lists.blank?
+            fatal "No such list: #{listname}"
+          end
+        else
+          lists = List.all
+        end
+        lists
       end
     end
   end

@@ -112,6 +112,8 @@ en:
   forward_all_incoming_to_admins: The attached message was received.
   forward_bounce_to_admins: The attached message was received as bounce.
   bounce: Bounced message
+  refresh_keys: Keys refresh
+  refresh_keys_intro: "Refreshing all keys from the keyring of list %{email} resulted in this:"
   check_keys: Keys check
   check_keys_intro: "Please take care of these keys for list %{email}.\n"
   key_expires: "Expires in %{days} days:\n0x%{fingerprint} %{email}"
