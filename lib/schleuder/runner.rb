@@ -82,31 +82,34 @@ module Schleuder
       list.present? && list.logger || Schleuder.logger
     end
 
+    def log_and_return(error)
+      Schleuder.logger.error(error)
+      error
+    end
+
     def setup_list(recipient)
       return @list if @list
 
       logger.info "Loading list '#{recipient}'"
       if ! @list = List.by_recipient(recipient)
-        logger.info 'List not found'
-        return Errors::ListNotFound.new(recipient)
+        return log_and_return(Errors::ListNotFound.new(recipient))
       end
 
       # Check basic sanity of list.
       %w[fingerprint key secret_key admins].each do |attrib|
         if @list.send(attrib).blank?
-          logger.error "list-attribute #{attrib} is blank or missing"
-          return Errors::ListPropertyMissing.new(attrib)
+          return log_and_return(Errors::ListPropertyMissing.new(attrib))
         end
       end
 
       # Check neccessary permissions of crucial files.
       if ! File.readable?(@list.listdir)
-        return Errors::ListdirProblem.new(@list.listdir, :not_readable)
+        return log_and_return(Errors::ListdirProblem.new(@list.listdir, :not_readable))
       elsif ! File.directory?(@list.listdir)
-        return Errors::ListdirProblem.new(@list.listdir, :not_a_directory)
+        return log_and_return(Errors::ListdirProblem.new(@list.listdir, :not_a_directory))
       end
       if ! File.writable?(@list.logfile)
-        return Errors::ListdirProblem.new(@list.logfile, :not_writable)
+        return log_and_return(Errors::ListdirProblem.new(@list.logfile, :not_writable))
       end
 
       # Set locale
