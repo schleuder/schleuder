@@ -189,7 +189,7 @@ module Schleuder
       @gpg_ctx ||= begin
         # TODO: figure out why set it again...
         # Set GNUPGHOME when list is created.
-        ENV['GNUPGHOME'] = listdir
+        set_gnupg_home
         GPGME::Ctx.new armor: true
       end
     end
@@ -276,6 +276,12 @@ module Schleuder
     end
 
     private
+
+    def set_gnupg_home
+      if ENV["SCHLEUDER_ENV"] != "test"
+        ENV['GNUPGHOME'] = listdir
+      end
+    end
 
       def delete_listdir
         if File.exists?(self.listdir)
