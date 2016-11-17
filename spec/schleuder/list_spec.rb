@@ -297,4 +297,25 @@ describe Schleuder::List do
       expect(list.email).to eq "foo@bar.org"
     end
   end
+
+  describe "#admins" do
+    it "returns subscriptions of admin users" do
+      list = Schleuder::List.create(
+        email: "foo@bar.org",
+        fingerprint: "aaaadddd0000999",
+      )
+      admin_subscription = Schleuder::Subscription.create(
+        email: "admin@foo.org",
+        admin: true,
+        list_id: list.id,
+      )
+      _user_subscription = Schleuder::Subscription.create(
+        email: "user@foo.org",
+        admin: false,
+        list_id: list.id,
+      )
+
+      expect(list.admins).to eq [admin_subscription]
+    end
+  end
 end
