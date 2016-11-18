@@ -1,0 +1,136 @@
+schleuder(8) -- an email hub for groups
+=======================================
+
+## SYNOPSIS
+
+`schleuder` work <listaddress> &lt; <email>
+
+`schleuder` help
+
+`schleuder` <other-command> [<...>]
+
+For descriptions of the other commands see the output of the <help>-command.
+
+This manual page is written for system administrators. For other information please read the Schleuder documentation online ([SEE ALSO][]).
+
+## DESCRIPTION
+
+Schleuder is an email hub for groups. Subscribers can communicate encryptedly and pseudonymously among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.
+
+Schleuder takes care of all de- and encryption, stripping of headers, formatting conversions, etc. Further Schleuder can send out its own public key and receive administrative commands by email.
+
+Email cryptography is handled by using GnuPG.
+
+
+## ENVIRONMENT
+
+### Configuration
+
+Schleuder reads its basic settings from a file that it by default expects at </etc/schleuder/schleuder.yml>. To make Schleuder read a different file set the environment variable <SCHLEUDER_CONFIG> to the path to your file when running schleuder. E.g.:
+
+    SCHLEUDER_CONFIG=/usr/local/etc/schleuder.yml /path/to/bin/schleuder ...
+
+For explanations of the possible settings read the default config file.
+
+The default settings for new lists are read from another config file. By default Schleuder looks at </etc/schleuder/list-defaults.yml>. To make Schleuder read a different file set the environment variable <SCHLEUDER_LIST_DEFAULTS> analogous to above. The possible settings are explained in the default config file.
+
+### Connect to MTA
+
+Schleuder behaves like an email-filter: it reads email from standard-input, and reports errors to standard-error. If all goes well Schleuder closes the initial connection to the Mail Transport Agent (MTA) only after it sent out all outgoing emails.
+
+In case of an error the MTA is expected to include Schleuder's error message into a bounce-email that is sent back to the sender (this is default behaviour of most MTAs).
+
+To connect the MTA with Schleuder it must pipe the incoming message into Schleuder's STDIN, and give it two arguments: first one: "work", second one: the full recipients email address.
+
+For more informations on how to integrate Schleuder with your existing mail
+setup, please read the Schleuder documentation online ([SEE ALSO][]).
+
+### Data storage
+
+The keyrings for each list are standard GnuPG keyrings and sit in the filesystem under $lists_dir/$hostname/$listname/ ($lists_dir is read from schleuder.yml, by default it is </var/schleuder/lists>). They can be used manually using gpg2. Please be careful to maintain proper file permissions if you touch the files.
+
+In the list-directory there’s also a list specific log-file (might be missing if the log-level is high and no error occurred yet).
+
+Other logging is sent to syslog. Where that ends up depends on the operating system and the system administration.
+
+All other list-related data is stored in the SQL-database. Most data is unserialized, only some values are JSON-encoded.
+
+
+## SPECIAL FEATURES
+
+Schleuder features some special funtionality. For more detailed information read the Schleuder documentation online ([SEE ALSO][]).
+
+### Getting the public key of a list
+
+Each Schleuder-list replies with its public key to any email sent to
+<listname-sendkey@hostname>. E.g. to receive the key for the contact address
+of the Schleuder project write an email to<br><schleuder-sendkey@nadir.org>.
+
+### Email commands
+
+Schleuder knows some special keywords that trigger different behaviour. You can e.g. subscribe someone, or resend an email to a non-subscriber using keywords.
+
+Keywords require that:
+
+ * they start the line and begin with "x-",
+ * they are written into the beginning of the *first text-part* of the email (usually that’s just the normal body of the email),
+ * possible arguments must be written *on the same line* as the keyword (exceptions are mentioned in the descriptions below),
+ * the email must be *encrypted and signed* by a list-member’s key.
+
+Keywords can be repeated within one email at will. Letter case doesn’t matter.
+
+There are two types of keywords: those to enhance messages sent over the list (“list-keywords”), and those to request something from Schleuder (“request-keywords”).
+
+Find detailed descriptions of all available keywords in the Schleuder documentation online ([SEE ALSO][]).
+
+### Contact list-owner
+
+Write to <listname-owner@hostname> to contact the list-owner(s) even if you don't know who they are. Use the list's key to encrypt the email!
+
+
+## EXIT STATUS
+
+ * 0:
+   Incoming email was processed without errors.
+
+ * 1:
+   Internal failure in incoming email processing.
+
+## FILES
+
+ * `/etc/schleuder/schleuder.yml`:
+   global Schleuder configuration
+
+ * `/etc/schleuder/list-defaults.yml`:
+   default list settings
+
+ * `/var/schleuder/lists/`<hostname>`/`<listname>:
+   list internal data
+
+ * `/var/schleuder/lists/`<hostname>`/`<listname>`/list.log`:
+   log-file for list
+
+All configuration files are formatted as YAML. See
+<http://www.yaml.org/> for more details.
+
+## BUGS
+
+Known bugs are listed on the Schleuder bugtracker at
+<https://codecoop.org/schleuder/schleuder>
+
+## SEE ALSO
+
+`schleuder-cli`(8),
+`gnupg`(7).
+
+ * Website of `schleuder`:
+   <http://schleuder.nadir.org/>
+
+ * More extensive documentation for `schleuder`:
+   <http://schleuder.nadir.org/docs/>
+
+ * `schleuder-cli`, the command line interface for list-management:
+   <http://codecoop.org/schleuder/schleuder-cli/>
+
+ * `schleuder-web`, the web interface for list-management:
+   <http://codecoop.org/schleuder/schleuder-web/>
