@@ -30,24 +30,21 @@ class SchleuderCertManager
 
     cert.sign key, OpenSSL::Digest::SHA256.new
 
-    [filename_key, filename_cert].each do |filename|
-      if filename.exist?
-        error "File exists: #{filename} — (re)move it or change configuration file to proceed."
-      end
-      if ! filename.dirname.exist?
-        filename.dirname.mkpath
-      end
-    end
+    filename_key = prepare_writing(filename_key)
+    filename_cert = prepare_writing(filename_cert)
 
     filename_key.open('w', 400) do |fd|
       fd.puts key
     end
+    puts "Private key written to: #{filename_key}"
 
     filename_cert.open('w') do |fd|
       fd.puts cert.to_pem
     end
+    puts "Certificate written to: #{filename_cert}"
 
-    fingerprint(cert)
+    puts "Fingerprint of generated certificate: #{fingerprint(cert)}"
+    puts "Have this fingerprint included into the configuration-file of all clients that want to connect to your Schleuder API."
   rescue => exc
     error exc.message
   end
@@ -66,5 +63,23 @@ class SchleuderCertManager
   def self.error(msg)
     $stderr.puts "Error: #{msg}"
     exit 1
+  end
+
+  def self.note(msg)
+    $stdout.puts "Note: #{msg}"
+  end
+
+  def self.prepare_writing(filename)
+    if filename.exist?
+      note "File exists: #{filename} — writing to current directory, you should move the file manually or change the configuration file."
+      if filename.basename.exist?
+        error "File exists: #{filename.basename} — (re)move it or fix previous error and try again."
+      end
+      filename = filename.basename
+    end
+    if ! filename.dirname.exist?
+      filename.dirname.mkpath
+    end
+    filename
   end
 end
