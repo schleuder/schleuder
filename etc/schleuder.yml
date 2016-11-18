@@ -28,6 +28,9 @@ database:
 api:
   host: localhost
   port: 4443
+  # Serve the API via https?
+  use_tls: false
+  # Certificate and key to use. You can create new ones with `schleuder cert generate`.
   tls_cert_file: /etc/schleuder/schleuder-certificate.pem
   tls_key_file: /etc/schleuder/schleuder-private-key.pem
   # List of api_keys to allow access to the API.
