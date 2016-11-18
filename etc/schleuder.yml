@@ -26,8 +26,8 @@ database:
 
 # Note: The API-daemon will bind only to localhost if no TLS-cert+keys are available.
 api:
+  host: localhost
   port: 4443
-  bind: 0.0.0.0
   tls_cert_file: /etc/schleuder/schleuder-certificate.pem
   tls_key_file: /etc/schleuder/schleuder-private-key.pem
   # List of api_keys to allow access to the API.

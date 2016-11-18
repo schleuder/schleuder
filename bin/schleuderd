@@ -17,7 +17,7 @@ class Schleuderd < Sinatra::Base
   configure do
     set :server, :thin
     set :port, Schleuder::Conf.api['port'] || 4443
-    set :bind, Schleuder::Conf.api['bind'] || '0.0.0.0'
+    set :bind, Schleuder::Conf.api['host'] || 'localhost'
     if settings.development?
       set :logging, Logger::DEBUG
     else
