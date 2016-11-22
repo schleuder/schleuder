@@ -101,12 +101,6 @@ describe Schleuder::Subscription do
   end
 
   BOOLEAN_SUBSCRIPTION_ATTRIBUTES.each do |subscription_attribute|
-    it "casts string values in #{subscription_attribute} to false" do
-      subscription = Schleuder::Subscription.new("#{subscription_attribute}": "foobar")
-
-      expect(subscription.method(subscription_attribute).call).to eq false
-    end
-
     it "is invalid if #{subscription_attribute} is nil" do
       subscription = Schleuder::Subscription.new(
         list_id: @list.id,

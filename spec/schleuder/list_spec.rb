@@ -107,12 +107,6 @@ describe Schleuder::List do
   end
 
   BOOLEAN_LIST_ATTRIBUTES.each do |list_attribute|
-    it "casts string values in #{list_attribute} to false" do
-      list = Schleuder::List.new("#{list_attribute}": "foobar")
-
-      expect(list.method(list_attribute).call).to eq false
-    end
-
     it "is invalid if #{list_attribute} is nil" do
       list = Schleuder::List.new(
         email: "foo@bar.org",
