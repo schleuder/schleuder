@@ -3,7 +3,7 @@ require_relative "lib/#{project}.rb"
 
 version = Schleuder::VERSION
 tagname = "#{project}-#{version}"
-gpguid = 'schleuder2@nadir.org'
+gpguid = 'schleuder@nadir.org'
 tarball = "#{tagname}.tar.gz"
 
 load "active_record/railties/databases.rake"
