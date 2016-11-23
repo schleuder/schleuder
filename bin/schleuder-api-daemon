@@ -12,7 +12,7 @@ require_relative '../lib/schleuder.rb'
 TLS_CERT = Conf.api['tls_cert_file']
 TLS_KEY = Conf.api['tls_key_file']
 
-class Schleuderd < Sinatra::Base
+class SchleuderApiDaemon < Sinatra::Base
   register Sinatra::Namespace
   configure do
     set :server, :thin
@@ -43,7 +43,7 @@ class Schleuderd < Sinatra::Base
       username == 'schleuder' && Conf.api_valid_api_keys.include?(key)
     end
   else
-    $stderr.puts "\nWarning: Without TLS Schleuderd enforces binding to localhost only!\nExecute `schleuder cert generate` and follow the instructions.\n\n"
+    $stderr.puts "\nWarning: Without TLS, schleuder-api-daemon enforces binding to localhost only!\nExecute `schleuder cert generate` and follow the instructions.\n\n"
     set :bind, 'localhost'
   end
 

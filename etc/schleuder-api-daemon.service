@@ -2,7 +2,7 @@
 Description=Schleuder API daemon
 
 [Service]
-ExecStart=/usr/local/bin/schleuderd
+ExecStart=/usr/local/bin/schleuder-api-daemon
 User=schleuder
 
 [Install]
