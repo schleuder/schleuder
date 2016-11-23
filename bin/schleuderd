@@ -208,7 +208,7 @@ class Schleuderd < Sinatra::Base
     put '/:id.json' do |id|
       list = list(id)
       if list.update(parsed_body)
-        200
+        204
       else
         client_error(list)
       end
@@ -217,7 +217,7 @@ class Schleuderd < Sinatra::Base
     patch '/:id.json' do |id|
       list = list(id)
       if list.update(parsed_body)
-        200
+        204
       else
         client_error(list)
       end
