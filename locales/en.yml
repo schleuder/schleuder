@@ -1,0 +1,119 @@
+en:
+  errors:
+    attributes:
+      language:
+        inclusion: "must be one of: en, de"
+      log_level:
+        inclusion: "must be one of: debug, info, warn, error"
+      openpgp_header_preference:
+        inclusion: "must be one of: sign, encrypt, signencrypt, unprotected, none"
+      public_footer:
+        invalid: "includes non-printable characters"
+    invalid_email: "is not a valid email address"
+    invalid_fingerprint: "is not a valid fingerprint"
+    list_fingerprint_missing: "List has no fingerprint configured, cannot run!"
+    list_key_missing: "List-key is missing in keyring, cannot run!"
+    list_secret_key_missing: 'Secret key of list is missing in keyring, cannot run!'
+    list_admins_missing: "List has no admins configured, cannot run!"
+    fatalerror: |
+      A fatal error happened. Administrators have been notified.
+      Please try again later.
+    signoff: |
+
+
+      Kind regards,
+      Your Schleuder system.
+    decryption_failed: |
+      Decrypting your message failed.
+      Messages to this address must be encrypted with the following key:
+
+      %{key}
+
+      To receive it send an email to
+      <%{email}>.
+    message_unsigned: Messages to this address must be OpenPGP-signed.
+    message_signature_unknown: |
+      Messages to this address must be OpenPGP-signed by the key that is configured
+      for your subscription. If you don't know which one that is, ask an administrator
+      of this list. You can contact the administrators by sending a message to
+      <%{owner_email}>
+      (preferably encrypt it with this addresses' public key:
+      %{list_fingerprint}).
+    message_unencrypted: Messages to this address must be encrypted conforming to OpenPGP.
+    message_unauthenticated: Messages to this address must be encrypted and signed by the key associated with a subscribed address.
+    message_sender_not_subscribed: Only subscribed addresses may send messages to this address.
+    message_not_from_admin: Only admins may send messages to this address.
+    message_empty: |
+      Your message was found empty and wasn't passed on to the list.
+
+      In case you only sent keywords please note that administrative keywords must be sent to the "request"-address (<%{request_address}>) in order to be respected.
+    no_linebreaks: "must not include line-breaks"
+    list_not_found: "Error: No list found with this address: '%{email}'."
+    invalid_listname: "Error: '%{email}' is not a valid address."
+    invalid_characters: "contains invalid characters"
+    list_exists: A list with address '%{email}' is already present.
+    listdir_problem:
+      message: "There's a problem with the list-directory: '%{dir}' %{problem}."
+      not_a_directory: is not a directory
+      not_empty: is not empty
+      not_writable: is not writable
+      not_readable: is not readable
+    keyword_admin_only: The keyword '%{keyword}' may only be used by list-admin.
+    key_generation_failed: Generating the OpenPGP key pair for %{listname} failed for unknown reasons. Please check the list-directory ('%{listdir}') and the log-files.
+    key_adduid_failed: "Adding a user-ID to the OpenPGP key failed with this message:\n%{errmsg}"
+    too_many_keys: "Error: In %{listdir} there's more than one matching OpenPGP-key for %{listname}. Please delete all but one."
+    unknown_list_option: "Unknown option in %{config_file}: '%{option}'."
+    loading_list_settings_failed: "%{config_file} could not be parsed, please check its formatting to be valid YAML."
+    message_too_big: "Your message was too big. Allowed are up to %{allowed_size}KB."
+    must_be_boolean: "must be true or false"
+    must_be_greater_than_zero: "must be a number greater than zero"
+    file_not_found: "File not found: '%{file}'."
+    not_pgp_mime: "Message was not encrypted in the pgp/mime-format."
+  plugins:
+    unknown_keyword: Unknown keyword '%{keyword}'.
+    plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
+    keyword_admin_notify: "%{signer} sent keyword '%{keyword}' and received this response:"
+    key_management:
+      import_result: "Import result:"
+      key_import_status:
+        imported: imported
+        updated: updated
+        unchanged: unchanged
+    resend:
+      not_resent_no_keys: "Resending failed. For the following recipients no matching key was found and unencrypted sending was disallowed: %{emails}."
+      encrypted_with: encrypted with
+      unencrypted: unencrypted
+    subscription_management:
+      forbidden: "Error: You're not allowed to unsubscribe %{email}."
+      is_not_subscribed: "%{email} is not subscribed."
+      unsubscribed: "%{email} has been unsubscribed."
+      unsubscribing_failed: |
+        Unsubscribing %{email} failed:
+        %{errors}
+      subscribed: "%{email} has been subscribed with fingerprint %{fingerprint}."
+      subscribing_failed: |
+        Subscribing %{email} failed:
+        %{errors}
+      list_of_subscriptions: Subscriptions
+      fingerprint_set: Fingerprint for %{email} set to %{fingerprint}.
+      setting_fingerprint_failed: |
+        Setting fingerprint for %{email} to %{fingerprint} failed:
+        %{errors}.
+    signatures_attached: Find the signatures attached.
+  list_public_key_attached: Find the key for this address attached.
+  no_output_result: Your message resulted in no output.
+  owner_forward_prefix: The following message was received for the list-owners.
+  no_keywords_error: Your message didn't contain any keywords, thus there was nothing to do.
+  bounces_drop_all: The attached message should have been bounced but was dropped without further notice because the list's configuration defines that no message should ever be bounced.
+  bounces_drop_on_headers: "The attached message should have been bounced but was dropped without further notice because it matched this header-line: %{key}: %{value}"
+  bounces_notify_admins: "The attached message was bounced with the following notice:"
+  notice: Notice
+  incoming_message: Incoming message
+  forward_all_incoming_to_admins: The attached message was received.
+  forward_bounce_to_admins: The attached message was received as bounce.
+  bounce: Bounced message
+  check_keys: Keys check
+  check_keys_intro: "Please take care of these keys for list %{email}.\n"
+  key_expires: "Expires in %{days} days:\n0x%{fingerprint} %{email}"
+  key_unusable: "Is %{trust}:\n0x%{fingerprint} %{email}"
+  missed_message_due_to_absent_key: "You missed an email from %{list_email} because your subscription isn't associated with a (usable) OpenPGP key. Please fix this."

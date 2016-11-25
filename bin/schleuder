@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+trap("INT") { exit 1 }
+
+
+begin
+  require_relative '../lib/schleuder/cli'
+  Schleuder::Cli.start
+rescue => exc
+  $stderr.puts exc.to_s
+  exit 1
+end

@@ -1,0 +1,119 @@
+de:
+  errors:
+    attributes:
+      language:
+        inclusion: "muss einem der folgenden Werte entsprechen: en, de"
+      log_level:
+        inclusion: "muss einem der folgenden Werte entsprechen: debug, info, warn, error"
+      openpgp_header_preference:
+        inclusion: "muss einem der folgenden Werte entsprechen: sign, encrypt, signencrypt, unprotected, none"
+      public_footer:
+        invalid: "enthält nicht druckbare Zeichen"
+    invalid_email: "ist keine valide E-Mail-Adresse"
+    invalid_fingerprint: "ist kein valider Fingerprint"
+    fingerprint_blank: 'Fingerprint der Liste ist nicht gesetzt, kann nicht arbeiten!'
+    list_key_missing: 'Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten!'
+    list_secret_key_missing: 'Geheimer Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten!'
+    admins_missing: 'List hat keine Admins konfiguriert, kann nicht arbeiten!'
+    fatalerror: |
+      Es ist ein schwerwiegender Fehler aufgetreten. Administratoren wurden benachrichtigt.
+      Bitte versuche es später noch ein Mal.
+    signoff: |
+
+
+      Freundliche Grüße,
+      Dein Schleuder-System.
+    decryption_failed: |
+      Deine Email konnnte nicht entschlüsselt werden.
+      Emails an diese Adresse müssen mit diesem Schlüssel verschlüsselt werden:
+
+      %{key}
+
+      Um den Schlüssel zugesandt zu bekommen sende eine Email an
+      <%{sendkey_email}>.
+    message_unsigned: Emails an diese Adresse müssen mit einem OpenPGP-Schlüssel signiert sein.
+    message_signature_unknown: |
+      Emails an diese Adresse müssen mit dem OpenPGP-Schlüssel signiert sein, der für
+      dein Abo eingetragen ist. Wenn du nicht weisst, welcher Schlüssel das ist, frage
+      die Administrator/innen. Die erreichst du per Email an
+      <%{owner_email}>.
+      (Vorzugsweise verschlüssele die Email mit dem Schlüssel dieser Adresse:
+      %{list_fingerprint}).
+    message_unencrypted: Emails an diese Adresse müssen OpenPGP-konform verschlüsselt sein.
+    message_unauthenticated: Emails an diese Adresse müssen verschlüsselt und mit einem OpenPGP-Schlüssel signiert sein, der für ein Abo eingetragen ist.
+    message_sender_not_subscribed: Nur Absender mit Abo dürfen Emails an diese Adresse schicken.
+    message_not_from_admin: Nur Admins dürfen Emails an diese Adresse schicken.
+    message_empty: |
+      Deine Email enthielt keinen Text, daher wurde sie nicht über die Liste verteilt.
+
+      Falls du ausschließlich Schlüsselwörter gesendet hast beachte, dass administrative Schlüsselwörter an die "request"-Adresse (<%{request_address}>) geschickt werden müssen um berücksichtigt zu werden.
+    list_not_found: "Fehler: Keine Liste zu dieser Adresse gefunden: '%{email}'."
+    no_linebreaks: "Darf keine Zeilenumbrüche enthalten"
+    invalid_characters: "enthält ungültige Zeichen"
+    invalid_listname: "Fehler: '%{email}' ist kein gültige Listen-Adresse."
+    list_exists: Es existiert bereits eine Liste mit der Adresse '%{email}'.
+    listdir_problem:
+      message: "Problem mit dem Listen-Verzeichnis: '%{dir}' %{problem}."
+      not_a_directory: ist kein Verzeichnis
+      not_empty: ist nicht leer
+      not_writable: ist nicht beschreibbar
+      not_readable: ist nicht lesbar
+    keyword_admin_only: Das Schlüsselwort '%{keyword}' darf nur von Listen-Admins verwendet werden.
+    key_generation_failed: Das Erzeugen des OpenPGP-Schlüsselpaares für %{listname} ist aus unbekannten Gründen fehlgeschlagen. Bitte prüfe das Listen-Verzeichnis ('%{listdir}') und die Log-Dateien.
+    key_adduid_failed: "Das Hinzufügen einer User-ID zum OpenPGP-Schlüssel ist mit folgender Meldung fehlgeschlagen:\n%{errmsg}"
+    too_many_keys: "Fehler: In %{listdir} existieren mehrere OpenPGP-Schlüssel für %{listname}. Bitte lösche alle bis auf einen."
+    unknown_list_option: "Unbekannte Option in %{config_file}: '%{option}'."
+    loading_list_settings_failed: "%{config_file} konnte nicht eingelesen werden, bitte Formatierung auf gültiges YAML prüfen."
+    message_too_big: "Deine Email war zu groß. Erlaubt sind für diese Liste %{allowed_size}KB."
+    must_be_boolean: "muss true oder false sein"
+    must_be_greater_than_zero: "muss größer als null sein"
+    file_not_found: "Die Datei existiert nicht: '%{file}'."
+    not_pgp_mime: "Deine Email war nicht im pgp/mime-Format verschlüsselt."
+  plugins:
+    unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
+    plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
+    keyword_admin_notify: "%{signer} schickte das Schlüsselwort '%{keyword}' und erhielt dies als Antwort:"
+    key_management:
+      import_result: "Import-Ergebnis:"
+      key_import_status:
+        imported: importiert
+        updated: aktualisiert
+        unchanged: unverändert
+    resend:
+      not_resent_no_keys: "Das Versenden schlug fehl. Für die folgenden Adressen wurde kein Schlüssel gefunden und unverschlüsseltes Senden war untersagt: %{emails}."
+      encrypted_with: verschlüsselt mit
+      unencrypted: unverschlüsselt
+    subscription_management:
+      forbidden: "Fehler: Du bist nicht berechtigt, das Abo für %{email} zu löschen."
+      is_not_subscribed: Kein Abo für %{email} gefunden.
+      unsubscribed: Abo für %{email} wurde gelöscht.
+      unsubscribing_failed: |
+        Abo für %{email} nicht gelöscht:
+        %{errors}
+      subscribed: Abo für %{email} mit Fingerabdruck %{fingerprint} eingetragen.
+      subscribing_failed: |
+        Abo für %{email} nicht eingetragen:
+        %{errors}
+      list_of_subscriptions: Abos
+      fingerprint_set: Fingerabdruck für %{email} auf %{fingerprint} gesetzt.
+      setting_fingerprint_failed: |
+        Fingerabdruck für %{email} konnte nicht auf %{fingerprint} gesetzt werden:
+        %{errors}.
+    signatures_attached: Die Signaturen hängen an.
+  list_public_key_attached: Der Schlüssel zu dieser Adresse hängt an.
+  no_output_result: Deine Email ergab keinen Ausgabe-Text.
+  owner_forward_prefix: Die folgende Email ging für die Listen-Besitzer/innen ein.
+  no_keywords_error: Deine Email enthielt keine Schlüsselwörter, daher gab es nichts zu tun.
+  bounces_drop_all: Die angehängte Email hätte zurückgewiesen (bounced) werden sollen, wurde aber stillschweigend fallen gelassen, weil die Konfiguration dieser Liste definiert, dass für diese Liste nie Email zurückgewiesen werden soll.
+  bounces_drop_on_headers: "Die angehängte Email hätte zurückgewiesen (bounce) werden sollen, wurde aber stillschweigend fallen gelassen, weil diese Kopfzeile gefunden wurde: %{key}: %{value}"
+  bounces_notify_admins: "Die angehängte Email wurde mit folgender Nachricht zurückgewiesen:"
+  notice: Hinweis
+  incoming_message: Eingehende Email
+  forward_all_incoming_to_admins: Die angehängte Email ging ein.
+  forward_bounce_to_admins: Die angehängte Email ging als zurückgewiesen (bounce) ein.
+  bounce: Zurückgewiesene Nachricht
+  check_keys: Schlüsselprüfung
+  check_keys_intro: "Bitte kümmere dich um die folgenden Schlüssel für Liste %{email}."
+  key_expires: "Läuft in %{days} Tagen ab:\n0x%{fingerprint} %{email}"
+  key_unusable: "Ist %{trust}:\n0x%{fingerprint} %{email}"
+  missed_message_due_to_absent_key: "Du hast eine Email von %{list_email} verpasst weil mit deinem Abo keinen (benutzbarer) OpenPGP-Schlüssel verknüpft ist. Bitte kümmere dich darum."
