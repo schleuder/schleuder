@@ -175,6 +175,16 @@ describe Schleuder::List do
       expect(list).not_to be_valid
       expect(list.errors.messages[list_attribute]).to include("must not include line-breaks")
     end
+
+    it "is valid if #{list_attribute} is nil" do
+      list = Schleuder::List.new(
+        email: "foo@bar.org",
+        fingerprint: "aaaadddd0000999",
+        "#{list_attribute}": nil,
+      )
+
+      expect(list).to be_valid
+    end
   end
 
   it "is invalid if openpgp_header_preference is foobar" do
