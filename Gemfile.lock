@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    schleuder (3.0.0.beta6)
+    schleuder (3.0.0.beta7)
       activerecord (~> 4.1)
       mail-gpg (~> 0.2.7)
       rake (~> 10)
@@ -101,4 +101,4 @@ DEPENDENCIES
   thin
 
 BUNDLED WITH
-   1.13.5
+   1.13.6
