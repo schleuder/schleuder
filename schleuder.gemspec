@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'database_cleaner'
   s.post_install_message = "
 
-    Please consider additionallly installing schleuder-conf (allows to
+    Please consider additionallly installing schleuder-cli (allows to
     configure lists from the command line).
 
     To set up Schleuder on this system please run `schleuder install`.

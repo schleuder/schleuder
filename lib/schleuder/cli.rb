@@ -94,7 +94,7 @@ module Schleuder
         say "NOTE: The database was prepared using sqlite. If you prefer to use a different DBMS please edit the 'database'-section in /etc/schleuder/schleuder.yml, create the database, install the corresponding ruby-library (e.g. `gem install mysql`) and run this current command again"
       end
 
-      say "Schleuder has been set up. You can now create a new list using `schleuder-conf`.\nWe hope you enjoy!"
+      say "Schleuder has been set up. You can now create a new list using `schleuder-cli`.\nWe hope you enjoy!"
     rescue => exc
       fatal exc.message
     end

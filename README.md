@@ -77,7 +77,7 @@ List administration
 -------------------
 
 You probably want to install
-[schleuder-conf](https://git.codecoop.org/schleuder/schleuder-conf), too.
+[schleuder-cli](https://git.codecoop.org/schleuder/schleuder-cli), too.
 Otherwise you'd need to edit the database-records manually to change
 list-settings, subscribe addresses, etc.
 
