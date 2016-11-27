@@ -33,6 +33,7 @@ Additionally these **rubygems** are required (will be installed automatically un
 * active_record
 * sqlite3
 * thor
+* thin
 * mail-gpg
 * sinatra
 * sinatra-contrib

@@ -27,8 +27,8 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'sinatra', '~> 1'
   s.add_runtime_dependency 'sinatra-contrib', '~> 1'
   s.add_runtime_dependency 'thor', '~> 0'
+  s.add_runtime_dependency 'thin', '~> 1'
   s.add_development_dependency 'rspec', '~> 3.5.0'
-  s.add_development_dependency 'thin'
   s.add_development_dependency 'hirb'
   s.add_development_dependency 'database_cleaner'
   s.post_install_message = "

@@ -8,6 +8,7 @@ PATH
       sinatra (~> 1)
       sinatra-contrib (~> 1)
       sqlite3 (~> 1)
+      thin (~> 1)
       thor (~> 0)
 
 GEM
@@ -98,7 +99,6 @@ DEPENDENCIES
   hirb
   rspec (~> 3.5.0)
   schleuder!
-  thin
 
 BUNDLED WITH
    1.13.6
