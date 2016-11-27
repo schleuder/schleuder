@@ -44,7 +44,7 @@ Installing Schleuder
 
 1. Download [the gem](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta8.gem) and [the OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta8.gem.sig) and verify:
    ```
-   gpg --recv-key 0x75C9B62688F93AC6574BDE7ED8A6EF816E1C6F25
+   gpg --recv-key 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
    gpg --verify schleuder-3.0.0.beta8.gem.sig
    ```
 
