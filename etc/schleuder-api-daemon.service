@@ -1,5 +1,6 @@
 [Unit]
 Description=Schleuder API daemon
+After=local-fs.target network.target
 
 [Service]
 ExecStart=/usr/local/bin/schleuder-api-daemon

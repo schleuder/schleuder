@@ -4,7 +4,7 @@ Schleuder, version 3
 Schleuder is a gpg-enabled mailing list manager with resending-capabilities. Subscribers can communicate encrypted (and pseudonymously) among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.
 
 Version 3 of schleuder is a complete rewrite, which aims to be more robust, flexible, and internationalized. It
-also provides an API for the optional web interface called [webschleuder](https://git.codecoop.org/schleuder/webschleuder3).
+also provides an API for the optional web interface called [schleuder-web](https://git.codecoop.org/schleuder/schleuder-web).
 
 For more details see <https://schleuder.nadir.org/docs/>.
 
@@ -33,6 +33,7 @@ Additionally these **rubygems** are required (will be installed automatically un
 * active_record
 * sqlite3
 * thor
+* thin
 * mail-gpg
 * sinatra
 * sinatra-contrib
@@ -41,15 +42,15 @@ Additionally these **rubygems** are required (will be installed automatically un
 Installing Schleuder
 ------------
 
-1. Download [the gem](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta6.gem) and [the OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta6.gem.sig) and verify:
+1. Download [the gem](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta8.gem) and [the OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta8.gem.sig) and verify:
    ```
    gpg --recv-key 0x75C9B62688F93AC6574BDE7ED8A6EF816E1C6F25
-   gpg --verify schleuder-3.0.0.beta6.gem.sig
+   gpg --verify schleuder-3.0.0.beta8.gem.sig
    ```
 
 2. If all went well install the gem:
    ```
-   gem install schleuder-3.0.0.beta6.gem
+   gem install schleuder-3.0.0.beta8.gem
    ```
 
 3. Set up schleuder:
@@ -77,12 +78,12 @@ List administration
 -------------------
 
 You probably want to install
-[schleuder-conf](https://git.codecoop.org/schleuder/schleuder-conf), too.
+[schleuder-cli](https://git.codecoop.org/schleuder/schleuder-cli), too.
 Otherwise you'd need to edit the database-records manually to change
 list-settings, subscribe addresses, etc.
 
 Optionally consider installing
-[webschleuder](https://git.codecoop.org/schleuder/webschleuder3), the web
+[schleuder-web](https://git.codecoop.org/schleuder/schleuder-web), the web
 interface for schleuder.
 
 

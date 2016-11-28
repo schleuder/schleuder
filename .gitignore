@@ -1,0 +1,5 @@
+.bundle
+vendor
+*.swp
+db/*.sqlite3
+testmails/*
