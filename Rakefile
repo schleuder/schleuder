@@ -36,7 +36,7 @@ task :git_tag => :check_version
 task :tarball => :check_version
 
 desc "Build new version: git-tag and gem-file"
-task :new_version => [:gem, :edit_readme, :git_commit_version, :git_tag] do
+task :new_version => [:gem, :tarball, :edit_readme, :git_commit_version, :git_tag] do
 end
 
 desc "Edit README"
