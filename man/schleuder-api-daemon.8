@@ -1,0 +1,68 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "SCHLEUDER\-API\-DAEMON" "8" "November 2016" "" ""
+.
+.SH "SYNOPSIS"
+\fBschleuder\-api\-daemon\fR
+.
+.SH "DESCRIPTION"
+schleuder\-api\-daemon provides the HTTP\-API of Schleuder(8) to clients\.
+.
+.SH "ENVIRONMENT"
+.
+.SS "Configuration"
+\fBschleuder\-api\-daemon\fR reads configuration out of the \fBapi\fR section of \fBschleuder\fR\'s configuration\. Please see \fBschleuder\fR(8) for details about the configuration file\.
+.
+.P
+The available options are:
+.
+.TP
+\fBhost\fR
+The hostname/IP to listen at\. This is overwritten with \'localhost\' unless \fBuse_tls\fR is true\.
+.
+.TP
+\fBport\fR
+The port to listen at\. Default: 4443\.
+.
+.TP
+\fBuse_tls\fR
+Serve the API via HTTPS? Default: false\. Requires a usable certificate and key specified as \fBtls_cert_file\fR and \fBtls_key_file\fR\.
+.
+.TP
+\fBtls_cert_file\fR
+Path to the file that contains the TLS\-certificate to use for HTTPS\. You can generate a new one with \fBschleuder cert generate\fR\.
+.
+.TP
+\fBtls_key_file\fR
+Path to the file that contains the TLS\-key to use for HTTPS\.
+.
+.TP
+\fBvalid_api_keys\fR
+List of api_keys to allow access to the API\.
+.
+.SS "Clients"
+Available clients using the API are \fBschleuder\-cli\fR(8) and \fBschleuder\-web\fR\. URLs to their websites are listed in \fISEE ALSO\fR\.
+.
+.SH "BUGS"
+Known bugs are listed on the Schleuder bugtracker at \fIhttps://codecoop\.org/schleuder/schleuder\fR
+.
+.SH "SEE ALSO"
+\fBschleuder\fR(8), \fBschleuder\-cli\fR(8)
+.
+.TP
+Website of \fBschleuder\fR
+\fIhttp://schleuder\.nadir\.org/\fR
+.
+.TP
+More extensive documentation for \fBschleuder\fR
+\fIhttp://schleuder\.nadir\.org/docs/\fR
+.
+.TP
+\fBschleuder\-cli\fR, the command line interface for list\-management
+\fIhttp://codecoop\.org/schleuder/schleuder\-cli/\fR
+.
+.TP
+\fBschleuder\-web\fR, the web interface for list\-management
+\fIhttp://codecoop\.org/schleuder/schleuder\-web/\fR
+
