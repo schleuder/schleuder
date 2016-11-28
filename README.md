@@ -113,3 +113,9 @@ To contribute please follow this workflow:
 
 
 Thank you for your interest!
+
+
+Alternative Download
+--------------------
+
+Alternatively to the gem-files you can download the latest release as [a tarball](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta8.tar.gz) and [its OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta8.tar.gz.sig).
