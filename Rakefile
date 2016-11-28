@@ -70,7 +70,13 @@ end
 
 desc 'Publish gem-file to rubygems.org'
 task :publish_gem do
-  `gem push #{tagname}.gem`
+  puts "Really push #{@tagname}.gem to rubygems.org? [yN]"
+  if gets.match(/^y/i)
+    puts "Pushing..."
+    `gem push #{@tagname}.gem`
+  else
+    puts "Not pushed."
+  end
 end
 
 desc 'Build and sign a tarball'
