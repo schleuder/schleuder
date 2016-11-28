@@ -16,14 +16,14 @@ ActiveRecord::Tasks::DatabaseTasks.tap do |config|
   config.database_configuration = Schleuder::Conf.databases
 end
 
+# ActiveRecord requires this task to be present
+Rake::Task.define_task("db:environment")
+
 def move_sign_and_add(file)
   `mv -iv #{file} gems/`
   `cd gems && gpg -u #{@gpguid} -b #{file}`
   `git add gems/#{file}*`
 end
-
-# ActiveRecord requires this task to be present
-Rake::Task.define_task("db:environment")
 
 task :console do
   exec "irb -r #{File.dirname(__FILE__)}/lib/schleuder.rb"
