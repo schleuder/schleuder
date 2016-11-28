@@ -16,9 +16,10 @@ ActiveRecord::Tasks::DatabaseTasks.tap do |config|
   config.database_configuration = Schleuder::Conf.databases
 end
 
-def sign_and_add(gemfile)
-  `cd gems && gpg -u #{@gpguid} -b #{gemfile}`
-  `git add gems/#{gemfile}*`
+def move_sign_and_add(file)
+  `mv -iv #{file} gems/`
+  `cd gems && gpg -u #{@gpguid} -b #{file}`
+  `git add gems/#{file}*`
 end
 
 # ActiveRecord requires this task to be present
@@ -31,12 +32,10 @@ end
 desc 'Release a new version of schleuder.'
 task :release => [:git_tag, :gem, :publish_gem, :tarball, :wiki]
 
-task :gem => :check_version
 task :git_tag => :check_version
-task :tarball => :check_version
 
 desc "Build new version: git-tag and gem-file"
-task :new_version => [:gem, :tarball, :edit_readme, :git_commit_version, :git_tag] do
+task :new_version => [:check_version, :gem, :tarball, :edit_readme, :git_commit_version, :git_tag] do
 end
 
 desc "Edit README"
@@ -64,8 +63,7 @@ desc 'Build, sign and commit a gem-file.'
 task :gem do
   gemfile = "#{@tagname}.gem"
   `gem build #{project}.gemspec`
-  `mv -iv #{gemfile} gems/`
-  sign_and_add(gemfile)
+  move_sign_and_add(gemfile)
 end
 
 desc 'Publish gem-file to rubygems.org'
@@ -83,14 +81,13 @@ desc 'Build and sign a tarball'
 task :tarball do
   tarball = "#{@tagname}.tar.gz"
   `git archive --format tar.gz --prefix "#{@tagname}/" -o #{tarball} #{@tagname}`
-  sign_and_add(tarball)
+  move_sign_and_add(tarball)
 end
 
-desc 'Describe manual wiki-related release-tasks'
-task :wiki do
+desc 'Describe manual release-tasks'
+task :website do
   puts "Please update the website:
-  * Upload tarball+signature.
-  * Edit download- and changelog-pages.
+  * Update changelog.
   * Publish release-announcement.
 "
 end
