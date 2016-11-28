@@ -42,7 +42,7 @@ In case of an error the MTA is expected to include Schleuder's error message int
 
 To connect the MTA with Schleuder it must pipe the incoming message into Schleuder's STDIN, and give it two arguments: first one: "work", second one: the full recipients email address.
 
-For more informations on how to integrate Schleuder with your existing mail
+For more information on how to integrate Schleuder with your existing mail
 setup, please read the Schleuder documentation online ([SEE ALSO][]).
 
 ### Data storage
