@@ -29,9 +29,7 @@ task :console do
   exec "irb -r #{File.dirname(__FILE__)}/lib/schleuder.rb"
 end
 
-desc 'Release a new version of schleuder.'
-task :release => [:git_tag, :gem, :publish_gem, :tarball, :wiki]
-
+task :publish_gem => :website
 task :git_tag => :check_version
 
 desc "Build new version: git-tag and gem-file"
