@@ -1,10 +1,9 @@
 project = 'schleuder'
 require_relative "lib/#{project}.rb"
 
-version = Schleuder::VERSION
-tagname = "#{project}-#{version}"
-gpguid = 'schleuder@nadir.org'
-tarball = "#{tagname}.tar.gz"
+@version = Schleuder::VERSION
+@tagname = "#{project}-#{@version}"
+@gpguid = 'schleuder@nadir.org'
 
 load "active_record/railties/databases.rake"
 
@@ -15,6 +14,11 @@ ActiveRecord::Tasks::DatabaseTasks.tap do |config|
   config.migrations_paths = ['db/migrate']
   config.env = ENV['SCHLEUDER_ENV']
   config.database_configuration = Schleuder::Conf.databases
+end
+
+def sign_and_add(gemfile)
+  `cd gems && gpg -u #{@gpguid} -b #{gemfile}`
+  `git add gems/#{gemfile}*`
 end
 
 # ActiveRecord requires this task to be present
@@ -37,7 +41,7 @@ end
 
 desc "Edit README"
 task :edit_readme do
-  puts "Please edit the README to refer to version #{version}"
+  puts "Please edit the README to refer to version #{@version}"
   if system('gvim -f README.md')
     `git add README.md`
   else
@@ -47,22 +51,21 @@ end
 
 desc 'git-tag HEAD as new version'
 task :git_tag do
-  `git tag -u #{gpguid} -s -m "Version #{version}" #{tagname}`
+  `git tag -u #{@gpguid} -s -m "Version #{@version}" #{@tagname}`
 end
 
 desc "Commit changes as new version"
 task :git_commit_version do
   `git add lib/#{project}/version.rb`
-  `git commit -m "Version #{version} (README, gems)"`
+  `git commit -m "Version #{@version} (README, gems)"`
 end
 
 desc 'Build, sign and commit a gem-file.'
 task :gem do
-  gemfile = "#{tagname}.gem"
+  gemfile = "#{@tagname}.gem"
   `gem build #{project}.gemspec`
   `mv -iv #{gemfile} gems/`
-  `cd gems && gpg -u #{gpguid} -b #{gemfile}`
-  `git add gems/#{gemfile}*`
+  sign_and_add(gemfile)
 end
 
 desc 'Publish gem-file to rubygems.org'
@@ -72,8 +75,9 @@ end
 
 desc 'Build and sign a tarball'
 task :tarball do
-  `git archive --format tar.gz --prefix "#{tagname}/" -o #{tarball} #{tagname}`
-  `gpg -u schleuder2@nadir.org --detach-sign #{tarball}`
+  tarball = "#{@tagname}.tar.gz"
+  `git archive --format tar.gz --prefix "#{@tagname}/" -o #{tarball} #{@tagname}`
+  sign_and_add(tarball)
 end
 
 desc 'Describe manual wiki-related release-tasks'
@@ -88,11 +92,11 @@ end
 desc 'Check if version-tag already exists'
 task :check_version do
   # Check if Schleuder::VERSION has been updated since last release
-  if `git tag`.include?(tagname)
-    $stderr.puts "Warning: Tag '#{tagname}' already exists. Did you forget to update #{project}/version.rb?"
+  if `git tag`.include?(@tagname)
+    $stderr.puts "Warning: Tag '#{@tagname}' already exists. Did you forget to update #{project}/version.rb?"
     $stderr.print "Continue? [yN] "
     if $stdin.gets.match(/^y/i)
-      `git tag -d #{tagname}`
+      `git tag -d #{@tagname}`
     else
       exit 1
     end
