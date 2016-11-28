@@ -77,14 +77,14 @@ E.g.:
 List administration
 -------------------
 
-You probably want to install
-[schleuder-cli](https://git.codecoop.org/schleuder/schleuder-cli), too.
-Otherwise you'd need to edit the database-records manually to change
-list-settings, subscribe addresses, etc.
+Please use
+[schleuder-cli](https://git.codecoop.org/schleuder/schleuder-cli) to create and
+manage lists from the command line.
 
 Optionally consider installing
 [schleuder-web](https://git.codecoop.org/schleuder/schleuder-web), the web
-interface for schleuder.
+interface for schleuder. It enables list-admins to manage their lists through
+the web instead of using [request-keywords](https://schleuder.nadir.org/docs/#subscription-and-key-management).
 
 
 
