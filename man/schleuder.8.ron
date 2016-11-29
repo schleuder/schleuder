@@ -124,13 +124,13 @@ Known bugs are listed on the Schleuder bugtracker at
 `gnupg`(7).
 
  * Website of `schleuder`:
-   <http://schleuder.nadir.org/>
+   <https://schleuder.nadir.org/>
 
  * More extensive documentation for `schleuder`:
-   <http://schleuder.nadir.org/docs/>
+   <https://schleuder.nadir.org/docs/>
 
  * `schleuder-cli`, the command line interface for list-management:
-   <http://codecoop.org/schleuder/schleuder-cli/>
+   <https://codecoop.org/schleuder/schleuder-cli/>
 
  * `schleuder-web`, the web interface for list-management:
-   <http://codecoop.org/schleuder/schleuder-web/>
+   <https://codecoop.org/schleuder/schleuder-web/>
