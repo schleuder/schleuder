@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.name         = "schleuder"
   s.version      = Schleuder::VERSION
   s.authors      = %w(lunar ng paz)
-  s.email        = "schleuder2@nadir.org"
+  s.email        = "schleuder@nadir.org"
   s.homepage     = "https://schleuder.nadir.org/"
   s.summary      = "Schleuder is a gpg-enabled mailinglist with remailing-capabilities."
   s.description  = "Schleuder is a group's email-gateway: subscribers can exchange encrypted emails among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.\n\nSchleuder takes care of all decryption and (re-)encryption, stripping of headers, and more. Schleuder can also send out its own public key upon request and process administrative commands by email."
