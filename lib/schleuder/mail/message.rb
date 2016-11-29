@@ -11,6 +11,11 @@ module Mail
     def setup(recipient, list)
       if self.encrypted?
         new = self.decrypt(verify: true)
+        # Test if there's a signed multipart inside the ciphertext
+        # ("encapsulated" format of pgp/mime).
+        if new.signed?
+          new = new.verify
+        end
       elsif self.signed?
         new = self.verify
       else
