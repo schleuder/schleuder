@@ -6,7 +6,7 @@ require 'schleuder/version'
 Gem::Specification.new do |s|
   s.name         = "schleuder"
   s.version      = Schleuder::VERSION
-  s.authors      = %w(lunar ng paz)
+  s.authors      = 'schleuder dev team'
   s.email        = "schleuder@nadir.org"
   s.homepage     = "https://schleuder.nadir.org/"
   s.summary      = "Schleuder is a gpg-enabled mailinglist with remailing-capabilities."
