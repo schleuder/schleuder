@@ -58,10 +58,6 @@ module Mail
       Mail::Gpg.encrypted?(original_message)
     end
 
-    def was_encrypted_mime?
-      Mail::Gpg.encrypted_mime?(original_message)
-    end
-
     def signature
       # Theoretically there might be more than one signing key, in practice this is neglectable.
       signatures.try(:first)
