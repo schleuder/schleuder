@@ -115,6 +115,12 @@ To contribute please follow this workflow:
 Thank you for your interest!
 
 
+License
+-------
+
+GNU GPL 3.0. Please see [LICENSE.txt](LICENSE.txt).
+
+
 Alternative Download
 --------------------
 
