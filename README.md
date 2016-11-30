@@ -60,6 +60,9 @@ Installing Schleuder
   This creates neccessary directories, copies example configs, etc. If you see errors about missing write permissions please follow the advice given.
 
 
+For further information on setup and configuration please read <https://schleuder.nadir.org/docs/#setup>.
+
+
 Command line usage
 -----------------
 
