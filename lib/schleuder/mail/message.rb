@@ -269,7 +269,7 @@ module Mail
         else
           # Test parts recursively. E.g. Thunderbird with activated
           # memoryhole-headers send nested parts that might still be empty.
-          return self.parts.reduce { |result, part| result && part.empty? }
+          return parts.inject(true) { |result, part| result && part.empty? }
         end
       else
         return self.body.empty?
