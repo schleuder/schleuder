@@ -64,7 +64,7 @@ GPGME::Ctx.check_gpg_version
 require Schleuder::Conf.database['adapter']
 
 # TODO: Test if database is writable if sqlite.
-ActiveRecord::Base.establish_connection(Schleuder::Conf.databases[ENV["SCHLEUDER_ENV"]])
+ActiveRecord::Base.establish_connection(Schleuder::Conf.database)
 ActiveRecord::Base.logger = Schleuder.logger
 
 Mail.defaults do
