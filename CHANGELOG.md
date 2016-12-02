@@ -10,6 +10,7 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
 ### Added
 
  * Include tarball into release.
+ * Make basedir of list-logs configurable (`listlogs_dir`). No operational change with the default value.
 
 ### Changed
 

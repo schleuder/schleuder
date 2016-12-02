@@ -74,7 +74,7 @@ module Schleuder
     end
 
     def logfile
-      @logfile ||= File.join(self.listdir, 'list.log')
+      @logfile ||= File.join(Conf.listlogs_dir, self.email.split('@').reverse, 'list.log')
     end
 
     def logger

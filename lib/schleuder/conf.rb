@@ -16,6 +16,10 @@ module Schleuder
       instance.config['lists_dir']
     end
 
+    def self.listlogs_dir
+      instance.config['listlogs_dir']
+    end
+
     def self.plugins_dir
       instance.config['plugins_dir']
     end
