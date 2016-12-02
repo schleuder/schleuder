@@ -65,7 +65,10 @@ module Schleuder
 
     desc 'install', "Set-up or update Schleuder environment (create folders, copy files, fill the database)."
     def install
-      %w[/var/schleuder/lists /etc/schleuder].each do |dir|
+      config_dir = Pathname.new(ENV['SCHLEUDER_CONFIG']).dirname
+      root_dir = Pathname.new(ENV['SCHLEUDER_ROOT'])
+
+      [Conf.lists_dir, config_dir].each do |dir|
         dir = Pathname.new(dir)
         if ! dir.exist?
           if dir.dirname.writable?
@@ -76,8 +79,8 @@ module Schleuder
         end
       end
 
-      Pathname.glob(Pathname.new(root_dir).join("etc").join("*.yml")).each do |file|
-        target = Pathname.new("/etc/schleuder/").join(file.basename)
+      Pathname.glob(root_dir.join("etc").join("*.yml")).each do |file|
+        target = config_dir.join(file.basename)
         if ! target.exist?
           if target.dirname.writable?
             FileUtils.cp file, target
@@ -87,7 +90,16 @@ module Schleuder
         end
       end
 
-      FileUtils.chmod_R('go-rwx', ['/etc/schleuder', '/var/schleuder'])
+      chmod_files = [
+          ENV['SCHLEUDER_CONFIG'],
+          ENV['SCHLEUDER_LIST_DEFAULTS'],
+          Conf.lists_dir
+      ]
+      if Conf.database['adapter'].match(/sqlite/)
+        chmod_files << Conf.database['database']
+      end
+
+      FileUtils.chmod_R('go-rwx', chmod_files)
 
       if ActiveRecord::SchemaMigration.table_exists?
         say `cd #{root_dir} && rake db:migrate`
@@ -240,10 +252,6 @@ Please notify the users and admins of this list of these changes.
         Array(value).map do |keyword|
           KEYWORDS[keyword.downcase]
         end.compact
-      end
-
-      def root_dir
-        Pathname.new(__FILE__).dirname.dirname.dirname.realpath
       end
     end
   end
