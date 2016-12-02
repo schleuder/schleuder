@@ -99,7 +99,7 @@ module Schleuder
         chmod_files << Conf.database['database']
       end
 
-      FileUtils.chmod_R('go-rwx', chmod_files)
+      FileUtils.chmod_R('o-rwx', chmod_files)
 
       if ActiveRecord::SchemaMigration.table_exists?
         say `cd #{root_dir} && rake db:migrate`
