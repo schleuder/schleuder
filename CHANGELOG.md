@@ -7,14 +7,25 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
 
 ## [Unreleased]
 
+
+## [3.0.0.beta9] / 2016-12-02
+
 ### Added
 
  * Include tarball into release.
  * Make basedir of list-logs configurable (`listlogs_dir`). No operational change with the default value.
+ * Recognize "encapsulated" signatures (RFC 3156, 6.1). (These signatures might still be reported as invalid, that's a bug in mail-gpg which will probably be fixed in their next release.)
+ * Make installed schleuder-files accessible for owner and group only.
+ * Make list-logs accessible to owner and group only.
 
 ### Changed
 
  * Improved documentation.
+
+### Fixed
+
+ * Fix checking for empty messages for nested multiparts (e.g. Thunderbird with memoryhole-headers).
+ * Fix `schleuder install` to respect config settings (e.g. `lists_dir`)
 
 ## [3.0.0.beta8] / 2016-11-27
 
