@@ -87,6 +87,8 @@ module Schleuder
         end
       end
 
+      FileUtils.chmod_R('go-rwx', ['/etc/schleuder', '/var/schleuder'])
+
       if ActiveRecord::SchemaMigration.table_exists?
         say `cd #{root_dir} && rake db:migrate`
       else
