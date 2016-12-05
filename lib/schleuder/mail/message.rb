@@ -64,8 +64,18 @@ module Mail
     end
 
     def signature
-      # Theoretically there might be more than one signing key, in practice this is neglectable.
-      signatures.try(:first)
+      case signatures.size
+      when 0
+        if multipart?
+          signature_multipart_inline
+        else
+          nil
+        end
+      when 1
+        signatures.first
+      else
+        raise "Multiple signatures found! Cannot handle!"
+      end
     end
 
     def was_validly_signed?
@@ -278,6 +288,23 @@ module Mail
 
     private
 
+
+    # Looking for signatures in each part. They are not aggregated into the main part.
+    # We only return the signature if all parts are validly signed by the same key.
+    def signature_multipart_inline
+      fingerprints = parts.map do |part|
+        if part.signature_valid?
+          part.signature.fpr
+        else
+          nil
+        end
+      end
+      if fingerprints.uniq.size == 1
+        parts.first.signature
+      else
+        nil
+      end
+    end
 
     def first_plaintext_part(part=nil)
       part ||= self
