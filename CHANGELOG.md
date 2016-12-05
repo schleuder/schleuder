@@ -8,6 +8,12 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
 ## [Unreleased]
 
 
+## [3.0.0.beta10] / 2016-12-05
+
+### Changed
+
+ * Fixed tarball to contain correct version and state of changelog.
+
 ## [3.0.0.beta9] / 2016-12-02
 
 ### Added
