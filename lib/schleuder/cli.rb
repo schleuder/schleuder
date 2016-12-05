@@ -73,6 +73,7 @@ module Schleuder
         if ! dir.exist?
           if dir.dirname.writable?
             dir.mkpath
+            chmod(Conf.lists_dir)
           else
             fatal "Cannot create required directory due to lacking write permissions, please create manually and then run this command again:\n#{dir}"
           end
@@ -84,28 +85,22 @@ module Schleuder
         if ! target.exist?
           if target.dirname.writable?
             FileUtils.cp file, target
+            chmod(target)
           else
             fatal "Cannot copy default config file due to lacking write permissions, please copy manually and then run this command again:\n#{file.realpath} → #{target}"
           end
         end
       end
 
-      chmod_files = [
-          ENV['SCHLEUDER_CONFIG'],
-          ENV['SCHLEUDER_LIST_DEFAULTS'],
-          Conf.lists_dir
-      ]
-      if Conf.database['adapter'].match(/sqlite/)
-        chmod_files << Conf.database['database']
-      end
-
-      FileUtils.chmod_R('o-rwx', chmod_files)
 
       if ActiveRecord::SchemaMigration.table_exists?
         say `cd #{root_dir} && rake db:migrate`
       else
         say `cd #{root_dir} && rake db:schema:load`
-        say "NOTE: The database was prepared using sqlite. If you prefer to use a different DBMS please edit the 'database'-section in /etc/schleuder/schleuder.yml, create the database, install the corresponding ruby-library (e.g. `gem install mysql`) and run this current command again"
+        if Conf.database['adapter'].match(/sqlite/)
+          say "NOTE: The database was prepared using sqlite. If you prefer to use a different DBMS please edit the 'database'-section in /etc/schleuder/schleuder.yml, create the database, install the corresponding ruby-library (e.g. `gem install mysql`) and run this current command again"
+          chmod(Conf.database['database'])
+        end
       end
 
       say "Schleuder has been set up. You can now create a new list using `schleuder-cli`.\nWe hope you enjoy!"
@@ -252,6 +247,10 @@ Please notify the users and admins of this list of these changes.
         Array(value).map do |keyword|
           KEYWORDS[keyword.downcase]
         end.compact
+      end
+
+      def chmod(file)
+        FileUtils.chmod_R('o-rwx', file)
       end
     end
   end
