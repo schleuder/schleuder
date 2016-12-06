@@ -69,7 +69,7 @@ module Schleuder
       root_dir = Pathname.new(ENV['SCHLEUDER_ROOT'])
 
       # Check if lists_dir contains v2-data.
-      if Dir.glob("#{Conf.lists_dir}/*/*/list.log").size > 0
+      if Dir.glob("#{Conf.lists_dir}/*/*/members.conf").size > 0
         msg = "Lists directory #{Conf.lists_dir} appears to contain data from a Schleuder version 2.x installation.\nPlease move it out of the way or configure a different `lists_dir` in `#{ENV['SCHLEUDER_CONFIG']}`.\nTo migrate lists from Schleuder v2 to Schleuder v3 please use `schleuder migrate_v2_list` after the installation succeeded."
         fatal msg, 2
       end
