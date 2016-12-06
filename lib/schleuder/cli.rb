@@ -77,10 +77,11 @@ module Schleuder
       [Conf.lists_dir, config_dir].each do |dir|
         dir = Pathname.new(dir)
         if ! dir.exist?
-          if dir.dirname.writable?
+          begin
             dir.mkpath
-          else
-            fatal "Cannot create required directory due to lacking write permissions, please create manually and then run this command again:\n#{dir}"
+          rescue Errno::EACCES => exc
+            problem_dir = exc.message.split(' - ').last
+            fatal "Cannot create required directory due to lacking write permissions: #{problem_dir}.\nPlease fix the permissions or create the directory manually and then run this command again."
           end
         end
       end
