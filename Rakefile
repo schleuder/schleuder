@@ -33,7 +33,7 @@ task :publish_gem => :website
 task :git_tag => :check_version
 
 desc "Build new version: git-tag and gem-file"
-task :new_version => [:check_version, :gem, :tarball, :edit_readme, :git_commit_version, :git_tag] do
+task :new_version => [:check_version, :edit_readme, :git_add_version, :gem, :tarball, :git_commit, :git_tag] do
 end
 
 desc "Edit README"
@@ -51,9 +51,13 @@ task :git_tag do
   `git tag -u #{@gpguid} -s -m "Version #{@version}" #{@tagname}`
 end
 
-desc "Commit changes as new version"
-task :git_commit_version do
+desc "Add changed version to git-index"
+task :git_add_version do
   `git add lib/#{project}/version.rb`
+end
+
+desc "Commit changes as new version"
+task :git_commit do
   `git commit -m "Version #{@version} (README, gems)"`
 end
 
@@ -78,7 +82,7 @@ end
 desc 'Build and sign a tarball'
 task :tarball do
   tarball = "#{@tagname}.tar.gz"
-  `git archive --format tar.gz --prefix "#{@tagname}/" -o #{tarball} #{@tagname}`
+  `git archive --format tar.gz --prefix "#{@tagname}/" -o #{tarball} master`
   move_sign_and_add(tarball)
 end
 

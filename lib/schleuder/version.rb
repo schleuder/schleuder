@@ -1,3 +1,3 @@
 module Schleuder
-  VERSION = '3.0.0.beta8'
+  VERSION = '3.0.0.beta10'
 end
