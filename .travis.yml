@@ -11,3 +11,7 @@ before_script:
   - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bundle exec rake db:create db:schema:load
 script:
   - bundle exec rspec
+notifications:
+  email:
+    recipients:
+      - schleuder@nadir.org
