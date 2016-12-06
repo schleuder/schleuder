@@ -144,7 +144,7 @@ module Schleuder
           raise Errors::ListdirProblem.new(@list_dir, :not_writable)
         end
       else
-        FileUtils.mkdir_p(@list_dir, mode: 0700)
+        FileUtils.mkdir_p(@list_dir)
       end
     end
 

@@ -79,7 +79,6 @@ module Schleuder
         if ! dir.exist?
           if dir.dirname.writable?
             dir.mkpath
-            chmod(Conf.lists_dir)
           else
             fatal "Cannot create required directory due to lacking write permissions, please create manually and then run this command again:\n#{dir}"
           end
@@ -91,7 +90,6 @@ module Schleuder
         if ! target.exist?
           if target.dirname.writable?
             FileUtils.cp file, target
-            chmod(target)
           else
             fatal "Cannot copy default config file due to lacking write permissions, please copy manually and then run this command again:\n#{file.realpath} → #{target}"
           end
@@ -105,7 +103,6 @@ module Schleuder
         say `cd #{root_dir} && rake db:schema:load`
         if Conf.database['adapter'].match(/sqlite/)
           say "NOTE: The database was prepared using sqlite. If you prefer to use a different DBMS please edit the 'database'-section in /etc/schleuder/schleuder.yml, create the database, install the corresponding ruby-library (e.g. `gem install mysql`) and run this current command again"
-          chmod(Conf.database['database'])
         end
       end
 

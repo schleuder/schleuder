@@ -2,7 +2,7 @@ module Schleuder
   class Listlogger < ::Logger
     include LoggerNotifications
     def initialize(list)
-      file = File.open(list.logfile, File::WRONLY | File::APPEND | File::CREAT, 0640)
+      file = File.open(list.logfile, File::WRONLY | File::APPEND | File::CREAT)
       super(file, 'daily')
       @from = list.email
       @adminaddresses = list.admins.map(&:email)
