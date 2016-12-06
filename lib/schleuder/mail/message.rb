@@ -11,6 +11,11 @@ module Mail
     def setup(recipient, list)
       if self.encrypted?
         new = self.decrypt(verify: true)
+        # Test if there's a signed multipart inside the ciphertext
+        # ("encapsulated" format of pgp/mime).
+        if new.signed?
+          new = new.verify
+        end
       elsif self.signed?
         new = self.verify
       else
@@ -56,10 +61,6 @@ module Mail
 
     def was_encrypted?
       Mail::Gpg.encrypted?(original_message)
-    end
-
-    def was_encrypted_mime?
-      Mail::Gpg.encrypted_mime?(original_message)
     end
 
     def signature
@@ -268,7 +269,7 @@ module Mail
         else
           # Test parts recursively. E.g. Thunderbird with activated
           # memoryhole-headers send nested parts that might still be empty.
-          return self.parts.reduce { |result, part| result && part.empty? }
+          return parts.inject(true) { |result, part| result && part.empty? }
         end
       else
         return self.body.empty?

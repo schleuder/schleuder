@@ -111,8 +111,8 @@ describe Schleuder::List do
       list = Schleuder::List.new(
         email: "foo@bar.org",
         fingerprint: "aaaadddd0000999",
-        "#{list_attribute}": nil
       )
+      list[list_attribute] = nil
 
       expect(list).not_to be_valid
       expect(list.errors.messages[list_attribute]).to include("must be true or false")
@@ -122,8 +122,8 @@ describe Schleuder::List do
       list = Schleuder::List.new(
         email: "foo@bar.org",
         fingerprint: "aaaadddd0000999",
-        "#{list_attribute}": ""
       )
+      list[list_attribute] = ""
 
       expect(list).not_to be_valid
       expect(list.errors.messages[list_attribute]).to include("must be true or false")
@@ -135,8 +135,8 @@ describe Schleuder::List do
       list = Schleuder::List.new(
         email: "foo@bar.org",
         fingerprint: "aaaadddd0000999",
-        "#{list_attribute}": ["$from", "to", "date", "cc"],
       )
+      list[list_attribute] =["$from", "to", "date", "cc"]
 
       expect(list).not_to be_valid
       expect(list.errors.messages[list_attribute]).to include("contains invalid characters")
@@ -146,8 +146,8 @@ describe Schleuder::List do
       list = Schleuder::List.new(
         email: "foo@bar.org",
         fingerprint: "aaaadddd0000999",
-        "#{list_attribute}": ["foobar"],
       )
+      list[list_attribute] = ["foobar"]
 
       expect(list).to be_valid
     end
@@ -157,7 +157,7 @@ describe Schleuder::List do
     list = Schleuder::List.new(
       email: "foo@bar.org",
       fingerprint: "aaaadddd0000999",
-      bounces_drop_on_headers: {"$": "%"},
+      bounces_drop_on_headers: {"$" => "%"},
     )
 
     expect(list).not_to be_valid
@@ -169,8 +169,8 @@ describe Schleuder::List do
       list = Schleuder::List.new(
         email: "foo@bar.org",
         fingerprint: "aaaadddd0000999",
-        "#{list_attribute}": "Foo\nbar",
       )
+      list[list_attribute] = "Foo\nbar"
 
       expect(list).not_to be_valid
       expect(list.errors.messages[list_attribute]).to include("must not include line-breaks")
@@ -180,8 +180,8 @@ describe Schleuder::List do
       list = Schleuder::List.new(
         email: "foo@bar.org",
         fingerprint: "aaaadddd0000999",
-        "#{list_attribute}": nil,
       )
+      list[list_attribute] = nil
 
       expect(list).to be_valid
     end
@@ -203,8 +203,8 @@ describe Schleuder::List do
       list = Schleuder::List.new(
         email: "foo@bar.org",
         fingerprint: "aaaadddd0000999",
-        "#{list_attribute}": 0,
       )
+      list[list_attribute] = 0
 
       expect(list).not_to be_valid
       expect(list.errors.messages[list_attribute]).to include("must be a number greater than zero")

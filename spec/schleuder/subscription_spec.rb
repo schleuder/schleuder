@@ -106,8 +106,8 @@ describe Schleuder::Subscription do
         list_id: @list.id,
         email: "foo@bar.org",
         fingerprint: nil,
-        "#{subscription_attribute}": nil
       )
+      subscription[subscription_attribute] = nil
 
       expect(subscription).not_to be_valid
       expect(subscription.errors.messages[subscription_attribute]).to include("must be true or false")
@@ -118,8 +118,8 @@ describe Schleuder::Subscription do
         list_id: @list.id,
         email: "foo@bar.org",
         fingerprint: nil,
-        "#{subscription_attribute}": ""
       )
+      subscription[subscription_attribute] = ""
 
       expect(subscription).not_to be_valid
       expect(subscription.errors.messages[subscription_attribute]).to include("must be true or false")

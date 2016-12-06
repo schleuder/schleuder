@@ -1,6 +1,9 @@
 # Where are the list-directories stored (contain log-files and GnuPG-keyrings).
 lists_dir: /var/schleuder/lists
 
+# Where to write list-logs. The actual log-file will be <lists_logs_base_dir>/<hostname>/<listname>/list.log.
+listlogs_dir: /var/schleuder/lists
+
 # Schleuder reads plugins also from this directory.
 plugins_dir: /etc/schleuder/plugins
 

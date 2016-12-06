@@ -1,0 +1,61 @@
+schleuder-api-daemon(8)
+=======================
+
+## SYNOPSIS
+
+`schleuder-api-daemon`
+
+
+## DESCRIPTION
+
+schleuder-api-daemon provides the HTTP-API of `schleuder(8)` to clients.
+
+## ENVIRONMENT
+
+### Configuration
+
+`schleuder-api-daemon` reads configuration out of the `api` section of `schleuder`'s configuration. Please see `schleuder`(8) for details about the configuration file.
+
+The available options are:
+
+ * `host`:
+   The hostname/IP to listen at. This is overwritten with 'localhost' unless `use_tls` is true.
+ * `port`:
+   The port to listen at. Default: 4443.
+ * `use_tls`:
+   Serve the API via HTTPS? Default: false. Requires a usable certificate and key specified as `tls_cert_file` and `tls_key_file`.
+ * `tls_cert_file`:
+   Path to the file that contains the TLS-certificate to use for HTTPS. You can generate a new one with `schleuder cert generate`.
+ * `tls_key_file`:
+   Path to the file that contains the TLS-key to use for HTTPS.
+ * `valid_api_keys`:
+   List of api_keys to allow access to the API.
+
+
+### Clients
+
+Available clients using the API are `schleuder-cli`(8) and `schleuder-web`. URLs to their websites are listed below ([SEE ALSO][]).
+
+
+## BUGS
+
+Known bugs are listed on the Schleuder bugtracker at
+<https://codecoop.org/schleuder/schleuder3>
+
+## SEE ALSO
+
+`schleuder`(8),
+`schleuder-cli`(8)
+
+ * Website of `schleuder`:
+   <https://schleuder.nadir.org/>
+
+ * More extensive documentation for `schleuder`:
+   <https://schleuder.nadir.org/docs/>
+
+ * `schleuder-cli`, the command line interface for list-management:
+   <https://codecoop.org/schleuder/schleuder-cli/>
+
+ * `schleuder-web`, the web interface for list-management:
+   <https://codecoop.org/schleuder/schleuder-web/>
+

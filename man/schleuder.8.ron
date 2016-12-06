@@ -42,12 +42,12 @@ In case of an error the MTA is expected to include Schleuder's error message int
 
 To connect the MTA with Schleuder it must pipe the incoming message into Schleuder's STDIN, and give it two arguments: first one: "work", second one: the full recipients email address.
 
-For more informations on how to integrate Schleuder with your existing mail
+For more information on how to integrate Schleuder with your existing mail
 setup, please read the Schleuder documentation online ([SEE ALSO][]).
 
 ### Data storage
 
-The keyrings for each list are standard GnuPG keyrings and sit in the filesystem under $lists_dir/$hostname/$listname/ ($lists_dir is read from schleuder.yml, by default it is </var/schleuder/lists>). They can be used manually using gpg2. Please be careful to maintain proper file permissions if you touch the files.
+The keyrings for each list are standard GnuPG keyrings and sit in the filesystem under <lists_dir>/<hostname>/<listname>/ (<lists_dir> is read from schleuder.yml, by default it is </var/schleuder/lists>). They can be used manually using gpg2. Please be careful to maintain proper file permissions if you touch the files.
 
 In the list-directory there’s also a list specific log-file (might be missing if the log-level is high and no error occurred yet).
 
@@ -99,15 +99,18 @@ Write to <listname-owner@hostname> to contact the list-owner(s) even if you don'
 ## FILES
 
  * `/etc/schleuder/schleuder.yml`:
-   global Schleuder configuration
+   default path of global Schleuder configuration
 
  * `/etc/schleuder/list-defaults.yml`:
-   default list settings
+   default path of default list settings
 
- * `/var/schleuder/lists/`<hostname>`/`<listname>:
+ * `/var/schleuder/`
+   default path of lists_dir
+
+ * `<lists_dir>`/`<hostname>`/`<listname>:
    list internal data
 
- * `/var/schleuder/lists/`<hostname>`/`<listname>`/list.log`:
+ * `<lists_dir>`/`<hostname>`/`<listname>`/list.log`:
    log-file for list
 
 All configuration files are formatted as YAML. See
@@ -124,13 +127,13 @@ Known bugs are listed on the Schleuder bugtracker at
 `gnupg`(7).
 
  * Website of `schleuder`:
-   <http://schleuder.nadir.org/>
+   <https://schleuder.nadir.org/>
 
  * More extensive documentation for `schleuder`:
-   <http://schleuder.nadir.org/docs/>
+   <https://schleuder.nadir.org/docs/>
 
  * `schleuder-cli`, the command line interface for list-management:
-   <http://codecoop.org/schleuder/schleuder-cli/>
+   <https://codecoop.org/schleuder/schleuder-cli/>
 
  * `schleuder-web`, the web interface for list-management:
-   <http://codecoop.org/schleuder/schleuder-web/>
+   <https://codecoop.org/schleuder/schleuder-web/>

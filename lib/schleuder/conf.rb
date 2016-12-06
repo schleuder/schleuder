@@ -16,6 +16,10 @@ module Schleuder
       instance.config['lists_dir']
     end
 
+    def self.listlogs_dir
+      instance.config['listlogs_dir']
+    end
+
     def self.plugins_dir
       instance.config['plugins_dir']
     end
@@ -89,7 +93,7 @@ module Schleuder
     def self.load_defaults(basename)
       file = Pathname.new(ENV['SCHLEUDER_ROOT']).join("etc/#{basename}.yml")
       if ! file.readable?
-        raise RuntimError, "Error: '#{file}' is not a readable file."
+        raise RuntimeError, "Error: '#{file}' is not a readable file."
       end
       load_config_file(file)
     end

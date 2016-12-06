@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "SCHLEUDER" "8" "November 2016" "" ""
+.TH "SCHLEUDER" "8" "December 2016" "" ""
 .
 .SH "NAME"
 \fBschleuder\fR \- an email hub for groups
@@ -10,10 +10,16 @@
 \fBschleuder\fR work \fIlistaddress\fR < \fIemail\fR
 .
 .P
+\fBschleuder\fR help
+.
+.P
 \fBschleuder\fR \fIother\-command\fR [<\.\.\.>]
 .
 .P
-For other commands see OPTIONS\.
+For descriptions of the other commands see the output of the \fIhelp\fR\-command\.
+.
+.P
+This manual page is written for system administrators\. For other information please read the Schleuder documentation online (\fISEE ALSO\fR)\.
 .
 .SH "DESCRIPTION"
 Schleuder is an email hub for groups\. Subscribers can communicate encryptedly and pseudonymously among themselves, receive emails from non\-subscribers and send emails to non\-subscribers via the list\.
@@ -24,17 +30,62 @@ Schleuder takes care of all de\- and encryption, stripping of headers, formattin
 .P
 Email cryptography is handled by using GnuPG\.
 .
-.P
-schleuder(8) is usually called in delivery mode by a \fIMail Transport Agent\fR with an incoming email piped to its standard input\. For more informations on how to integrate Schleuder with your existing mail setup, please look at the Schleuder website: \fIhttp://schleuder\.nadir\.org/\fR
+.SH "ENVIRONMENT"
 .
-.SH "GETTING THE PUBLIC KEY OF A LIST"
+.SS "Configuration"
+Schleuder reads its basic settings from a file that it by default expects at </etc/schleuder/schleuder\.yml>\. To make Schleuder read a different file set the environment variable \fISCHLEUDER_CONFIG\fR to the path to your file when running schleuder\. E\.g\.:
+.
+.IP "" 4
+.
+.nf
+
+SCHLEUDER_CONFIG=/usr/local/etc/schleuder\.yml /path/to/bin/schleuder \.\.\.
+.
+.fi
+.
+.IP "" 0
+.
+.P
+For explanations of the possible settings read the default config file\.
+.
+.P
+The default settings for new lists are read from another config file\. By default Schleuder looks at </etc/schleuder/list\-defaults\.yml>\. To make Schleuder read a different file set the environment variable \fISCHLEUDER_LIST_DEFAULTS\fR analogous to above\. The possible settings are explained in the default config file\.
+.
+.SS "Connect to MTA"
+Schleuder behaves like an email\-filter: it reads email from standard\-input, and reports errors to standard\-error\. If all goes well Schleuder closes the initial connection to the Mail Transport Agent (MTA) only after it sent out all outgoing emails\.
+.
+.P
+In case of an error the MTA is expected to include Schleuder\'s error message into a bounce\-email that is sent back to the sender (this is default behaviour of most MTAs)\.
+.
+.P
+To connect the MTA with Schleuder it must pipe the incoming message into Schleuder\'s STDIN, and give it two arguments: first one: "work", second one: the full recipients email address\.
+.
+.P
+For more information on how to integrate Schleuder with your existing mail setup, please read the Schleuder documentation online (\fISEE ALSO\fR)\.
+.
+.SS "Data storage"
+The keyrings for each list are standard GnuPG keyrings and sit in the filesystem under \fIlists_dir\fR/\fIhostname\fR/\fIlistname\fR/ (\fIlists_dir\fR is read from schleuder\.yml, by default it is </var/schleuder/lists>)\. They can be used manually using gpg2\. Please be careful to maintain proper file permissions if you touch the files\.
+.
+.P
+In the list\-directory there’s also a list specific log\-file (might be missing if the log\-level is high and no error occurred yet)\.
+.
+.P
+Other logging is sent to syslog\. Where that ends up depends on the operating system and the system administration\.
+.
+.P
+All other list\-related data is stored in the SQL\-database\. Most data is unserialized, only some values are JSON\-encoded\.
+.
+.SH "SPECIAL FEATURES"
+Schleuder features some special funtionality\. For more detailed information read the Schleuder documentation online (\fISEE ALSO\fR)\.
+.
+.SS "Getting the public key of a list"
 Each Schleuder\-list replies with its public key to any email sent to \fIlistname\-sendkey@hostname\fR\. E\.g\. to receive the key for the contact address of the Schleuder project write an email to
 .
 .br
 \fIschleuder\-sendkey@nadir\.org\fR\.
 .
-.SH "EMAIL COMMANDS"
-Schleuder knows some special keywords that trigger different behaviour\. You can e\.g\. subscribe someone, or resend an email to a non\-subscriber using keywords\. See a list of available keywords below\.
+.SS "Email commands"
+Schleuder knows some special keywords that trigger different behaviour\. You can e\.g\. subscribe someone, or resend an email to a non\-subscriber using keywords\.
 .
 .P
 Keywords require that:
@@ -59,94 +110,11 @@ Keywords can be repeated within one email at will\. Letter case doesn’t matter
 .P
 There are two types of keywords: those to enhance messages sent over the list (“list\-keywords”), and those to request something from Schleuder (“request\-keywords”)\.
 .
-.SS "Resending"
-The resending\-keywords must be included in messages sent to the normal list\-address: \fIlistname@hostname\fR\.
+.P
+Find detailed descriptions of all available keywords in the Schleuder documentation online (\fISEE ALSO\fR)\.
 .
-.TP
-\fBx\-resend:\fR \fIsomeone@example\.org\fR
-Send the message to the given address, encrypted if possible, otherwise in the clear\.
-.
-.TP
-\fBx\-resend\-encrypted\-only:\fR \fIsomeone@example\.org\fR
-Send the message to the given address only if it could be encrypted\.
-.
-.SS "Subscription and key management"
-These keywords must be send to \fIlistname\-request@hostname\fR\. They are used to get information about the list, its subscribers and keys, or to change that information\.
-.
-.TP
-\fBx\-list\-subscriptions\fR
-List all subscriptions\.
-.
-.TP
-\fBx\-subscribe:\fR \fIperson@example\.org\fR \fI12345678DEADBEEF12345678DEADBEEF12345678\fR
-Subscribe the given address and assign it the given OpenPGP\-fingerprint\.
-.
-.TP
-\fBx\-unsubscribe:\fR \fIperson@example\.org\fR
-Unsubscribe the given address\.
-.
-.TP
-\fBx\-set\-fingerprint:\fR \fI12345678DEADBEEF12345678DEADBEEF12345678\fR
-Assign the key with the given fingerprint to your subscription\.
-.
-.TP
-\fBx\-set\-fingerprint:\fR \fIperson@example\.org\fR \fI12345678DEADBEEF12345678DEADBEEF12345678\fR
-Assign the key with the given fingerprint to the given subscription\. This variant of this command may only be used by list\-admins\.
-.
-.TP
-\fBx\-list\-keys:\fR
-Lists all public keys known to the list\.
-.
-.TP
-\fBx\-add\-key:\fR
-Import the \fIrest of the email\-body\fR into the list\'s keyring\. Write the ascii\-armored key\-block below this keyword\.
-.
-.br
-\fINote:\fR This command reads the whole body of the email\. If you want to use other keywords within the same email, \fIthis must be the last one!\fR
-.
-.TP
-\fBx\-delete\-key:\fR \fI12345678DEADBEEF12345678DEADBEEF12345678\fR
-Delete the key with the given fingerprint from the list\'s keyring\.
-.
-.TP
-\fBx\-get\-key:\fR \fI12345678DEADBEEF12345678DEADBEEF12345678\fR
-Export the key with the given fingerprint from the list\'s keyring\.
-.
-.TP
-\fBx\-fetch\-key:\fR \fI12345678DEADBEEF12345678DEADBEEF12345678\fR
-Fetch the key with the given fingerprint from a keyserver and import it into the list\'s keyring\. (This works only if a keyserver has been configured by the provider\.)
-.
-.SS "Other"
-Must also be sent to the request\-address: \fIlistname\-request@hostname\fR\.
-.
-.TP
-\fBx\-sign\-this:\fR
-Sign the remaining contents of the email body or the attachments with the list\'s key\. Use this e\.g\. to provide GnuPG\-signatures for things you are publishing\.
-.
-.br
-\fINote:\fR This command reads the whole body of the email\. If you want to use other keywords within the same email, \fIthis must be the last one!\fR
-.
-.SH "CONTACT LIST\-OWNER"
+.SS "Contact list\-owner"
 Write to \fIlistname\-owner@hostname\fR to contact the list\-owner(s) even if you don\'t know who they are\. Use the list\'s key to encrypt the email!
-.
-.SH "OPTIONS"
-Other sub\-commands of schleuder:
-.
-.TP
-\fBschleuder help\fR
-Display usage and exit\.
-.
-.TP
-\fBschleuder version\fR
-Display version and exit\.
-.
-.TP
-\fBschleuder install\fR
-Creates neccessary directories, copies example configs, etc\. If you see errors about missing write permissions please follow the advice given\.
-.
-.TP
-\fBschleuder generate_api_key\fR
-Generate a new key to be used by clients to speak to the API\.
 .
 .SH "EXIT STATUS"
 .
@@ -160,21 +128,22 @@ Internal failure in incoming email processing\.
 .
 .SH "FILES"
 .
-.TP
-\fB/etc/schleuder/schleuder\.yml\fR
-global Schleuder configuration
+.IP "\(bu" 4
+\fB/etc/schleuder/schleuder\.yml\fR: default path of global Schleuder configuration
 .
-.TP
-\fB/etc/schleuder/list\-defaults\.yml\fR
-default list settings
+.IP "\(bu" 4
+\fB/etc/schleuder/list\-defaults\.yml\fR: default path of default list settings
 .
-.TP
-\fB/var/schleuder/lists/\fR\fIhostname\fR\fB/\fR\fIlistname\fR
-list internal data
+.IP "\(bu" 4
+\fB/var/schleuder/\fR default path of lists_dir
 .
-.TP
-\fB/var/schleuder/lists/\fR\fIhostname\fR\fB/\fR\fIlistname\fR\fB/list\.log\fR
-log\-file for list
+.IP "\(bu" 4
+\fB<lists_dir>\fR/\fB<hostname>\fR/`\fIlistname\fR: list internal data
+.
+.IP "\(bu" 4
+\fB<lists_dir>\fR/\fB<hostname>\fR/\fB<listname>\fR/list\.log`: log\-file for list
+.
+.IP "" 0
 .
 .P
 All configuration files are formatted as YAML\. See \fIhttp://www\.yaml\.org/\fR for more details\.
@@ -187,13 +156,17 @@ Known bugs are listed on the Schleuder bugtracker at \fIhttps://codecoop\.org/sc
 .
 .TP
 Website of \fBschleuder\fR
-\fIhttp://schleuder\.nadir\.org/\fR
+\fIhttps://schleuder\.nadir\.org/\fR
+.
+.TP
+More extensive documentation for \fBschleuder\fR
+\fIhttps://schleuder\.nadir\.org/docs/\fR
 .
 .TP
 \fBschleuder\-cli\fR, the command line interface for list\-management
-\fIhttp://codecoop\.org/schleuder/schleuder\-cli/\fR
+\fIhttps://codecoop\.org/schleuder/schleuder\-cli/\fR
 .
 .TP
 \fBschleuder\-web\fR, the web interface for list\-management
-\fIhttp://codecoop\.org/schleuder/schleuder\-web/\fR
+\fIhttps://codecoop\.org/schleuder/schleuder\-web/\fR
 

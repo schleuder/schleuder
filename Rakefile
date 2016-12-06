@@ -1,10 +1,9 @@
 project = 'schleuder'
 require_relative "lib/#{project}.rb"
 
-version = Schleuder::VERSION
-tagname = "#{project}-#{version}"
-gpguid = 'schleuder@nadir.org'
-tarball = "#{tagname}.tar.gz"
+@version = Schleuder::VERSION
+@tagname = "#{project}-#{@version}"
+@gpguid = 'schleuder@nadir.org'
 
 load "active_record/railties/databases.rake"
 
@@ -20,24 +19,26 @@ end
 # ActiveRecord requires this task to be present
 Rake::Task.define_task("db:environment")
 
+def move_sign_and_add(file)
+  `mv -iv #{file} gems/`
+  `cd gems && gpg -u #{@gpguid} -b #{file}`
+  `git add gems/#{file}*`
+end
+
 task :console do
   exec "irb -r #{File.dirname(__FILE__)}/lib/schleuder.rb"
 end
 
-desc 'Release a new version of schleuder.'
-task :release => [:git_tag, :gem, :publish_gem, :tarball, :wiki]
-
-task :gem => :check_version
+task :publish_gem => :website
 task :git_tag => :check_version
-task :tarball => :check_version
 
 desc "Build new version: git-tag and gem-file"
-task :new_version => [:gem, :edit_readme, :git_commit_version, :git_tag] do
+task :new_version => [:check_version, :gem, :tarball, :edit_readme, :git_commit_version, :git_tag] do
 end
 
 desc "Edit README"
 task :edit_readme do
-  puts "Please edit the README to refer to version #{version}"
+  puts "Please edit the README to refer to version #{@version}"
   if system('gvim -f README.md')
     `git add README.md`
   else
@@ -47,40 +48,44 @@ end
 
 desc 'git-tag HEAD as new version'
 task :git_tag do
-  `git tag -u #{gpguid} -s -m "Version #{version}" #{tagname}`
+  `git tag -u #{@gpguid} -s -m "Version #{@version}" #{@tagname}`
 end
 
 desc "Commit changes as new version"
 task :git_commit_version do
   `git add lib/#{project}/version.rb`
-  `git commit -m "Version #{version} (README, gems)"`
+  `git commit -m "Version #{@version} (README, gems)"`
 end
 
 desc 'Build, sign and commit a gem-file.'
 task :gem do
-  gemfile = "#{tagname}.gem"
+  gemfile = "#{@tagname}.gem"
   `gem build #{project}.gemspec`
-  `mv -iv #{gemfile} gems/`
-  `cd gems && gpg -u #{gpguid} -b #{gemfile}`
-  `git add gems/#{gemfile}*`
+  move_sign_and_add(gemfile)
 end
 
 desc 'Publish gem-file to rubygems.org'
 task :publish_gem do
-  `gem push #{tagname}.gem`
+  puts "Really push #{@tagname}.gem to rubygems.org? [yN]"
+  if gets.match(/^y/i)
+    puts "Pushing..."
+    `gem push #{@tagname}.gem`
+  else
+    puts "Not pushed."
+  end
 end
 
 desc 'Build and sign a tarball'
 task :tarball do
-  `git archive --format tar.gz --prefix "#{tagname}/" -o #{tarball} #{tagname}`
-  `gpg -u schleuder2@nadir.org --detach-sign #{tarball}`
+  tarball = "#{@tagname}.tar.gz"
+  `git archive --format tar.gz --prefix "#{@tagname}/" -o #{tarball} #{@tagname}`
+  move_sign_and_add(tarball)
 end
 
-desc 'Describe manual wiki-related release-tasks'
-task :wiki do
+desc 'Describe manual release-tasks'
+task :website do
   puts "Please update the website:
-  * Upload tarball+signature.
-  * Edit download- and changelog-pages.
+  * Update changelog.
   * Publish release-announcement.
 "
 end
@@ -88,11 +93,11 @@ end
 desc 'Check if version-tag already exists'
 task :check_version do
   # Check if Schleuder::VERSION has been updated since last release
-  if `git tag`.include?(tagname)
-    $stderr.puts "Warning: Tag '#{tagname}' already exists. Did you forget to update #{project}/version.rb?"
-    $stderr.print "Continue? [yN] "
+  if `git tag`.include?(@tagname)
+    $stderr.puts "Warning: Tag '#{@tagname}' already exists. Did you forget to update #{project}/version.rb?"
+    $stderr.print "Delete tag to continue? [yN] "
     if $stdin.gets.match(/^y/i)
-      `git tag -d #{tagname}`
+      `git tag -d #{@tagname}`
     else
       exit 1
     end
