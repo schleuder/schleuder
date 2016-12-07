@@ -270,7 +270,7 @@ describe Schleuder::List do
         fingerprint: "aaaadddd0000999",
       )
 
-      expect(list.logfile).to eq "/var/schleuder/lists/bar.org/foo/list.log"
+      expect(list.logfile).to eq File.join(Schleuder::Conf.listlogs_dir, "bar.org/foo/list.log")
     end
   end
 
