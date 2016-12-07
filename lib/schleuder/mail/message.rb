@@ -49,7 +49,11 @@ module Mail
           clean.add_part Mail::Part.new(part)
         end
       else
-        clean.add_part Mail::Part.new(self.body)
+        # Don't use self.to_s here — that includes all the headers we *don't*
+        # want to copy.
+        new_part = Mail::Part.new
+        new_part.body = self.body.to_s
+        clean.add_part Mail::Part.new(new_part)
       end
       clean
     end
