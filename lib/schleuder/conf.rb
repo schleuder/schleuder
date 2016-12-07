@@ -4,12 +4,45 @@ module Schleuder
 
     EMAIL_REGEXP = /\A.+@.+\z/i
 
+    DEFAULTS = {
+      'lists_dir' => '/var/schleuder/lists',
+      'listlogs_dir' => '/var/schleuder/lists',
+      'plugins_dir' => '/etc/schleuder/plugins',
+      'log_level' => 'warn',
+      'smtp_settings' => {
+        'address' => 'localhost',
+        'port' => 25,
+        'domain' => 'localhost',
+        'enable_starttls_auto' => true,
+        # Don't verify by default because most smtp servers don't include
+        # 'localhost' into their TLS-certificates.
+        'openssl_verify_mode' => 'none',
+        'authentication' => nil,
+        'user_name' => nil,
+        'password' => nil,
+      },
+      'database' => {
+        'production' => {
+          'adapter' =>  'sqlite3',
+          'database' => '/var/schleuder/db.sqlite'
+        }
+      },
+      'api' => {
+        'host' => 'localhost',
+        'port' => 4443,
+        'use_tls' => false,
+        'tls_cert_file' => '/etc/schleuder/schleuder-certificate.pem',
+        'tls_key_file' => '/etc/schleuder/schleuder-private-key.pem',
+        'valid_api_keys' => []
+      }
+    }
+
     def config
-      @config ||= self.class.load_config('schleuder', ENV['SCHLEUDER_CONFIG'])
+      @config ||= self.class.load_config(ENV['SCHLEUDER_CONFIG'])
     end
 
-    def self.load_config(defaults_basename, filename)
-      load_defaults(defaults_basename).deep_merge(load_config_file(filename))
+    def self.load_config(filename)
+      DEFAULTS.deep_merge(load_config_file(filename))
     end
 
     def self.lists_dir
@@ -88,14 +121,6 @@ module Schleuder
       else
         {}
       end
-    end
-
-    def self.load_defaults(basename)
-      file = Pathname.new(ENV['SCHLEUDER_ROOT']).join("etc/#{basename}.yml")
-      if ! file.readable?
-        raise RuntimeError, "Error: '#{file}' is not a readable file."
-      end
-      load_config_file(file)
     end
   end
 end
