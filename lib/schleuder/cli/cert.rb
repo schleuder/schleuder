@@ -7,6 +7,7 @@ module Schleuder
       key = Conf.api['tls_key_file']
       cert = Conf.api['tls_cert_file']
       SchleuderCertManager.generate('schleuder', key, cert)
+      puts "To activate TLS set `use_tls: true` in #{ENV['SCHLEUDER_CONFIG']} and restart schleuder-api-daemon."
     end
 
     desc 'fingerprint', 'Show fingerprint of configured certificate.'
