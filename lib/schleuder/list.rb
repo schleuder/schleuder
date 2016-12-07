@@ -189,7 +189,7 @@ module Schleuder
       @gpg_ctx ||= begin
         # TODO: figure out why set it again...
         # Set GNUPGHOME when list is created.
-        ENV['GNUPGHOME'] = listdir
+        set_gnupg_home
         GPGME::Ctx.new armor: true
       end
     end
@@ -277,19 +277,25 @@ module Schleuder
 
     private
 
-      def delete_listdir
-        if File.exists?(self.listdir)
-          FileUtils.rm_r(self.listdir, secure: true)
-          Schleuder.logger.info "Deleted listdir"
-        else
-          # Don't use list-logger here — if the list-dir isn't present we can't log to it!
-          Schleuder.logger.info "Couldn't delete listdir, directly not present"
-        end
-        true
-      rescue => exc
-        # Don't use list-logger here — if the list-dir isn't present we can't log to it!
-        Schleuder.logger.error "Error while deleting listdir: #{exc}"
-        return false
+    def set_gnupg_home
+      if ENV["SCHLEUDER_ENV"] != "test"
+        ENV['GNUPGHOME'] = listdir
       end
+    end
+
+    def delete_listdir
+      if File.exists?(self.listdir)
+        FileUtils.rm_r(self.listdir, secure: true)
+        Schleuder.logger.info "Deleted listdir"
+      else
+        # Don't use list-logger here — if the list-dir isn't present we can't log to it!
+        Schleuder.logger.info "Couldn't delete listdir, directly not present"
+      end
+      true
+    rescue => exc
+      # Don't use list-logger here — if the list-dir isn't present we can't log to it!
+      Schleuder.logger.error "Error while deleting listdir: #{exc}"
+      return false
+    end
   end
 end

@@ -297,4 +297,37 @@ describe Schleuder::List do
       expect(list.email).to eq "foo@bar.org"
     end
   end
+
+  describe "#admins" do
+    it "returns subscriptions of admin users" do
+      list = Schleuder::List.create(
+        email: "foo@bar.org",
+        fingerprint: "aaaadddd0000999",
+      )
+      admin_subscription = Schleuder::Subscription.create(
+        email: "admin@foo.org",
+        admin: true,
+        list_id: list.id,
+      )
+      _user_subscription = Schleuder::Subscription.create(
+        email: "user@foo.org",
+        admin: false,
+        list_id: list.id,
+      )
+
+      expect(list.admins).to eq [admin_subscription]
+    end
+  end
+
+  describe "#key" do
+    it "returns the key with the fingerprint of the list" do
+      set_test_gnupg_home
+      list = Schleuder::List.create(
+        email: "foo@bar.org",
+        fingerprint: "59C7 1FB3 8AEE 22E0 91C7  8259 D063 5044 0F75 9BD3",
+      )
+
+      expect(list.key.fingerprint()).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
+    end
+  end
 end
