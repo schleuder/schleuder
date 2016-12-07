@@ -38,11 +38,7 @@ module Schleuder
     }
 
     def config
-      @config ||= self.class.load_config(ENV['SCHLEUDER_CONFIG'])
-    end
-
-    def self.load_config(filename)
-      DEFAULTS.deep_merge(load_config_file(filename))
+      @config ||= load_config(ENV['SCHLEUDER_CONFIG'])
     end
 
     def self.lists_dir
@@ -114,7 +110,11 @@ module Schleuder
 
     private
 
-    def self.load_config_file(filename)
+    def load_config(filename)
+      DEFAULTS.deep_merge(load_config_file(filename))
+    end
+
+    def load_config_file(filename)
       file = Pathname.new(filename)
       if file.readable?
         YAML.load(file.read)
