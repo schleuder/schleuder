@@ -43,8 +43,7 @@ class SchleuderCertManager
     end
     puts "Certificate written to: #{filename_cert}"
 
-    puts "Fingerprint of generated certificate: #{fingerprint(cert)}"
-    puts "Have this fingerprint included into the configuration-file of all clients that want to connect to your Schleuder API."
+    fingerprint(cert)
   rescue => exc
     error exc.message
   end
