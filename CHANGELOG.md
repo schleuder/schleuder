@@ -5,7 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [Unreleased]
+## [3.0.0.beta11] / 2016-12-07
+
+### Changed
+
+ * Fixed recognition and validation of clearsigned-inline messages.
+ * Fix log-file rotation (for list.log).
+ * Show hint to set `use_tls: true` after generation of certificate.
+
+### Added
+
+ * During installation, show error message and exit if data of an installation of schleuder-2.x is found in the configured lists_dir.
+ * More tests.
 
 
 ## [3.0.0.beta10] / 2016-12-05
@@ -13,6 +24,7 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
 ### Changed
 
  * Fixed tarball to contain correct version and state of changelog.
+
 
 ## [3.0.0.beta9] / 2016-12-02
 

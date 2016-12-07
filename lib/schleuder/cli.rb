@@ -68,13 +68,20 @@ module Schleuder
       config_dir = Pathname.new(ENV['SCHLEUDER_CONFIG']).dirname
       root_dir = Pathname.new(ENV['SCHLEUDER_ROOT'])
 
+      # Check if lists_dir contains v2-data.
+      if Dir.glob("#{Conf.lists_dir}/*/*/members.conf").size > 0
+        msg = "Lists directory #{Conf.lists_dir} appears to contain data from a Schleuder version 2.x installation.\nPlease move it out of the way or configure a different `lists_dir` in `#{ENV['SCHLEUDER_CONFIG']}`.\nTo migrate lists from Schleuder v2 to Schleuder v3 please use `schleuder migrate_v2_list` after the installation succeeded."
+        fatal msg, 2
+      end
+
       [Conf.lists_dir, config_dir].each do |dir|
         dir = Pathname.new(dir)
         if ! dir.exist?
-          if dir.dirname.writable?
+          begin
             dir.mkpath
-          else
-            fatal "Cannot create required directory due to lacking write permissions, please create manually and then run this command again:\n#{dir}"
+          rescue Errno::EACCES => exc
+            problem_dir = exc.message.split(' - ').last
+            fatal "Cannot create required directory due to lacking write permissions: #{problem_dir}.\nPlease fix the permissions or create the directory manually and then run this command again."
           end
         end
       end
@@ -90,22 +97,14 @@ module Schleuder
         end
       end
 
-      chmod_files = [
-          ENV['SCHLEUDER_CONFIG'],
-          ENV['SCHLEUDER_LIST_DEFAULTS'],
-          Conf.lists_dir
-      ]
-      if Conf.database['adapter'].match(/sqlite/)
-        chmod_files << Conf.database['database']
-      end
-
-      FileUtils.chmod_R('o-rwx', chmod_files)
 
       if ActiveRecord::SchemaMigration.table_exists?
         say `cd #{root_dir} && rake db:migrate`
       else
         say `cd #{root_dir} && rake db:schema:load`
-        say "NOTE: The database was prepared using sqlite. If you prefer to use a different DBMS please edit the 'database'-section in /etc/schleuder/schleuder.yml, create the database, install the corresponding ruby-library (e.g. `gem install mysql`) and run this current command again"
+        if Conf.database['adapter'].match(/sqlite/)
+          say "NOTE: The database was prepared using sqlite. If you prefer to use a different DBMS please edit the 'database'-section in /etc/schleuder/schleuder.yml, create the database, install the corresponding ruby-library (e.g. `gem install mysql`) and run this current command again"
+        end
       end
 
       say "Schleuder has been set up. You can now create a new list using `schleuder-cli`.\nWe hope you enjoy!"
@@ -228,9 +227,9 @@ Please notify the users and admins of this list of these changes.
     end
 
     no_commands do
-      def fatal(msg)
+      def fatal(msg, exitcode=1)
         error("Error: #{msg}")
-        exit 1
+        exit exitcode
       end
 
       KEYWORDS = {
@@ -252,6 +251,10 @@ Please notify the users and admins of this list of these changes.
         Array(value).map do |keyword|
           KEYWORDS[keyword.downcase]
         end.compact
+      end
+
+      def chmod(file)
+        FileUtils.chmod_R('o-rwx', file)
       end
     end
   end

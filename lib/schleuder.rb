@@ -15,8 +15,9 @@ require 'active_record'
 require 'hkp'
 
 # Load schleuder
-rootdir = Pathname.new(__FILE__).dirname.dirname.realpath
-$:.unshift File.join(rootdir, 'lib')
+libdir = Pathname.new(__FILE__).dirname.realpath
+rootdir = libdir.dirname
+$:.unshift libdir
 
 # Monkeypatches
 require 'schleuder/mail/message.rb'
@@ -27,7 +28,7 @@ require 'schleuder/gpgme/ctx.rb'
 
 # The Code[tm]
 require 'schleuder/errors/base'
-Dir[rootdir.to_s + "/lib/schleuder/errors/*.rb"].each do |file|
+Dir["#{libdir}/schleuder/errors/*.rb"].each do |file|
   require file
 end
 # Load schleuder/conf before the other classes, it defines constants!
@@ -37,14 +38,14 @@ require 'schleuder/logger_notifications'
 require 'schleuder/logger'
 require 'schleuder/listlogger'
 require 'schleuder/plugins_runner'
-Dir[rootdir.to_s + "/lib/schleuder/plugins/*.rb"].each do |file|
+Dir["#{libdir}/schleuder/plugins/*.rb"].each do |file|
   require file
 end
 require 'schleuder/filters_runner'
-Dir[rootdir.to_s + "/lib/schleuder/filters/*.rb"].each do |file|
+Dir["#{libdir}/schleuder/filters/*.rb"].each do |file|
   require file
 end
-Dir[rootdir.to_s + "/lib/schleuder/validators/*.rb"].each do |file|
+Dir["#{libdir}/schleuder/validators/*.rb"].each do |file|
   require file
 end
 require 'schleuder/runner'
@@ -71,8 +72,10 @@ Mail.defaults do
   delivery_method :smtp, Schleuder::Conf.smtp_settings.symbolize_keys
 end
 
-I18n.load_path += Dir[rootdir.to_s + "/locales/*.yml"]
+I18n.load_path += Dir["#{rootdir}/locales/*.yml"]
 I18n.enforce_available_locales = true
 I18n.default_locale = :en
+
+File.umask(0027)
 
 include Schleuder
