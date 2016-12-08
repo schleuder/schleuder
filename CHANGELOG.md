@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [Unreleased]
+
+### Changed
+
+ * Show file permission warning if cert is being generated as root.
+ * Use hard-coded defaults as base to merge config-file over.
+
+### Fixed
+
+ * Fix tests for non-default listlogs_dir.
+
+
 ## [3.0.0.beta11] / 2016-12-07
 
 ### Changed
