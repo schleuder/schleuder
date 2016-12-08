@@ -4,6 +4,7 @@ require 'bundler/setup'
 Bundler.setup
 require 'schleuder'
 require 'database_cleaner'
+require 'factory_girl'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -18,6 +19,11 @@ RSpec.configure do |config|
   end
 
   config.order = :random
+
+  config.include FactoryGirl::Syntax::Methods
+  config.before(:suite) do
+    FactoryGirl.find_definitions
+  end
 
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
