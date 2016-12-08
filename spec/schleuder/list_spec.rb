@@ -10,6 +10,12 @@ describe Schleuder::List do
       :include_openpgp_header, :forward_all_incoming_to_admins
   ].freeze
 
+  it "has a valid factory" do
+    list = create(:list_with_one_subscription)
+
+    expect(list).to be_valid
+  end
+
   it { is_expected.to respond_to :subscriptions }
   it { is_expected.to respond_to :email }
   it { is_expected.to respond_to :fingerprint }

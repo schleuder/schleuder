@@ -11,6 +11,12 @@ describe Schleuder::Subscription do
     @list = Schleuder::List.first || Schleuder::List.create(email: 'test@whatever', fingerprint: 'aaaadddd0000999')
   end
 
+  it "has a valid factory" do
+    subscription = create(:subscription)
+
+    expect(subscription).to be_valid
+  end
+
   it { is_expected.to respond_to :list_id }
   it { is_expected.to respond_to :email }
   it { is_expected.to respond_to :fingerprint }
