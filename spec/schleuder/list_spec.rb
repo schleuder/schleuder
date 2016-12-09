@@ -268,6 +268,7 @@ describe Schleuder::List do
       expect(list.key.fingerprint()).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
     end
   end
+
   describe "#secret_key" do
     it "returns the secret key with the fingerprint of the list" do
       set_test_gnupg_home
@@ -278,6 +279,27 @@ describe Schleuder::List do
 
       expect(list.secret_key.secret?).to eq true
       expect(list.secret_key.fingerprint).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
+    end
+  end
+
+  describe "#keys" do
+    it "it returns an array with the keys of the list" do
+      set_test_gnupg_home
+      list = create(:list)
+
+      expect(list.keys).to be_kind_of Array
+      expect(list.keys.length).to eq 1
+    end
+
+    it "returns an array of keys matching the given fingerprint" do
+      set_test_gnupg_home
+      list = create(
+        :list,
+        fingerprint: "59C71FB38AEE22E091C78259D06350440F759BD3"
+      )
+
+      expect(list.keys).to be_kind_of Array
+      expect(list.keys.first.fingerprint).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
     end
   end
 end
