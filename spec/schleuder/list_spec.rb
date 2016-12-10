@@ -302,4 +302,16 @@ describe Schleuder::List do
       expect(list.keys.first.fingerprint).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
     end
   end
+
+  describe "#keys_by_email" do
+    it "returns an array with the keys matching the given email address" do
+      set_test_gnupg_home
+      list = create(:list, email: "schleuder@example.org")
+
+      expect(list.keys_by_email("schleuder@example.org").length).to eq 1
+      expect(
+        list.keys_by_email("schleuder@example.org").first.fingerprint
+      ).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
+    end
+  end
 end
