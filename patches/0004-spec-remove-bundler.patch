@@ -1,0 +1,17 @@
+Description: spec/: Remove bundler usage
+ We don't need bundler, because we're using packages. 
+ Upstream is aware of this patch and we're working on integrating it.
+Author: Georg Faerber <georg@riseup.net>
+Last-Update: 2016-12-06
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/spec/spec_helper.rb
++++ b/spec/spec_helper.rb
+@@ -1,7 +1,5 @@
+ ENV['SCHLEUDER_ENV'] ||= 'test'
+ ENV['SCHLEUDER_CONFIG'] = 'spec/schleuder.yml'
+-require 'bundler/setup'
+-Bundler.setup
+ require 'schleuder'
+ require 'database_cleaner'
+ 

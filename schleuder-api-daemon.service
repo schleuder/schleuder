@@ -1,0 +1,12 @@
+[Unit]
+Description=Schleuder API daemon
+Documentation=https://schleuder.nadir.org/docs/
+After=local-fs.target network.target
+
+[Service]
+ExecStart=/usr/bin/schleuder-api-daemon
+User=schleuder
+Group=schleuder
+
+[Install]
+WantedBy=multi-user.target

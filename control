@@ -1,38 +1,54 @@
 Source: schleuder
-Section: ruby
+Section: mail
 Priority: optional
 Maintainer: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>
 Uploaders: Georg Faerber <georg@riseup.net>
-Build-Depends: debhelper (>= 9~),
+Build-Depends: debhelper (>= 9.20160709~),
+	       dh-systemd,
                gem2deb,
-               rake (>= 10),
-               ruby-activerecord (>= 4.1),
-               ruby-mail-gpg (>= 0.2.7),
-               ruby-sinatra (>= 1),
-               ruby-sinatra-contrib (>= 1),
-               ruby-sqlite3 (>= 1),
-               ruby-thor (>= 0)
+               rake (>= 10~),
+               ruby-activerecord (>= 4.1~),
+               ruby-mail-gpg,
+               ruby-sinatra,
+               ruby-sinatra-contrib,
+               ruby-sqlite3,
+               ruby-thor,
+	       thin,
+	       ruby-rspec (>= 3.5.0~),
+	       ruby-database-cleaner
 Standards-Version: 3.9.8
 Vcs-Git: https://anonscm.debian.org/git/pkg-ruby-extras/schleuder.git
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-ruby-extras/schleuder.git
-Homepage: http://schleuder.nadir.org/
+Homepage: https://schleuder.nadir.org/
 Testsuite: autopkgtest-pkg-ruby
 XS-Ruby-Versions: all
 
 Package: schleuder
 Architecture: all
 XB-Ruby-Versions: ${ruby:Versions}
-Depends: rake (>= 10),
+Depends: adduser,
+	 exim4 | mail-transport-agent,
+	 cron,
          ruby | ruby-interpreter,
-         ruby-activerecord (>= 4.1),
-         ruby-mail-gpg (>= 0.2.7),
-         ruby-sinatra (>= 1),
-         ruby-sinatra-contrib (>= 1),
-         ruby-sqlite3 (>= 1),
-         ruby-thor (>= 0),
+         rake (>= 10~),
+ 	 ruby-activerecord (>= 4.1~),
+         ruby-mail-gpg,
+         ruby-sinatra,
+         ruby-sinatra-contrib,
+         ruby-sqlite3,
+         ruby-thor,
+	 thin,
+	 init-system-helpers,
          ${misc:Depends},
-         ${shlibs:Depends}
-Description: Schleuder is a gpg-enabled mailinglist with remailing-capabilities.
- Schleuder is a group's email-gateway: subscribers can exchange encrypted emails among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.
+	 ${shlibs:Depends}
+Recommends: schleuder-cli,
+	    haveged
+Description: GPG-enabled mailing list manager with resending-capabilities
+ Schleuder is a GPG-enabled mailing list manager with resending-capabilities.
+ Subscribers can communicate encrypted (and pseudonymously) among themselves,
+ receive emails from non-subscribers and send emails to non-subscribers via the
+ list.
  .
- Schleuder takes care of all decryption and (re-)encryption, stripping of headers, and more. Schleuder can also send out its own public key upon request and process administrative commands by email.
+ Version 3 of schleuder is a complete rewrite, which aims to be more robust,
+ flexible, and internationalized. It also provides an API to be used with
+ schleuder-cli and/or schleuder-web.

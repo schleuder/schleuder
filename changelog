@@ -1,5 +1,5 @@
-schleuder (3.0.0~beta7-1) UNRELEASED; urgency=medium
+schleuder (3.0.0~beta11-1) unstable; urgency=medium
 
-  * Initial release (Closes: #nnnn)
+  * Initial release (Closes: #845636)
 
- -- Georg Faerber <georg@riseup.net>  Fri, 25 Nov 2016 14:01:35 +0100
+ -- Georg Faerber <georg@riseup.net>  Mon, 12 Dec 2016 16:20:50 +0100

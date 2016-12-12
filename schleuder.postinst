@@ -1,0 +1,55 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+    configure)
+	# Fresh installations or upgrades of schleuder (< 3.0).
+	if [ -z "$2" ] || dpkg --compare-versions "$2" lt 3.0; then
+		# We need to do this because code ordering in 'schleuder install' is wrong currently.
+		# Upstream is informed, will be resolved and fixed very soon.
+		touch /var/lib/schleuder/db.sqlite
+	fi
+
+	# 'schleuder install' will set up the database and/or run migrations.
+	# This needs to be done in any case.
+	schleuder install >/dev/null
+
+	# Fresh installations or upgrades of schleuder (< 3.0).
+	if [ -z "$2" ] || dpkg --compare-versions "$2" lt 3.0; then
+		if ! id schleuder >/dev/null 2>&1; then
+			adduser --system --group --gecos "Schleuder GPG-enabled mailing list manager" \
+				--no-create-home --home /var/lib/schleuder schleuder >/dev/null
+		fi
+
+		# Ensure sane permissions.
+		chown -R schleuder:schleuder /var/lib/schleuder /var/log/schleuder /etc/schleuder
+		chmod -R 750 /var/lib/schleuder /var/log/schleuder /etc/schleuder
+
+		# Enable and start 'schleuder-api-daemon' by default.
+		# We're doing this here manually instead of just relying on debhelper because we need
+		# to set up the database first, see above and 'debian/rules'.
+		deb-systemd-helper enable schleuder-api-daemon.service
+		deb-systemd-invoke restart schleuder-api-daemon.service
+
+	# Upgrades of schleuder (>= 3.0).
+	else
+		# Only restart 'schleuder-api-daemon' if it is running currently.
+		RUNNING=$(systemctl is-active schleuder-api-daemon.service >/dev/null && echo $?)
+
+		if [ $RUNNING = 0 ]; then
+			deb-systemd-invoke restart schleuder-api-daemon.service
+		fi
+	fi
+	;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+	;;
+
+    *)
+	echo "postinst called with unknown argument \`$1'" >&2
+	exit 1
+	;;
+esac
+
+#DEBHELPER#

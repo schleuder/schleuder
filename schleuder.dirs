@@ -1,0 +1,4 @@
+etc/schleuder/plugins
+var/lib/schleuder/lists
+var/log/schleuder
+usr/lib/ruby/vendor_ruby/schleuder

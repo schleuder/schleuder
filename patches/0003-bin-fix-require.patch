@@ -1,0 +1,30 @@
+Description: bin/: Use 'require' instead of 'require_relative'
+ As we're installing into '/usr/lib/ruby/vendor_ruby',
+ 'require_relative' as used by upstream doesn't work.
+ Upstream is aware of this patch and we're working on integrating it.
+Author: Georg Faerber <georg@riseup.net>
+Last-Update: 2016-12-06
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/bin/schleuder
++++ b/bin/schleuder
+@@ -4,7 +4,7 @@
+ 
+ 
+ begin
+-  require_relative '../lib/schleuder/cli'
++  require 'schleuder/cli'
+   Schleuder::Cli.start
+ rescue => exc
+   $stderr.puts exc.to_s
+--- a/bin/schleuder-api-daemon
++++ b/bin/schleuder-api-daemon
+@@ -7,7 +7,7 @@
+ require 'sinatra/json'
+ require 'sinatra/namespace'
+ require 'thin'
+-require_relative '../lib/schleuder.rb'
++require 'schleuder'
+ 
+ TLS_CERT = Conf.api['tls_cert_file']
+ TLS_KEY = Conf.api['tls_key_file']

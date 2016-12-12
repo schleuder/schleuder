@@ -1,0 +1,31 @@
+Description: etc/: Fix paths used by upstream
+ Upstream uses default paths like '/var/schleuder' which obviously
+ violate policies and common standards, like FHS for example. We need to
+ fix this. Upstream is aware of this patch and we're working on
+ integrating it.
+Author: Georg Faerber <georg@riseup.net>
+Last-Update: 2016-12-06
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/etc/schleuder.yml
++++ b/etc/schleuder.yml
+@@ -1,8 +1,8 @@
+ # Where are the list-directories stored (contain log-files and GnuPG-keyrings).
+-lists_dir: /var/schleuder/lists
++lists_dir: /var/lib/schleuder/lists
+ 
+ # Where to write list-logs. The actual log-file will be <lists_logs_base_dir>/<hostname>/<listname>/list.log.
+-listlogs_dir: /var/schleuder/lists
++listlogs_dir: /var/log/schleuder
+ 
+ # Schleuder reads plugins also from this directory.
+ plugins_dir: /etc/schleuder/plugins
+@@ -25,7 +25,7 @@
+ database:
+   production:
+     adapter:  'sqlite3'
+-    database: /var/schleuder/db.sqlite
++    database: /var/lib/schleuder/db.sqlite
+ 
+ # Note: The API-daemon will bind only to localhost if no TLS-cert+keys are available.
+ api:

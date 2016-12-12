@@ -1,0 +1,6 @@
+bin/schleuder usr/bin
+bin/schleuder-api-daemon usr/bin
+db/ /usr/lib/ruby/vendor_ruby/schleuder
+debian/Rakefile usr/lib/ruby/vendor_ruby/schleuder
+etc/*.yml /etc/schleuder
+locales/ /usr/share/schleuder

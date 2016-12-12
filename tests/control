@@ -1,0 +1,3 @@
+Tests: check-status upstream-tests
+Depends: @, @builddeps@, gem2deb-test-runner, curl
+Restrictions: isolation-container
