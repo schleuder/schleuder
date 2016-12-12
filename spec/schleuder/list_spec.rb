@@ -314,4 +314,36 @@ describe Schleuder::List do
       ).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
     end
   end
+
+  describe "#import_key" do
+    it "imports a given key" do
+      set_test_gnupg_home
+      list = create(:list)
+      key = File.read("spec/fixtures/example_key.txt")
+
+      expect { list.import_key(key) }.to change { list.keys.count }.by(1)
+
+      list.delete_key("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+    end
+  end
+
+  describe "#delete_key" do
+    it "deletes the key with the given fingerprint" do
+      set_test_gnupg_home
+      list = create(:list)
+      key = File.read("spec/fixtures/example_key.txt")
+      list.import_key(key)
+
+      expect do
+        list.delete_key("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+      end.to change { list.keys.count }.by(-1)
+    end
+
+    it "returns false if no key with the fingerprint was found" do
+      set_test_gnupg_home
+      list = create(:list)
+
+      expect(list.delete_key("A4C60C8833789C7CAA44496FD3FFA6611AB10CEC")).to eq false
+    end
+  end
 end
