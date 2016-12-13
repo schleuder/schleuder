@@ -34,12 +34,7 @@ case "$1" in
 
 	# Upgrades of schleuder (>= 3.0).
 	else
-		# Only restart 'schleuder-api-daemon' if it is running currently.
-		RUNNING=$(systemctl is-active schleuder-api-daemon.service >/dev/null && echo $?)
-
-		if [ $RUNNING = 0 ]; then
-			deb-systemd-invoke restart schleuder-api-daemon.service
-		fi
+		deb-systemd-invoke restart schleuder-api-daemon.service
 	fi
 	;;
 
