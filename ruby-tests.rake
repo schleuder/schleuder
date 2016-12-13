@@ -3,8 +3,11 @@ require 'gem2deb/rake/spectask'
 task :setup do
   ENV['SCHLEUDER_ENV'] = 'test'
   ENV['SCHLEUDER_CONFIG'] = 'spec/schleuder.yml'
-  `rake db:create`
-  `rake db:schema:load`
+  # Remove database to ensure clean environment
+  `rm db/test.sqlite3 >/dev/null 2>&1 || true`
+  # Set up database
+  `rake -f debian/Rakefile db:create`
+  `rake -f debian/Rakefile db:schema:load`
 end
 
 task :run_tests do
