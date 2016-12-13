@@ -1,3 +1,11 @@
+schleuder (3.0.0~beta11-2) unstable; urgency=medium
+
+  * debian/schleuder.postinst: Restart the API daemon by default
+  * debian/ruby-tests.rake: Load correct Rakefile and ensure clean 
+    environment
+
+ -- Georg Faerber <georg@riseup.net>  Tue, 13 Dec 2016 18:56:32 +0100
+
 schleuder (3.0.0~beta11-1) unstable; urgency=medium
 
   * Initial release (Closes: #845636)
