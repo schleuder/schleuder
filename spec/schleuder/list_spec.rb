@@ -341,4 +341,24 @@ describe Schleuder::List do
       expect(list.delete_key("A4C60C8833789C7CAA44496FD3FFA6611AB10CEC")).to eq false
     end
   end
+
+  describe "#export_key" do
+    it "exports the key with the fingerprint of the list if no argument is given" do
+      set_test_gnupg_home
+      list = create(:list, email: "schleuder@example.org")
+      expected_public_key = File.read("spec/fixtures/schleuder_at_example_public_key.txt")
+
+      expect(list.export_key()).to include expected_public_key
+    end
+  end
+
+  it "exports the key with the given fingerprint" do
+    set_test_gnupg_home
+    list = create(:list, email: "schleuder@example.org")
+    expected_public_key = File.read("spec/fixtures/schleuder_at_example_public_key.txt")
+
+    expect(
+      list.export_key("59C71FB38AEE22E091C78259D06350440F759BD3")
+    ).to include expected_public_key
+  end
 end
