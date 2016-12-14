@@ -259,7 +259,6 @@ describe Schleuder::List do
 
   describe "#key" do
     it "returns the key with the fingerprint of the list" do
-      set_test_gnupg_home
       list = Schleuder::List.create(
         email: "foo@bar.org",
         fingerprint: "59C7 1FB3 8AEE 22E0 91C7  8259 D063 5044 0F75 9BD3",
@@ -271,7 +270,6 @@ describe Schleuder::List do
 
   describe "#secret_key" do
     it "returns the secret key with the fingerprint of the list" do
-      set_test_gnupg_home
       list = create(
         :list,
         fingerprint: "59C71FB38AEE22E091C78259D06350440F759BD3"
@@ -284,7 +282,6 @@ describe Schleuder::List do
 
   describe "#keys" do
     it "it returns an array with the keys of the list" do
-      set_test_gnupg_home
       list = create(:list)
 
       expect(list.keys).to be_kind_of Array
@@ -292,7 +289,6 @@ describe Schleuder::List do
     end
 
     it "returns an array of keys matching the given fingerprint" do
-      set_test_gnupg_home
       list = create(
         :list,
         fingerprint: "59C71FB38AEE22E091C78259D06350440F759BD3"
@@ -305,7 +301,6 @@ describe Schleuder::List do
 
   describe "#keys_by_email" do
     it "returns an array with the keys matching the given email address" do
-      set_test_gnupg_home
       list = create(:list, email: "schleuder@example.org")
 
       expect(list.keys_by_email("schleuder@example.org").length).to eq 1
