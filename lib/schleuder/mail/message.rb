@@ -187,13 +187,16 @@ module Mail
         msg = begin
                 self.signature.to_s
               rescue EOFError
+                # TODO: I18n
                 "Unknown signature by 0x#{self.signature.fingerprint}"
               end
       else
+        # TODO: I18n
         msg = "Unsigned"
       end
       @standard_pseudoheaders << make_pseudoheader(:sig, msg)
 
+      # TODO: I18n
       @standard_pseudoheaders << make_pseudoheader(
             :enc,
             was_encrypted? ? 'Encrypted' : 'Unencrypted'
