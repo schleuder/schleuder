@@ -66,6 +66,19 @@ module Mail
       self.parts.unshift(parts.delete_at(parts.size-1))
     end
 
+    def add_footer!
+      # Add public_footer unless it's empty?.
+      if self.list.present? && ! self.list.public_footer.to_s.strip.empty?
+        footer_part = Mail::Part.new
+        footer_part.body = list.public_footer.strip
+        if parts.size == 1 && parts.first.mime_type == 'multipart/mixed' && parts.first.parts.size == 1 && parts.first.parts.first.mime_type == 'text/plain'
+          self.parts.first.add_part footer_part
+        else
+          self.add_part footer_part
+        end
+      end
+    end
+
     def was_encrypted?
       Mail::Gpg.encrypted?(original_message)
     end
@@ -166,7 +179,7 @@ module Mail
     end
 
     def make_pseudoheader(key, value)
-      "#{key.to_s.capitalize}: #{value.to_s}"
+      "#{key.to_s.camelize}: #{value.to_s}"
     end
 
     def dynamic_pseudoheaders
