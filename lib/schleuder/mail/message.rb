@@ -163,14 +163,16 @@ module Mail
       @keywords
     end
 
-    def add_subject_prefix(string)
-      if ! string.to_s.strip.empty?
-        prefix = "#{string} "
-        # Only insert prefix if it's not present already.
-        if ! self.subject.include?(prefix)
-          self.subject = "#{string} #{self.subject}"
-        end
-      end
+    def add_subject_prefix!
+      _add_subject_prefix(nil)
+    end
+
+    def add_subject_prefix_in!
+      _add_subject_prefix(:in)
+    end
+
+    def add_subject_prefix_out!
+      _add_subject_prefix(:out)
     end
 
     def add_pseudoheader(key, value)
@@ -311,6 +313,25 @@ module Mail
 
     private
 
+
+    def _add_subject_prefix(suffix)
+      attrib = "subject_prefix"
+      if suffix
+        attrib << "_#{suffix}"
+      end
+      if ! self.list.respond_to?(attrib)
+        return false
+      end
+
+      string = self.list.send(attrib).to_s.strip
+      if ! string.empty?
+        prefix = "#{string} "
+        # Only insert prefix if it's not present already.
+        if ! self.subject.include?(prefix)
+          self.subject = "#{string} #{self.subject}"
+        end
+      end
+    end
 
     # Looking for signatures in each part. They are not aggregated into the main part.
     # We only return the signature if all parts are validly signed by the same key.

@@ -31,7 +31,7 @@ module Schleuder
         logger.debug "Message was encrypted."
         if ! @mail.was_validly_signed?
           logger.debug "Message was not validly signed, adding subject_prefix_in and skipping plugins"
-          @mail.add_subject_prefix(list.subject_prefix_in)
+          @mail.add_subject_prefix_in!
         else
           # Plugins
           logger.debug "Message was encrypted and validly signed"
@@ -52,7 +52,7 @@ module Schleuder
       end
 
       logger.debug "Adding subject_prefix"
-      @mail.add_subject_prefix(list.subject_prefix)
+      @mail.add_subject_prefix!
 
       # Subscriptions
       send_to_subscriptions
