@@ -202,12 +202,15 @@ module Mail
       # Careful to add information about the incoming signature. GPGME
       # throws exceptions if it doesn't know the key.
       if self.signature.present?
-        msg = begin
-                self.signature.to_s
-              rescue EOFError
-                # TODO: I18n
-                "Unknown signature by 0x#{self.signature.fingerprint}"
-              end
+        # Some versions of gpgme return nil if the key is unknown, so we check
+        # for that manually and provide our own fallback. (Calling
+        # `signature.key` results in an EOFError in that case.)
+        if list.key(signature.fingerprint)
+          msg = signature.to_s
+        else
+          # TODO: I18n
+          msg = "Unknown signature by unknown key 0x#{self.signature.fingerprint}"
+        end
       else
         # TODO: I18n
         msg = "Unsigned"
