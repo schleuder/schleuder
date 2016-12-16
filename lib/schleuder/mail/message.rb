@@ -23,6 +23,7 @@ module Mail
       end
 
       new.list = list
+      new.gpg list.gpg_sign_options
       new.original_message = self.dup.freeze
       new.recipient = recipient
       new
@@ -30,6 +31,8 @@ module Mail
 
     def clean_copy(with_pseudoheaders=false)
       clean = Mail.new
+      clean.list = self.list
+      clean.gpg self.list.gpg_sign_options
       clean.from = list.email
       clean.subject = self.subject
 

@@ -41,7 +41,7 @@ module Schleuder
       end
 
       mail = ensure_headers(mail)
-      gpg_opts = {encrypt: true, sign: true, keys: {self.email => "0x#{self.fingerprint}"}}
+      gpg_opts = self.list.gpg_sign_options.merge(encrypt: true, keys: {self.email => "0x#{self.fingerprint}"})
       if self.key.blank?
         if self.list.send_encrypted_only?
           self.list.logger.warn "Not sending to #{self.email}: no key present and sending plain text not allowed"
@@ -67,7 +67,7 @@ module Schleuder
       mail = ensure_headers(Mail.new)
       mail.subject = I18n.t('notice')
       mail.body = I18n.t("missed_message_due_to_absent_key", list_email: self.list.email) + I18n.t('errors.signoff')
-      mail.gpg({encrypt: false, sign: true})
+      mail.gpg self.list.gpg_sign_options
       mail.deliver
     end
 
