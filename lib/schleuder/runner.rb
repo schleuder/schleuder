@@ -25,23 +25,22 @@ module Schleuder
         return error
       end
 
+      if ! @mail.was_validly_signed?
+        logger.debug "Message was not validly signed, adding subject_prefix_in"
+        @mail.add_subject_prefix_in!
+      end
+
       if ! @mail.was_encrypted?
         logger.debug "Message was not encrypted, skipping plugins"
-      else
-        logger.debug "Message was encrypted."
-        if ! @mail.was_validly_signed?
-          logger.debug "Message was not validly signed, adding subject_prefix_in and skipping plugins"
-          @mail.add_subject_prefix_in!
-        else
-          # Plugins
-          logger.debug "Message was encrypted and validly signed"
-          output = Plugins::Runner.run(list, @mail).compact
+      elsif @mail.was_validly_signed?
+        # Plugins
+        logger.debug "Message was encrypted and validly signed"
+        output = Plugins::Runner.run(list, @mail).compact
 
-          # Any output will be treated as error-message. Text meant for users
-          # should have been put into the mail by the plugin.
-          output.each do |something|
-            @mail.add_pseudoheader(:error, something.to_s) if something.present?
-          end
+        # Any output will be treated as error-message. Text meant for users
+        # should have been put into the mail by the plugin.
+        output.each do |something|
+          @mail.add_pseudoheader(:error, something.to_s) if something.present?
         end
       end
 
