@@ -136,7 +136,7 @@ module Schleuder
         expiry = key.subkeys.first.expires
         if expiry && expiry > now && expiry < checkdate
           # key expires in the near future
-          expdays = ((exp - now)/86400).to_i
+          expdays = ((expiry - now)/86400).to_i
           expiring << [key, expdays]
         end
 

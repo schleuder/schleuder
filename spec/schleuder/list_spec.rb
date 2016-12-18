@@ -361,4 +361,18 @@ describe Schleuder::List do
       list.export_key("59C71FB38AEE22E091C78259D06350440F759BD3")
     ).to include expected_public_key
   end
+
+  describe "#check_keys" do
+    it "adds a mesage if a key expires in two weeks or less" do
+      list = create(:list)
+      key = double("key")
+      allow_any_instance_of(GPGME::Key).to receive(:subkeys).and_return(key)
+      allow(key).to receive(:first).and_return(key)
+      allow(key).to receive(:expires).and_return(Time.now + 7.days)
+      allow(key).to receive(:fingerprint).and_return("59C71FB38AEE22E091C78259D06350440F759BD3")
+
+      expect(list.check_keys).to eq "Expires in 6 days:"\
+        "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
+    end
+  end
 end
