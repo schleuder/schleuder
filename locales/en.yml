@@ -80,9 +80,9 @@ en:
         updated: updated
         unchanged: unchanged
     resend:
-      not_resent_no_keys: "Resending failed. For the following recipients no matching key was found and unencrypted sending was disallowed: %{emails}."
-      encrypted_with: encrypted with
-      unencrypted: unencrypted
+      not_resent_no_keys: Resending to <%{email}> failed (%{num_keys} keys found and unencrypted sending disallowed).
+      encrypted_to: Encrypted to
+      unencrypted_to: Unencrypted to
     subscription_management:
       forbidden: "Error: You're not allowed to unsubscribe %{email}."
       is_not_subscribed: "%{email} is not subscribed."
