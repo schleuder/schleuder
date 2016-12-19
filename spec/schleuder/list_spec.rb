@@ -374,5 +374,29 @@ describe Schleuder::List do
       expect(list.check_keys).to eq "Expires in 6 days:"\
         "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
     end
+
+    it "adds a message if a key is revoked" do
+      list = create(:list)
+      allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:revoked)
+
+      expect(list.check_keys).to eq "Is revoked:"\
+        "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
+    end
+
+    it "adds a message if a key is disabled" do
+      list = create(:list)
+      allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:disabled)
+
+      expect(list.check_keys).to eq "Is disabled:"\
+        "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
+    end
+
+    it "adds a message if a key is invalid" do
+      list = create(:list)
+      allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:invalid)
+
+      expect(list.check_keys).to eq "Is invalid:"\
+        "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
+    end
   end
 end
