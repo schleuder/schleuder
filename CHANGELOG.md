@@ -12,10 +12,16 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
  * Show file permission warning if cert is being generated as root.
  * Use hard-coded defaults as base to merge config-file over.
 
+### Added
+
+ * New keyword `x-resend-cc` to send a message to multiple recipients that should know of each another. The ciphertext will be encrypted only once to all recipients, too.
+ * More specs.
+
 ### Fixed
 
  * Fix tests for non-default listlogs_dir.
-
+ * Fix pseudo-header "Sig" for unknown keys.
+ * Fix adding subject_prefix_in for unencrypted messages.
 
 ## [3.0.0.beta11] / 2016-12-07
 
