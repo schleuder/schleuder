@@ -11,6 +11,9 @@ module Mail
     def setup(recipient, list)
       if self.encrypted?
         new = self.decrypt(verify: true)
+        # Work around a bug in mail-gpg: when decrypting pgp/mime the
+        # Date-header is not copied.
+        new.date ||= self.date
         # Test if there's a signed multipart inside the ciphertext
         # ("encapsulated" format of pgp/mime).
         if new.signed?
