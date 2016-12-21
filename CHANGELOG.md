@@ -22,6 +22,7 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
  * Fix tests for non-default listlogs_dir.
  * Fix pseudo-header "Sig" for unknown keys.
  * Fix adding subject_prefix_in for unencrypted messages.
+ * Fix checking permissions of listdir and list.log for newly created lists.
 
 ## [3.0.0.beta11] / 2016-12-07
 

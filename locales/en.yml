@@ -54,6 +54,7 @@ en:
     list_exists: A list with address '%{email}' is already present.
     listdir_problem:
       message: "There's a problem with the list-directory: '%{dir}' %{problem}."
+      not_existing: does not exist
       not_a_directory: is not a directory
       not_empty: is not empty
       not_writable: is not writable

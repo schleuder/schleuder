@@ -102,14 +102,20 @@ module Schleuder
       end
 
       # Check neccessary permissions of crucial files.
-      if ! File.readable?(@list.listdir)
-        return log_and_return(Errors::ListdirProblem.new(@list.listdir, :not_readable))
+      if ! File.exist?(@list.listdir)
+        return log_and_return(Errors::ListdirProblem.new(@list.listdir, :not_existing))
       elsif ! File.directory?(@list.listdir)
         return log_and_return(Errors::ListdirProblem.new(@list.listdir, :not_a_directory))
+      elsif ! File.readable?(@list.listdir)
+        return log_and_return(Errors::ListdirProblem.new(@list.listdir, :not_readable))
+      elsif ! File.writable?(@list.listdir)
+        return log_and_return(Errors::ListdirProblem.new(@list.listdir, :not_writable))
+      else
+        if File.exist?(@list.logfile) && ! File.writable?(@list.logfile)
+          return log_and_return(Errors::ListdirProblem.new(@list.logfile, :not_writable))
+        end
       end
-      if ! File.writable?(@list.logfile)
-        return log_and_return(Errors::ListdirProblem.new(@list.logfile, :not_writable))
-      end
+
 
       # Set locale
       if I18n.available_locales.include?(@list.language.to_sym)
