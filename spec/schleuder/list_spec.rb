@@ -10,6 +10,12 @@ describe Schleuder::List do
       :include_openpgp_header, :forward_all_incoming_to_admins
   ].freeze
 
+  it "has a valid factory" do
+    list = create(:list_with_one_subscription)
+
+    expect(list).to be_valid
+  end
+
   it { is_expected.to respond_to :subscriptions }
   it { is_expected.to respond_to :email }
   it { is_expected.to respond_to :fingerprint }
@@ -40,30 +46,21 @@ describe Schleuder::List do
   it { is_expected.to respond_to :logfiles_to_keep }
 
   it "is invalid when email is nil" do
-    list = Schleuder::List.new(
-      email: nil,
-      fingerprint: "aaaadddd0000999",
-    )
+    list = build(:list, email: nil)
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:email]).to include("can't be blank")
   end
 
-   it "is invalid when email is blank" do
-    list = Schleuder::List.new(
-      email: "",
-      fingerprint: "aaaadddd0000999",
-    )
+  it "is invalid when email is blank" do
+    list = build(:list, email: "")
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:email]).to include("can't be blank")
   end
 
   it "is invalid when email does not contain an @" do
-    list = Schleuder::List.new(
-      email: "fooatbar.org",
-      fingerprint: "aaaadddd0000999",
-    )
+    list = build(:list, email: "fooatbar.org")
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:email]).to include("is not a valid email address")
@@ -71,36 +68,27 @@ describe Schleuder::List do
 
   it "normalizes the fingerprint" do
     fingerprint = " 99 991 1000 10"
-    list = Schleuder::List.new(fingerprint: fingerprint)
+    list = build(:list, fingerprint: fingerprint)
 
     expect(list.fingerprint).to eq "99991100010"
   end
 
   it "is invalid when fingerprint is blank" do
-    list = Schleuder::List.new(
-      email: "foo@bar.org",
-      fingerprint: "",
-    )
+    list = build(:list, fingerprint: "")
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:fingerprint]).to include("can't be blank")
   end
 
   it "is invalid when fingerprint is nil" do
-    list = Schleuder::List.new(
-      email: "foo@bar.org",
-      fingerprint: nil
-    )
+    list = build(:list, fingerprint: nil)
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:fingerprint]).to include("can't be blank")
   end
 
   it "is invalid when fingerprint contains invalid characters" do
-    list = Schleuder::List.new(
-      email: "foo@bar.org",
-      fingerprint: "&$$$$67923AAA",
-    )
+    list = build(:list, fingerprint: "&$$$$67923AAA")
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:fingerprint]).to include("is not a valid fingerprint")
@@ -108,10 +96,7 @@ describe Schleuder::List do
 
   BOOLEAN_LIST_ATTRIBUTES.each do |list_attribute|
     it "is invalid if #{list_attribute} is nil" do
-      list = Schleuder::List.new(
-        email: "foo@bar.org",
-        fingerprint: "aaaadddd0000999",
-      )
+      list = build(:list)
       list[list_attribute] = nil
 
       expect(list).not_to be_valid
@@ -119,10 +104,7 @@ describe Schleuder::List do
     end
 
     it "is invalid if #{list_attribute} is blank" do
-      list = Schleuder::List.new(
-        email: "foo@bar.org",
-        fingerprint: "aaaadddd0000999",
-      )
+      list = build(:list)
       list[list_attribute] = ""
 
       expect(list).not_to be_valid
@@ -132,10 +114,7 @@ describe Schleuder::List do
 
   [:headers_to_meta, :keywords_admin_only, :keywords_admin_notify].each do |list_attribute|
     it "is invalid if #{list_attribute} contains special characters" do
-      list = Schleuder::List.new(
-        email: "foo@bar.org",
-        fingerprint: "aaaadddd0000999",
-      )
+      list = build(:list)
       list[list_attribute] =["$from", "to", "date", "cc"]
 
       expect(list).not_to be_valid
@@ -143,10 +122,7 @@ describe Schleuder::List do
     end
 
     it "is valid if #{list_attribute} does not contain special characters" do
-      list = Schleuder::List.new(
-        email: "foo@bar.org",
-        fingerprint: "aaaadddd0000999",
-      )
+      list = build(:list)
       list[list_attribute] = ["foobar"]
 
       expect(list).to be_valid
@@ -154,11 +130,7 @@ describe Schleuder::List do
   end
 
   it "is invalid if bounces_drop_on_headers contains special characters" do
-    list = Schleuder::List.new(
-      email: "foo@bar.org",
-      fingerprint: "aaaadddd0000999",
-      bounces_drop_on_headers: {"$" => "%"},
-    )
+    list = build(:list, bounces_drop_on_headers: {"$" => "%"})
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:bounces_drop_on_headers]).to include("contains invalid characters")
@@ -166,10 +138,7 @@ describe Schleuder::List do
 
   [:subject_prefix, :subject_prefix_in, :subject_prefix_out].each do |list_attribute|
     it "is invalid if #{list_attribute} contains a linebreak" do
-      list = Schleuder::List.new(
-        email: "foo@bar.org",
-        fingerprint: "aaaadddd0000999",
-      )
+      list = build(:list)
       list[list_attribute] = "Foo\nbar"
 
       expect(list).not_to be_valid
@@ -177,10 +146,7 @@ describe Schleuder::List do
     end
 
     it "is valid if #{list_attribute} is nil" do
-      list = Schleuder::List.new(
-        email: "foo@bar.org",
-        fingerprint: "aaaadddd0000999",
-      )
+      list = build(:list)
       list[list_attribute] = nil
 
       expect(list).to be_valid
@@ -188,11 +154,7 @@ describe Schleuder::List do
   end
 
   it "is invalid if openpgp_header_preference is foobar" do
-    list = Schleuder::List.new(
-      email: "foo@bar.org",
-      fingerprint: "aaaadddd0000999",
-      openpgp_header_preference: "foobar",
-    )
+    list = build(:list, openpgp_header_preference: "foobar")
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:openpgp_header_preference]).to include("must be one of: sign, encrypt, signencrypt, unprotected, none")
@@ -200,10 +162,7 @@ describe Schleuder::List do
 
   [:max_message_size_kb, :logfiles_to_keep].each do |list_attribute|
     it "is invalid if #{list_attribute} is 0" do
-      list = Schleuder::List.new(
-        email: "foo@bar.org",
-        fingerprint: "aaaadddd0000999",
-      )
+      list = build(:list)
       list[list_attribute] = 0
 
       expect(list).not_to be_valid
@@ -212,33 +171,21 @@ describe Schleuder::List do
   end
 
   it "is invalid if log_level is foobar" do
-    list = Schleuder::List.new(
-      email: "foo@bar.org",
-      fingerprint: "aaaadddd0000999",
-      log_level: "foobar",
-    )
+    list = build(:list, log_level: "foobar")
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:log_level]).to include("must be one of: debug, info, warn, error")
   end
 
   it "is invalid if language is jp" do
-    list = Schleuder::List.new(
-      email: "foo@bar.org",
-      fingerprint: "aaaadddd0000999",
-      language: "jp",
-    )
+    list = build(:list, language: "jp")
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:language]).to include("must be one of: en, de")
   end
 
   it "is invalid if public footer include a non-printable characters" do
-    list = Schleuder::List.new(
-      email: "foo@bar.org",
-      fingerprint: "aaaadddd0000999",
-      public_footer: "\a",
-    )
+    list = build(:list, public_footer: "\a")
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:public_footer]).to include("includes non-printable characters")
@@ -265,21 +212,15 @@ describe Schleuder::List do
 
   describe "#logfile" do
     it "returns the logfile path" do
-      list = Schleuder::List.new(
-        email: "foo@bar.org",
-        fingerprint: "aaaadddd0000999",
-      )
+      list = create(:list, email: "foo@bar.org")
 
-      expect(list.logfile).to eq "/var/schleuder/lists/bar.org/foo/list.log"
+      expect(list.logfile).to eq File.join(Schleuder::Conf.listlogs_dir, "bar.org/foo/list.log")
     end
   end
 
   describe "#logger" do
     it "calls the ListLogger" do
-      list = Schleuder::List.new(
-        email: "foo@bar.org",
-        fingerprint: "aaaadddd0000999",
-      )
+      list = create(:list)
 
       expect(Listlogger).to receive(:new).with(list)
 
@@ -289,10 +230,7 @@ describe Schleuder::List do
 
   describe "#to_s" do
     it "returns the email" do
-      list = Schleuder::List.new(
-        email: "foo@bar.org",
-        fingerprint: "aaaadddd0000999",
-      )
+      list = create(:list, email: "foo@bar.org")
 
       expect(list.email).to eq "foo@bar.org"
     end
@@ -321,13 +259,86 @@ describe Schleuder::List do
 
   describe "#key" do
     it "returns the key with the fingerprint of the list" do
-      set_test_gnupg_home
       list = Schleuder::List.create(
         email: "foo@bar.org",
         fingerprint: "59C7 1FB3 8AEE 22E0 91C7  8259 D063 5044 0F75 9BD3",
       )
 
       expect(list.key.fingerprint()).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
+    end
+  end
+
+  describe "#secret_key" do
+    it "returns the secret key with the fingerprint of the list" do
+      list = create(
+        :list,
+        fingerprint: "59C71FB38AEE22E091C78259D06350440F759BD3"
+      )
+
+      expect(list.secret_key.secret?).to eq true
+      expect(list.secret_key.fingerprint).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
+    end
+  end
+
+  describe "#keys" do
+    it "it returns an array with the keys of the list" do
+      list = create(:list)
+
+      expect(list.keys).to be_kind_of Array
+      expect(list.keys.length).to eq 1
+    end
+
+    it "returns an array of keys matching the given fingerprint" do
+      list = create(
+        :list,
+        fingerprint: "59C71FB38AEE22E091C78259D06350440F759BD3"
+      )
+
+      expect(list.keys).to be_kind_of Array
+      expect(list.keys.first.fingerprint).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
+    end
+  end
+
+  describe "#keys_by_email" do
+    it "returns an array with the keys matching the given email address" do
+      list = create(:list, email: "schleuder@example.org")
+
+      expect(list.keys_by_email("schleuder@example.org").length).to eq 1
+      expect(
+        list.keys_by_email("schleuder@example.org").first.fingerprint
+      ).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
+    end
+  end
+
+  describe "#import_key" do
+    it "imports a given key" do
+      set_test_gnupg_home
+      list = create(:list)
+      key = File.read("spec/fixtures/example_key.txt")
+
+      expect { list.import_key(key) }.to change { list.keys.count }.by(1)
+
+      list.delete_key("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+    end
+  end
+
+  describe "#delete_key" do
+    it "deletes the key with the given fingerprint" do
+      set_test_gnupg_home
+      list = create(:list)
+      key = File.read("spec/fixtures/example_key.txt")
+      list.import_key(key)
+
+      expect do
+        list.delete_key("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+      end.to change { list.keys.count }.by(-1)
+    end
+
+    it "returns false if no key with the fingerprint was found" do
+      set_test_gnupg_home
+      list = create(:list)
+
+      expect(list.delete_key("A4C60C8833789C7CAA44496FD3FFA6611AB10CEC")).to eq false
     end
   end
 end

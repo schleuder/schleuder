@@ -69,7 +69,7 @@ module Schleuder
         reply.from = @list.email
         reply.return_path = @list.bounce_address
         reply.body = msg
-        gpg_opts = {sign: true}
+        gpg_opts = @list.gpg_sign_options
         if @list.keys("<#{sender_addr}>").present?
           logger.debug "Found key for address"
           gpg_opts[encrypt] = true

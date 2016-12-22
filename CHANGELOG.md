@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [3.0.0.beta12] / 2016-12-22
+
+### Changed
+
+ * Show file permission warning if cert is being generated as root.
+ * Use hard-coded defaults as base to merge config-file over.
+
+### Added
+
+ * New keyword `x-resend-cc` to send a message to multiple recipients that should know of each another. The ciphertext will be encrypted only once to all recipients, too.
+ * More specs.
+ * Skript for schleuder-api-daemon under sysvinit.
+
+### Fixed
+
+ * Fix tests for non-default listlogs_dir.
+ * Fix pseudo-header "Sig" for unknown keys.
+ * Fix adding subject_prefix_in for unencrypted messages.
+ * Fix checking permissions of listdir and list.log for newly created lists.
+ * Fix occasionally empty 'date'-pseudo-header.
+
 ## [3.0.0.beta11] / 2016-12-07
 
 ### Changed

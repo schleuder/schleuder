@@ -11,6 +11,9 @@ module Mail
     def setup(recipient, list)
       if self.encrypted?
         new = self.decrypt(verify: true)
+        # Work around a bug in mail-gpg: when decrypting pgp/mime the
+        # Date-header is not copied.
+        new.date ||= self.date
         # Test if there's a signed multipart inside the ciphertext
         # ("encapsulated" format of pgp/mime).
         if new.signed?
@@ -23,6 +26,7 @@ module Mail
       end
 
       new.list = list
+      new.gpg list.gpg_sign_options
       new.original_message = self.dup.freeze
       new.recipient = recipient
       new
@@ -30,6 +34,8 @@ module Mail
 
     def clean_copy(with_pseudoheaders=false)
       clean = Mail.new
+      clean.list = self.list
+      clean.gpg self.list.gpg_sign_options
       clean.from = list.email
       clean.subject = self.subject
 
@@ -61,6 +67,19 @@ module Mail
     def prepend_part(part)
       self.add_part(part)
       self.parts.unshift(parts.delete_at(parts.size-1))
+    end
+
+    def add_footer!
+      # Add public_footer unless it's empty?.
+      if self.list.present? && ! self.list.public_footer.to_s.strip.empty?
+        footer_part = Mail::Part.new
+        footer_part.body = list.public_footer.strip
+        if parts.size == 1 && parts.first.mime_type == 'multipart/mixed' && parts.first.parts.size == 1 && parts.first.parts.first.mime_type == 'text/plain'
+          self.parts.first.add_part footer_part
+        else
+          self.add_part footer_part
+        end
+      end
     end
 
     def was_encrypted?
@@ -147,14 +166,16 @@ module Mail
       @keywords
     end
 
-    def add_subject_prefix(string)
-      if ! string.to_s.strip.empty?
-        prefix = "#{string} "
-        # Only insert prefix if it's not present already.
-        if ! self.subject.include?(prefix)
-          self.subject = "#{string} #{self.subject}"
-        end
-      end
+    def add_subject_prefix!
+      _add_subject_prefix(nil)
+    end
+
+    def add_subject_prefix_in!
+      _add_subject_prefix(:in)
+    end
+
+    def add_subject_prefix_out!
+      _add_subject_prefix(:out)
     end
 
     def add_pseudoheader(key, value)
@@ -163,7 +184,7 @@ module Mail
     end
 
     def make_pseudoheader(key, value)
-      "#{key.to_s.capitalize}: #{value.to_s}"
+      "#{key.to_s.camelize}: #{value.to_s}"
     end
 
     def dynamic_pseudoheaders
@@ -184,16 +205,22 @@ module Mail
       # Careful to add information about the incoming signature. GPGME
       # throws exceptions if it doesn't know the key.
       if self.signature.present?
-        msg = begin
-                self.signature.to_s
-              rescue EOFError
-                "Unknown signature by 0x#{self.signature.fingerprint}"
-              end
+        # Some versions of gpgme return nil if the key is unknown, so we check
+        # for that manually and provide our own fallback. (Calling
+        # `signature.key` results in an EOFError in that case.)
+        if list.key(signature.fingerprint)
+          msg = signature.to_s
+        else
+          # TODO: I18n
+          msg = "Unknown signature by unknown key 0x#{self.signature.fingerprint}"
+        end
       else
+        # TODO: I18n
         msg = "Unsigned"
       end
       @standard_pseudoheaders << make_pseudoheader(:sig, msg)
 
+      # TODO: I18n
       @standard_pseudoheaders << make_pseudoheader(
             :enc,
             was_encrypted? ? 'Encrypted' : 'Unencrypted'
@@ -292,6 +319,25 @@ module Mail
 
     private
 
+
+    def _add_subject_prefix(suffix)
+      attrib = "subject_prefix"
+      if suffix
+        attrib << "_#{suffix}"
+      end
+      if ! self.list.respond_to?(attrib)
+        return false
+      end
+
+      string = self.list.send(attrib).to_s.strip
+      if ! string.empty?
+        prefix = "#{string} "
+        # Only insert prefix if it's not present already.
+        if ! self.subject.include?(prefix)
+          self.subject = "#{string} #{self.subject}"
+        end
+      end
+    end
 
     # Looking for signatures in each part. They are not aggregated into the main part.
     # We only return the signature if all parts are validly signed by the same key.

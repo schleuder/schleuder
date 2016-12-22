@@ -19,7 +19,7 @@ module Schleuder
       out.attachments[filename].content_type = 'application/pgp-keys'
       out.attachments[filename].content_description = 'OpenPGP public key'
       # TODO: find out why the gpg-module puts all the headers into the first mime-part, too
-      out.gpg sign: true
+      out.gpg list.gpg_sign_options
       out.deliver
       exit
     end

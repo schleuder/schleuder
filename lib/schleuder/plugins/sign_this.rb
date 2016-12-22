@@ -8,7 +8,8 @@ module Schleuder
         clearsign(mail)
       else
         # Here we need to send our reply manually because we're sending
-        # attachments. Maybe move this ability into the plugin-runner?
+        # attachments.
+        # TODO: Maybe move this ability into the plugin-runner?
         out = multipart(mail.reply, list, mail)
         out.body = I18n.t('plugins.signatures_attached')
         list.logger.info "Replying directly to sender"
@@ -34,15 +35,12 @@ module Schleuder
       out
     end
 
-    def self.sign_each_part(list, mail)
-    end
-
     def self.detachsign(thing)
       crypto.sign(thing, mode: GPGME::SIG_MODE_DETACH).to_s
     end
 
     def self.clearsign(mail)
-      return crypto.clearsign(mail.body.to_s).to_s
+      crypto.clearsign(mail.body.to_s).to_s
     end
 
     def self.crypto

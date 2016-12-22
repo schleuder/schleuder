@@ -205,6 +205,10 @@ module Schleuder
       $stderr.puts "Failed to kill gpg-agent: #{e}"
     end
 
+    def gpg_sign_options
+      {sign: true, sign_as: self.fingerprint}
+    end
+
     def fingerprint=(arg)
       # Strip whitespace from incoming arg.
       if arg
