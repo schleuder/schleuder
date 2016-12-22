@@ -289,7 +289,7 @@ module Schleuder
 
     def delete_listdir
       if File.exists?(self.listdir)
-        FileUtils.rm_r(self.listdir, secure: true)
+        FileUtils.rm_rf(self.listdir, secure: true)
         Schleuder.logger.info "Deleted listdir"
       else
         # Don't use list-logger here — if the list-dir isn't present we can't log to it!
