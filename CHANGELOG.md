@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [3.0.0.beta13] / 2016-12-22
+
+### Fixed
+
+ * Fix creating new lists.
+
+
 ## [3.0.0.beta12] / 2016-12-22
 
 ### Changed
