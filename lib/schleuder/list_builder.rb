@@ -10,7 +10,7 @@ module Schleuder
     end
 
     def read_default_settings
-      hash = Conf.load_config('list-defaults', ENV['SCHLEUDER_LIST_DEFAULTS'])
+      hash = YAML.load_file(ENV['SCHLEUDER_LIST_DEFAULTS'])
       if ! hash.kind_of?(Hash)
         raise Errors::LoadingListSettingsFailed.new
       end
