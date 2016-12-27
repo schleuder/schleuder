@@ -11,9 +11,9 @@ module Mail
     def setup(recipient, list)
       if self.encrypted?
         new = self.decrypt(verify: true)
-        # Work around a bug in mail-gpg: when decrypting pgp/mime the
-        # Date-header is not copied.
-        new.date ||= self.date
+        ## Work around a bug in mail-gpg: when decrypting pgp/mime the
+        ## Date-header is not copied.
+        #new.date ||= self.date
         # Test if there's a signed multipart inside the ciphertext
         # ("encapsulated" format of pgp/mime).
         if new.signed?
@@ -248,7 +248,7 @@ module Mail
       if list.include_list_headers
         self['List-Id'] = "<#{list.email.gsub('@', '.')}>"
         self['List-Owner'] = "<mailto:#{list.owner_address}> (Use list's public key)"
-        self['List-Help'] = '<https://schleuder2.nadir.org/>'
+        self['List-Help'] = '<https://schleuder.nadir.org/>'
 
         postmsg = if list.receive_admin_only
                     "NO (Admins only)"
