@@ -46,6 +46,7 @@ describe Schleuder::List do
   it { is_expected.to respond_to :logfiles_to_keep }
 
   it "is invalid when email is nil" do
+    # Don't use factory here because we'd run into List.listdir expecting email to not be nil.
     list = Schleuder::List.new(email: nil)
 
     expect(list).not_to be_valid
