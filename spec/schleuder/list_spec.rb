@@ -341,4 +341,62 @@ describe Schleuder::List do
       expect(list.delete_key("A4C60C8833789C7CAA44496FD3FFA6611AB10CEC")).to eq false
     end
   end
+
+  describe "#export_key" do
+    it "exports the key with the fingerprint of the list if no argument is given" do
+      set_test_gnupg_home
+      list = create(:list, email: "schleuder@example.org")
+      expected_public_key = File.read("spec/fixtures/schleuder_at_example_public_key.txt")
+
+      expect(list.export_key()).to include expected_public_key
+    end
+  end
+
+  it "exports the key with the given fingerprint" do
+    set_test_gnupg_home
+    list = create(:list, email: "schleuder@example.org")
+    expected_public_key = File.read("spec/fixtures/schleuder_at_example_public_key.txt")
+
+    expect(
+      list.export_key("59C71FB38AEE22E091C78259D06350440F759BD3")
+    ).to include expected_public_key
+  end
+
+  describe "#check_keys" do
+    it "adds a mesage if a key expires in two weeks or less" do
+      list = create(:list)
+      key = double("key")
+      allow_any_instance_of(GPGME::Key).to receive(:subkeys).and_return(key)
+      allow(key).to receive(:first).and_return(key)
+      allow(key).to receive(:expires).and_return(Time.now + 7.days)
+      allow(key).to receive(:fingerprint).and_return("59C71FB38AEE22E091C78259D06350440F759BD3")
+
+      expect(list.check_keys).to eq "Expires in 6 days:"\
+        "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
+    end
+
+    it "adds a message if a key is revoked" do
+      list = create(:list)
+      allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:revoked)
+
+      expect(list.check_keys).to eq "Is revoked:"\
+        "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
+    end
+
+    it "adds a message if a key is disabled" do
+      list = create(:list)
+      allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:disabled)
+
+      expect(list.check_keys).to eq "Is disabled:"\
+        "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
+    end
+
+    it "adds a message if a key is invalid" do
+      list = create(:list)
+      allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:invalid)
+
+      expect(list.check_keys).to eq "Is invalid:"\
+        "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
+    end
+  end
 end
