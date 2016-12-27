@@ -45,18 +45,7 @@ RSpec.configure do |config|
 
   def cleanup_gnupg_home
     ENV["GNUPGHOME"] = nil
-    if gpg_major_version == '2.1'
-      Dir.glob("/tmp/schleuder-test/*/*").each do |dir|
-        err = `gpgconf --homedir '#{dir}' --kill gpg-agent 2>&1`
-        if ! err.empty?
-          puts err
-        end
-      end
-    end
-  end
-
-  def gpg_major_version
-    `gpgconf --version`.split[2].to_s[0..2]
+    FileUtils.rm_rf Schleuder::Conf.lists_dir
   end
 
   Mail.defaults do
