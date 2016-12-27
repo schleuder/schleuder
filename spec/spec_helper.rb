@@ -56,7 +56,7 @@ RSpec.configure do |config|
   end
 
   def cleanup_gnupg_home
-    Dir.glob("/tmp/schleuder-*").each {|dir| FileUtils.rm_rf(dir) }
+    FileUtils.rm_rf(ENV["GNUPGHOME"])
     ENV["GNUPGHOME"] = nil
     puts `gpgconf --kill gpg-agent 2>&1`
   end

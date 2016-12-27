@@ -312,7 +312,6 @@ describe Schleuder::List do
 
   describe "#import_key" do
     it "imports a given key" do
-      set_test_gnupg_home
       list = create(:list)
       key = File.read("spec/fixtures/example_key.txt")
 
@@ -324,7 +323,6 @@ describe Schleuder::List do
 
   describe "#delete_key" do
     it "deletes the key with the given fingerprint" do
-      set_test_gnupg_home
       list = create(:list)
       key = File.read("spec/fixtures/example_key.txt")
       list.import_key(key)
@@ -335,7 +333,6 @@ describe Schleuder::List do
     end
 
     it "returns false if no key with the fingerprint was found" do
-      set_test_gnupg_home
       list = create(:list)
 
       expect(list.delete_key("A4C60C8833789C7CAA44496FD3FFA6611AB10CEC")).to eq false
@@ -344,7 +341,6 @@ describe Schleuder::List do
 
   describe "#export_key" do
     it "exports the key with the fingerprint of the list if no argument is given" do
-      set_test_gnupg_home
       list = create(:list, email: "schleuder@example.org")
       expected_public_key = File.read("spec/fixtures/schleuder_at_example_public_key.txt")
 
@@ -353,7 +349,6 @@ describe Schleuder::List do
   end
 
   it "exports the key with the given fingerprint" do
-    set_test_gnupg_home
     list = create(:list, email: "schleuder@example.org")
     expected_public_key = File.read("spec/fixtures/schleuder_at_example_public_key.txt")
 
