@@ -127,6 +127,5 @@ module Schleuder
       ENV['GNUPGHOME'] = @list.listdir
       nil
     end
-
   end
 end

@@ -27,6 +27,11 @@ FactoryGirl.define do
     language "en"
     forward_all_incoming_to_admins false
     logfiles_to_keep 2
+    after(:build) do |list|
+      FileUtils.mkdir_p(list.listdir)
+      gpghome_upstream = File.join ENV["SCHLEUDER_ROOT"], "spec", "gnupg"
+      FileUtils.cp_r Dir["#{gpghome_upstream}/{private*,*.gpg,.*migrated}"], list.listdir
+    end
 
     trait :with_one_subscription do
       after(:build) do |list|
