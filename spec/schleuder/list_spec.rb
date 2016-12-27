@@ -46,7 +46,8 @@ describe Schleuder::List do
   it { is_expected.to respond_to :logfiles_to_keep }
 
   it "is invalid when email is nil" do
-    list = build(:list, email: nil)
+    # Don't use factory here because we'd run into List.listdir expecting email to not be nil.
+    list = Schleuder::List.new(email: nil)
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:email]).to include("can't be blank")
@@ -238,16 +239,15 @@ describe Schleuder::List do
 
   describe "#admins" do
     it "returns subscriptions of admin users" do
-      list = Schleuder::List.create(
-        email: "foo@bar.org",
-        fingerprint: "aaaadddd0000999",
-      )
-      admin_subscription = Schleuder::Subscription.create(
+      list = create(:list)
+      admin_subscription = create(
+        :subscription,
         email: "admin@foo.org",
         admin: true,
         list_id: list.id,
       )
-      _user_subscription = Schleuder::Subscription.create(
+      _user_subscription = create(
+        :subscription,
         email: "user@foo.org",
         admin: false,
         list_id: list.id,
@@ -259,9 +259,9 @@ describe Schleuder::List do
 
   describe "#key" do
     it "returns the key with the fingerprint of the list" do
-      list = Schleuder::List.create(
-        email: "foo@bar.org",
-        fingerprint: "59C7 1FB3 8AEE 22E0 91C7  8259 D063 5044 0F75 9BD3",
+      list = create(
+        :list,
+        fingerprint: "59C7 1FB3 8AEE 22E0 91C7  8259 D063 5044 0F75 9BD3"
       )
 
       expect(list.key.fingerprint()).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"

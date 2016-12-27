@@ -282,9 +282,7 @@ module Schleuder
     private
 
     def set_gnupg_home
-      if ENV["SCHLEUDER_ENV"] != "test"
-        ENV['GNUPGHOME'] = listdir
-      end
+      ENV['GNUPGHOME'] = listdir
     end
 
     def delete_listdir
