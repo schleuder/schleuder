@@ -30,6 +30,49 @@ describe Schleuder::Runner do
       teardown_list_and_mailer(list)
     end
 
+    it "doesn't have unwanted headerlines from the original message" do
+      list = create(:list, send_encrypted_only: false)
+      list.subscribe("admin@example.org", nil, true)
+      mail = File.read("spec/fixtures/mails/plain_text")
+
+      Schleuder::Runner.new().run(mail, list.email)
+      message = Mail::TestMailer.deliveries.first
+
+      expect(message.to).to eq ["admin@example.org"]
+      expect(message.header.to_s.scan("zeromail").size).to eq 0
+      expect(message.header.to_s.scan("nna.local").size).to eq 0
+      expect(message.header.to_s.scan("80.187.107.60").size).to eq 0
+      expect(message.header.to_s.scan("User-Agent:").size).to eq 0
+
+      teardown_list_and_mailer(list)
+    end
+
+    it "doesn't leak the Message-Id as configured" do
+      list = create(:list, send_encrypted_only: false, keep_msgid: false)
+      list.subscribe("admin@example.org", nil, true)
+      mail = File.read("spec/fixtures/mails/plain_text")
+
+      Schleuder::Runner.new().run(mail, list.email)
+      message = Mail::TestMailer.deliveries.first
+
+      expect(message.header.to_s.scan("8db04406-e2ab-fd06-d4c5-c19b5765c52b@web.de").size).to eq 0
+
+      teardown_list_and_mailer(list)
+    end
+
+    it "does keep the Message-Id as configured" do
+      list = create(:list, send_encrypted_only: false, keep_msgid: true)
+      list.subscribe("admin@example.org", nil, true)
+      mail = File.read("spec/fixtures/mails/plain_text")
+
+      Schleuder::Runner.new().run(mail, list.email)
+      message = Mail::TestMailer.deliveries.first
+
+      expect(message.header.to_s.scan("8db04406-e2ab-fd06-d4c5-c19b5765c52b@web.de").size).to eq 1
+
+      teardown_list_and_mailer(list)
+    end
+
     it "contains the list headers if include_list_headers is set to true" do
       list = create(
         :list,
