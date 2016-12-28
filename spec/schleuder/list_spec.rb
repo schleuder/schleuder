@@ -394,4 +394,44 @@ describe Schleuder::List do
         "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
     end
   end
+
+  describe ".by_recipient" do
+    it "returns the list for a given address" do
+      list = create(:list, email: "list@example.org")
+
+      expect(Schleuder::List.by_recipient("list-owner@example.org")).to eq list
+    end
+  end
+
+  describe "#sendkey_address" do
+    it "adds the sendkey keyword to the email address" do
+      list = create(:list, email: "list@example.org")
+
+      expect(list.sendkey_address).to eq "list-sendkey@example.org"
+    end
+  end
+
+  describe "#request_address" do
+    it "adds the request keyword to the email address" do
+      list = create(:list, email: "list@example.org")
+
+      expect(list.request_address).to eq "list-request@example.org"
+    end
+  end
+
+  describe "#owner_address" do
+    it "adds the owner keyword to the email address" do
+      list = create(:list, email: "list@example.org")
+
+      expect(list.owner_address).to eq "list-owner@example.org"
+    end
+  end
+
+  describe "#bounce_address" do
+    it "adds the bounce keyword to the email address" do
+      list = create(:list, email: "list@example.org")
+
+      expect(list.bounce_address).to eq "list-bounce@example.org"
+    end
+  end
 end
