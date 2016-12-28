@@ -434,4 +434,20 @@ describe Schleuder::List do
       expect(list.bounce_address).to eq "list-bounce@example.org"
     end
   end
+
+  describe "#gpg" do
+    it "returns an instance of GPGME::Ctx" do
+      list = create(:list)
+
+      expect(list.gpg).to be_an_instance_of GPGME::Ctx
+    end
+
+    it "sets the GNUPGHOME environment variable to the listdir" do
+      list = create(:list)
+
+      list.gpg
+
+      expect(ENV["GNUPGHOME"]).to eq list.listdir
+    end
+  end
 end
