@@ -98,10 +98,16 @@ See <https://git.codecoop.org/schleuder/schleuder3/issues>.
 
 Testing
 -------
+We use rspec to test our code. To setup the test environment run:
+
 
     SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bundle exec rake db:create db:schema:load
+
+To execute the test suite run:
+
     bundle exec rspec
 
+We are working on extendig the test coverage.
 
 Contributing
 ------------
