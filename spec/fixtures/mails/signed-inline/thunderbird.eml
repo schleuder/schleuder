@@ -1,0 +1,39 @@
+Received: from [IPv6:::1] (localhost.localdomain [IPv6:::1])
+	by flutsch.local (Postfix) with ESMTP id 777D3801DD
+	for <schleuder@example.org>; Thu, 29 Dec 2016 15:21:42 +0100 (CET)
+To: schleuder@example.org
+From: paz <paz@nadir.org>
+Subject: signed-inline
+Openpgp: id=52507B0163A8D9F0094FFE03B1A36F08069E55DE
+Message-ID: <dbd54295-d467-d704-5c32-89377161b9db@nadir.org>
+Date: Thu, 29 Dec 2016 15:21:42 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101
+ Thunderbird/45.5.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+This is a test.
+
+Umlauts: öäß.
+
+♥★
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEUlB7AWOo2fAJT/4DsaNvCAaeVd4FAlhlG/YACgkQsaNvCAae
+Vd4g5A/+Joc1sst26EGHhYL/MrYICBljcvFHWYHo81sr6ED1ek18eWiHtHGFhWvO
+HyJ0Ccu1ktdcyay7K70gpRNrjvs2d3l5sAAfgMyDPsvBrvWHKYUpiypcVG/7FRrD
+1RVsQroh4xTo2wzWOjn47dT0EMhVZtg4jITSQn25dj8/D9viUeE3fiGFLtG5KLhU
+B1l+3A5cYrzaSRy9p6VoCPSEOCToZ34LJd9RkG/QKMD9JT/HcZN89sRVL0e4qI8e
+wQWsI6Oi7WNGiUA+p8Q5un90KNCqqumjkVxIiiFk5wSB4egba6JIBW43pKYrklRz
+wIXrNCk/RWcPJMTqIH9n+2IrDlKeYO/u+h/uh1y0SOTnImkmpfcgYsG3ggPnVask
+T2J8CCQ5Xy0HecyEFt5GO9pYG73vG9bX/YQ3cGN6yUJxmXzlQ02iS6UVx5g8Ypy2
+NuZwQKFUGUeFta2mRlkKn8VZfqXrWv3VtKoaa1Zm0gZydTDA/37W5A2xrGk9IvjZ
+CUGx4jLqXbOFJ+zOthI9JJmaPP4sc7hUmegAjV1PJP6AaIZ+6TLwn+gY1z7SaRd2
+59bA6Bnm4S7p8nV7oPwW/WaOUu3mF7y5w4Yd8DAS5BKC5UiBexrhY6mH71jXb+J9
+VZOIwSEI9QvBKQM/7wULApVGq1kPR3K6XKAMvWiez3ayqsYUflk=
+=TSUJ
+-----END PGP SIGNATURE-----
