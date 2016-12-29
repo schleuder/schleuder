@@ -4,3 +4,5 @@ database:
     database: db/test.sqlite3
 lists_dir: /tmp/schleuder-test/
 listlogs_dir: /tmp/schleuder-test/
+smtp_settings:
+  port: 2523
