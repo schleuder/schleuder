@@ -6,7 +6,7 @@ describe Schleuder::Runner do
       it "delivers the incoming message" do
         list = create(:list, send_encrypted_only: false)
         list.subscribe("admin@example.org", nil, true)
-        mail = File.read("spec/fixtures/mails/plain_text")
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
 
         error = Schleuder::Runner.new().run(mail, list.email)
 
@@ -19,7 +19,7 @@ describe Schleuder::Runner do
       it "has the correct headerlines" do
         list = create(:list, send_encrypted_only: false)
         list.subscribe("admin@example.org", nil, true)
-        mail = File.read("spec/fixtures/mails/plain_text")
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
 
         Schleuder::Runner.new().run(mail, list.email)
         message = Mail::TestMailer.deliveries.first
@@ -34,7 +34,7 @@ describe Schleuder::Runner do
       it "doesn't have unwanted headerlines from the original message" do
         list = create(:list, send_encrypted_only: false)
         list.subscribe("admin@example.org", nil, true)
-        mail = File.read("spec/fixtures/mails/plain_text")
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
 
         Schleuder::Runner.new().run(mail, list.email)
         message = Mail::TestMailer.deliveries.first
@@ -51,7 +51,7 @@ describe Schleuder::Runner do
       it "doesn't leak the Message-Id as configured" do
         list = create(:list, send_encrypted_only: false, keep_msgid: false)
         list.subscribe("admin@example.org", nil, true)
-        mail = File.read("spec/fixtures/mails/plain_text")
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
 
         Schleuder::Runner.new().run(mail, list.email)
         message = Mail::TestMailer.deliveries.first
@@ -64,7 +64,7 @@ describe Schleuder::Runner do
       it "does keep the Message-Id as configured" do
         list = create(:list, send_encrypted_only: false, keep_msgid: true)
         list.subscribe("admin@example.org", nil, true)
-        mail = File.read("spec/fixtures/mails/plain_text")
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
 
         Schleuder::Runner.new().run(mail, list.email)
         message = Mail::TestMailer.deliveries.first
@@ -82,7 +82,7 @@ describe Schleuder::Runner do
           include_list_headers: true,
         )
         list.subscribe("admin@example.org", nil, true)
-        mail = File.read("spec/fixtures/mails/plain_text")
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
 
         Schleuder::Runner.new().run(mail, list.email)
         message = Mail::TestMailer.deliveries.first
@@ -101,7 +101,7 @@ describe Schleuder::Runner do
           include_openpgp_header: true,
         )
         list.subscribe("admin@example.org", nil, true)
-        mail = File.read("spec/fixtures/mails/plain_text")
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
 
         Schleuder::Runner.new().run(mail, list.email)
         message = Mail::TestMailer.deliveries.first
@@ -114,7 +114,7 @@ describe Schleuder::Runner do
       it "does not deliver content if send_encrypted_only is set to true" do
         list = create(:list, send_encrypted_only: true)
         list.subscribe("admin@example.org", nil, true)
-        mail = File.read("spec/fixtures/mails/plain_text")
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
 
         Schleuder::Runner.new().run(mail, list.email)
         message = Mail::TestMailer.deliveries.first
