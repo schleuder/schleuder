@@ -50,8 +50,8 @@ module Schleuder
     end
 
     desc 'check_keys', 'Check all lists for unusable or expiring keys and send the results to the list-admins. (This is supposed to be run from cron weekly.)'
-    def check_keys(listname=nil)
-      Schleuder::List.all.each do |list|
+    def check_keys
+      List.all.each do |list|
         I18n.locale = list.language
 
         text = list.check_keys
@@ -251,10 +251,6 @@ Please notify the users and admins of this list of these changes.
         Array(value).map do |keyword|
           KEYWORDS[keyword.downcase]
         end.compact
-      end
-
-      def chmod(file)
-        FileUtils.chmod_R('o-rwx', file)
       end
     end
   end
