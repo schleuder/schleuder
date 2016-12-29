@@ -1,0 +1,61 @@
+Received: from [IPv6:::1] (localhost.localdomain [IPv6:::1])
+	by flutsch.local (Postfix) with ESMTP id E276680329
+	for <schleuder@example.org>; Thu, 29 Dec 2016 15:14:42 +0100 (CET)
+To: schleuder@example.org
+From: paz <paz@nadir.org>
+Subject: signed-mime test
+Openpgp: id=52507B0163A8D9F0094FFE03B1A36F08069E55DE
+Message-ID: <f1cb40c3-2576-4649-34d3-6a75c6d2ac89@nadir.org>
+Date: Thu, 29 Dec 2016 15:14:42 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101
+ Thunderbird/45.5.1
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="DnUG3PvpPDcqa5kwpXHvXR1RjOgf17M3b"
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--DnUG3PvpPDcqa5kwpXHvXR1RjOgf17M3b
+Content-Type: multipart/mixed; boundary="L98FCUdRgUPMMRg5CUqPXDjjv0kGAXPf0";
+ protected-headers="v1"
+From: paz <paz@nadir.org>
+To: schleuder@example.org
+Message-ID: <f1cb40c3-2576-4649-34d3-6a75c6d2ac89@nadir.org>
+Subject: signed-mime test
+
+--L98FCUdRgUPMMRg5CUqPXDjjv0kGAXPf0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+This is a test
+
+Umlauts: =C3=B6=C3=A4=C3=9F
+
+=E2=99=A5=E2=98=85
+
+
+--L98FCUdRgUPMMRg5CUqPXDjjv0kGAXPf0--
+
+--DnUG3PvpPDcqa5kwpXHvXR1RjOgf17M3b
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEUlB7AWOo2fAJT/4DsaNvCAaeVd4FAlhlGlIACgkQsaNvCAae
+Vd5VQQ/7BfL7kQA30QfQMoOLqnww/jX2aCeOIAisuPE0CU1oqxn00ntSIl7vMYIl
+Gu16gfwXrftbNxLfEwlLN6xZbzPJg+JefumOZglAqP9zHONxuwhO3QkaN0+K2Gfl
+ECDVAOxVZX52APoFkkgJjkUcHmCa2GeFROhgmDtCxeGjBTQlRg6WNu+xeJmR9GUG
+MQSaaMxHHSFxTmXQonRa5C1ATw9ZXekDOHK8LEO5hq04WEus0zio0a6fi+/xgTUS
+rJb+9el+pSOa9pZ5ZFfWWqFYuG5d4GNQpNeZQZjnUKKt0PvSw8g6Sqe0UvAeyjyg
+HRjDAsCijMaMql4+w6Ko7T8vl/C2By0bBeJfpZ1YkR+wa28+v2u3G8l2Mk7azkzT
+a8QHMzyTITv3D3MunpXSrp6Blh9X2u5PmkD9BkxHduuz/J7kgvufini8oqc3WP4U
+zZ8ZfU3ruon2le4UCRE/kWtDgCEK8+ppYqF/GSJZ6j1lO+tOfuWjwhotdtdG88/x
+bRS2GXecp7Jy8aosC0c0MHqZEMRUCKfN9lQLFf3oi+7f1AhDZbTzVnI+KGduZU3h
+/gk3kwLHFUd2epIjiWOygQyfpMQCqNvaskz8md3uH9P2F1mfHi1CaUB5Nq1gLegP
+GNmgErDQLDCoBnEW3aNsEM/BzPy2JRMi9k/sPXQ0GsTZhH62MV0=
+=CSzt
+-----END PGP SIGNATURE-----
+
+--DnUG3PvpPDcqa5kwpXHvXR1RjOgf17M3b--

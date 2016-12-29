@@ -8,13 +8,6 @@ require 'factory_girl'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
-    # This option will default to `true` in RSpec 4. It makes the `description`
-    # and `failure_message` of custom matchers include text for helper methods
-    # defined using `chain`, e.g.:
-    # be_bigger_than(2).and_smaller_than(4).description
-    #   # => "be bigger than 2 and smaller than 4"
-    # ...rather than:
-    #   # => "be bigger than 2"
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end
 
@@ -26,7 +19,7 @@ RSpec.configure do |config|
   end
 
   config.before(:suite) do
-    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.strategy = :deletion
     DatabaseCleaner.clean_with(:truncation)
   end
 
@@ -40,34 +33,50 @@ RSpec.configure do |config|
     FileUtils.rm_rf(Dir["spec/gnupg/pubring.gpg~"])
   end
 
-  config.before(:suite) do
-    set_test_gnupg_home
-  end
-
   config.after(:suite) do
     cleanup_gnupg_home
+    stop_smtp_daemon
   end
 
   # rspec-mocks config goes here. You can use an alternate test double
   # library (such as bogus or mocha) by changing the `mock_with` option here.
   config.mock_with :rspec do |mocks|
-    # Prevents you from mocking or stubbing a method that does not exist on
-    # a real object. This is generally recommended, and will default to
-    # `true` in RSpec 4.
     mocks.verify_partial_doubles = true
   end
 
-  def set_test_gnupg_home
-    gpghome_upstream = File.join File.dirname(__dir__), "spec", "gnupg"
-    gpghome_tmp = "/tmp/schleuder-#{Time.now.to_i}-#{rand(100)}"
-    Dir.mkdir(gpghome_tmp)
-    ENV["GNUPGHOME"] = gpghome_tmp
-    FileUtils.cp_r Dir["#{gpghome_upstream}/{private*,*.gpg,.*migrated}"], gpghome_tmp
+  def cleanup_gnupg_home
+    ENV["GNUPGHOME"] = nil
+    FileUtils.rm_rf Schleuder::Conf.lists_dir
   end
 
-  def cleanup_gnupg_home
-    FileUtils.rm_rf(ENV["GNUPGHOME"])
-    ENV["GNUPGHOME"] = nil
-    puts `gpgconf --kill gpg-agent 2>&1`
+  def smtp_daemon_outputdir
+    File.join(Conf.lists_dir, 'smtp-daemon-output')
+  end
+
+  def start_smtp_daemon
+    if ! File.directory?(smtp_daemon_outputdir)
+      FileUtils.mkdir_p(smtp_daemon_outputdir)
+    end
+    daemon = File.join(ENV['SCHLEUDER_ROOT'], 'spec', 'smtp-daemon.rb')
+    pid = Process.spawn(daemon, '2523', smtp_daemon_outputdir)
+    pidfile = File.join(smtp_daemon_outputdir, 'pid')
+    IO.write(pidfile, pid)
+  end
+
+  def stop_smtp_daemon
+    pidfile = File.join(smtp_daemon_outputdir, 'pid')
+    if File.exist?(pidfile)
+      pid = File.read(pidfile).to_i
+      Process.kill(15, pid)
+      FileUtils.rm_rf smtp_daemon_outputdir
+    end
+  end
+
+  def run_schleuder(command, email, message_path)
+    `SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bin/schleuder #{command} #{email} < #{message_path} 2>&1`
+  end
+
+  Mail.defaults do
+    delivery_method :test
   end
 end

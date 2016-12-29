@@ -136,7 +136,7 @@ module Schleuder
         expiry = key.subkeys.first.expires
         if expiry && expiry > now && expiry < checkdate
           # key expires in the near future
-          expdays = ((exp - now)/86400).to_i
+          expdays = ((expiry - now)/86400).to_i
           expiring << [key, expdays]
         end
 
@@ -282,14 +282,12 @@ module Schleuder
     private
 
     def set_gnupg_home
-      if ENV["SCHLEUDER_ENV"] != "test"
-        ENV['GNUPGHOME'] = listdir
-      end
+      ENV['GNUPGHOME'] = listdir
     end
 
     def delete_listdir
       if File.exists?(self.listdir)
-        FileUtils.rm_r(self.listdir, secure: true)
+        FileUtils.rm_rf(self.listdir, secure: true)
         Schleuder.logger.info "Deleted listdir"
       else
         # Don't use list-logger here — if the list-dir isn't present we can't log to it!

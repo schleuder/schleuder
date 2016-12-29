@@ -46,7 +46,8 @@ describe Schleuder::List do
   it { is_expected.to respond_to :logfiles_to_keep }
 
   it "is invalid when email is nil" do
-    list = build(:list, email: nil)
+    # Don't use factory here because we'd run into List.listdir expecting email to not be nil.
+    list = Schleuder::List.new(email: nil)
 
     expect(list).not_to be_valid
     expect(list.errors.messages[:email]).to include("can't be blank")
@@ -238,16 +239,15 @@ describe Schleuder::List do
 
   describe "#admins" do
     it "returns subscriptions of admin users" do
-      list = Schleuder::List.create(
-        email: "foo@bar.org",
-        fingerprint: "aaaadddd0000999",
-      )
-      admin_subscription = Schleuder::Subscription.create(
+      list = create(:list)
+      admin_subscription = create(
+        :subscription,
         email: "admin@foo.org",
         admin: true,
         list_id: list.id,
       )
-      _user_subscription = Schleuder::Subscription.create(
+      _user_subscription = create(
+        :subscription,
         email: "user@foo.org",
         admin: false,
         list_id: list.id,
@@ -259,9 +259,9 @@ describe Schleuder::List do
 
   describe "#key" do
     it "returns the key with the fingerprint of the list" do
-      list = Schleuder::List.create(
-        email: "foo@bar.org",
-        fingerprint: "59C7 1FB3 8AEE 22E0 91C7  8259 D063 5044 0F75 9BD3",
+      list = create(
+        :list,
+        fingerprint: "59C7 1FB3 8AEE 22E0 91C7  8259 D063 5044 0F75 9BD3"
       )
 
       expect(list.key.fingerprint()).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
@@ -312,7 +312,6 @@ describe Schleuder::List do
 
   describe "#import_key" do
     it "imports a given key" do
-      set_test_gnupg_home
       list = create(:list)
       key = File.read("spec/fixtures/example_key.txt")
 
@@ -324,7 +323,6 @@ describe Schleuder::List do
 
   describe "#delete_key" do
     it "deletes the key with the given fingerprint" do
-      set_test_gnupg_home
       list = create(:list)
       key = File.read("spec/fixtures/example_key.txt")
       list.import_key(key)
@@ -335,10 +333,121 @@ describe Schleuder::List do
     end
 
     it "returns false if no key with the fingerprint was found" do
-      set_test_gnupg_home
       list = create(:list)
 
       expect(list.delete_key("A4C60C8833789C7CAA44496FD3FFA6611AB10CEC")).to eq false
+    end
+  end
+
+  describe "#export_key" do
+    it "exports the key with the fingerprint of the list if no argument is given" do
+      list = create(:list, email: "schleuder@example.org")
+      expected_public_key = File.read("spec/fixtures/schleuder_at_example_public_key.txt")
+
+      expect(list.export_key()).to include expected_public_key
+    end
+  end
+
+  it "exports the key with the given fingerprint" do
+    list = create(:list, email: "schleuder@example.org")
+    expected_public_key = File.read("spec/fixtures/schleuder_at_example_public_key.txt")
+
+    expect(
+      list.export_key("59C71FB38AEE22E091C78259D06350440F759BD3")
+    ).to include expected_public_key
+  end
+
+  describe "#check_keys" do
+    it "adds a mesage if a key expires in two weeks or less" do
+      list = create(:list)
+      key = double("key")
+      allow_any_instance_of(GPGME::Key).to receive(:subkeys).and_return(key)
+      allow(key).to receive(:first).and_return(key)
+      allow(key).to receive(:expires).and_return(Time.now + 7.days)
+      allow(key).to receive(:fingerprint).and_return("59C71FB38AEE22E091C78259D06350440F759BD3")
+
+      expect(list.check_keys).to eq "Expires in 6 days:"\
+        "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
+    end
+
+    it "adds a message if a key is revoked" do
+      list = create(:list)
+      allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:revoked)
+
+      expect(list.check_keys).to eq "Is revoked:"\
+        "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
+    end
+
+    it "adds a message if a key is disabled" do
+      list = create(:list)
+      allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:disabled)
+
+      expect(list.check_keys).to eq "Is disabled:"\
+        "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
+    end
+
+    it "adds a message if a key is invalid" do
+      list = create(:list)
+      allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:invalid)
+
+      expect(list.check_keys).to eq "Is invalid:"\
+        "\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org"
+    end
+  end
+
+  describe ".by_recipient" do
+    it "returns the list for a given address" do
+      list = create(:list, email: "list@example.org")
+
+      expect(Schleuder::List.by_recipient("list-owner@example.org")).to eq list
+    end
+  end
+
+  describe "#sendkey_address" do
+    it "adds the sendkey keyword to the email address" do
+      list = create(:list, email: "list@example.org")
+
+      expect(list.sendkey_address).to eq "list-sendkey@example.org"
+    end
+  end
+
+  describe "#request_address" do
+    it "adds the request keyword to the email address" do
+      list = create(:list, email: "list@example.org")
+
+      expect(list.request_address).to eq "list-request@example.org"
+    end
+  end
+
+  describe "#owner_address" do
+    it "adds the owner keyword to the email address" do
+      list = create(:list, email: "list@example.org")
+
+      expect(list.owner_address).to eq "list-owner@example.org"
+    end
+  end
+
+  describe "#bounce_address" do
+    it "adds the bounce keyword to the email address" do
+      list = create(:list, email: "list@example.org")
+
+      expect(list.bounce_address).to eq "list-bounce@example.org"
+    end
+  end
+
+  describe "#gpg" do
+    it "returns an instance of GPGME::Ctx" do
+      list = create(:list)
+
+      expect(list.gpg).to be_an_instance_of GPGME::Ctx
+    end
+
+    it "sets the GNUPGHOME environment variable to the listdir" do
+      list = create(:list)
+
+      list.gpg
+
+      expect(ENV["GNUPGHOME"]).to eq list.listdir
     end
   end
 end
