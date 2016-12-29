@@ -5,13 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## Unreleased
+## [3.0.0.beta14] / 2016-12-29
 
 ### Fixed
 
 * Fix key expiry check
 * Fix link to schleuder.nadir.org in List-Help header
 * Fix deleting listdir
+
+### Added
+
+ * Runner and integration tests
+ * More fixtures
 
 ## [3.0.0.beta13] / 2016-12-22
 
