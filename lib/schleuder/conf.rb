@@ -9,6 +9,7 @@ module Schleuder
       'listlogs_dir' => '/var/lib/schleuder/lists',
       'plugins_dir' => '/etc/schleuder/plugins',
       'log_level' => 'warn',
+      'keyserver' => 'hkp://pool.sks-keyservers.net',
       'smtp_settings' => {
         'address' => 'localhost',
         'port' => 25,
@@ -107,6 +108,10 @@ module Schleuder
         end
       end
       settings
+    end
+
+    def self.keyserver
+      instance.config['keyserver']
     end
 
     private

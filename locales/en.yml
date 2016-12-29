@@ -119,3 +119,12 @@ en:
   key_expires: "Expires in %{days} days:\n0x%{fingerprint} %{email}"
   key_unusable: "Is %{usability_issue}:\n0x%{fingerprint} %{email}"
   missed_message_due_to_unusable_key: "You missed an email from %{list_email} because your subscription isn't associated with a (usable) OpenPGP key. Please fix this."
+  refresh_keys: Keys update
+  refresh_keys_intro: "Refreshing all keys from the keyring of list %{email} resulted in this:"
+  key_updated: Key %{fingerprint} was updated (%{states}).
+  import_states:
+    new_keys: new keys
+    new_uids: new user-IDs
+    new_subkeys: new subkeys
+    new_signatures: new signatures
+

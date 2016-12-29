@@ -164,6 +164,10 @@ module Schleuder
       text
     end
 
+    def refresh_keys
+      GPGME::Ctx.refresh_keys(self.keys)
+    end
+
     def self.by_recipient(recipient)
       listname = recipient.gsub(/-(sendkey|request|owner|bounce)@/, '@')
       where(email: listname).first

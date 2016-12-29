@@ -49,12 +49,14 @@ module GPGME
       end
 
       # Specifying the key via fingerprint apparently doesn't work.
-      GPGME::Ctx.gpgcli("--quick-adduid #{uid} '#{uid} <#{email}>'")
+      errors, _ = GPGME::Ctx.gpgcli("--quick-adduid #{uid} '#{uid} <#{email}>'")
+      errors.join
     end
 
     # This method can be deleted once we cease to support gnupg 2.0.
     def adduid_expect(uid, email)
-      GPGME::Ctx.gpgcli_expect("--allow-freeform-uid --edit-key '#{self.fingerprint}' adduid") do |line|
+      args = "--allow-freeform-uid --edit-key '#{self.fingerprint}' adduid"
+      errors, _ = GPGME::Ctx.gpgcli_expect(args) do |line|
         case line.chomp
         when /keygen.name/
           uid
@@ -70,6 +72,7 @@ module GPGME
           [false, "Unexpected line: #{line}"]
         end
       end
+      errors.join
     end
 
     def clearpassphrase(oldpw)
@@ -80,7 +83,8 @@ module GPGME
 
       oldpw_given = false
       # Don't use '--passwd', it claims to fail (even though it factually doesn't).
-      GPGME::Ctx.gpgcli_expect(" --pinentry-mode loopback --edit-key '#{self.fingerprint}' passwd") do |line|
+      args = "--pinentry-mode loopback --edit-key '#{self.fingerprint}' passwd"
+      errors, _, exitcode = GPGME::Ctx.gpgcli_expect(args) do |line|
         case line
         when /passphrase.enter/
           if ! oldpw_given
@@ -101,6 +105,15 @@ module GPGME
           [false, "Unexpected line: #{line}"]
         end
       end
+
+      # Only show errors if something apparently went wrong. Otherwise we might
+      # leak useless strings from gpg and make the caller report errors even
+      # though this method succeeded.
+      if exitcode > 0
+        errors.join
+      else
+        nil
+      end
     end
 
     # This method can be deleted once we cease to support gnupg 2.0.
@@ -114,7 +127,7 @@ module GPGME
         return [false, "gpg-agent exited with code #{$?}, output in #{gpg_agent_log}"]
       end
       # Don't use '--passwd', it claims to fail (even though it factually doesn't).
-      output = GPGME::Ctx.gpgcli_expect("--edit-key '#{self.fingerprint}' passwd") do |line|
+      errors, _, exitcode = GPGME::Ctx.gpgcli_expect("--edit-key '#{self.fingerprint}' passwd") do |line|
         case line
         when /BAD_PASSPHRASE/
           [false, 'bad passphrase']
@@ -131,7 +144,15 @@ module GPGME
       # gpg-agent terminates itself if its socket goes away.
       delete_gpg_agent_socket
       delete_file(gpg_agent_log)
-      output
+
+      # Only show errors if something apparently went wrong. Otherwise we might
+      # leak useless strings from gpg and make the caller report errors even
+      # though this method succeeded.
+      if exitcode > 0
+        errors.join
+      else
+        nil
+      end
     end
 
     # This method can be deleted once we cease to support gnupg 2.0.

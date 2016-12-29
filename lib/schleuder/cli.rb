@@ -63,6 +63,18 @@ module Schleuder
       end
     end
 
+    desc 'refresh_keys', "Refresh all keys of all list from the keyservers sequentially (one by one). (This is supposed to be run from cron weekly.)"
+    def refresh_keys
+      List.all.each do |list|
+        I18n.locale = list.language
+        output = list.refresh_keys
+        if output.present?
+          msg = "#{I18n.t('refresh_keys_intro', email: list.email)}\n\n#{output}"
+          list.logger.notify_admin(msg, nil, I18n.t('refresh_keys'))
+        end
+      end
+    end
+
     desc 'install', "Set-up or update Schleuder environment (create folders, copy files, fill the database)."
     def install
       config_dir = Pathname.new(ENV['SCHLEUDER_CONFIG']).dirname
@@ -159,7 +171,7 @@ module Schleuder
 
       # Clear passphrase of imported list-key.
       output = list.key.clearpassphrase(conf['gpg_password'])
-      if output
+      if output.present?
         fatal "while clearing passphrase of list-key: #{output.inspect}"
       end
 
@@ -268,6 +280,7 @@ Please notify the users and admins of this list of these changes.
           KEYWORDS[keyword.downcase]
         end.compact
       end
+
     end
   end
 end

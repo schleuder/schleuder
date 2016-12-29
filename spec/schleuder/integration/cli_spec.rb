@@ -87,4 +87,43 @@ describe 'cli' do
       expect(subscription_emails).to eq ['schleuder2@example.org']
     end
   end
+
+  context '#refresh_keys' do
+    it 'updates one key from the keyserver' do
+      list = create(:list)
+      list.subscribe("admin@example.org", nil, true)
+      list.import_key(File.read("spec/fixtures/expired_key.txt"))
+
+      with_sks_mock do
+        Cli.new.refresh_keys
+      end
+      mail = Mail::TestMailer.deliveries.first
+
+      expect(Mail::TestMailer.deliveries.length).to eq 1
+      expect(mail.to_s).to include("Refreshing all keys from the keyring of list #{list.email} resulted in this")
+      expect(mail.to_s).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was updated (new signatures)")
+
+      teardown_list_and_mailer(list)
+    end
+
+    it 'reports errors from refreshing keys' do
+      list = create(:list)
+      list.subscribe("admin@example.org", nil, true)
+      list.import_key(File.read("spec/fixtures/expired_key.txt"))
+
+      Cli.new.refresh_keys
+      mail = Mail::TestMailer.deliveries.first
+
+      expect(Mail::TestMailer.deliveries.length).to eq 1
+      expect(mail.to_s).to include("Refreshing all keys from the keyring of list #{list.email} resulted in this")
+      if GPGME::Ctx.sufficient_gpg_version?('2.1')
+        expect(mail.to_s).to include("keyserver refresh failed: No keyserver available")
+      else
+        # The wording differs slightly among versions.
+        expect(mail.to_s).to match(/gpgkeys: .* error .* connect/)
+      end
+
+      teardown_list_and_mailer(list)
+    end
+  end
 end
