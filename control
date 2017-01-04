@@ -4,18 +4,18 @@ Priority: optional
 Maintainer: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>
 Uploaders: Georg Faerber <georg@riseup.net>
 Build-Depends: debhelper (>= 9.20160709~),
-	       dh-systemd,
+               dh-systemd,
                gem2deb,
                rake (>= 10~),
                ruby-activerecord (>= 4.1~),
+               ruby-database-cleaner,
                ruby-mail-gpg,
+               ruby-rspec (>= 3.5.0~),
                ruby-sinatra,
                ruby-sinatra-contrib,
                ruby-sqlite3,
                ruby-thor,
-	       thin,
-	       ruby-rspec (>= 3.5.0~),
-	       ruby-database-cleaner
+               thin
 Standards-Version: 3.9.8
 Vcs-Git: https://anonscm.debian.org/git/pkg-ruby-extras/schleuder.git
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-ruby-extras/schleuder.git
@@ -27,22 +27,21 @@ Package: schleuder
 Architecture: all
 XB-Ruby-Versions: ${ruby:Versions}
 Depends: adduser,
-	 exim4 | mail-transport-agent,
-	 cron,
-         ruby | ruby-interpreter,
+         cron,
+         exim4 | mail-transport-agent,
+         init-system-helpers,
          rake (>= 10~),
- 	 ruby-activerecord (>= 4.1~),
+         ruby | ruby-interpreter,
+         ruby-activerecord (>= 4.1~),
          ruby-mail-gpg,
          ruby-sinatra,
          ruby-sinatra-contrib,
          ruby-sqlite3,
          ruby-thor,
-	 thin,
-	 init-system-helpers,
+         thin,
          ${misc:Depends},
-	 ${shlibs:Depends}
-Recommends: schleuder-cli,
-	    haveged
+         ${shlibs:Depends}
+Recommends: haveged, schleuder-cli
 Description: GPG-enabled mailing list manager with resending-capabilities
  Schleuder is a GPG-enabled mailing list manager with resending-capabilities.
  Subscribers can communicate encrypted (and pseudonymously) among themselves,
