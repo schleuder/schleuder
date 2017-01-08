@@ -147,8 +147,12 @@ module Schleuder
       end
 
       # Create list.
-      # TODO: Check for errors!
       list, messages = Schleuder::ListBuilder.new({email: listname, fingerprint: fingerprint}).run
+      if messages
+        fatal messages.values.join(" - ")
+      elsif list.errors.any?
+        fatal list.errors.full_messages.join(" - ")
+      end
 
       # Set list-options.
       List.configurable_attributes.each do |option|

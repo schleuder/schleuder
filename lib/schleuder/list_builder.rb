@@ -6,7 +6,6 @@ module Schleuder
       @fingerprint = list_attributes[:fingerprint]
       @adminemail = adminemail
       @adminkey = adminkey
-      @messages = []
     end
 
     def read_default_settings
@@ -23,7 +22,7 @@ module Schleuder
       Schleuder.logger.info "Building new list"
 
       if @listname.blank? || ! @listname.match(Conf::EMAIL_REGEXP)
-        return [nil, "Given 'listname' is not a valid email address."]
+        return [nil, {'email' => ["'#{@listname}' is not a valid email address"]}]
       end
 
       settings = read_default_settings.merge(@list_attributes)
@@ -73,7 +72,7 @@ module Schleuder
         end
       end
 
-      [list, @messages]
+      list
     end
 
     def gpg

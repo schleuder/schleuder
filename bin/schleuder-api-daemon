@@ -135,8 +135,6 @@ class SchleuderApiDaemon < Sinatra::Base
       text = case obj_or_msg
              when String, Symbol
                obj_or_msg.to_s
-             when Array
-               obj_or_msg.join("\n")
              when ActiveRecord::Base
                obj_or_msg.errors.full_messages
              else
@@ -178,9 +176,10 @@ class SchleuderApiDaemon < Sinatra::Base
 
     post '.json' do
       listname = parsed_body['email']
+      fingerprint = parsed_body['fingerprint']
       adminaddress = parsed_body['adminaddress']
       adminkey = parsed_body['adminkey']
-      list, messages = ListBuilder.new({email: listname}, adminaddress, adminkey).run
+      list, messages = ListBuilder.new({email: listname, fingerprint: fingerprint}, adminaddress, adminkey).run
       if list.nil?
         client_error(messages, 422)
       elsif ! list.valid?
