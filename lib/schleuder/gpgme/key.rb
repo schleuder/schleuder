@@ -28,17 +28,9 @@ module GPGME
       orig_fingerprint.encode(Encoding::US_ASCII)
     end
 
-    def adduid(uid, newuid, homedir)
-      output = ''
-      exitcode = -1
+    def adduid(uid, email)
       # Specifying the key via fingerprint apparently doesn't work.
-      cmd = "gpg --homedir '#{homedir}' --quick-adduid #{uid} '#{uid} <#{newuid}>'"
-      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
-        output = stdout_err.readlines.join
-        exitcode = wait_thr.value
-      end
-
-      [exitcode.to_i, output.to_s]
+      GPGME::Ctx.gpgcli("--quick-adduid #{uid} '#{uid} <#{email}>'")
     end
   end
 end

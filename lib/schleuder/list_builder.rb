@@ -111,8 +111,8 @@ module Schleuder
       end
 
       [list.request_address, list.owner_address].each do |address|
-        err, string = key.adduid(list.email, address, list.listdir)
-        if err > 0
+        err = key.adduid(list.email, address)
+        if err.present?
           raise Errors::KeyAdduidFailed.new(string)
         end
       end
