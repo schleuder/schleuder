@@ -74,7 +74,7 @@ module Schleuder
         fatal msg, 2
       end
 
-      [Conf.lists_dir, config_dir].each do |dir|
+      [Conf.lists_dir, Conf.listlogs_dir, config_dir].each do |dir|
         dir = Pathname.new(dir)
         if ! dir.exist?
           begin

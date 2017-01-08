@@ -30,7 +30,10 @@ module Schleuder
       list = List.new(settings)
 
       @list_dir = list.listdir
-      create_or_test_list_dir
+      create_or_test_dir(@list_dir)
+      # In case listlogs_dir != lists_dir we have to create the basedir of the
+      # list's log-file.
+      create_or_test_dir(File.dirname(list.logfile))
 
       if list.fingerprint.blank?
         list_key = gpg.keys("<#{list.email}>").first
@@ -134,17 +137,17 @@ module Schleuder
       "
     end
 
-    def create_or_test_list_dir
-      if File.exists?(@list_dir)
-        if ! File.directory?(@list_dir)
-          raise Errors::ListdirProblem.new(@list_dir, :not_a_directory)
+    def create_or_test_dir(dir)
+      if File.exists?(dir)
+        if ! File.directory?(dir)
+          raise Errors::ListdirProblem.new(dir, :not_a_directory)
         end
 
-        if ! File.writable?(@list_dir)
-          raise Errors::ListdirProblem.new(@list_dir, :not_writable)
+        if ! File.writable?(dir)
+          raise Errors::ListdirProblem.new(dir, :not_writable)
         end
       else
-        FileUtils.mkdir_p(@list_dir)
+        FileUtils.mkdir_p(dir)
       end
     end
 
