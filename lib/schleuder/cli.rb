@@ -153,6 +153,16 @@ module Schleuder
         fatal list.errors.full_messages.join(" - ")
       end
 
+      # Import keys
+      list.import_key(File.read(dir + 'pubring.gpg'))
+      list.import_key(File.read(dir + 'secring.gpg'))
+
+      # Clear passphrase of imported list-key.
+      output = list.key.clearpassphrase(conf['gpg_password'])
+      if output
+        fatal "while clearing passphrase of list-key: #{output.inspect}"
+      end
+
       # Set list-options.
       List.configurable_attributes.each do |option|
         option = option.to_s
@@ -186,9 +196,6 @@ module Schleuder
         end
       end
       list.save!
-
-      # Import keys
-      list.import_key(File.read(dir + 'pubring.gpg'))
 
       # Subscribe members
       YAML.load(File.read(dir + 'members.conf')).each do |member|
