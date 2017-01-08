@@ -21,7 +21,7 @@ module GPGME
     end
 
     def self.sufficient_gpg_version?(required)
-      Gem::Version.new(required) < Gem::Version.new(gpg_engine.version)
+      Gem::Version.new(required) <= Gem::Version.new(gpg_engine.version)
     end
 
     def self.check_gpg_version
