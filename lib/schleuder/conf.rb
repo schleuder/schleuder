@@ -24,7 +24,8 @@ module Schleuder
       'database' => {
         'production' => {
           'adapter' =>  'sqlite3',
-          'database' => '/var/schleuder/db.sqlite'
+          'database' => '/var/schleuder/db.sqlite',
+          'timeout' => 5000
         }
       },
       'api' => {

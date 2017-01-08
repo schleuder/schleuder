@@ -26,6 +26,7 @@ database:
   production:
     adapter:  'sqlite3'
     database: /var/schleuder/db.sqlite
+    timeout: 5000
 
 # Note: The API-daemon will bind only to localhost if no TLS-cert+keys are available.
 api:
