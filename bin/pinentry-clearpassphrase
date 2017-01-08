@@ -1,0 +1,87 @@
+#!/usr/bin/env ruby
+
+# This file can be deleted once we cease to support gnupg 2.0.
+
+require 'fileutils'
+require 'openssl'
+require 'cgi'
+
+def respond(msg, flush=true)
+  log '>', msg
+  $stdout.puts msg
+  if flush
+    $stdout.flush
+  end
+end
+
+def send_ok(flush=true)
+  respond 'OK', flush
+end
+
+def send_password
+  if File.exist?(OLDPWDSENTFILE)
+    pwd = ''
+    if File.exist?(EMPTYPWDSENTFILE1)
+      FileUtils.touch(EMPTYPWDSENTFILE2)
+    else
+      FileUtils.touch(EMPTYPWDSENTFILE1)
+    end
+  else
+    pwd = OLDPASSWD
+    FileUtils.touch(OLDPWDSENTFILE)
+  end
+  respond "D #{pwd}"
+end
+
+def do_exit
+  if File.exist?(EMPTYPWDSENTFILE2)
+    log "deleting tmpdir"
+    FileUtils.rm_rf(TMPDIR)
+  end
+  log "exiting\n"
+  exit 0
+end
+
+def log(*args)
+  if DEBUG
+    File.open('/tmp/pinentry.log', 'a') do |f|
+      f.puts "#{args.join(' ')}"
+    end
+  end
+end
+
+
+OLDPASSWD = CGI.escape(ENV['PINENTRY_USER_DATA'].to_s)
+if OLDPASSWD.empty?
+  respond "Fatal error: passed PINENTRY_USER_DATA was empty, cannot continue"
+  exit 1
+end
+
+DEBUG = false
+SALT = 'Thank you, Edward!'
+TMPNAME = Digest::SHA256.hexdigest(SALT + ENV['GNUPGHOME'].to_s)
+TMPDIR = "/tmp/schleuder-#{TMPNAME}"
+OLDPWDSENTFILE = File.join(TMPDIR, "1")
+EMPTYPWDSENTFILE1 = File.join(TMPDIR, '2')
+EMPTYPWDSENTFILE2 = File.join(TMPDIR, '3')
+if ! Dir.exist?(TMPDIR)
+  Dir.mkdir(TMPDIR)
+end
+
+log "\nnew connection at #{Time.now}"
+respond "OK - what's up?"
+
+while line = $stdin.gets do
+  log '<', line
+  case line
+  when /^GETPIN/
+    send_password
+    send_ok
+  when /^BYE/
+    send_ok false
+    do_exit
+  else
+    send_ok
+  end
+end
+
