@@ -107,8 +107,8 @@ module Schleuder
           raise err
         end
       end
-    rescue Errno::ENOENT
-      raise Errors::KeyAdduidFailed.new('Need gpg in $PATH')
+    rescue => exc
+      raise Errors::KeyAdduidFailed.new(exc.to_s)
     end
 
     def key_params(list)
