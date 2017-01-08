@@ -94,13 +94,6 @@ module Schleuder
         return log_and_return(Errors::ListNotFound.new(recipient))
       end
 
-      # Check basic sanity of list.
-      %w[fingerprint key secret_key admins].each do |attrib|
-        if @list.send(attrib).blank?
-          return log_and_return(Errors::ListPropertyMissing.new(attrib))
-        end
-      end
-
       # Check neccessary permissions of crucial files.
       if ! File.exist?(@list.listdir)
         return log_and_return(Errors::ListdirProblem.new(@list.listdir, :not_existing))
@@ -116,6 +109,12 @@ module Schleuder
         end
       end
 
+      # Check basic sanity of list.
+      %w[fingerprint key secret_key admins].each do |attrib|
+        if @list.send(attrib).blank?
+          return log_and_return(Errors::ListPropertyMissing.new(attrib))
+        end
+      end
 
       # Set locale
       if I18n.available_locales.include?(@list.language.to_sym)
