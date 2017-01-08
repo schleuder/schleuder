@@ -29,8 +29,34 @@ module GPGME
     end
 
     def adduid(uid, email)
+      # This block can be deleted once we cease to support gnupg 2.0.
+      if ! GPGME::Ctx.sufficient_gpg_version?('2.1.4')
+        return adduid_expect(uid, email)
+      end
+
       # Specifying the key via fingerprint apparently doesn't work.
       GPGME::Ctx.gpgcli("--quick-adduid #{uid} '#{uid} <#{email}>'")
     end
+
+    # This method can be deleted once we cease to support gnupg 2.0.
+    def adduid_expect(uid, email)
+      GPGME::Ctx.gpgcli_expect("--allow-freeform-uid --edit-key '#{self.fingerprint}' adduid") do |line|
+        case line.chomp
+        when /keygen.name/
+          uid
+        when /keygen.email/
+          email
+        when /keygen.comment/
+          ''
+        when /keyedit.prompt/
+          "save"
+        when /USERID_HINT|GOT_IT|GOOD_PASSPHRASE/
+          nil
+        else
+          [false, "Unexpected line: #{line}"]
+        end
+      end
+    end
+
   end
 end
