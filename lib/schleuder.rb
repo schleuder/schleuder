@@ -59,6 +59,7 @@ ENV["SCHLEUDER_LIST_DEFAULTS"] ||= '/etc/schleuder/list-defaults.yml'
 ENV["SCHLEUDER_ENV"] ||= 'production'
 ENV["SCHLEUDER_ROOT"] = rootdir.to_s
 
+GPGME::Ctx.set_gpg_path_from_env
 GPGME::Ctx.check_gpg_version
 
 # Require lib for database specified in config.

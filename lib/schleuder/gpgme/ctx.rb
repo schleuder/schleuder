@@ -25,7 +25,6 @@ module GPGME
     end
 
     def self.check_gpg_version
-      set_gpg_path_from_env
       if ! sufficient_gpg_version?('2.0')
         $stderr.puts "Error: GnuPG version >= 2.0 required.\nPlease install it and/or provide the path to the binary via the environment-variable GPGBIN.\nExample: GPGBIN=/opt/gpg2/bin/gpg ..."
         exit 1
