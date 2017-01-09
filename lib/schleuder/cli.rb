@@ -147,7 +147,11 @@ module Schleuder
       end
 
       # Create list.
-      list, messages = Schleuder::ListBuilder.new({email: listname, fingerprint: fingerprint}).run
+      begin
+        list, messages = Schleuder::ListBuilder.new({email: listname, fingerprint: fingerprint}).run
+      rescue => exc
+        fatal exc
+      end
       if messages
         fatal messages.values.join(" - ")
       elsif list.errors.any?
@@ -227,7 +231,7 @@ Please notify the users and admins of this list of these changes.
         say messages.gsub(' // ', "\n")
       end
     rescue => exc
-      fatal [exc, exc.backtrace.slice(0,2)].join("\n")
+      fatal "#{exc}\n#{exc.backtrace.first}"
     end
 
     no_commands do
