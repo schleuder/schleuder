@@ -6,7 +6,7 @@ rvm:
 before_install:
   - gem install bundler
   - sudo apt-get -qq update
-  - sudo apt-get install -y gnupg2 libgpgme11-dev libsqlite3-dev
+  - sudo apt-get install -y gnupg2 libgpgme11-dev libsqlite3-dev haveged
 before_script:
   - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bundle exec rake db:create db:schema:load
 script:
