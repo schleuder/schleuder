@@ -136,14 +136,9 @@ module Schleuder
 
       # Identify list-fingerprint.
       ENV['GNUPGHOME'] = dir.to_s
-      # Save all the keys for later import, we shouldn't change ENV['GNUPGHOME'] later.
-      #allkeys = GPGME::Key.find(:public, '')
-      listkey = GPGME::Key.find(:public, "<#{listname}>")
-      if listkey.size == 1
-        fingerprint = listkey.first.fingerprint
-      else
-        fingerprint = nil
-        error 'Failed to identify fingerprint of GnuPG key for list, you must set it manually to make the list operational!'
+      listkey = GPGME::Key.find(:public, "<#{listname}>").first
+      if listkey.nil?
+        fatal "Failed to identify the list's OpenPGP-key!"
       end
 
       # Create list.
