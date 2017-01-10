@@ -156,9 +156,12 @@ module Schleuder
       # Set list-options.
       List.configurable_attributes.each do |option|
         option = option.to_s
-        if conf[option]
-          value = if option.match(/^keywords_/)
+        if conf.keys.include?(option)
+          value = case option
+                  when /^keywords_/
                     filter_keywords(conf[option])
+                  when 'log_level'
+                    conf[option].to_s.downcase
                   else
                     conf[option]
                   end
@@ -167,15 +170,18 @@ module Schleuder
       end
 
       # Set changed options.
-      { 'prefix' => 'subject_prefix',
+      changed_options = {
+        'prefix' => 'subject_prefix',
         'prefix_in' => 'subject_prefix_in',
         'prefix_out' => 'subject_prefix_out',
         'dump_incoming_mail' => 'forward_all_incoming_to_admins',
         'receive_from_member_emailaddresses_only' => 'receive_from_subscribed_emailaddresses_only',
         'bounces_notify_admin' => 'bounces_notify_admins',
         'max_message_size' => 'max_message_size_kb'
-      }.each do |old, new|
-        if conf[old] && ! conf[old].to_s.empty?
+      }
+
+      changed_options.each do |old, new|
+        if conf.keys.include?(old)
           list.set_attribute(new, conf[old])
         end
       end
