@@ -1,5 +1,6 @@
 ENV['SCHLEUDER_ENV'] ||= 'test'
 ENV['SCHLEUDER_CONFIG'] = 'spec/schleuder.yml'
+ENV["SCHLEUDER_LIST_DEFAULTS"] = "etc/list-defaults.yml"
 require 'bundler/setup'
 Bundler.setup
 require 'schleuder'
