@@ -113,7 +113,7 @@ module Schleuder
       [list.request_address, list.owner_address].each do |address|
         err = key.adduid(list.email, address)
         if err.present?
-          raise Errors::KeyAdduidFailed.new(string)
+          raise err
         end
       end
     rescue Errno::ENOENT
