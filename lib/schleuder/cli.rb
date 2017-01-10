@@ -143,7 +143,7 @@ module Schleuder
 
       # Create list.
       begin
-        list, messages = Schleuder::ListBuilder.new({email: listname, fingerprint: fingerprint}).run
+        list, messages = Schleuder::ListBuilder.new({email: listname, fingerprint: listkey.fingerprint}).run
       rescue => exc
         fatal exc
       end
