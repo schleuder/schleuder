@@ -30,6 +30,8 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
 * Add timeout to default sqlite-config (avoids errors in the case that the
   DB-file is locked on first attempt).
 * Provide method to call gpg-executable.
+* Also add additional UIDs to generated PGP-keys when using gpg 2.0.
+* Specs for ListBuilder.
 
 
 ## [3.0.0.beta14] / 2016-12-29
