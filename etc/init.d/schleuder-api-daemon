@@ -17,7 +17,7 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 . /lib/lsb/init-functions
 
 NAME=schleuder-api-daemon
-DAEMON=/usr/bin/schleuder-api-daemon
+DAEMON=/usr/local/bin/schleuder-api-daemon
 PIDFILE=/var/run/$NAME.pid
 USER=schleuder
 GROUP=schleuder

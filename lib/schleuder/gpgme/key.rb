@@ -28,17 +28,35 @@ module GPGME
       orig_fingerprint.encode(Encoding::US_ASCII)
     end
 
-    def adduid(uid, newuid, homedir)
-      output = ''
-      exitcode = -1
-      # Specifying the key via fingerprint apparently doesn't work.
-      cmd = "gpg --homedir '#{homedir}' --quick-adduid #{uid} '#{uid} <#{newuid}>'"
-      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
-        output = stdout_err.readlines.join
-        exitcode = wait_thr.value
+    def adduid(uid, email)
+      # This block can be deleted once we cease to support gnupg 2.0.
+      if ! GPGME::Ctx.sufficient_gpg_version?('2.1.4')
+        return adduid_expect(uid, email)
       end
 
-      [exitcode.to_i, output.to_s]
+      # Specifying the key via fingerprint apparently doesn't work.
+      GPGME::Ctx.gpgcli("--quick-adduid #{uid} '#{uid} <#{email}>'")
     end
+
+    # This method can be deleted once we cease to support gnupg 2.0.
+    def adduid_expect(uid, email)
+      GPGME::Ctx.gpgcli_expect("--allow-freeform-uid --edit-key '#{self.fingerprint}' adduid") do |line|
+        case line.chomp
+        when /keygen.name/
+          uid
+        when /keygen.email/
+          email
+        when /keygen.comment/
+          ''
+        when /keyedit.prompt/
+          "save"
+        when /USERID_HINT|GOT_IT|GOOD_PASSPHRASE/
+          nil
+        else
+          [false, "Unexpected line: #{line}"]
+        end
+      end
+    end
+
   end
 end

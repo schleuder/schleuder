@@ -74,7 +74,7 @@ module Schleuder
         fatal msg, 2
       end
 
-      [Conf.lists_dir, config_dir].each do |dir|
+      [Conf.lists_dir, Conf.listlogs_dir, config_dir].each do |dir|
         dir = Pathname.new(dir)
         if ! dir.exist?
           begin
@@ -136,19 +136,22 @@ module Schleuder
 
       # Identify list-fingerprint.
       ENV['GNUPGHOME'] = dir.to_s
-      # Save all the keys for later import, we shouldn't change ENV['GNUPGHOME'] later.
-      #allkeys = GPGME::Key.find(:public, '')
-      listkey = GPGME::Key.find(:public, "<#{listname}>")
-      if listkey.size == 1
-        fingerprint = listkey.first.fingerprint
-      else
-        fingerprint = nil
-        error 'Failed to identify fingerprint of GnuPG key for list, you must set it manually to make the list operational!'
+      listkey = GPGME::Key.find(:public, "<#{listname}>").first
+      if listkey.nil?
+        fatal "Failed to identify the list's OpenPGP-key!"
       end
 
       # Create list.
-      # TODO: Check for errors!
-      list, messages = Schleuder::ListBuilder.new({email: listname, fingerprint: fingerprint}).run
+      begin
+        list, messages = Schleuder::ListBuilder.new({email: listname, fingerprint: fingerprint}).run
+      rescue => exc
+        fatal exc
+      end
+      if messages
+        fatal messages.values.join(" - ")
+      elsif list.errors.any?
+        fatal list.errors.full_messages.join(" - ")
+      end
 
       # Set list-options.
       List.configurable_attributes.each do |option|
@@ -223,7 +226,7 @@ Please notify the users and admins of this list of these changes.
         say messages.gsub(' // ', "\n")
       end
     rescue => exc
-      fatal [exc, exc.backtrace.slice(0,2)].join("\n")
+      fatal "#{exc}\n#{exc.backtrace.first}"
     end
 
     no_commands do

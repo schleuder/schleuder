@@ -5,6 +5,35 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
+
+## [3.0.0.beta15]
+
+### Changed
+
+* Default `lists_dir` and `listlogs_dir` to `/var/lib/schleuder`.
+* Use '/usr/local/bin' as daemon PATH in schleuder-api-daemon sysvinit
+  script.
+
+### Fixed
+
+* Fix running for fresh lists if `lists_dir` is different from `listlogs_dir`
+  (by creating logfile-basedir, closes Debian bug #850545).
+* Fix error-message from ListBuilder if given email is invalid.
+* Fix checking for sufficient gpg-version (previously '2.1' didn't suffice if
+  '2.1.0' was required).
+
+### Added
+
+* Cron job file to check keys.
+* Show when delivery is disabled for a subscription (in reply to
+  'list-subscriptions'-keyword).
+* Add timeout to default sqlite-config (avoids errors in the case that the
+  DB-file is locked on first attempt).
+* Provide method to call gpg-executable.
+* Also add additional UIDs to generated PGP-keys when using gpg 2.0.
+* Specs for ListBuilder.
+
+
 ## [3.0.0.beta14] / 2016-12-29
 
 ### Fixed

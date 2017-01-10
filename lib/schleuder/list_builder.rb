@@ -6,7 +6,6 @@ module Schleuder
       @fingerprint = list_attributes[:fingerprint]
       @adminemail = adminemail
       @adminkey = adminkey
-      @messages = []
     end
 
     def read_default_settings
@@ -23,14 +22,17 @@ module Schleuder
       Schleuder.logger.info "Building new list"
 
       if @listname.blank? || ! @listname.match(Conf::EMAIL_REGEXP)
-        return [nil, "Given 'listname' is not a valid email address."]
+        return [nil, {'email' => ["'#{@listname}' is not a valid email address"]}]
       end
 
       settings = read_default_settings.merge(@list_attributes)
       list = List.new(settings)
 
       @list_dir = list.listdir
-      create_or_test_list_dir
+      create_or_test_dir(@list_dir)
+      # In case listlogs_dir != lists_dir we have to create the basedir of the
+      # list's log-file.
+      create_or_test_dir(File.dirname(list.logfile))
 
       if list.fingerprint.blank?
         list_key = gpg.keys("<#{list.email}>").first
@@ -70,7 +72,7 @@ module Schleuder
         end
       end
 
-      [list, @messages]
+      list
     end
 
     def gpg
@@ -99,23 +101,14 @@ module Schleuder
 
     def adduids(list, key)
       # Add UIDs for -owner and -request.
-      gpg_version = `gpg --version`.lines.first.split.last
-      # Gem::Version knows that e.g. ".10" is higher than ".4", String doesn't.
-      if Gem::Version.new(gpg_version) < Gem::Version.new("2.1.4")
-        string = "Couldn't add additional UIDs to the list's key automatically (GnuPG version >= 2.1.4 is required for that, using 'gpg' in PATH).\nPlease add these UIDs to the list's key manually: #{list.request_address}, #{list.owner_address}."
-        # Don't add to errors because then the list isn't saved.
-        @messages << Errors::KeyAdduidFailed.new(string).message
-        return false
-      end
-
       [list.request_address, list.owner_address].each do |address|
-        err, string = key.adduid(list.email, address, list.listdir)
-        if err > 0
-          raise Errors::KeyAdduidFailed.new(string)
+        err = key.adduid(list.email, address)
+        if err.present?
+          raise err
         end
       end
-    rescue Errno::ENOENT
-      raise Errors::KeyAdduidFailed.new('Need gpg in $PATH')
+    rescue => exc
+      raise Errors::KeyAdduidFailed.new(exc.to_s)
     end
 
     def key_params(list)
@@ -134,17 +127,17 @@ module Schleuder
       "
     end
 
-    def create_or_test_list_dir
-      if File.exists?(@list_dir)
-        if ! File.directory?(@list_dir)
-          raise Errors::ListdirProblem.new(@list_dir, :not_a_directory)
+    def create_or_test_dir(dir)
+      if File.exists?(dir)
+        if ! File.directory?(dir)
+          raise Errors::ListdirProblem.new(dir, :not_a_directory)
         end
 
-        if ! File.writable?(@list_dir)
-          raise Errors::ListdirProblem.new(@list_dir, :not_writable)
+        if ! File.writable?(dir)
+          raise Errors::ListdirProblem.new(dir, :not_writable)
         end
       else
-        FileUtils.mkdir_p(@list_dir)
+        FileUtils.mkdir_p(dir)
       end
     end
 

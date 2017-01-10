@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+test -x /usr/local/bin/schleuder || exit 0
+
+su -s /bin/sh schleuder -c "/usr/local/bin/schleuder check_keys"
+
+exit 0

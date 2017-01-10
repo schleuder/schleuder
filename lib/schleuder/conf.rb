@@ -5,8 +5,8 @@ module Schleuder
     EMAIL_REGEXP = /\A.+@.+\z/i
 
     DEFAULTS = {
-      'lists_dir' => '/var/schleuder/lists',
-      'listlogs_dir' => '/var/schleuder/lists',
+      'lists_dir' => '/var/lib/schleuder/lists',
+      'listlogs_dir' => '/var/lib/schleuder/lists',
       'plugins_dir' => '/etc/schleuder/plugins',
       'log_level' => 'warn',
       'smtp_settings' => {
@@ -24,7 +24,8 @@ module Schleuder
       'database' => {
         'production' => {
           'adapter' =>  'sqlite3',
-          'database' => '/var/schleuder/db.sqlite'
+          'database' => '/var/lib/schleuder/db.sqlite',
+          'timeout' => 5000
         }
       },
       'api' => {

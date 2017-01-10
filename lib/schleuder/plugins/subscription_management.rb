@@ -70,7 +70,11 @@ module Schleuder
       out << subs.map do |subscription|
         # Fingerprints are at most 40 characters long, and lines shouldn't
         # exceed 80 characters if possible.
-        "#{subscription.email.rjust(37)} 0x#{subscription.fingerprint}"
+        s = "#{subscription.email}\t0x#{subscription.fingerprint}"
+        if ! subscription.delivery_enabled?
+          s << "\tDelivery disabled!"
+        end
+        s
       end
     end
 

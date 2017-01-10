@@ -1,8 +1,8 @@
 # Where are the list-directories stored (contain log-files and GnuPG-keyrings).
-lists_dir: /var/schleuder/lists
+lists_dir: /var/lib/schleuder/lists
 
 # Where to write list-logs. The actual log-file will be <lists_logs_base_dir>/<hostname>/<listname>/list.log.
-listlogs_dir: /var/schleuder/lists
+listlogs_dir: /var/lib/schleuder/lists
 
 # Schleuder reads plugins also from this directory.
 plugins_dir: /etc/schleuder/plugins
@@ -25,7 +25,8 @@ smtp_settings:
 database:
   production:
     adapter:  'sqlite3'
-    database: /var/schleuder/db.sqlite
+    database: /var/lib/schleuder/db.sqlite
+    timeout: 5000
 
 # Note: The API-daemon will bind only to localhost if no TLS-cert+keys are available.
 api:
