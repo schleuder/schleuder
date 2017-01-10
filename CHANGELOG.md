@@ -10,6 +10,7 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
 
 ### Changed
 
+* Default `lists_dir` and `listlogs_dir` to `/var/lib/schleuder`.
 * Use '/usr/local/bin' as daemon PATH in schleuder-api-daemon sysvinit
   script.
 
