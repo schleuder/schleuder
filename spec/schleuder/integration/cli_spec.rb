@@ -25,7 +25,7 @@ describe 'cli' do
       expect(keys).to include 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE'
     end
 
-    xit "imports the secret key" do
+    it "imports the secret key" do
       v2list_path = 'spec/fixtures/v2list'
 
       output = run_cli("migrate #{v2list_path}")
@@ -35,6 +35,10 @@ describe 'cli' do
 
       expect(list.secret_key).to be_present
       expect(list.secret_key.fingerprint).to eq '0392CF72B345256BB730049789226FD6A42B2A7A'
+
+      signed = GPGME::Crypto.new(:armor => true).clearsign('lala').read
+
+      expect(signed).to match(/^-----BEGIN PGP SIGNED MESSAGE-----\n.*\n\nlala\n-----BEGIN PGP SIGNATURE-----\n.*\n-----END PGP SIGNATURE-----\n$/m)
     end
 
     it "imports the config" do
