@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
+
+## [3.0.0.beta15] / UNRELEASED
+
+### Fixed
+
+* Minor typo.
+* Create logfile-basedir if lists_dir != listlogs_dir, closes Debian bug
+  #850545.
+* Re-order sanity-checks.
+* Fix error-message from ListBuilder if email invalid.
+* Fix checking for sufficient gpg-version.
+* Use '/usr/local/bin' as daemon PATH in schleuder-api-daemon sysvinit
+  script.
+
+### Added
+
+* Cron job file to check keys.
+* Show when delivery is disabled for a subscription.
+* Add timeout to default sqlite-config.
+
+
 ## [3.0.0.beta14] / 2016-12-29
 
 ### Fixed
