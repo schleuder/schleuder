@@ -8,22 +8,27 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
 
 ## [3.0.0.beta15] / UNRELEASED
 
-### Fixed
+### Changed
 
-* Minor typo.
-* Create logfile-basedir if lists_dir != listlogs_dir, closes Debian bug
-  #850545.
-* Re-order sanity-checks.
-* Fix error-message from ListBuilder if email invalid.
-* Fix checking for sufficient gpg-version.
 * Use '/usr/local/bin' as daemon PATH in schleuder-api-daemon sysvinit
   script.
+
+### Fixed
+
+* Fix running for fresh lists if `lists_dir` is different from `listlogs_dir`
+  (by creating logfile-basedir, closes Debian bug #850545).
+* Fix error-message from ListBuilder if given email is invalid.
+* Fix checking for sufficient gpg-version (previously '2.1' didn't suffice if
+  '2.1.0' was required).
 
 ### Added
 
 * Cron job file to check keys.
-* Show when delivery is disabled for a subscription.
-* Add timeout to default sqlite-config.
+* Show when delivery is disabled for a subscription (in reply to
+  'list-subscriptions'-keyword).
+* Add timeout to default sqlite-config (avoids errors in the case that the
+  DB-file is locked on first attempt).
+* Provide method to call gpg-executable.
 
 
 ## [3.0.0.beta14] / 2016-12-29
