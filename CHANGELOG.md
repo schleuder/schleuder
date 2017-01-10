@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
 
-## [3.0.0.beta15] / UNRELEASED
+## [3.0.0.beta15]
 
 ### Changed
 
