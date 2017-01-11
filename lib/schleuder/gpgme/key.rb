@@ -58,5 +58,79 @@ module GPGME
       end
     end
 
+    def clearpassphrase(oldpw)
+      # This block can be deleted once we cease to support gnupg 2.0.
+      if ! GPGME::Ctx.sufficient_gpg_version?('2.1.0')
+        return clearpassphrase_v20(oldpw)
+      end
+
+      oldpw_given = false
+      # Don't use '--passwd', it claims to fail (even though it factually doesn't).
+      GPGME::Ctx.gpgcli_expect(" --pinentry-mode loopback --edit-key '#{self.fingerprint}' passwd") do |line|
+        case line
+        when /passphrase.enter/
+          if ! oldpw_given
+            oldpw_given = true
+            oldpw
+          else
+            ""
+          end
+        when /BAD_PASSPHRASE/
+          [false, 'bad passphrase']
+        when /change_passwd.empty.okay/
+          'y'
+        when /keyedit.prompt/
+          "save"
+        when /USERID_HINT|NEED_PASSPHRASE|GOT_IT|GOOD_PASSPHRASE|MISSING_PASSPHRASE|KEY_CONSIDERED|INQUIRE_MAXLEN|PROGRESS/
+          nil
+        else
+          [false, "Unexpected line: #{line}"]
+        end
+      end
+    end
+
+    # This method can be deleted once we cease to support gnupg 2.0.
+    def clearpassphrase_v20(oldpw)
+      ENV['PINENTRY_USER_DATA'] = oldpw
+      pinentry = File.join(ENV['SCHLEUDER_ROOT'], 'bin', 'pinentry-clearpassphrase')
+      delete_gpg_agent_socket
+      gpg_agent_log = "/tmp/schleuder-gpg-agent-#{rand}.log"
+      gpg_agent_cmd = "gpg-agent --use-standard-socket --pinentry-program #{pinentry} --daemon > #{gpg_agent_log} 2>&1"
+      if ! system(gpg_agent_cmd)
+        return [false, "gpg-agent exited with code #{$?}, output in #{gpg_agent_log}"]
+      end
+      # Don't use '--passwd', it claims to fail (even though it factually doesn't).
+      output = GPGME::Ctx.gpgcli_expect("--edit-key '#{self.fingerprint}' passwd") do |line|
+        case line
+        when /BAD_PASSPHRASE/
+          [false, 'bad passphrase']
+        when /change_passwd.empty.okay/
+          'y'
+        when /keyedit.prompt/
+          "save"
+        when /USERID_HINT|NEED_PASSPHRASE|GOT_IT|GOOD_PASSPHRASE|MISSING_PASSPHRASE|KEY_CONSIDERED|INQUIRE_MAXLEN|PROGRESS/
+          nil
+        else
+          [false, "Unexpected line: #{line}"]
+        end
+      end
+      # gpg-agent terminates itself if its socket goes away.
+      delete_gpg_agent_socket
+      delete_file(gpg_agent_log)
+      output
+    end
+
+    # This method can be deleted once we cease to support gnupg 2.0.
+    def delete_gpg_agent_socket
+      delete_file(ENV['GNUPGHOME'], 'S.gpg-agent')
+    end
+
+    # This method can be deleted once we cease to support gnupg 2.0.
+    def delete_file(*args)
+      path = File.join(Array(args))
+      if File.exist?(path)
+        File.delete(path)
+      end
+    end
   end
 end

@@ -6,7 +6,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
 
-## [3.0.0.beta15]
+## [3.0.0.beta16] / 2017-01-11
+
+### Fixed
+
+* Fix running `schleuder migrate...`.
+* Fix assigning list-attributes when migrating a list.
+
+### Added
+
+* Import the secret key and clear its passphrase when migrating a list from v2.
+* More tests.
+
+
+## [3.0.0.beta15] / 2017-01-10
 
 ### Changed
 

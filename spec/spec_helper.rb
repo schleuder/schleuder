@@ -77,6 +77,10 @@ RSpec.configure do |config|
     `SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bin/schleuder #{command} #{email} < #{message_path} 2>&1`
   end
 
+  def run_cli(command)
+    `SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bin/schleuder #{command} 2>&1`
+  end
+
   Mail.defaults do
     delivery_method :test
   end
