@@ -1,31 +1,43 @@
-Description: etc/: Fix paths used by upstream
- Upstream uses default paths like '/var/schleuder' which obviously
- violate policies and common standards, like FHS for example. We need to
- fix this. Upstream is aware of this patch and we're working on
- integrating it.
+Description: Fix paths used by upstream
+ Logs should go into '/var/log/schleuder'.
+ 
+ Upstream recently switched the list data dir to '/var/lib/schleuder'.
+ However, this isn't fixed in the manpage yet, so let's take care of
+ this. This part of the patch can be dropped once the next upstream
+ version is released.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2016-12-06
+Reviewed-by: Sebastien Badia <sbadia@debian.org>
+Last-Update: 2017-01-12
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/etc/schleuder.yml
 +++ b/etc/schleuder.yml
-@@ -1,8 +1,8 @@
- # Where are the list-directories stored (contain log-files and GnuPG-keyrings).
--lists_dir: /var/schleuder/lists
-+lists_dir: /var/lib/schleuder/lists
+@@ -2,7 +2,7 @@
+ lists_dir: /var/lib/schleuder/lists
  
  # Where to write list-logs. The actual log-file will be <lists_logs_base_dir>/<hostname>/<listname>/list.log.
--listlogs_dir: /var/schleuder/lists
-+listlogs_dir: /var/log/schleuder
+-listlogs_dir: /var/lib/schleuder/lists
++listlogs_dir: /var/log/schleuder/lists
  
  # Schleuder reads plugins also from this directory.
  plugins_dir: /etc/schleuder/plugins
-@@ -25,7 +25,7 @@
- database:
-   production:
-     adapter:  'sqlite3'
--    database: /var/schleuder/db.sqlite
-+    database: /var/lib/schleuder/db.sqlite
- 
- # Note: The API-daemon will bind only to localhost if no TLS-cert+keys are available.
- api:
+--- a/man/schleuder.8
++++ b/man/schleuder.8
+@@ -64,7 +64,7 @@
+ For more information on how to integrate Schleuder with your existing mail setup, please read the Schleuder documentation online (\fISEE ALSO\fR)\.
+ .
+ .SS "Data storage"
+-The keyrings for each list are standard GnuPG keyrings and sit in the filesystem under \fIlists_dir\fR/\fIhostname\fR/\fIlistname\fR/ (\fIlists_dir\fR is read from schleuder\.yml, by default it is </var/schleuder/lists>)\. They can be used manually using gpg2\. Please be careful to maintain proper file permissions if you touch the files\.
++The keyrings for each list are standard GnuPG keyrings and sit in the filesystem under \fIlists_dir\fR/\fIhostname\fR/\fIlistname\fR/ (\fIlists_dir\fR is read from schleuder\.yml, by default it is </var/lib/schleuder/lists>)\. They can be used manually using gpg2\. Please be careful to maintain proper file permissions if you touch the files\.
+ .
+ .P
+ In the list\-directory there’s also a list specific log\-file (might be missing if the log\-level is high and no error occurred yet)\.
+@@ -135,7 +135,7 @@
+ \fB/etc/schleuder/list\-defaults\.yml\fR: default path of default list settings
+ .
+ .IP "\(bu" 4
+-\fB/var/schleuder/\fR default path of lists_dir
++\fB/var/lib/schleuder/\fR default path of lists_dir
+ .
+ .IP "\(bu" 4
+ \fB<lists_dir>\fR/\fB<hostname>\fR/`\fIlistname\fR: list internal data

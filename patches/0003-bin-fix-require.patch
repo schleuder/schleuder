@@ -3,7 +3,7 @@ Description: bin/: Use 'require' instead of 'require_relative'
  'require_relative' as used by upstream doesn't work.
  Upstream is aware of this patch and we're working on integrating it.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2016-12-06
+Last-Update: 2017-01-12
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/bin/schleuder
@@ -16,7 +16,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +  require 'schleuder/cli'
    Schleuder::Cli.start
  rescue => exc
-   $stderr.puts exc.to_s
+   $stderr.puts "Technical Error: #{exc}\n#{exc.backtrace.first}"
 --- a/bin/schleuder-api-daemon
 +++ b/bin/schleuder-api-daemon
 @@ -7,7 +7,7 @@
