@@ -12,8 +12,14 @@ end
 
 task :run_tests do
   Gem2Deb::Rake::RSpecTask.new do |spec|
-    spec.pattern = '../spec/schleuder/*_spec.rb'
+    spec.pattern = ['../spec/*/*_spec.rb', '../spec/*/*/*.spec.rb']
   end
+end
+
+task :cleanup do
+  # Remove database to make the build reproducible
+  `rm db/test.sqlite3 >/dev/null 2>&1 || true`
+  `rm /usr/lib/ruby/vendor_ruby/schleuder/db/test.sqlite3 >/dev/null 2>&1 || true`
 end
 
 task :default => [:setup, :run_tests]
