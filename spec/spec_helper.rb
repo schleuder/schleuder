@@ -37,6 +37,7 @@ RSpec.configure do |config|
   config.after(:suite) do
     cleanup_gnupg_home
     stop_smtp_daemon
+    delete_smtp_daemon_outputdir
   end
 
   # rspec-mocks config goes here. You can use an alternate test double
@@ -57,6 +58,10 @@ RSpec.configure do |config|
   def start_smtp_daemon
     if ! File.directory?(smtp_daemon_outputdir)
       FileUtils.mkdir_p(smtp_daemon_outputdir)
+    else
+      # Try to kill it, in case it's still around (this occurred on some
+      # systems).
+      stop_smtp_daemon(9)
     end
     daemon = File.join('spec', 'smtp-daemon.rb')
     pid = Process.spawn(daemon, '2523', smtp_daemon_outputdir)
@@ -64,13 +69,16 @@ RSpec.configure do |config|
     IO.write(pidfile, pid)
   end
 
-  def stop_smtp_daemon
+  def stop_smtp_daemon(signal=15)
     pidfile = File.join(smtp_daemon_outputdir, 'pid')
     if File.exist?(pidfile)
       pid = File.read(pidfile).to_i
-      Process.kill(15, pid)
-      FileUtils.rm_rf smtp_daemon_outputdir
+      Process.kill(signal, pid)
     end
+  end
+
+  def delete_smtp_daemon_outputdir
+    FileUtils.rm_rf smtp_daemon_outputdir
   end
 
   def run_schleuder(command, email, message_path)
