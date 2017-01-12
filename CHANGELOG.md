@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## UNRELEASED
+
+### Changed
+
+* Stopped using SCHLEUDER_ROOT in specs. Those make life difficult for packaging for debian.
+* While running specs, ensure smtp-daemon.rb has been stopped before starting it anew.
 
 ## [3.0.0.beta16] / 2017-01-11
 
