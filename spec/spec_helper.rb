@@ -58,7 +58,7 @@ RSpec.configure do |config|
     if ! File.directory?(smtp_daemon_outputdir)
       FileUtils.mkdir_p(smtp_daemon_outputdir)
     end
-    daemon = File.join(ENV['SCHLEUDER_ROOT'], 'spec', 'smtp-daemon.rb')
+    daemon = File.join('spec', 'smtp-daemon.rb')
     pid = Process.spawn(daemon, '2523', smtp_daemon_outputdir)
     pidfile = File.join(smtp_daemon_outputdir, 'pid')
     IO.write(pidfile, pid)
