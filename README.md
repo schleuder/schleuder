@@ -11,7 +11,7 @@ For more details see <https://schleuder.nadir.org/docs/>.
 Requirements
 ------------
 * ruby  >=2.1
-* gnupg >=2.0 (if possible use >= 2.1.14)
+* gnupg >=2.0
 * gpgme
 * sqlite3
 
