@@ -1,3 +1,21 @@
+schleuder (3.0.0~beta17-1) unstable; urgency=medium
+
+  [ Georg Faerber ]
+  * New upstream release. (Closes: #850545)
+  * debian/schleuder-api-daemon.init: Add sysvinit script.
+  * debian/patches: Refresh for Debian schleuder release 3.0.0~beta17-1.
+  * debian/ruby-tests.rake:
+    - Cover all upstream tests.
+    - Remove test database to make the build reproducible.
+
+  [ Sebastien Badia ]
+  * debian/control:
+    - Wrap and sort.
+    - Add ruby-factory-girl as Build-Depends.
+  * debian/compat: Bump debhelper compat to 10.
+
+ -- Georg Faerber <georg@riseup.net>  Thu, 12 Jan 2017 19:52:43 +0100
+
 schleuder (3.0.0~beta11-2) unstable; urgency=medium
 
   * debian/schleuder.postinst: Restart the API daemon by default
