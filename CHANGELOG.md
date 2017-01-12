@@ -12,7 +12,7 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
 * Stopped using SCHLEUDER_ROOT in specs. Those make life difficult for packaging for debian.
 * While running specs, ensure smtp-daemon.rb has been stopped before starting it anew.
 
-###
+### Added
 
 * A Code of Conduct.
 
