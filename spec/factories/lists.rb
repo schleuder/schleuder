@@ -29,7 +29,7 @@ FactoryGirl.define do
     logfiles_to_keep 2
     after(:build) do |list|
       FileUtils.mkdir_p(list.listdir)
-      gpghome_upstream = File.join ENV["SCHLEUDER_ROOT"], "spec", "gnupg"
+      gpghome_upstream = File.join "spec", "gnupg"
       FileUtils.cp_r Dir["#{gpghome_upstream}/{private*,*.gpg,.*migrated}"], list.listdir
     end
 

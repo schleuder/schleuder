@@ -1,4 +1,9 @@
 #!/usr/bin/env ruby
+#
+# This script is a very simple SMTP-daemon, that dumps every incoming email
+# into the given directory. It's meant to capture messages from schleuder-lists
+# during test-runs.
+
 require 'socket'
 require 'open3'
 

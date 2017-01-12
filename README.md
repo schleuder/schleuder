@@ -11,7 +11,7 @@ For more details see <https://schleuder.nadir.org/docs/>.
 Requirements
 ------------
 * ruby  >=2.1
-* gnupg >=2.0 (if possible use >= 2.1.14)
+* gnupg >=2.0
 * gpgme
 * sqlite3
 
@@ -42,15 +42,15 @@ Additionally these **rubygems** are required (will be installed automatically un
 Installing Schleuder
 ------------
 
-1. Download [the gem](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta16.gem) and [the OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta16.gem.sig) and verify:
+1. Download [the gem](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta17.gem) and [the OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta17.gem.sig) and verify:
    ```
    gpg --recv-key 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
-   gpg --verify schleuder-3.0.0.beta16.gem.sig
+   gpg --verify schleuder-3.0.0.beta17.gem.sig
    ```
 
 2. If all went well install the gem:
    ```
-   gem install schleuder-3.0.0.beta16.gem
+   gem install schleuder-3.0.0.beta17.gem
    ```
 
 3. Set up schleuder:
@@ -115,6 +115,12 @@ Contributing
 Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 
+Code of Conduct
+---------------
+
+We adopted a code of conduct. Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
+
 License
 -------
 
@@ -124,4 +130,4 @@ GNU GPL 3.0. Please see [LICENSE.txt](LICENSE.txt).
 Alternative Download
 --------------------
 
-Alternatively to the gem-files you can download the latest release as [a tarball](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta16.tar.gz) and [its OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta16.tar.gz.sig).
+Alternatively to the gem-files you can download the latest release as [a tarball](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta17.tar.gz) and [its OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta17.tar.gz.sig).
