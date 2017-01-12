@@ -47,7 +47,7 @@ setup, please read the Schleuder documentation online ([SEE ALSO][]).
 
 ### Data storage
 
-The keyrings for each list are standard GnuPG keyrings and sit in the filesystem under <lists_dir>/<hostname>/<listname>/ (<lists_dir> is read from schleuder.yml, by default it is </var/schleuder/lists>). They can be used manually using gpg2. Please be careful to maintain proper file permissions if you touch the files.
+The keyrings for each list are standard GnuPG keyrings and sit in the filesystem under <lists_dir>/<hostname>/<listname>/ (<lists_dir> is read from schleuder.yml, by default it is </var/lib/schleuder/lists>). They can be used manually using gpg2. Please be careful to maintain proper file permissions if you touch the files.
 
 In the list-directory there’s also a list specific log-file (might be missing if the log-level is high and no error occurred yet).
 
@@ -104,7 +104,7 @@ Write to <listname-owner@hostname> to contact the list-owner(s) even if you don'
  * `/etc/schleuder/list-defaults.yml`:
    default path of default list settings
 
- * `/var/schleuder/`
+ * `/var/lib/schleuder/lists`
    default path of lists_dir
 
  * `<lists_dir>`/`<hostname>`/`<listname>:
