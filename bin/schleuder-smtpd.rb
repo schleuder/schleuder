@@ -1,4 +1,9 @@
 #!/usr/bin/env ruby
+#
+# This script is a very simple SMTP-daemon, that delivers every incoming email
+# to a given schleuder-list. It's meant to help developing without a real,
+# local MTA.
+
 require 'socket'
 require 'open3'
 
