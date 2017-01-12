@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+# Don't emit any warnings, they would be sent back to the email-sender as an
+# error-message.
+$VERBOSE=nil
+
 trap("INT") { exit 1 }
 
 
