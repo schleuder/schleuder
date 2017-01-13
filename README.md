@@ -42,7 +42,7 @@ Additionally these **rubygems** are required (will be installed automatically un
 Installing Schleuder
 ------------
 
-1. Download [the gem](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta17.gem) and [the OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta17.gem.sig) and verify:
+1. Download [the gem](https://0xacab.org/schleuder/schleuder/raw/master/gems/schleuder-3.0.0.beta17.gem) and [the OpenPGP-signature](https://0xacab.org/schleuder/schleuder/raw/master/gems/schleuder-3.0.0.beta17.gem.sig) and verify:
    ```
    gpg --recv-key 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
    gpg --verify schleuder-3.0.0.beta17.gem.sig
@@ -94,7 +94,7 @@ the web instead of using [request-keywords](https://schleuder.nadir.org/docs/#su
 Todo
 ----
 
-See <https://git.codecoop.org/schleuder/schleuder3/issues>.
+See <https://0xacab.org/schleuder/schleuder/issues>.
 
 Testing
 -------
@@ -130,4 +130,4 @@ GNU GPL 3.0. Please see [LICENSE.txt](LICENSE.txt).
 Alternative Download
 --------------------
 
-Alternatively to the gem-files you can download the latest release as [a tarball](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta17.tar.gz) and [its OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta17.tar.gz.sig).
+Alternatively to the gem-files you can download the latest release as [a tarball](https://0xacab.org/schleuder/schleuder/raw/master/gems/schleuder-3.0.0.beta17.tar.gz) and [its OpenPGP-signature](https://0xacab.org/schleuder/schleuder/raw/master/gems/schleuder-3.0.0.beta17.tar.gz.sig).
