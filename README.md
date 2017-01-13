@@ -81,7 +81,7 @@ List administration
 -------------------
 
 Please use
-[schleuder-cli](https://git.codecoop.org/schleuder/schleuder-cli) to create and
+[schleuder-cli](https://0xacab.org/schleuder/schleuder-cli) to create and
 manage lists from the command line.
 
 Optionally consider installing
