@@ -17,9 +17,11 @@ task :run_tests do
 end
 
 task :cleanup do
-  # Remove database to make the build reproducible
-  `rm db/test.sqlite3 >/dev/null 2>&1 || true`
-  `rm /usr/lib/ruby/vendor_ruby/schleuder/db/test.sqlite3 >/dev/null 2>&1 || true`
+  at_exit {
+    # Remove database to make the build reproducible
+    `rm db/test.sqlite3 >/dev/null 2>&1 || true`
+    `rm /usr/lib/ruby/vendor_ruby/schleuder/db/test.sqlite3 >/dev/null 2>&1 || true`
+  }
 end
 
-task :default => [:setup, :run_tests]
+task :default => [:setup, :run_tests, :cleanup]
