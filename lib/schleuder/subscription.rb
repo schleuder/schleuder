@@ -50,12 +50,12 @@ module Schleuder
         else
           list.logger.warn "Sending plaintext because no key is present!"
         end
-      elsif self.key.trust.present?
+      elsif ! self.key.usable?
         if self.list.send_encrypted_only?
-          notify_of_missed_message(key.trust)
+          notify_of_missed_message(key.usability_issue)
           return false
         else
-          list.logger.warn "Sending plaintext because assigned key is #{key.trust}!"
+          list.logger.warn "Sending plaintext because assigned key is #{key.usability_issue}!"
         end
       else
         gpg_opts.merge!(encrypt: true, keys: {self.email => "0x#{self.fingerprint}"})

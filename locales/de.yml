@@ -117,5 +117,5 @@ de:
   check_keys: Schlüsselprüfung
   check_keys_intro: "Bitte kümmere dich um die folgenden Schlüssel für Liste %{email}."
   key_expires: "Läuft in %{days} Tagen ab:\n0x%{fingerprint} %{email}"
-  key_unusable: "Ist %{trust}:\n0x%{fingerprint} %{email}"
+  key_unusable: "Ist %{usability_issue}:\n0x%{fingerprint} %{email}"
   missed_message_due_to_unusable_key: "Du hast eine Email von %{list_email} verpasst weil mit deinem Abo kein (benutzbarer) OpenPGP-Schlüssel verknüpft ist. Bitte kümmere dich darum."

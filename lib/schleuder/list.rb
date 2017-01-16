@@ -140,8 +140,8 @@ module Schleuder
           expiring << [key, expdays]
         end
 
-        if key.trust
-          unusable << [key, key.trust]
+        if ! key.usable?
+          unusable << [key, key.usability_issue]
         end
       end
 
@@ -154,9 +154,9 @@ module Schleuder
                       })
       end
 
-      unusable.each do |key,trust|
+      unusable.each do |key,usability_issue|
         text << I18n.t('key_unusable', {
-                          trust: Array(trust).join(', '),
+                          usability_issue: usability_issue,
                           fingerprint: key.fingerprint,
                           email: key.email
                       })

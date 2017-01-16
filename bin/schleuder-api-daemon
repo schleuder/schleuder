@@ -164,7 +164,7 @@ class SchleuderApiDaemon < Sinatra::Base
         email: key.email,
         ascii: key.armored,
         expiry: key.expires,
-        trust_issues: key.trust
+        trust_issues: key.usability_issue
       }
     end
   end

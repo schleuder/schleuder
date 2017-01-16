@@ -28,6 +28,20 @@ module GPGME
       orig_fingerprint.encode(Encoding::US_ASCII)
     end
 
+    def usable?
+      usability_issue.blank?
+    end
+
+    def usability_issue
+      if trust.present?
+        trust
+      elsif ! usable_for?(:encrypt)
+        "not capable of encryption"
+      else
+        nil
+      end
+    end
+
     def adduid(uid, email)
       # This block can be deleted once we cease to support gnupg 2.0.
       if ! GPGME::Ctx.sufficient_gpg_version?('2.1.4')
