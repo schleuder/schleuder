@@ -4,7 +4,8 @@ module Schleuder
     def initialize(list)
       super(list.logfile, 'daily')
       @from = list.email
-      @adminaddresses = list.admins.map(&:email)
+      @list = list
+      @adminaddresses = list.admins.map { |sub| [sub.email, sub.key] }
       @level = ::Logger.const_get(list.log_level.upcase)
       remove_old_logfiles(list)
     end
