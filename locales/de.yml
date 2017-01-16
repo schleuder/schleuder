@@ -70,6 +70,7 @@ de:
     must_be_greater_than_zero: "muss größer als null sein"
     file_not_found: "Die Datei existiert nicht: '%{file}'."
     not_pgp_mime: "Deine Email war nicht im pgp/mime-Format verschlüsselt."
+    delivery_error: "Beim Versenden einer Email an %{email} ist der folgende Fehler aufgetreten: %{error}"
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.

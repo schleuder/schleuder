@@ -70,6 +70,7 @@ en:
     must_be_greater_than_zero: "must be a number greater than zero"
     file_not_found: "File not found: '%{file}'."
     not_pgp_mime: "Message was not encrypted in the pgp/mime-format."
+    delivery_error: "The following error occurred while sending a message to %{email}: %{error}"
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
