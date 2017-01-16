@@ -149,6 +149,20 @@ describe Schleuder::Runner do
         teardown_list_and_mailer(list)
     end
 
+    it "delivers a signed error message if a subscription's key is not available on a encrypted-only list" do
+        list = create(:list, send_encrypted_only: true)
+        list.subscribe("admin@example.org", 'AAAAAAAABBBBBBBBBCCCCCCCCCDDDDDDDDEEEEEE', true)
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
+
+        Schleuder::Runner.new().run(mail, list.email)
+        message = Mail::TestMailer.deliveries.first
+
+        expect(message.to).to eq ['admin@example.org']
+        expect(message.to_s).to include("You missed an email from #{list.email} ")
+
+        teardown_list_and_mailer(list)
+    end
+
     def teardown_list_and_mailer(list)
       FileUtils.rm_rf(list.listdir)
       Mail::TestMailer.deliveries.clear
