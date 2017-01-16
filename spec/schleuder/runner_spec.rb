@@ -128,6 +128,27 @@ describe Schleuder::Runner do
       end
     end
 
+    it "delivers a signed error message if a subscription's key is expired on a encrypted-only list" do
+        list = create(:list, send_encrypted_only: true)
+        list.subscribe("admin@example.org", nil, true, false)
+        list.subscribe("expired@example.org", '98769E8A1091F36BD88403ECF71A3F8412D83889')
+        key = File.read("spec/fixtures/expired_key.txt")
+        list.import_key(key)
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
+
+        Schleuder::Runner.new().run(mail, list.email)
+        message = Mail::TestMailer.deliveries.first
+        verified = message.verify
+        signature_fingerprints = verified.signatures.map(&:fpr)
+
+        expect(Mail::TestMailer.deliveries.size).to eq 1
+        expect(message.to).to include('expired@example.org')
+        expect(message.to_s).to include("You missed an email from ")
+        expect(signature_fingerprints).to eq([list.fingerprint])
+
+        teardown_list_and_mailer(list)
+    end
+
     def teardown_list_and_mailer(list)
       FileUtils.rm_rf(list.listdir)
       Mail::TestMailer.deliveries.clear
