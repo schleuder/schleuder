@@ -232,8 +232,8 @@ module Schleuder
           list_id: self.id,
           email: email,
           fingerprint: fingerprint,
-          admin: adminflag.presence || false,
-          delivery_enabled: deliveryflag.presence || true
+          admin: adminflag,
+          delivery_enabled: deliveryflag
         )
       sub.save
       sub
