@@ -163,9 +163,5 @@ describe Schleuder::Runner do
         teardown_list_and_mailer(list)
     end
 
-    def teardown_list_and_mailer(list)
-      FileUtils.rm_rf(list.listdir)
-      Mail::TestMailer.deliveries.clear
-    end
   end
 end
