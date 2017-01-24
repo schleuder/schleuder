@@ -57,10 +57,8 @@ module GPGME
           else
             "save"
           end
-        when /USERID_HINT|NEED_PASSPHRASE|GOOD_PASSPHRASE|GOT_IT|KEY_CONSIDERED/
-          nil
         else
-          return "Unexpected line: #{line}"
+          nil
         end
       end
       errors.join
