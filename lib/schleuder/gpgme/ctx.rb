@@ -138,10 +138,9 @@ module GPGME
 
     def self.spawn_daemon(name, args)
       delete_daemon_socket(name)
-      log = "/tmp/schleuder-#{name}-#{rand}.log"
-      cmd = "#{name} #{args} --daemon > #{log} 2>&1"
+      cmd = "#{name} #{args} --daemon > /dev/null 2>&1"
       if ! system(cmd)
-        return [false, "#{name} exited with code #{$?}, output in #{log}"]
+        return [false, "#{name} exited with code #{$?}"]
       end
     end
 
