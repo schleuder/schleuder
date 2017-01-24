@@ -106,11 +106,11 @@ module Mail
     end
 
     def signer
-      fingerprint = self.signature.try(:fpr)
+      return nil if signature.blank?
       # The fingerprint might be the one of a sub-key, but the assigned
       # fingerprints are (should be) the ones of the primary keys, so we need
       # to look up the key.
-      key = list.keys(fingerprint).first
+      key = list.keys(signature.fpr).first
       if key.present?
         list.subscriptions.where(fingerprint: key.fingerprint).first
       end
