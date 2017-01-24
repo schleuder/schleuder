@@ -90,10 +90,8 @@ module GPGME
           ''
         when /keyedit.prompt/
           "save"
-        when /USERID_HINT|GOT_IT|GOOD_PASSPHRASE/
-          nil
         else
-          [false, "Unexpected line: #{line}"]
+          nil
         end
       end
       errors.join
@@ -123,10 +121,8 @@ module GPGME
           'y'
         when /keyedit.prompt/
           "save"
-        when /USERID_HINT|NEED_PASSPHRASE|GOT_IT|GOOD_PASSPHRASE|MISSING_PASSPHRASE|KEY_CONSIDERED|INQUIRE_MAXLEN|PROGRESS/
-          nil
         else
-          [false, "Unexpected line: #{line}"]
+          nil
         end
       end
 
@@ -152,10 +148,8 @@ module GPGME
           'y'
         when /keyedit.prompt/
           "save"
-        when /USERID_HINT|NEED_PASSPHRASE|GOT_IT|GOOD_PASSPHRASE|MISSING_PASSPHRASE|KEY_CONSIDERED|INQUIRE_MAXLEN|PROGRESS/
-          nil
         else
-          [false, "Unexpected line: #{line}"]
+          nil
         end
       end
       stop_gpg_agent
