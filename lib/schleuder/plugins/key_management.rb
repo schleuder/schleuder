@@ -9,9 +9,9 @@ module Schleuder
       result = list.import_key(key_material)
 
       out = [I18n.t('plugins.key_management.import_result')]
-      out << result.map do |import_result|
-        str = I18n.t("plugins.key_management.key_import_status.#{import_result.action}")
-        "#{import_result.fpr}: #{str}"
+      out << result.imports.map do |import_status|
+        str = I18n.t("plugins.key_management.key_import_status.#{import_status.action}")
+        "#{import_status.fpr}: #{str}"
       end
     end
 
