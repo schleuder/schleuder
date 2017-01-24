@@ -16,7 +16,7 @@ module Schleuder
           @list.logger.debug "Running keyword '#{keyword}'"
           if @list.admin_only?(keyword) && ! @list.from_admin?(@mail)
             @list.logger.debug "Error: Keyword is admin-only, sent by non-admin"
-            output << Schleuder::Errors::KeywordAdminOnly.new(keyword)
+            output << Schleuder::Errors::KeywordAdminOnly.new(keyword).to_s
             next
           end
           output << run_plugin(keyword, arguments)
