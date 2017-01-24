@@ -1,15 +1,15 @@
 module Schleuder
   module RequestPlugins
     def self.add_key(arguments, list, mail)
-      key_material = if mail.parts.first.present?
-                       mail.parts.first.body
-                     else
-                       mail.body
-                     end.to_s
-      result = list.import_key(key_material)
-
       out = [I18n.t('plugins.key_management.import_result')]
-      out << result.imports.map do |import_status|
+
+      if mail.has_attachments?
+        results = self.import_keys_from_attachments(list, mail)
+      else
+        results = [self.import_key_from_body(list, mail)]
+      end
+
+      out << results.compact.collect(&:imports).flatten.map do |import_status|
         str = I18n.t("plugins.key_management.key_import_status.#{import_status.action}")
         "#{import_status.fpr}: #{str}"
       end
@@ -46,6 +46,41 @@ module Schleuder
       arguments.map do |argument|
         hkp.fetch_and_import(argument)
       end
+    end
+
+    def self.is_armored_key?(material)
+      return false unless /\A-----BEGIN PGP PUBLIC KEY BLOCK-----\n$/ =~ material
+      return false unless /^-----END PGP PUBLIC KEY BLOCK-----\n*\Z/ =~ material
+
+      lines = material.split("\n").reject(&:empty?)
+      # remove header
+      lines.shift
+      # remove tail
+      lines.pop
+      # verify the rest
+      # TODO: verify length except for lasts lines?
+      # headers according to https://tools.ietf.org/html/rfc4880#section-6.2
+      lines.map do |line|
+        /\A((comment|version|messageid|hash|charset):.*|[0-9a-z\/=+]+)\Z/i =~ line
+      end.all?
+    end
+
+    def self.import_keys_from_attachments(list, mail)
+      mail.attachments.map do |attachment|
+        material = attachment.body.to_s
+
+        list.import_key(material) if self.is_armored_key?(material)
+      end
+    end
+
+    def self.import_key_from_body(list, mail)
+      if mail.parts.first.present?
+        key_material = mail.parts.first.body.to_s
+      else
+        key_material = mail.body.to_s
+      end
+
+      list.import_key(key_material) if self.is_armored_key?(key_material)
     end
   end
 end
