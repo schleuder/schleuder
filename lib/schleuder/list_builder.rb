@@ -116,8 +116,10 @@ module Schleuder
         <GnupgKeyParms format=\"internal\">
         Key-Type: RSA
         Key-Length: 4096
+        Key-Usage: sign
         Subkey-Type: RSA
         Subkey-Length: 4096
+        Subkey-Usage: encrypt
         Name-Real: #{list.email}
         Name-Email: #{list.email}
         Expire-Date: 0
