@@ -4,13 +4,6 @@ set -e
 
 case "$1" in
     configure)
-	# Fresh installations or upgrades of schleuder (< 3.0).
-	if [ -z "$2" ] || dpkg --compare-versions "$2" lt 3.0; then
-		# We need to do this because code ordering in 'schleuder install' is wrong currently.
-		# Upstream is informed, will be resolved and fixed very soon.
-		touch /var/lib/schleuder/db.sqlite
-	fi
-
 	# 'schleuder install' will set up the database and/or run migrations.
 	# This needs to be done in any case.
 	schleuder install >/dev/null
