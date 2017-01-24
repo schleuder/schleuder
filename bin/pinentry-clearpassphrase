@@ -4,7 +4,7 @@
 
 require 'fileutils'
 require 'cgi'
-require 'secure_random'
+require 'openssl'
 
 def respond(msg, flush=true)
   $stdout.puts msg
@@ -45,10 +45,15 @@ if OLDPASSWD.empty?
   exit 1
 end
 
-TMPDIR = Dir.mktmpdir(SecureRandom.hex)
-OLDPWDSENTFILE = File.join(TMPDIR, SecureRandom.hex)
-EMPTYPWDSENTFILE1 = File.join(TMPDIR, SecureRandom.hex)
-EMPTYPWDSENTFILE2 = File.join(TMPDIR, SecureRandom.hex)
+# We need a static directory name to maintain the state across invocations of
+# this file.
+TMPDIR = File.join(ENV['GNUPGHOME'], '.tmp-pinentry-clearpassphrase')
+OLDPWDSENTFILE = File.join(TMPDIR, '1')
+EMPTYPWDSENTFILE1 = File.join(TMPDIR, '2')
+EMPTYPWDSENTFILE2 = File.join(TMPDIR, '3')
+if ! Dir.exist?(TMPDIR)
+  Dir.mkdir(TMPDIR)
+end
 
 respond "OK - what's up?"
 
