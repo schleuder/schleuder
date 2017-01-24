@@ -107,6 +107,12 @@ module Schleuder
           raise err
         end
       end
+      # Go through list.key() to re-fetch the key from the keyring, otherwise
+      # we don't see the new UIDs.
+      errors = list.key.set_primary_uid(list.email)
+      if errors.present?
+        raise errors
+      end
     rescue => exc
       raise Errors::KeyAdduidFailed.new(exc.to_s)
     end
