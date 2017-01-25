@@ -2,7 +2,7 @@ module Schleuder
   class List < ActiveRecord::Base
 
     has_many :subscriptions, dependent: :destroy
-    before_destroy :delete_listdir
+    before_destroy :delete_listdirs
 
     serialize :headers_to_meta, JSON
     serialize :bounces_drop_on_headers, JSON
@@ -291,13 +291,17 @@ module Schleuder
       ENV['GNUPGHOME'] = listdir
     end
 
-    def delete_listdir
+    def delete_listdirs
       if File.exists?(self.listdir)
-        FileUtils.rm_rf(self.listdir, secure: true)
-        Schleuder.logger.info "Deleted listdir"
-      else
-        # Don't use list-logger here — if the list-dir isn't present we can't log to it!
-        Schleuder.logger.info "Couldn't delete listdir, directory not present"
+        # FileUtils.rm_rf(self.listdir, secure: true)
+        Schleuder.logger.info "Deleted #{self.listdir}"
+      end
+      # If listlogs_dir is different from lists_dir, the logfile still exists
+      # and needs to be deleted, too.
+      logfile_dir = File.dirname(self.logfile)
+      if File.exists?(logfile_dir)
+        # FileUtils.rm_rf(logfile_dir, secure: true)
+        Schleuder.logger.info "Deleted #{logfile_dir}"
       end
       true
     rescue => exc
