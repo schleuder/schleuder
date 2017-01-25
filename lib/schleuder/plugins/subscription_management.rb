@@ -3,6 +3,9 @@ module Schleuder
     def self.subscribe(arguments, list, mail)
       email = arguments.shift
       fingerprint = arguments.shift
+      if fingerprint.present?
+        fingerprint.sub!(/^0x/, '')
+      end
       adminflag = arguments.shift
       deliveryflag = arguments.shift
 
