@@ -35,7 +35,7 @@ module Schleuder
         if @list.present?
           gpg_opts = @list.gpg_sign_options
           if key.present? && key.usable?
-            gpg_opts.merge!(encrypt: true)
+            gpg_opts.merge!(encrypt: true, keys: { address => key.fingerprint })
           end
           mail.gpg gpg_opts
         end
