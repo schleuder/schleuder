@@ -2,7 +2,7 @@ module Schleuder
   class List < ActiveRecord::Base
 
     has_many :subscriptions, dependent: :destroy
-    before_destroy :delete_listdir
+    before_destroy :delete_listdirs
 
     serialize :headers_to_meta, JSON
     serialize :bounces_drop_on_headers, JSON
@@ -140,8 +140,8 @@ module Schleuder
           expiring << [key, expdays]
         end
 
-        if key.trust
-          unusable << [key, key.trust]
+        if ! key.usable?
+          unusable << [key, key.usability_issue]
         end
       end
 
@@ -154,14 +154,18 @@ module Schleuder
                       })
       end
 
-      unusable.each do |key,trust|
+      unusable.each do |key,usability_issue|
         text << I18n.t('key_unusable', {
-                          trust: Array(trust).join(', '),
+                          usability_issue: usability_issue,
                           fingerprint: key.fingerprint,
                           email: key.email
                       })
       end
       text
+    end
+
+    def refresh_keys
+      GPGME::Ctx.refresh_keys(self.keys)
     end
 
     def self.by_recipient(recipient)
@@ -228,14 +232,16 @@ module Schleuder
     end
 
     def subscribe(email, fingerprint=nil, adminflag=false, deliveryflag=true)
-      adminflag ||= false
-      deliveryflag ||= true
+      # Ensure we have true or false as values for these two attributes.
+      admin            = adminflag.to_s == 'true'
+      delivery_enabled = deliveryflag.to_s != 'false'
+
       sub = Subscription.new(
           list_id: self.id,
           email: email,
           fingerprint: fingerprint,
-          admin: adminflag,
-          delivery_enabled: deliveryflag
+          admin: admin,
+          delivery_enabled: delivery_enabled
         )
       sub.save
       sub
@@ -271,7 +277,7 @@ module Schleuder
     def from_admin?(mail)
       return false if ! mail.was_validly_signed?
       admins.find do |admin|
-        admin.fingerprint == mail.signature.fingerprint
+        admin.fingerprint == mail.signing_key.fingerprint
       end.presence || false
     end
 
@@ -285,13 +291,17 @@ module Schleuder
       ENV['GNUPGHOME'] = listdir
     end
 
-    def delete_listdir
+    def delete_listdirs
       if File.exists?(self.listdir)
         FileUtils.rm_rf(self.listdir, secure: true)
-        Schleuder.logger.info "Deleted listdir"
-      else
-        # Don't use list-logger here — if the list-dir isn't present we can't log to it!
-        Schleuder.logger.info "Couldn't delete listdir, directory not present"
+        Schleuder.logger.info "Deleted #{self.listdir}"
+      end
+      # If listlogs_dir is different from lists_dir, the logfile still exists
+      # and needs to be deleted, too.
+      logfile_dir = File.dirname(self.logfile)
+      if File.exists?(logfile_dir)
+        FileUtils.rm_rf(logfile_dir, secure: true)
+        Schleuder.logger.info "Deleted #{logfile_dir}"
       end
       true
     rescue => exc

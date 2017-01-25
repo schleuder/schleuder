@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "SCHLEUDER" "8" "December 2016" "" ""
+.TH "SCHLEUDER" "8" "January 2017" "" ""
 .
 .SH "NAME"
 \fBschleuder\fR \- an email hub for groups
@@ -64,7 +64,7 @@ To connect the MTA with Schleuder it must pipe the incoming message into Schleud
 For more information on how to integrate Schleuder with your existing mail setup, please read the Schleuder documentation online (\fISEE ALSO\fR)\.
 .
 .SS "Data storage"
-The keyrings for each list are standard GnuPG keyrings and sit in the filesystem under \fIlists_dir\fR/\fIhostname\fR/\fIlistname\fR/ (\fIlists_dir\fR is read from schleuder\.yml, by default it is </var/schleuder/lists>)\. They can be used manually using gpg2\. Please be careful to maintain proper file permissions if you touch the files\.
+The keyrings for each list are standard GnuPG keyrings and sit in the filesystem under \fIlists_dir\fR/\fIhostname\fR/\fIlistname\fR/ (\fIlists_dir\fR is read from schleuder\.yml, by default it is </var/lib/schleuder/lists>)\. They can be used manually using gpg2\. Please be careful to maintain proper file permissions if you touch the files\.
 .
 .P
 In the list\-directory there’s also a list specific log\-file (might be missing if the log\-level is high and no error occurred yet)\.
@@ -135,7 +135,7 @@ Internal failure in incoming email processing\.
 \fB/etc/schleuder/list\-defaults\.yml\fR: default path of default list settings
 .
 .IP "\(bu" 4
-\fB/var/schleuder/\fR default path of lists_dir
+\fB/var/lib/schleuder/lists\fR default path of lists_dir
 .
 .IP "\(bu" 4
 \fB<lists_dir>\fR/\fB<hostname>\fR/`\fIlistname\fR: list internal data
@@ -149,7 +149,7 @@ Internal failure in incoming email processing\.
 All configuration files are formatted as YAML\. See \fIhttp://www\.yaml\.org/\fR for more details\.
 .
 .SH "BUGS"
-Known bugs are listed on the Schleuder bugtracker at \fIhttps://codecoop\.org/schleuder/schleuder\fR
+Known bugs are listed on the Schleuder bugtracker at \fIhttps://0xacab\.org/schleuder/schleuder\fR
 .
 .SH "SEE ALSO"
 \fBschleuder\-cli\fR(8), \fBgnupg\fR(7)\.
@@ -164,9 +164,9 @@ More extensive documentation for \fBschleuder\fR
 .
 .TP
 \fBschleuder\-cli\fR, the command line interface for list\-management
-\fIhttps://codecoop\.org/schleuder/schleuder\-cli/\fR
+\fIhttps://0xacab\.org/schleuder/schleuder\-cli/\fR
 .
 .TP
 \fBschleuder\-web\fR, the web interface for list\-management
-\fIhttps://codecoop\.org/schleuder/schleuder\-web/\fR
+\fIhttps://0xacab\.org/schleuder/schleuder\-web/\fR
 

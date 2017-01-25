@@ -9,11 +9,21 @@ require 'sinatra/namespace'
 require 'thin'
 require_relative '../lib/schleuder.rb'
 
-TLS_CERT = Conf.api['tls_cert_file']
-TLS_KEY = Conf.api['tls_key_file']
+
+%w[tls_cert_file tls_key_file].each do |config_key|
+  path = Conf.api[config_key]
+  if ! File.readable?(path)
+    $stderr.puts "Error: '#{path}' is not a readable file (from #{config_key} in config)."
+    exit 1
+  end
+end
 
 class SchleuderApiDaemon < Sinatra::Base
   register Sinatra::Namespace
+  use Rack::Auth::Basic, "Schleuder API Daemon" do |username, key|
+    username == 'schleuder' && Conf.api_valid_api_keys.include?(key)
+  end
+
   configure do
     set :server, :thin
     set :port, Schleuder::Conf.api['port'] || 4443
@@ -23,28 +33,6 @@ class SchleuderApiDaemon < Sinatra::Base
     else
       set :logging, Logger::WARN
     end
-  end
-
-  # TODO: Move this into a method, call that in the configure block
-  @use_tls = Conf.api_use_tls?
-  if @use_tls
-    [TLS_CERT, TLS_KEY].each do |const|
-      if const.nil?
-        @use_tls = false
-      elsif ! File.readable?(const)
-        $stderr.puts "Error: '#{const}' is not a readable file."
-        exit 1
-      end
-    end
-  end
-
-  if @use_tls
-    use Rack::Auth::Basic, "Schleuder API Daemon" do |username, key|
-      username == 'schleuder' && Conf.api_valid_api_keys.include?(key)
-    end
-  else
-    $stderr.puts "\nWarning: Without TLS, schleuder-api-daemon enforces binding to localhost only!\nExecute `schleuder cert generate` and follow the instructions.\n\n"
-    set :bind, 'localhost'
   end
 
   before do
@@ -164,7 +152,7 @@ class SchleuderApiDaemon < Sinatra::Base
         email: key.email,
         ascii: key.armored,
         expiry: key.expires,
-        trust_issues: key.trust
+        trust_issues: key.usability_issue
       }
     end
   end
@@ -256,11 +244,13 @@ class SchleuderApiDaemon < Sinatra::Base
     post '.json' do
       begin
         list = list(requested_list_id)
+        adminflag = [true, 1, '1'].include?(parsed_body['admin'])
+        deliveryflag = [true, 1, '1'].include?(parsed_body['delivery_enabled'])
         sub = list.subscribe(
             parsed_body['email'],
             parsed_body['fingerprint'],
-            parsed_body['admin'],
-            parsed_body['delivery_enabled']
+            adminflag,
+            deliveryflag
           )
         logger.debug "subcription: #{sub.inspect}"
         if sub.valid?
@@ -354,13 +344,11 @@ class SchleuderApiDaemon < Sinatra::Base
 
   def self.run!
     super do |server|
-      if @use_tls == true
-        server.ssl = true
-        server.ssl_options = {
-          :cert_chain_file  => TLS_CERT,
-          :private_key_file => TLS_KEY
-        }
-      end
+      server.ssl = true
+      server.ssl_options = {
+        :cert_chain_file  => Conf.api['tls_cert_file'],
+        :private_key_file => Conf.api['tls_key_file']
+      }
     end
   end
 

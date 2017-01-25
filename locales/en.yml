@@ -10,7 +10,7 @@ en:
       public_footer:
         invalid: "includes non-printable characters"
     invalid_email: "is not a valid email address"
-    invalid_fingerprint: "is not a valid fingerprint"
+    invalid_fingerprint: "is not a valid OpenPGP-fingerprint"
     list_fingerprint_missing: "List has no fingerprint configured, cannot run!"
     list_key_missing: "List-key is missing in keyring, cannot run!"
     list_secret_key_missing: 'Secret key of list is missing in keyring, cannot run!'
@@ -70,6 +70,7 @@ en:
     must_be_greater_than_zero: "must be a number greater than zero"
     file_not_found: "File not found: '%{file}'."
     not_pgp_mime: "Message was not encrypted in the pgp/mime-format."
+    delivery_error: "The following error occurred while sending a message to %{email}: %{error}"
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
@@ -91,10 +92,16 @@ en:
       unsubscribing_failed: |
         Unsubscribing %{email} failed:
         %{errors}
-      subscribed: "%{email} has been subscribed with fingerprint %{fingerprint}."
+      subscribed: |
+        %{email} has been subscribed with these attributes:
+
+        Fingerprint: %{fingerprint}
+        Admin? %{admin}
+        Email-delivery enabled? %{delivery_enabled}
       subscribing_failed: |
         Subscribing %{email} failed:
-        %{errors}
+
+        %{errors}.
       list_of_subscriptions: Subscriptions
       fingerprint_set: Fingerprint for %{email} set to %{fingerprint}.
       setting_fingerprint_failed: |
@@ -105,6 +112,8 @@ en:
   no_output_result: Your message resulted in no output.
   owner_forward_prefix: The following message was received for the list-owners.
   no_keywords_error: Your message didn't contain any keywords, thus there was nothing to do.
+  missing_listname_keyword_error: Your message didn't contain the mandatory X-LISTNAME-keyword, thus it was rejected.
+  wrong_listname_keyword_error: Your message didn't contain a wrong X-LISTNAME-keyword. The value of that keyword muss match the email address of this list.
   bounces_drop_all: The attached message should have been bounced but was dropped without further notice because the list's configuration defines that no message should ever be bounced.
   bounces_drop_on_headers: "The attached message should have been bounced but was dropped without further notice because it matched this header-line: %{key}: %{value}"
   bounces_notify_admins: "The attached message was bounced with the following notice:"
@@ -116,5 +125,14 @@ en:
   check_keys: Keys check
   check_keys_intro: "Please take care of these keys for list %{email}.\n"
   key_expires: "Expires in %{days} days:\n0x%{fingerprint} %{email}"
-  key_unusable: "Is %{trust}:\n0x%{fingerprint} %{email}"
-  missed_message_due_to_absent_key: "You missed an email from %{list_email} because your subscription isn't associated with a (usable) OpenPGP key. Please fix this."
+  key_unusable: "Is %{usability_issue}:\n0x%{fingerprint} %{email}"
+  missed_message_due_to_unusable_key: "You missed an email from %{list_email} because your subscription isn't associated with a (usable) OpenPGP key. Please fix this."
+  refresh_keys: Keys update
+  refresh_keys_intro: "Refreshing all keys from the keyring of list %{email} resulted in this:"
+  key_updated: Key %{fingerprint} was updated (%{states}).
+  import_states:
+    new_keys: new keys
+    new_uids: new user-IDs
+    new_subkeys: new subkeys
+    new_signatures: new signatures
+

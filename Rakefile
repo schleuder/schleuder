@@ -124,7 +124,7 @@ end
 desc 'Check if version-tag already exists'
 task :check_version do
   # Check if Schleuder::VERSION has been updated since last release
-  if `git tag`.include?(@tagname)
+  if `git tag`.match?(/^#{@tagname}$/)
     $stderr.puts "Warning: Tag '#{@tagname}' already exists. Did you forget to update #{project}/version.rb?"
     $stderr.print "Delete tag to continue? [yN] "
     if $stdin.gets.match(/^y/i)

@@ -107,6 +107,12 @@ module Schleuder
           raise err
         end
       end
+      # Go through list.key() to re-fetch the key from the keyring, otherwise
+      # we don't see the new UIDs.
+      errors = list.key.set_primary_uid(list.email)
+      if errors.present?
+        raise errors
+      end
     rescue => exc
       raise Errors::KeyAdduidFailed.new(exc.to_s)
     end
@@ -116,8 +122,10 @@ module Schleuder
         <GnupgKeyParms format=\"internal\">
         Key-Type: RSA
         Key-Length: 4096
+        Key-Usage: sign
         Subkey-Type: RSA
         Subkey-Length: 4096
+        Subkey-Usage: encrypt
         Name-Real: #{list.email}
         Name-Email: #{list.email}
         Expire-Date: 0

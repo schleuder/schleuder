@@ -72,7 +72,7 @@ describe Schleuder::Subscription do
     subscription = build(:subscription, fingerprint: "&$$$$123AAA")
 
     expect(subscription).not_to be_valid
-    expect(subscription.errors.messages[:fingerprint]).to include("is not a valid fingerprint")
+    expect(subscription.errors.messages[:fingerprint]).to include("is not a valid OpenPGP-fingerprint")
   end
 
   BOOLEAN_SUBSCRIPTION_ATTRIBUTES.each do |subscription_attribute|

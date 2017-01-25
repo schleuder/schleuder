@@ -1,0 +1,28 @@
+# Use this as a table for postfix to select addresses that schleuder
+# thinks belong to it.  This is useful when
+# smtpd_reject_unlisted_recipient = yes (which is the default for
+# modern Postfix)
+
+# For example, you might dedicate Postfix's "virtual" domains to
+# schleuder with the following set of configs in main.cf:
+#
+# virtual_domains = lists.example.org
+# virtual_transport = schleuder
+# virtual_alias_maps = hash:/etc/postfix/virtual_aliases
+# virtual_mailbox_maps = sqlite:/etc/postfix/schleuder_sqlite.cf
+# schleuder_destination_recipient_limit = 1
+
+# it is not recommended to use this table for more powerful
+# configuration options (e.g. transport_maps) because it could give
+# the schleuder user (which can write the given sqlite database) the
+# power to change settings for for other mail handled by this Postfix
+# instance.
+
+dbpath = /var/lib/schleuder/db.sqlite
+
+query = select 'present' where '%s' in (
+  select email from lists union
+  select replace(email, '@', '-bounces@') from lists union
+  select replace(email, '@', '-owner@') from lists union
+  select replace(email, '@', '-request@') from lists union
+  select replace(email, '@', '-sendkey@') from lists)

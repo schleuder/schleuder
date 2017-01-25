@@ -4,7 +4,7 @@ Schleuder, version 3
 Schleuder is a gpg-enabled mailing list manager with resending-capabilities. Subscribers can communicate encrypted (and pseudonymously) among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.
 
 Version 3 of schleuder is a complete rewrite, which aims to be more robust, flexible, and internationalized. It
-also provides an API for the optional web interface called [schleuder-web](https://git.codecoop.org/schleuder/schleuder-web).
+also provides an API for the optional web interface called [schleuder-web](https://0xacab.org/schleuder/schleuder-web).
 
 For more details see <https://schleuder.nadir.org/docs/>.
 
@@ -42,15 +42,15 @@ Additionally these **rubygems** are required (will be installed automatically un
 Installing Schleuder
 ------------
 
-1. Download [the gem](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta17.gem) and [the OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta17.gem.sig) and verify:
+1. Download [the gem](https://0xacab.org/schleuder/schleuder/raw/master/gems/schleuder-3.0.0.gem) and [the OpenPGP-signature](https://0xacab.org/schleuder/schleuder/raw/master/gems/schleuder-3.0.0.gem.sig) and verify:
    ```
    gpg --recv-key 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
-   gpg --verify schleuder-3.0.0.beta17.gem.sig
+   gpg --verify schleuder-3.0.0.gem.sig
    ```
 
 2. If all went well install the gem:
    ```
-   gem install schleuder-3.0.0.beta17.gem
+   gem install schleuder-3.0.0.gem
    ```
 
 3. Set up schleuder:
@@ -81,11 +81,11 @@ List administration
 -------------------
 
 Please use
-[schleuder-cli](https://git.codecoop.org/schleuder/schleuder-cli) to create and
+[schleuder-cli](https://0xacab.org/schleuder/schleuder-cli) to create and
 manage lists from the command line.
 
 Optionally consider installing
-[schleuder-web](https://git.codecoop.org/schleuder/schleuder-web), the web
+[schleuder-web](https://0xacab.org/schleuder/schleuder-web), the web
 interface for schleuder. It enables list-admins to manage their lists through
 the web instead of using [request-keywords](https://schleuder.nadir.org/docs/#subscription-and-key-management).
 
@@ -94,7 +94,7 @@ the web instead of using [request-keywords](https://schleuder.nadir.org/docs/#su
 Todo
 ----
 
-See <https://git.codecoop.org/schleuder/schleuder3/issues>.
+See <https://0xacab.org/schleuder/schleuder/issues>.
 
 Testing
 -------
@@ -130,4 +130,4 @@ GNU GPL 3.0. Please see [LICENSE.txt](LICENSE.txt).
 Alternative Download
 --------------------
 
-Alternatively to the gem-files you can download the latest release as [a tarball](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta17.tar.gz) and [its OpenPGP-signature](https://git.codecoop.org/schleuder/schleuder3/raw/master/gems/schleuder-3.0.0.beta17.tar.gz.sig).
+Alternatively to the gem-files you can download the latest release as [a tarball](https://0xacab.org/schleuder/schleuder/raw/master/gems/schleuder-3.0.0.tar.gz) and [its OpenPGP-signature](https://0xacab.org/schleuder/schleuder/raw/master/gems/schleuder-3.0.0.tar.gz.sig).

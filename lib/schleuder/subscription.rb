@@ -41,16 +41,26 @@ module Schleuder
       end
 
       mail = ensure_headers(mail)
-      gpg_opts = self.list.gpg_sign_options.merge(encrypt: true, keys: {self.email => "0x#{self.fingerprint}"})
+      gpg_opts = self.list.gpg_sign_options
+
       if self.key.blank?
         if self.list.send_encrypted_only?
-          self.list.logger.warn "Not sending to #{self.email}: no key present and sending plain text not allowed"
-          notify_of_missed_message
+          notify_of_missed_message(:absent)
           return false
         else
-          gpg_opts.merge!(encrypt: false)
+          list.logger.warn "Sending plaintext because no key is present!"
         end
+      elsif ! self.key.usable?
+        if self.list.send_encrypted_only?
+          notify_of_missed_message(key.usability_issue)
+          return false
+        else
+          list.logger.warn "Sending plaintext because assigned key is #{key.usability_issue}!"
+        end
+      else
+        gpg_opts.merge!(encrypt: true, keys: {self.email => "0x#{self.fingerprint}"})
       end
+
       list.logger.info "Sending message to #{self.email}"
       mail.gpg gpg_opts
       mail.deliver
@@ -63,10 +73,11 @@ module Schleuder
       mail
     end
 
-    def notify_of_missed_message
+    def notify_of_missed_message(reason)
+      self.list.logger.warn "Not sending to #{self.email}: key is unusable because it is #{reason} and sending plain text not allowed"
       mail = ensure_headers(Mail.new)
       mail.subject = I18n.t('notice')
-      mail.body = I18n.t("missed_message_due_to_absent_key", list_email: self.list.email) + I18n.t('errors.signoff')
+      mail.body = I18n.t("missed_message_due_to_unusable_key", list_email: self.list.email) + I18n.t('errors.signoff')
       mail.gpg self.list.gpg_sign_options
       mail.deliver
     end

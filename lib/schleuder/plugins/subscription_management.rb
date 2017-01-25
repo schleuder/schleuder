@@ -1,22 +1,29 @@
 module Schleuder
   module RequestPlugins
     def self.subscribe(arguments, list, mail)
-      sub = list.subscriptions.new(
-        email: arguments.first,
-        fingerprint: arguments.last
-      )
+      email = arguments.shift
+      fingerprint = arguments.shift
+      if fingerprint.present?
+        fingerprint.sub!(/^0x/, '')
+      end
+      adminflag = arguments.shift
+      deliveryflag = arguments.shift
 
-      if sub
+      sub = list.subscribe(email, fingerprint, adminflag, deliveryflag)
+
+      if sub.persisted?
         I18n.t(
           "plugins.subscription_management.subscribed",
           email: sub.email,
-          fingerprint: sub.fingerprint
+          fingerprint: sub.fingerprint,
+          admin: sub.admin,
+          delivery_enabled: sub.delivery_enabled
         )
       else
         I18n.t(
           "plugins.subscription_management.subscribing_failed",
           email: sub.email,
-          errors: sub.errors.full_messages
+          errors: sub.errors.full_messages.join(".\n")
         )
       end
     end
@@ -70,7 +77,10 @@ module Schleuder
       out << subs.map do |subscription|
         # Fingerprints are at most 40 characters long, and lines shouldn't
         # exceed 80 characters if possible.
-        s = "#{subscription.email}\t0x#{subscription.fingerprint}"
+        s = subscription.email
+        if subscription.fingerprint.present?
+          s << "\t0x#{subscription.fingerprint}"
+        end
         if ! subscription.delivery_enabled?
           s << "\tDelivery disabled!"
         end

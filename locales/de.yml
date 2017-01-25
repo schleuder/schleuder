@@ -10,8 +10,8 @@ de:
       public_footer:
         invalid: "enthält nicht druckbare Zeichen"
     invalid_email: "ist keine valide E-Mail-Adresse"
-    invalid_fingerprint: "ist kein valider Fingerprint"
-    fingerprint_blank: 'Fingerprint der Liste ist nicht gesetzt, kann nicht arbeiten!'
+    invalid_fingerprint: "ist kein valider OpenPGP-Fingerabdruck"
+    fingerprint_blank: 'Fingerabdruck der Liste ist nicht gesetzt, kann nicht arbeiten!'
     list_key_missing: 'Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten!'
     list_secret_key_missing: 'Geheimer Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten!'
     admins_missing: 'List hat keine Admins konfiguriert, kann nicht arbeiten!'
@@ -70,6 +70,7 @@ de:
     must_be_greater_than_zero: "muss größer als null sein"
     file_not_found: "Die Datei existiert nicht: '%{file}'."
     not_pgp_mime: "Deine Email war nicht im pgp/mime-Format verschlüsselt."
+    delivery_error: "Beim Versenden einer Email an %{email} ist der folgende Fehler aufgetreten: %{error}"
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
@@ -91,10 +92,16 @@ de:
       unsubscribing_failed: |
         Abo für %{email} nicht gelöscht:
         %{errors}
-      subscribed: Abo für %{email} mit Fingerabdruck %{fingerprint} eingetragen.
+      subscribed: |
+        Abo für %{email} mit diesen Werten eingetragen:
+
+        Fingerabdruck: %{fingerprint}
+        Admin? %{admin}
+        Email-Zustellung aktiv? %{delivery_enabled}
       subscribing_failed: |
         Abo für %{email} nicht eingetragen:
-        %{errors}
+
+        %{errors}.
       list_of_subscriptions: Abos
       fingerprint_set: Fingerabdruck für %{email} auf %{fingerprint} gesetzt.
       setting_fingerprint_failed: |
@@ -105,6 +112,8 @@ de:
   no_output_result: Deine Email ergab keinen Ausgabe-Text.
   owner_forward_prefix: Die folgende Email ging für die Listen-Besitzer/innen ein.
   no_keywords_error: Deine Email enthielt keine Schlüsselwörter, daher gab es nichts zu tun.
+  missing_listname_keyword_error: Deine Email enthielt nicht das notwendige X-LISTNAME-Schlüsselwort, daher wurde sie zurückgewiesen.
+  wrong_listname_keyword_error: Deine Email enthielt ein falsches X-LISTNAME-Schlüsselwort. Der Wert dieses Schlüsselworts muss der Emailadresse dieser Liste gleichen.
   bounces_drop_all: Die angehängte Email hätte zurückgewiesen (bounced) werden sollen, wurde aber stillschweigend fallen gelassen, weil die Konfiguration dieser Liste definiert, dass für diese Liste nie Email zurückgewiesen werden soll.
   bounces_drop_on_headers: "Die angehängte Email hätte zurückgewiesen (bounce) werden sollen, wurde aber stillschweigend fallen gelassen, weil diese Kopfzeile gefunden wurde: %{key}: %{value}"
   bounces_notify_admins: "Die angehängte Email wurde mit folgender Nachricht zurückgewiesen:"
@@ -116,5 +125,14 @@ de:
   check_keys: Schlüsselprüfung
   check_keys_intro: "Bitte kümmere dich um die folgenden Schlüssel für Liste %{email}."
   key_expires: "Läuft in %{days} Tagen ab:\n0x%{fingerprint} %{email}"
-  key_unusable: "Ist %{trust}:\n0x%{fingerprint} %{email}"
-  missed_message_due_to_absent_key: "Du hast eine Email von %{list_email} verpasst weil mit deinem Abo keinen (benutzbarer) OpenPGP-Schlüssel verknüpft ist. Bitte kümmere dich darum."
+  key_unusable: "Ist %{usability_issue}:\n0x%{fingerprint} %{email}"
+  missed_message_due_to_unusable_key: "Du hast eine Email von %{list_email} verpasst weil mit deinem Abo kein (benutzbarer) OpenPGP-Schlüssel verknüpft ist. Bitte kümmere dich darum."
+  refresh_keys: Schlüsselaktualisierung
+  refresh_keys_intro: "Die Aktualisierung aller Schlüssel des Schlüsselrings für Liste %{email} ergab dies:"
+  key_updated: Schlüssel %{fingerprint} wurde aktualisiert (%{states}).
+  import_states:
+    new_keys: neue Schlüssel
+    new_uids: neue User-IDs
+    new_subkeys: neue Unterschlüssel
+    new_signatures: neue Signaturen
+

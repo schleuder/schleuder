@@ -15,7 +15,8 @@ module Schleuder
     end
 
     def notify_admin(string, original_message=nil, subject='Error')
-      Array(adminaddresses).each do |address|
+      # Minimize using other classes here, we don't know what caused the error.
+      Array(adminaddresses).each do |address, key|
         mail = Mail.new
         mail.from = @from
         mail.to = address
@@ -30,6 +31,13 @@ module Schleuder
           orig_part.content_description = 'The originally incoming message'
           orig_part.body = original_message.to_s
           mail.add_part orig_part
+        end
+        if @list.present?
+          gpg_opts = @list.gpg_sign_options
+          if key.present? && key.usable?
+            gpg_opts.merge!(encrypt: true, keys: { address => key.fingerprint })
+          end
+          mail.gpg gpg_opts
         end
         mail.deliver
       end

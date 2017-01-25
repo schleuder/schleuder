@@ -4,6 +4,7 @@ ENV["SCHLEUDER_LIST_DEFAULTS"] = "etc/list-defaults.yml"
 require 'bundler/setup'
 Bundler.setup
 require 'schleuder'
+require 'schleuder/cli'
 require 'database_cleaner'
 require 'factory_girl'
 
@@ -54,6 +55,14 @@ RSpec.configure do |config|
     File.join(Conf.lists_dir, 'smtp-daemon-output')
   end
 
+  def with_sks_mock
+    pid = Process.spawn('spec/sks-mock.rb', [:out, :err] => ["/tmp/sks-mock.log", 'w'])
+    sleep 1
+    yield
+    Process.kill 'TERM', pid
+    Process.wait pid
+  end
+
   def start_smtp_daemon
     if ! File.directory?(smtp_daemon_outputdir)
       FileUtils.mkdir_p(smtp_daemon_outputdir)
@@ -87,5 +96,10 @@ RSpec.configure do |config|
 
   Mail.defaults do
     delivery_method :test
+  end
+  
+  def teardown_list_and_mailer(list)
+    FileUtils.rm_rf(list.listdir)
+    Mail::TestMailer.deliveries.clear
   end
 end

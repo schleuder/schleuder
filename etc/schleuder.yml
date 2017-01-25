@@ -10,6 +10,15 @@ plugins_dir: /etc/schleuder/plugins
 # How verbose should Schleuder log to syslog? (list-specific messages are written to the list's log-file).
 log_level: warn
 
+# Which keyserver to refresh keys from (used by `schleuder refresh_keys`, meant
+# to be run from cron weekly).
+# If you have gnupg 2.1, we strongly suggest to use a hkps-keyserver:
+#keyserver: hkps://hkps.pool.sks-keyservers.net
+# If you have gnupg 2.1 and TOR running locally, use a onion-keyserver:
+#keyserver: hkp://jirk5u4osbsr34t5.onion
+# The default works for all supported versions of gnupg:
+keyserver: pool.sks-keyservers.net
+
 # For these options see documentation for ActionMailer::smtp_settings, e.g. <http://api.rubyonrails.org/classes/ActionMailer/Base.html>.
 smtp_settings:
   address: localhost
@@ -28,12 +37,9 @@ database:
     database: /var/lib/schleuder/db.sqlite
     timeout: 5000
 
-# Note: The API-daemon will bind only to localhost if no TLS-cert+keys are available.
 api:
   host: localhost
   port: 4443
-  # Serve the API via https?
-  use_tls: false
   # Certificate and key to use. You can create new ones with `schleuder cert generate`.
   tls_cert_file: /etc/schleuder/schleuder-certificate.pem
   tls_key_file: /etc/schleuder/schleuder-private-key.pem

@@ -106,8 +106,17 @@ module Mail
     end
 
     def signer
-      if fingerprint = self.signature.try(:fpr)
-        list.subscriptions.where(fingerprint: fingerprint).first
+      if signing_key.present?
+        list.subscriptions.where(fingerprint: signing_key.fingerprint).first
+      end
+    end
+
+    # The fingerprint of the signature might be the one of a sub-key, but the
+    # subscription-assigned fingerprints are (should be) the ones of the
+    # primary keys, so we need to look up the key.
+    def signing_key
+      if signature.present?
+        @signing_key ||= list.keys(signature.fpr).first
       end
     end
 
@@ -208,7 +217,7 @@ module Mail
         # Some versions of gpgme return nil if the key is unknown, so we check
         # for that manually and provide our own fallback. (Calling
         # `signature.key` results in an EOFError in that case.)
-        if list.key(signature.fingerprint)
+        if signing_key.present?
           msg = signature.to_s
         else
           # TODO: I18n

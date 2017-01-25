@@ -68,7 +68,9 @@ module Schleuder
         begin
           subscription.send_mail(new)
         rescue => exc
-          logger.error exc
+          msg = I18n.t('errors.delivery_error',
+                       { email: subscription.email, error: exc.to_s })
+          logger.error msg
         end
       end
     end

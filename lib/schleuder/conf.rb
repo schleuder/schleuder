@@ -2,13 +2,14 @@ module Schleuder
   class Conf
     include Singleton
 
-    EMAIL_REGEXP = /\A.+@.+\z/i
+    EMAIL_REGEXP = /\A.+@[[:alnum:]_.-]+\z/i
 
     DEFAULTS = {
       'lists_dir' => '/var/lib/schleuder/lists',
       'listlogs_dir' => '/var/lib/schleuder/lists',
       'plugins_dir' => '/etc/schleuder/plugins',
       'log_level' => 'warn',
+      'keyserver' => 'hkp://pool.sks-keyservers.net',
       'smtp_settings' => {
         'address' => 'localhost',
         'port' => 25,
@@ -31,7 +32,6 @@ module Schleuder
       'api' => {
         'host' => 'localhost',
         'port' => 4443,
-        'use_tls' => false,
         'tls_cert_file' => '/etc/schleuder/schleuder-certificate.pem',
         'tls_key_file' => '/etc/schleuder/schleuder-private-key.pem',
         'valid_api_keys' => []
@@ -74,10 +74,6 @@ module Schleuder
       instance.config['api'] || {}
     end
 
-    def self.api_use_tls?
-      api['use_tls'].to_s == 'true'
-    end
-
     def self.api_valid_api_keys
       Array(api['valid_api_keys'])
     end
@@ -107,6 +103,10 @@ module Schleuder
         end
       end
       settings
+    end
+
+    def self.keyserver
+      instance.config['keyserver']
     end
 
     private
