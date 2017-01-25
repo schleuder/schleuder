@@ -5,11 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## Unreleased
+## [3.0.0] / 2017-01-26
 
 ### Changed
 
 * **API-keys always required!** From now on all requests to schleuder-api-daemon require API-keys, even via localhost. This helps protecting against rogue non-root-accounts or -scripts on the local machine.
+* **TLS always used!** schleuder-api-daemon now always uses TLS.
 * Switched project-site and git-repository to <https://0xacab.org/schleuder/schleuder>.
 * Set proper usage flags when creating a new OpenPGP-key: the primary key gets "SC", the subkey "E". (Thanks, dkg!)
 * Avoid possible future errors by ignoring every unknown output of gpg (like GnuPG's doc/DETAILS recommends). (Thanks, dkg!)
@@ -17,6 +18,7 @@ The format of this file is based on [Keep a Changelog](http://keepachangelog.com
 * Set list-email as primary address after adding UIDs. Previously it was a little random, for reasons only known to GnuPG.
 * Only use temporary files where neccessary, and with more secure paths.
 * Tighten requirements for valid email-addresses a little: The domain-part may now only contain alpha-numeric characters, plus these: `._-`
+* Required version of schleuder-cli: 0.0.2.
 
 ### Added
 
