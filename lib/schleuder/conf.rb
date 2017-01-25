@@ -32,7 +32,6 @@ module Schleuder
       'api' => {
         'host' => 'localhost',
         'port' => 4443,
-        'use_tls' => false,
         'tls_cert_file' => '/etc/schleuder/schleuder-certificate.pem',
         'tls_key_file' => '/etc/schleuder/schleuder-private-key.pem',
         'valid_api_keys' => []
@@ -73,10 +72,6 @@ module Schleuder
 
     def self.api
       instance.config['api'] || {}
-    end
-
-    def self.api_use_tls?
-      api['use_tls'].to_s == 'true'
     end
 
     def self.api_valid_api_keys

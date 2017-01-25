@@ -109,7 +109,6 @@ module Schleuder
         end
       end
 
-
       if ActiveRecord::SchemaMigration.table_exists?
         say `cd #{root_dir} && rake db:migrate`
       else
@@ -117,6 +116,10 @@ module Schleuder
         if Conf.database['adapter'].match(/sqlite/)
           say "NOTE: The database was prepared using sqlite. If you prefer to use a different DBMS please edit the 'database'-section in /etc/schleuder/schleuder.yml, create the database, install the corresponding ruby-library (e.g. `gem install mysql`) and run this current command again"
         end
+      end
+
+      if ! File.exist?(Conf.api['tls_cert_file']) || ! File.exist?(Conf.api['tls_key_file'])
+        Schleuder::Cert.new.generate
       end
 
       say "Schleuder has been set up. You can now create a new list using `schleuder-cli`.\nWe hope you enjoy!"

@@ -37,12 +37,9 @@ database:
     database: /var/lib/schleuder/db.sqlite
     timeout: 5000
 
-# Note: The API-daemon will bind only to localhost if no TLS-cert+keys are available.
 api:
   host: localhost
   port: 4443
-  # Serve the API via https?
-  use_tls: false
   # Certificate and key to use. You can create new ones with `schleuder cert generate`.
   tls_cert_file: /etc/schleuder/schleuder-certificate.pem
   tls_key_file: /etc/schleuder/schleuder-private-key.pem
