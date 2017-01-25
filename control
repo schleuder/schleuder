@@ -28,7 +28,7 @@ Package: schleuder
 Architecture: all
 XB-Ruby-Versions: ${ruby:Versions}
 Depends: adduser,
-         cron,
+         cron | cron-daemon,
          exim4 | mail-transport-agent,
          init-system-helpers,
          rake (>= 10~),
