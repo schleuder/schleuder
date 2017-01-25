@@ -25,6 +25,10 @@ class SchleuderApiDaemon < Sinatra::Base
     end
   end
 
+  use Rack::Auth::Basic, "Schleuder API Daemon" do |username, key|
+    username == 'schleuder' && Conf.api_valid_api_keys.include?(key)
+  end
+
   # TODO: Move this into a method, call that in the configure block
   @use_tls = Conf.api_use_tls?
   if @use_tls
@@ -35,12 +39,6 @@ class SchleuderApiDaemon < Sinatra::Base
         $stderr.puts "Error: '#{const}' is not a readable file."
         exit 1
       end
-    end
-  end
-
-  if @use_tls
-    use Rack::Auth::Basic, "Schleuder API Daemon" do |username, key|
-      username == 'schleuder' && Conf.api_valid_api_keys.include?(key)
     end
   else
     $stderr.puts "\nWarning: Without TLS, schleuder-api-daemon enforces binding to localhost only!\nExecute `schleuder cert generate` and follow the instructions.\n\n"
