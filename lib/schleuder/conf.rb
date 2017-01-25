@@ -2,7 +2,7 @@ module Schleuder
   class Conf
     include Singleton
 
-    EMAIL_REGEXP = /\A.+@.+\z/i
+    EMAIL_REGEXP = /\A.+@[[:alnum:]_.-]+\z/i
 
     DEFAULTS = {
       'lists_dir' => '/var/lib/schleuder/lists',
