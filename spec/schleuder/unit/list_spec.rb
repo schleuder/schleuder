@@ -92,7 +92,7 @@ describe Schleuder::List do
     list = build(:list, fingerprint: "&$$$$67923AAA")
 
     expect(list).not_to be_valid
-    expect(list.errors.messages[:fingerprint]).to include("is not a valid fingerprint")
+    expect(list.errors.messages[:fingerprint]).to include("is not a valid OpenPGP-fingerprint")
   end
 
   BOOLEAN_LIST_ATTRIBUTES.each do |list_attribute|
