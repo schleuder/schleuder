@@ -5,6 +5,40 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Unreleased
+
+### Changed
+
+* **API-keys always required!** From now on all requests to schleuder-api-daemon require API-keys, even via localhost. This helps protecting against rogue non-root-accounts or -scripts on the local machine.
+* Switched project-site and git-repository to <https://0xacab.org/schleuder/schleuder>.
+* Set proper usage flags when creating a new OpenPGP-key: the primary key gets "SC", the subkey "E". (Thanks, dkg!)
+* Avoid possible future errors by ignoring every unknown output of gpg (like GnuPG's doc/DETAILS recommends). (Thanks, dkg!)
+* Friendlier error message if delivery to subscription fails.
+* Set list-email as primary address after adding UIDs. Previously it was a little random, for reasons only known to GnuPG.
+* Only use temporary files where neccessary, and with more secure paths.
+* Tighten requirements for valid email-addresses a little: The domain-part may now only contain alpha-numeric characters, plus these: `._-`
+
+### Added
+
+* X-LISTNAME: A **new mandatory keyword** to accompany all keywords. From now on every message containing keywords must also include the listname-keyword like this: `X-LISTNAME: list@hostname`
+
+  The other keywords will only be run if the given listname matches the email-address of the list that the message is sent to. This mitigates replay-attacks among different lists.
+* Also send helpful message if a subscription's key is present but unusable.
+* Provide simpler postfix integration, now using virtual_domains and an sql-script. (Thanks, dkg!)
+* Enable refreshing keys from keyservers: A script that is meant to be run regularly from cron. It refreshes each key of each list one by one from a configurable keyserver, and sends the result to the respective list-admins.
+* Import attached, ascii-armored keys from messages with `add-key`-keyword. (Thanks, Kéfir!)
+* Check possible key-material for expected format before importing it. (Thanks, Kéfir!)
+
+### Fixed
+
+* Allow fingerprints to be prefixed with '0x' in `subscribe`-keyword.
+* Also delete directory of list-logfile on deletion if that resides outside of the list-dir.
+* Sign and possibly encrypt error notifications.
+* Fix setting admin- and delivery-flags while subscribing.
+* Fix subscribing from schleuder-cli.
+* Fix finding subscriptions from signatures made by a signing-capable sub-key.
+
+
 ## [3.0.0.beta17] / 2017-01-12
 
 ### Changed
