@@ -92,10 +92,16 @@ en:
       unsubscribing_failed: |
         Unsubscribing %{email} failed:
         %{errors}
-      subscribed: "%{email} has been subscribed with fingerprint %{fingerprint}."
+      subscribed: |
+        %{email} has been subscribed with these attributes:
+
+        Fingerprint: %{fingerprint}
+        Admin? %{admin}
+        Email-delivery enabled? %{delivery_enabled}
       subscribing_failed: |
         Subscribing %{email} failed:
-        %{errors}
+
+        %{errors}.
       list_of_subscriptions: Subscriptions
       fingerprint_set: Fingerprint for %{email} set to %{fingerprint}.
       setting_fingerprint_failed: |

@@ -92,10 +92,16 @@ de:
       unsubscribing_failed: |
         Abo für %{email} nicht gelöscht:
         %{errors}
-      subscribed: Abo für %{email} mit Fingerabdruck %{fingerprint} eingetragen.
+      subscribed: |
+        Abo für %{email} mit diesen Werten eingetragen:
+
+        Fingerabdruck: %{fingerprint}
+        Admin? %{admin}
+        Email-Zustellung aktiv? %{delivery_enabled}
       subscribing_failed: |
         Abo für %{email} nicht eingetragen:
-        %{errors}
+
+        %{errors}.
       list_of_subscriptions: Abos
       fingerprint_set: Fingerabdruck für %{email} auf %{fingerprint} gesetzt.
       setting_fingerprint_failed: |
