@@ -15,7 +15,7 @@ describe "user sends keyword" do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = 'X-SUBSCRIBE: test@example.org'
+    mail.body = "x-listname: #{list.email}\nX-SUBSCRIBE: test@example.org"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -51,7 +51,7 @@ describe "user sends keyword" do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "X-SUBSCRIBE: test@example.org #{list.fingerprint} true false"
+    mail.body = "x-listname: #{list.email}\nX-SUBSCRIBE: test@example.org #{list.fingerprint} true false"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -88,7 +88,7 @@ describe "user sends keyword" do
     }
     mail.gpg(gpg_opts)
     keymaterial = File.read('spec/fixtures/example_key.txt')
-    mail.body = "X-ADD-KEY:\n#{keymaterial}"
+    mail.body = "x-listname: #{list.email}\nX-ADD-KEY:\n#{keymaterial}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -121,7 +121,7 @@ describe "user sends keyword" do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "X-ADD-KEY:"
+    mail.body = "x-listname: #{list.email}\nX-ADD-KEY:"
     mail.add_file('spec/fixtures/example_key.txt')
     mail.deliver
 
