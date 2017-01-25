@@ -1,3 +1,13 @@
+schleuder (3.0.0~beta17-2) unstable; urgency=medium
+
+  * debian/control: Depend on cron or cron-daemon. (Closes: #851732)
+  * debian/schleuder.postinst: Don't 'touch' database; fixed upstream.
+  * debian/tests/control: Install haveged to help with entropy.
+  * debian/watch: Watch 0xacab.org; the upstream repository moved.
+  * debian/ruby-tests.rake: Fix and call cleanup task.
+
+ -- Georg Faerber <georg@riseup.net>  Wed, 25 Jan 2017 15:27:28 +0100
+
 schleuder (3.0.0~beta17-1) unstable; urgency=medium
 
   [ Georg Faerber ]
