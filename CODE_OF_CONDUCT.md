@@ -14,7 +14,7 @@ Individuals asked to stop any harassing behavior are expected to comply immediat
 
 Maintainers, including the development team, are also subject to the anti-harassment policy.
 
-If anyone engages in abusive, harassing, or otherwise unacceptable behavior, including maintainers, we may take appropriate action, up to and including warning the offender, deletion of comments, removal from the project’s codebase and communication systems, and escalation to Github support.
+If anyone engages in abusive, harassing, or otherwise unacceptable behavior, including maintainers, we may take appropriate action, up to and including warning the offender, deletion of comments, removal from the project’s codebase and communication systems.
 
 If you are being harassed, notice that someone else is being harassed, or have any other concerns, please [contact the development team](mailto:schleuder@nadir.org) immediately.
 
