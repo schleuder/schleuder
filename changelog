@@ -1,3 +1,16 @@
+schleuder (3.0.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/schleuder.cron.weekly: Refresh keys from the keyservers.
+  * debian/schleuder.{dirs,install}: Ship Postfix config file.
+  * debian/patches/: Refresh for Debian schleuder release 3.0.1-1.
+  * debian/control: Add dirmngr to {Build-}Depends:.
+  * debian/tests/check-status: Rework check against installed API daemon. This
+    is needed because of the recent upstream changes which made TLS and API
+    keys mandatory.
+
+ -- Georg Faerber <georg@riseup.net>  Thu, 26 Jan 2017 12:33:06 +0100
+
 schleuder (3.0.0~beta17-2) unstable; urgency=medium
 
   * debian/control: Depend on cron or cron-daemon. (Closes: #851732)
