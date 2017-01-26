@@ -16,7 +16,7 @@ Requirements
 * sqlite3
 * openssl
 
-On Debian-based systems, install these via
+On systems that base on Debian 8 ("Jessie"), install these via
 
     apt-get install ruby2.1-dev gnupg2 libgpgme11-dev libsqlite3-dev libssl-dev
 
