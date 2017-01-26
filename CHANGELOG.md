@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [3.0.1] / 2017-01-26
+
+### Fixed
+
+* Fixed setting admin- and delivery-flags on subscription. Requests from schleuder-cli were interpreted wrongly, which led to new lists having no admins.
+* A short description for the man-page of schleuder-api-daemon to satisfy the lintian.
+* Listing openssl as dependency in README. If the openssl header-files are not present when eventmachine compiles its native code, schleuder-api-daemon cannot use TLS.
+* Removed reference to Github from Code of Conduct.
+
+
 ## [3.0.0] / 2017-01-26
 
 ### Changed

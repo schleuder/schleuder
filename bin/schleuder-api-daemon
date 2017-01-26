@@ -244,13 +244,11 @@ class SchleuderApiDaemon < Sinatra::Base
     post '.json' do
       begin
         list = list(requested_list_id)
-        adminflag = [true, 1, '1'].include?(parsed_body['admin'])
-        deliveryflag = [true, 1, '1'].include?(parsed_body['delivery_enabled'])
         sub = list.subscribe(
             parsed_body['email'],
             parsed_body['fingerprint'],
-            adminflag,
-            deliveryflag
+            parsed_body['admin'],
+            parsed_body['delivery_enabled']
           )
         logger.debug "subcription: #{sub.inspect}"
         if sub.valid?
