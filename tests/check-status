@@ -2,10 +2,4 @@
 
 set -e
 
-GET_STATUS=$(curl -s http://127.0.0.1:4443/status.json)
-EXPECTED_STATUS='{"status":"ok"}'
-
-if ! grep "${EXPECTED_STATUS}" <<< "${GET_STATUS}" >/dev/null; then
-	echo "Got status: ${GET_STATUS}"
-        exit 1
-fi
+curl -s -k -I https://127.0.0.1:4443/status.json | grep -q 'WWW-Authenticate: Basic realm="Schleuder API Daemon"' || exit 1
