@@ -14,10 +14,11 @@ Requirements
 * gnupg >=2.0
 * gpgme
 * sqlite3
+* openssl
 
 On Debian-based systems, install these via
 
-    apt-get install ruby2.1-dev gnupg2 libgpgme11-dev libsqlite3-dev
+    apt-get install ruby2.1-dev gnupg2 libgpgme11-dev libsqlite3-dev libssl-dev
 
 
 We **recommend** to also run a random number generator like [haveged](http://www.issihosts.com/haveged/). This ensures Schleuder won't be blocked by lacking entropy, which otherwise might happen especially during key generation.
