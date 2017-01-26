@@ -259,7 +259,7 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).not_to include("Resent: Unencrypted to someone@example.org")
-    expect(message.to_s).to include("Your message didn't contain a wrong X-LISTNAME-keyword. The value of that keyword muss match the email address of this list.")
+    expect(message.to_s).to include("Your message contained a wrong X-LISTNAME-keyword. The value of that keyword must match the email address of this list.")
 
     teardown_list_and_mailer(list)
   end
