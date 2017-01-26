@@ -1,8 +1,18 @@
-Description: lib/: Fix paths
+Description: lib/: Fix paths and ignore v2 data
+ Use '/var/log/schleuder' for logging.
+ 
+ Don't fail if '/var/lib/schleuder' contains data of a schleuder v2
+ installation, to enable upgrades.
+
+ Set the 'root_dir' to '/usr/lib/ruby/vendor_ruby/schleuder/'.
+
+ Additionally, add '/usr/share/schleuder/locales/*.yml' to the locales
+ load path. 
+
  Upstream is aware of this patch and we're working on integrating it
  upstream.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2017-01-12
+Last-Update: 2017-01-26
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/lib/schleuder/conf.rb
@@ -15,18 +25,24 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +      'listlogs_dir' => '/var/log/schleuder/lists',
        'plugins_dir' => '/etc/schleuder/plugins',
        'log_level' => 'warn',
-       'smtp_settings' => {
+       'keyserver' => 'hkp://pool.sks-keyservers.net',
 --- a/lib/schleuder/cli.rb
 +++ b/lib/schleuder/cli.rb
-@@ -66,7 +66,7 @@
+@@ -78,13 +78,7 @@
      desc 'install', "Set-up or update Schleuder environment (create folders, copy files, fill the database)."
      def install
        config_dir = Pathname.new(ENV['SCHLEUDER_CONFIG']).dirname
 -      root_dir = Pathname.new(ENV['SCHLEUDER_ROOT'])
+-
+-      # Check if lists_dir contains v2-data.
+-      if Dir.glob("#{Conf.lists_dir}/*/*/members.conf").size > 0
+-        msg = "Lists directory #{Conf.lists_dir} appears to contain data from a Schleuder version 2.x installation.\nPlease move it out of the way or configure a different `lists_dir` in `#{ENV['SCHLEUDER_CONFIG']}`.\nTo migrate lists from Schleuder v2 to Schleuder v3 please use `schleuder migrate_v2_list` after the installation succeeded."
+-        fatal msg, 2
+-      end
 +      root_dir = Pathname.new('/usr/lib/ruby/vendor_ruby/schleuder/')
  
-       # Check if lists_dir contains v2-data.
-       if Dir.glob("#{Conf.lists_dir}/*/*/members.conf").size > 0
+       [Conf.lists_dir, Conf.listlogs_dir, config_dir].each do |dir|
+         dir = Pathname.new(dir)
 --- a/lib/schleuder.rb
 +++ b/lib/schleuder.rb
 @@ -74,6 +74,7 @@

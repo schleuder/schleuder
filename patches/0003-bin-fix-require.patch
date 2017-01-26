@@ -3,12 +3,12 @@ Description: bin/: Use 'require' instead of 'require_relative'
  'require_relative' as used by upstream doesn't work.
  Upstream is aware of this patch and we're working on integrating it.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2017-01-12
+Last-Update: 2017-01-26
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/bin/schleuder
 +++ b/bin/schleuder
-@@ -4,7 +4,7 @@
+@@ -8,7 +8,7 @@
  
  
  begin
@@ -26,5 +26,5 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 -require_relative '../lib/schleuder.rb'
 +require 'schleuder'
  
- TLS_CERT = Conf.api['tls_cert_file']
- TLS_KEY = Conf.api['tls_key_file']
+ 
+ %w[tls_cert_file tls_key_file].each do |config_key|

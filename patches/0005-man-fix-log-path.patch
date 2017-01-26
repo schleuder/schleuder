@@ -1,0 +1,21 @@
+Description: man/: Fix logging path
+ We're logging into '/var/log/schleuder', so reflect this in the
+ manpage.
+
+ Upstream is aware of this patch and we're working on integrating it
+ upstream.
+Author: Georg Faerber <georg@riseup.net>
+Last-Update: 2017-01-26
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/man/schleuder.8
++++ b/man/schleuder.8
+@@ -141,7 +141,7 @@
+ \fB<lists_dir>\fR/\fB<hostname>\fR/`\fIlistname\fR: list internal data
+ .
+ .IP "\(bu" 4
+-\fB<lists_dir>\fR/\fB<hostname>\fR/\fB<listname>\fR/list\.log`: log\-file for list
++\fB/var/log/schleuder\fR/\fB<hostname>\fR/\fB<listname>\fR/list\.log`: log\-file for list
+ .
+ .IP "" 0
+ .
