@@ -74,11 +74,7 @@ module Schleuder
     end
 
     def self.import_key_from_body(list, mail)
-      if mail.parts.first.present?
-        key_material = mail.parts.first.body.to_s
-      else
-        key_material = mail.body.to_s
-      end
+      key_material = mail.first_plaintext_part.body.to_s
 
       list.import_key(key_material) if self.is_armored_key?(key_material)
     end
