@@ -58,6 +58,7 @@ module GPGME
         if import_stats.present?
           output << I18n.t("key_updated", { fingerprint: key.fingerprint,
                                             states: import_stats.join(', ') })
+          output << "\n"
         end
         sleep rand(1.0..5.0)
       end
