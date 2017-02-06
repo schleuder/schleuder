@@ -214,7 +214,7 @@ module Schleuder
 
       # Subscribe members
       YAML.load(File.read(dir + 'members.conf')).each do |member|
-        list.subscribe(member['email'], member['fingerprint'])
+        list.subscribe(member['email'], member['key_fingerprint'])
       end
 
       # Subscribe or flag admins
@@ -224,7 +224,7 @@ module Schleuder
           sub.admin = true
           sub.save!
         else
-          adminfpr = member['fingerprint'] || list.keys(member['email']).first.fingerprint
+          adminfpr = member['key_fingerprint'] || list.keys(member['email']).first.fingerprint
           list.subscribe(member['email'], adminfpr, true)
         end
       end

@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 The format of this file is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [3.0.2] / 2017-02-01
+
+### Changed
+
+* Use less usual IP and port number for mock SKS-server. Previously this conflicted with actual SKS-servers running on the same machine.
+
+
+### Added
+
+* Call refresh_keys in provided crontab-script.
+
+
+### Fixed
+
+* Fixed importing member-fingerprints when migrating a list.
+* Fix clearing passphrase during list-migration with GnuPG 2.0.x by actually shipping the required pinentry-script.
+* Corrected english phrasing and spelling for error message in case of wrong argument to listname-keyword. (Thanks, dkg!)
+
+
 ## [3.0.1] / 2017-01-26
 
 ### Fixed

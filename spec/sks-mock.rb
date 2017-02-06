@@ -4,9 +4,8 @@ require 'sinatra/base'
 
 class SksMock < Sinatra::Base
   set :environment, :production
-  set :port, 11371
-  set :bind, '127.0.0.1'
-  set :logging, true
+  set :port, 9999
+  set :bind, '127.9.9.9'
 
   get '/status' do
     'ok'
