@@ -1,38 +1,39 @@
 module Schleuder
   module RequestPlugins
     def self.sign_this(arguments, list, mail)
-      if mail.parts.empty? && mail.body.to_s.present?
-        # Single text/plain-output is handled by the plugin-runner well, we
-        # don't need to take care of the reply.
-        list.logger.debug "Clear-signing text/plain body"
-        clearsign(mail)
-      else
+      if mail.has_attachments?
         # Here we need to send our reply manually because we're sending
         # attachments.
         # TODO: Maybe move this ability into the plugin-runner?
-        out = multipart(mail.reply, list, mail)
-        out.body = I18n.t('plugins.signatures_attached')
+        reply_msg = sign_attachments(mail.reply, list, mail)
+        reply_msg.body = I18n.t('plugins.signatures_attached')
         list.logger.info "Replying directly to sender"
-        mail.signer.send_mail(out)
+        mail.signer.send_mail(reply_msg)
         list.logger.info "Exiting."
         exit
+      else
+        # Single text/plain-output is handled by the plugin-runner well, we
+        # don't need to take care of the reply.
+        list.logger.debug "Clear-signing first available text/plain part"
+        clearsign(mail.first_plaintext_part)
       end
     end
 
-    def self.multipart(out, list, mail)
+    def self.sign_attachments(reply_msg, list, mail)
       list.logger.debug "Signing each attachment's body"
-      mail.parts.each do |part|
-        next if part.body.to_s.strip.blank?
-        file_basename = part.filename.presence || Digest::SHA256.hexdigest(part.body.to_s)
+      mail.attachments.each do |attachment|
+        material = attachment.body.to_s
+        next if material.strip.blank?
+        file_basename = attachment.filename.presence || Digest::SHA256.hexdigest(material)
         list.logger.debug "Signing #{file_basename}"
         filename = "#{file_basename}.sig"
-        out.add_file({
+        reply_msg.add_file({
             filename: filename,
-            content: detachsign(part.body.to_s)
+            content: detachsign(material)
           })
-        out.attachments[filename].content_description = "OpenPGP signature for '#{file_basename}'"
+        reply_msg.attachments[filename].content_description = "OpenPGP signature for '#{file_basename}'"
       end
-      out
+      reply_msg
     end
 
     def self.detachsign(thing)
