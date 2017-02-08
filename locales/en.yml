@@ -137,8 +137,9 @@ en:
   refresh_keys: Keys update
   refresh_keys_intro: "Refreshing all keys from the keyring of list %{email} resulted in this:"
   key_updated: Key %{fingerprint} was updated (%{states}).
+  key_fetched: Key %{fingerprint} was fetched (%{states}).
   import_states:
-    new_keys: new keys
+    new_key: new key
     new_uids: new user-IDs
     new_subkeys: new subkeys
     new_signatures: new signatures

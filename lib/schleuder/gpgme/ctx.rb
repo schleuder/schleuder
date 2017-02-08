@@ -1,7 +1,7 @@
 module GPGME
   class Ctx
     IMPORT_FLAGS = {
-      'new key' => 1,
+      'new_key' => 1,
       'new_uids' => 2,
       'new_signatures' => 4,
       'new_subkeys' => 8
@@ -62,7 +62,7 @@ module GPGME
 
     def self.refresh_keys(keys)
       output = []
-      base_args = "--quiet --no-auto-check-trustdb --keyserver #{Conf.keyserver} --refresh-keys"
+      base_args = "--no-auto-check-trustdb --keyserver #{Conf.keyserver} --refresh-keys"
       keys.each do |key|
         args = "#{base_args} #{key.fingerprint}"
         err, gpgout, _ = gpgcli(args)
@@ -72,31 +72,64 @@ module GPGME
         # Those could e.g. report a failure to connect to the keyserver.
         output << gpgout.select { |line| line.match(/^gpgkeys: .*$/) }
 
-        import_stats = translate_import_data(gpgout)
-        if import_stats.present?
-          output << I18n.t("key_updated", { fingerprint: key.fingerprint,
-                                            states: import_stats.join(', ') })
+        translate_import_data(gpgout).each do |fingerprint, states|
+          output << I18n.t("key_updated", { fingerprint: fingerprint,
+                                            states: states.join(', ') })
           output << "\n"
         end
         sleep rand(1.0..5.0)
       end
-      GPGME::Ctx.gpgcli("--check-trustdb")
+      gpgcli("--check-trustdb")
       output.flatten.uniq.join
     end
 
-    def self.translate_import_data(gpgoutput)
-      result = []
-      import_ok = gpgoutput.grep(/IMPORT_OK/).first
-      return result if import_ok.blank?
+    def fetch_key(input)
+      output = []
+      case input
+      when /\A[a-f0-9]{32,}\z/i
+        # Fingerprint
+        args = "--keyserver #{Conf.keyserver} --recv-key #{input}"
+      when /\Ahttp/
+        # URL
+        args = "--fetch-key #{input}"
+      when /@/
+        # Email address
+        args = "--keyserver #{Conf.keyserver} --auto-key-locate keyserver --locate-key #{input}"
+      else
+        # TODO: i18n
+        return "Invalid input."
+      end
 
-      import_status = import_ok.split(/\s/).slice(2).to_i
-      return result if import_status.zero?
-
-      # TODO: Raise alarm if new key is found?
-      IMPORT_FLAGS.each do |text, int|
-        if (import_status & int) > 0
-          result << I18n.t("import_states.#{text}")
+      gpgerr, gpgout, exitcode = self.class.gpgcli(args)
+      if exitcode > 0
+        output << "Fetching #{input} did not succeed:\n#{gpgerr.join("\n")}"
+      else
+        self.class.translate_import_data(gpgout).each do |fpr, states|
+          output << I18n.t("key_fetched", { fingerprint: fpr,
+                                            states: states.join(', ') })
+          output << "\n"
         end
+      end
+      output.flatten.uniq.join
+    end
+
+
+    def self.translate_import_data(gpgoutput)
+      result = {}
+      gpgoutput.grep(/IMPORT_OK/) do |import_ok|
+        next if import_ok.blank?
+
+        import_status, fingerprint = import_ok.split(/\s/).slice(2, 2)
+        import_status = import_status.to_i
+        next if import_status == 0
+
+        states = []
+        IMPORT_FLAGS.each do |text, int|
+          if (import_status & int) > 0
+            states << I18n.t("import_states.#{text}")
+          end
+        end
+        result[fingerprint] = states
       end
       result
     end

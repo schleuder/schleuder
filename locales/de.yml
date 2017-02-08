@@ -137,8 +137,9 @@ de:
   refresh_keys: Schlüsselaktualisierung
   refresh_keys_intro: "Die Aktualisierung aller Schlüssel des Schlüsselrings für Liste %{email} ergab dies:"
   key_updated: Schlüssel %{fingerprint} wurde aktualisiert (%{states}).
+  key_fetched: Schlüssel %{fingerprint} wurde geholt (%{states}).
   import_states:
-    new_keys: neue Schlüssel
+    new_key: neuer Schlüssel
     new_uids: neue User-IDs
     new_subkeys: neue Unterschlüssel
     new_signatures: neue Signaturen

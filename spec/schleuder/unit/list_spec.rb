@@ -456,4 +456,48 @@ describe Schleuder::List do
       expect(ENV["GNUPGHOME"]).to eq list.listdir
     end
   end
+
+  context '#fetch_keys' do
+    it 'fetches one key by fingerprint' do
+      list = create(:list)
+      list.subscribe("admin@example.org", nil, true)
+      output = ''
+
+      with_sks_mock do
+        output = list.fetch_keys('98769E8A1091F36BD88403ECF71A3F8412D83889')
+      end
+
+      expect(output).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+
+      teardown_list_and_mailer(list)
+    end
+
+    it 'fetches one key by URL' do
+      list = create(:list)
+      list.subscribe("admin@example.org", nil, true)
+      output = ''
+
+      with_sks_mock do
+        output = list.fetch_keys('http://127.0.0.1:9999/keys/example.asc')
+      end
+
+      expect(output).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+
+      teardown_list_and_mailer(list)
+    end
+
+    it 'fetches one key by email address' do
+      list = create(:list)
+      list.subscribe("admin@example.org", nil, true)
+      output = ''
+
+      with_sks_mock do
+        output = list.fetch_keys('admin@example.org')
+      end
+
+      expect(output).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+
+      teardown_list_and_mailer(list)
+    end
+  end
 end
