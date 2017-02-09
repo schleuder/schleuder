@@ -143,4 +143,6 @@ de:
     new_uids: neue User-IDs
     new_subkeys: neue Unterschlüssel
     new_signatures: neue Signaturen
+  fetch_key:
+    invalid_input: "Ungültige Angabe. Gültig sind: URLs, OpenPGP-Fingerabdrücke, oder Emailadressen."
 

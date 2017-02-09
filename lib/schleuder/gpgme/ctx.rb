@@ -96,8 +96,7 @@ module GPGME
         # Email address
         args = "--keyserver #{Conf.keyserver} --auto-key-locate keyserver --locate-key #{input}"
       else
-        # TODO: i18n
-        return "Invalid input."
+        return I18n.t("fetch_key.invalid_input")
       end
 
       gpgerr, gpgout, exitcode = self.class.gpgcli(args)
