@@ -86,7 +86,7 @@ module GPGME
     def fetch_key(input)
       output = []
       case input
-      when /\A[a-f0-9]{32,}\z/i
+      when /\A(0x)?[a-f0-9]{32,}\z/i
         # Fingerprint
         args = "--keyserver #{Conf.keyserver} --recv-key #{input}"
       when /\Ahttp/
