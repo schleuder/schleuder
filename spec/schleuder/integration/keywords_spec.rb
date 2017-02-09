@@ -263,7 +263,84 @@ describe "user sends keyword" do
 
     teardown_list_and_mailer(list)
   end
+
+  it "x-sign-this with inline text" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    signed_text = "signed\nsigned\nsigned\n\n"
+    mail.body = "x-listname: #{list.email}\nx-sign-this:\n#{signed_text}"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.email, list)
+
+    expect(message.to_s.gsub("\r", '')).to include("BEGIN PGP SIGNED MESSAGE-----\n\n#{signed_text}-----END PGP SIGNED MESSAGE")
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-sign-this with attachments" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    signed_content = File.read('spec/fixtures/example_key.txt')
+    mail.attachments['example_key.txt'] = { mime_type: 'application/pgp-key',
+                                            content: signed_content }
+    mail.body = "\n\nx-listname: #{list.email}\nx-sign-this:"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.email, list)
+    signature = message.attachments.first.body.to_s
+    # list.gpg.verify() results in a "Bad Signature".  The sign-this plugin
+    # also uses GPGME::Crypto, apparently that makes a difference.
+    crypto = GPGME::Crypto.new
+    verification_string = ''
+    crypto.verify(signature, {signed_text: signed_content}) do |sig|
+      verification_string = sig.to_s
+    end
+
+    expect(message.to_s).to include("Find the signatures attached.")
+    expect(message.attachments.size).to eql(1)
+    expect(message.attachments.first.filename).to eql("example_key.txt.sig")
+    expect(verification_string).to include("Good signature from D06350440F759BD3")
+
+    teardown_list_and_mailer(list)
+  end
 end
-
-
 
