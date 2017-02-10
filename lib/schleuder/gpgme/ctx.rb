@@ -100,7 +100,8 @@ module GPGME
       end
 
       gpgerr, gpgout, exitcode = self.class.gpgcli(args)
-      if exitcode > 0
+      # Unfortunately gpg doesn't exit with code > 0 if `--fetch-key` fails.
+      if exitcode > 0 || gpgerr.grep(/ unable to fetch /).presence
         output << "Fetching #{input} did not succeed:\n#{gpgerr.join("\n")}"
       else
         self.class.translate_import_data(gpgout).each do |fpr, states|
