@@ -326,6 +326,17 @@ module Mail
       end
     end
 
+    def first_plaintext_part(part=nil)
+      part ||= self
+      if part.multipart?
+        first_plaintext_part(part.parts.first)
+      elsif part.mime_type == 'text/plain'
+        part
+      else
+        nil
+      end
+    end
+
     private
 
 
@@ -360,17 +371,6 @@ module Mail
       end
       if fingerprints.uniq.size == 1
         parts.first.signature
-      else
-        nil
-      end
-    end
-
-    def first_plaintext_part(part=nil)
-      part ||= self
-      if part.multipart?
-        first_plaintext_part(part.parts.first)
-      elsif part.mime_type == 'text/plain'
-        part
       else
         nil
       end
