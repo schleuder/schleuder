@@ -1,5 +1,6 @@
 module GPGME
   class Ctx
+    FINGERPRINT_REGEXP = /\A(0x)?[a-f0-9]{32,}\z/i
     IMPORT_FLAGS = {
       'new_key' => 1,
       'new_uids' => 2,
