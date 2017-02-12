@@ -163,5 +163,48 @@ describe Schleuder::Runner do
         teardown_list_and_mailer(list)
     end
 
+    it "injects pseudoheaders appropriately into an unsigned thunderbird-multipart/alternative-message" do
+      list = create(:list, send_encrypted_only: false)
+      list.subscribe("admin@example.org", nil, true)
+      mail = File.read('spec/fixtures/mails/multipart-alternative/thunderbird-multi-alt-unsigned.eml')
+
+      Schleuder::Runner.new().run(mail, list.email)
+      message = Mail::TestMailer.deliveries.first
+      content_part = message.parts.first
+
+      expect(message.to).to eq ['admin@example.org']
+      expect(content_part.mime_type).to eql('multipart/mixed')
+      expect(content_part.body).to be_blank
+      expect(content_part.parts.size).to eql(2)
+      expect(content_part.parts.first.mime_type).to eql('text/plain')
+      expect(content_part.parts.first.body).to include('From: paz <paz@nadir.org>')
+      expect(content_part.parts.last.mime_type).to eql('multipart/alternative')
+
+      teardown_list_and_mailer(list)
+    end
+
+    it "injects pseudoheaders appropriately into a signed multipart/alternative-message (thunderbird+enigmail-1.9) " do
+      list = create(:list, send_encrypted_only: false)
+      list.subscribe("admin@example.org", nil, true)
+      mail = File.read('spec/fixtures/mails/multipart-alternative/thunderbird-multi-alt-signed.eml')
+
+      Schleuder::Runner.new().run(mail, list.email)
+      message = Mail::TestMailer.deliveries.first
+      content_part = message.parts.first
+
+      expect(message.to).to eq ['admin@example.org']
+      expect(content_part.mime_type).to eql('multipart/mixed')
+      expect(content_part.body).to be_blank
+      expect(content_part.parts.size).to eql(2)
+      expect(content_part.parts.first.mime_type).to eql('text/plain')
+      expect(content_part.parts.first.body).to include('From: paz <paz@nadir.org>')
+      expect(content_part.parts.last.mime_type).to eql('multipart/mixed')
+      expect(content_part.parts.last.parts.size).to eql(1)
+      expect(content_part.parts.last.parts.first.mime_type).to eql('multipart/alternative')
+
+      teardown_list_and_mailer(list)
+    end
+
+
   end
 end

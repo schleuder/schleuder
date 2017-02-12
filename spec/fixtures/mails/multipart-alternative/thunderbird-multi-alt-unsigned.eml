@@ -1,0 +1,41 @@
+Return-Path: <paz@nadir.org>
+X-Original-To: paz@duckdalbe.org
+Delivered-To: paz@duckdalbe.org
+Received: from flutsch.local (x4dbbbe7a.dyn.telefonica.de [77.187.190.122])
+	by duckdalbe.org (Postfix) with ESMTPSA id DC98332097
+	for <paz@duckdalbe.org>; Sun, 12 Feb 2017 22:27:50 +0100 (CET)
+From: paz <paz@nadir.org>
+Subject: multi/alt test unsigned
+To: paz@nadir.org
+Openpgp: id=52507B0163A8D9F0094FFE03B1A36F08069E55DE
+Message-ID: <c9513047-d4e6-6cbc-1f76-fff26a76be67@nadir.org>
+Date: Sun, 12 Feb 2017 22:27:48 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.0
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="------------995F058E0A221863BAC4E3E7"
+
+This is a multi-part message in MIME format.
+--------------995F058E0A221863BAC4E3E7
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+_*This is a test.*_
+
+
+--------------995F058E0A221863BAC4E3E7
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  </head>
+  <body bgcolor="#FFFFFF" text="#000000">
+    <p><u><b>This is a test.</b></u><br>
+    </p>
+  </body>
+</html>
+
+--------------995F058E0A221863BAC4E3E7--
