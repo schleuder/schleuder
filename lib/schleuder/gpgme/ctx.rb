@@ -61,27 +61,30 @@ module GPGME
       GPGME::Engine.info.find {|e| e.protocol == GPGME::PROTOCOL_OpenPGP }
     end
 
-    def self.refresh_keys(keys)
-      output = []
-      base_args = "--no-auto-check-trustdb --keyserver #{Conf.keyserver} --refresh-keys"
-      keys.each do |key|
-        args = "#{base_args} #{key.fingerprint}"
-        err, gpgout, _ = gpgcli(args)
-        gpgout = filter_gpgcli_output(gpgout)
-        output << filter_gpgcli_output(err)
-        # Add any gpgkeys-message (gpg 2.0 writes those messages to stdout).
-        # Those could e.g. report a failure to connect to the keyserver.
-        output << gpgout.select { |line| line.match(/^gpgkeys: .*$/) }
-
-        translate_import_data(gpgout).each do |fingerprint, states|
-          output << I18n.t("key_updated", { fingerprint: fingerprint,
-                                            states: states.join(', ') })
-          output << "\n"
-        end
+    def refresh_keys(keys)
+      output = keys.map do |key|
+        # Sleep a short while to make traffic analysis less easy.
         sleep rand(1.0..5.0)
+        refresh_key(key.fingerprint)
       end
-      gpgcli("--check-trustdb")
-      output.flatten.uniq.join
+      output.join
+    end
+
+    def refresh_key(fingerprint)
+      args = "--keyserver #{Conf.keyserver} --refresh-keys #{fingerprint}"
+      gpgerr, gpgout, exitcode = self.class.gpgcli(args)
+
+      if exitcode > 0
+        # Return filtered error messages. Include gpgkeys-messages from stdout
+        # (gpg 2.0 does that), which could e.g. report a failure to connect to
+        # the keyserver.
+        [
+          refresh_key_filter_messages(gpgerr),
+          refresh_key_filter_messages(gpgout).grep(/^gpgkeys: /)
+        ].flatten.compact
+      else
+        translate_output('key_updated', gpgout)
+      end
     end
 
     def fetch_key(input)
@@ -123,10 +126,6 @@ module GPGME
     end
 
     def translate_import_data(gpgoutput)
-      self.class.translate_import_data(gpgoutput)
-    end
-
-    def self.translate_import_data(gpgoutput)
       result = {}
       gpgoutput.grep(/IMPORT_OK/) do |import_ok|
         next if import_ok.blank?
@@ -149,7 +148,7 @@ module GPGME
     # Unfortunately we can't distinguish between a failure to connect the
     # keyserver, and a failure to find the key on the server. So we try to
     # filter misleading errors to check if there are any to be reported.
-    def self.filter_gpgcli_output(strings)
+    def refresh_key_filter_messages(strings)
       strings.reject do |line|
         line.chomp == 'gpg: keyserver refresh failed: No data' ||
           line.match(/^gpgkeys: key .* not found on keyserver/) ||

@@ -161,7 +161,7 @@ module Schleuder
     end
 
     def refresh_keys
-      GPGME::Ctx.refresh_keys(self.keys)
+      gpg.refresh_keys(self.keys)
     end
 
     def fetch_keys(input)
