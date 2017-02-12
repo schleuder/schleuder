@@ -85,35 +85,46 @@ module GPGME
     end
 
     def fetch_key(input)
-      output = []
-      case input
-      when /\A(0x)?[a-f0-9]{32,}\z/i
-        # Fingerprint
-        args = "--keyserver #{Conf.keyserver} --recv-key #{input}"
-      when /\Ahttp/
-        # URL
-        args = "--fetch-key #{input}"
-      when /@/
-        # Email address
-        args = "--keyserver #{Conf.keyserver} --auto-key-locate keyserver --locate-key #{input}"
-      else
-        return I18n.t("fetch_key.invalid_input")
-      end
+      arguments, error = fetch_key_gpg_arguments_for(input)
+      return error if error
 
-      gpgerr, gpgout, exitcode = self.class.gpgcli(args)
+      gpgerr, gpgout, exitcode = self.class.gpgcli(arguments)
+
       # Unfortunately gpg doesn't exit with code > 0 if `--fetch-key` fails.
       if exitcode > 0 || gpgerr.grep(/ unable to fetch /).presence
-        output << "Fetching #{input} did not succeed:\n#{gpgerr.join("\n")}"
+        "Fetching #{input} did not succeed:\n#{gpgerr.join("\n")}"
       else
-        self.class.translate_import_data(gpgout).each do |fpr, states|
-          output << I18n.t("key_fetched", { fingerprint: fpr,
-                                            states: states.join(', ') })
-          output << "\n"
-        end
+        translate_output('key_fetched', gpgout)
       end
-      output.flatten.uniq.join
     end
 
+    def fetch_key_gpg_arguments_for(input)
+      case input
+      when FINGERPRINT_REGEXP
+        "--keyserver #{Conf.keyserver} --recv-key #{input}"
+      when /^http/
+        "--fetch-key #{input}"
+      when /@/
+        # --recv-key doesn't work with email-addresses, so we use --locate-key
+        # restricted to keyservers.
+        "--keyserver #{Conf.keyserver} --auto-key-locate keyserver --locate-key #{input}"
+      else
+        [nil, I18n.t("fetch_key.invalid_input")]
+      end
+    end
+
+    def translate_output(locale_key, gpgoutput)
+      import_states = translate_import_data(gpgoutput)
+      strings = import_states.map do |fingerprint, states|
+        I18n.t(locale_key, { fingerprint: fingerprint,
+                             states: states.join(', ') })
+      end
+      strings.join("\n")
+    end
+
+    def translate_import_data(gpgoutput)
+      self.class.translate_import_data(gpgoutput)
+    end
 
     def self.translate_import_data(gpgoutput)
       result = {}
