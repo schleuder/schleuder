@@ -342,5 +342,109 @@ describe "user sends keyword" do
 
     teardown_list_and_mailer(list)
   end
+
+  it "x-list-key with arbitrary email-sub-string" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-list-KEYs: der@ex"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.request_address, list)
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
+    expect(message.to_s.scan(/^pub /).size).to eql(1)
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-list-key with correctly prefixed email-sub-string" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-list-KEYs: @schleuder"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.request_address, list)
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
+    expect(message.to_s.scan(/^pub /).size).to eql(1)
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-list-key with prefixed fingerprint" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-list-KEYs: 0x59C71FB38AEE22E091C78259D06350440F759BD3"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.request_address, list)
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
+    expect(message.to_s.scan(/^pub /).size).to eql(1)
+
+    teardown_list_and_mailer(list)
+  end
+
 end
+
 
