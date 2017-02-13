@@ -51,7 +51,11 @@ module Schleuder
 
     def self.get_key(arguments, list, mail)
       arguments.map do |argument|
-        list.export_key(argument)
+        if keymaterial = list.export_key(argument)
+          keymaterial
+        else
+          I18n.t("errors.no_match_for", input: argument)
+        end
       end
     end
 
