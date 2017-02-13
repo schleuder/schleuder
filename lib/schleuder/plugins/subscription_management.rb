@@ -62,10 +62,6 @@ module Schleuder
     end
 
     def self.list_subscriptions(arguments, list, mail)
-      out = [
-        "#{I18n.t("plugins.subscription_management.list_of_subscriptions")}:"
-      ]
-
       subs = if arguments.blank?
                 list.subscriptions.all.to_a
              else
@@ -73,6 +69,14 @@ module Schleuder
                  list.subscriptions.where("email like ?", "%#{argument}%").to_a
                end.flatten
              end
+
+      if subs.blank?
+        return nil
+      end
+
+      out = [
+        "#{I18n.t("plugins.subscription_management.list_of_subscriptions")}:"
+      ]
 
       out << subs.map do |subscription|
         # Fingerprints are at most 40 characters long, and lines shouldn't
