@@ -29,6 +29,10 @@ module Mail
       new.gpg list.gpg_sign_options
       new.original_message = self.dup.freeze
       new.recipient = recipient
+      # Trigger method early to save the information. Later some information
+      # might be gone (e.g. request-keywords that delete subscriptions or
+      # keys).
+      new.signer
       new
     end
 
@@ -106,8 +110,10 @@ module Mail
     end
 
     def signer
-      if signing_key.present?
-        list.subscriptions.where(fingerprint: signing_key.fingerprint).first
+      @signer ||= begin
+        if signing_key.present?
+          list.subscriptions.where(fingerprint: signing_key.fingerprint).first
+        end
       end
     end
 
