@@ -18,7 +18,7 @@ module Schleuder
     def self.delete_key(arguments, list, mail)
       arguments.map do |argument|
         # TODO: I18n
-        if list.gpg.delete(argument)
+        if list.delete_key(argument)
           "Deleted: #{argument}."
         else
           "Not found: #{argument}."
