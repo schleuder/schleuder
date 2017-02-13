@@ -103,6 +103,7 @@ de:
 
         %{errors}.
       list_of_subscriptions: Abos
+      set_fingerprint_only_self: Nur admins dürfen den Fingerabdruck für andere Abos festlegen.
       fingerprint_set: Fingerabdruck für %{email} auf %{fingerprint} gesetzt.
       setting_fingerprint_failed: |
         Fingerabdruck für %{email} konnte nicht auf %{fingerprint} gesetzt werden:

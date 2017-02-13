@@ -103,6 +103,7 @@ en:
 
         %{errors}.
       list_of_subscriptions: Subscriptions
+      set_fingerprint_only_self: Only admins may set fingerprints of subscriptions other than their own.
       fingerprint_set: Fingerprint for %{email} set to %{fingerprint}.
       setting_fingerprint_failed: |
         Setting fingerprint for %{email} to %{fingerprint} failed:
