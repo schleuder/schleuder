@@ -7,8 +7,8 @@ module GPGME
       'new_subkeys' => 8
     }
 
-    def keyimport(*args)
-      self.import_keys(*args)
+    def keyimport(keydata)
+      self.import_keys(GPGME::Data.new(keydata))
       result = self.import_result
       result.imports.map(&:set_action)
       result
