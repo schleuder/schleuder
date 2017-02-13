@@ -162,7 +162,7 @@ module Mail
         end
         # TODO: Find multiline arguments (add-key). Currently add-key has to
         # read the whole body and hope for the best.
-        if line.match(/^x-([^: ]*)[: ]*(.*)/i)
+        if line.match(/^x-([^:\s]*)[:\s]*(.*)/i)
           command = $1.strip.downcase
           arguments = $2.to_s.strip.downcase.split(/[,; ]{1,}/)
           @keywords << [command, arguments]
