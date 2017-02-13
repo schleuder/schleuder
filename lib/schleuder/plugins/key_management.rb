@@ -27,9 +27,12 @@ module Schleuder
     end
 
     def self.list_keys(arguments, list, mail)
-      args = arguments.presence || ['']
+      args = arguments.presence
       args.map do |argument|
-        list.keys(argument).map do |key|
+        # In this case it shall be allowed to match keys by arbitrary
+        # sub-strings, therefore we use `list.gpg` directly to not have the
+        # input filtered.
+        list.gpg.keys(argument).map do |key|
           key.to_s
         end
       end

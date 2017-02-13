@@ -94,15 +94,11 @@ module Schleuder
     end
 
     def secret_key
-      gpg.keys(self.fingerprint, true).first
+      keys(self.fingerprint, true).first
     end
 
-    def keys(identifier='')
-      gpg.keys(identifier)
-    end
-
-    def keys_by_email(address)
-      keys("<#{address}>")
+    def keys(identifier=nil, secret_only=nil)
+      gpg.find_keys(identifier, secret_only)
     end
 
     def import_key(importable)
@@ -110,7 +106,7 @@ module Schleuder
     end
 
     def delete_key(fingerprint)
-      if key = gpg.keys(fingerprint).first
+      if key = keys(fingerprint).first
         key.delete!
         true
       else
