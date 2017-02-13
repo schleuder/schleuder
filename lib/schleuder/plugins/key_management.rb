@@ -17,13 +17,24 @@ module Schleuder
 
     def self.delete_key(arguments, list, mail)
       arguments.map do |argument|
-        # TODO: I18n
-        if list.delete_key(argument)
-          "Deleted: #{argument}."
+        keys = list.keys(argument)
+        case keys.size
+        when 0
+          I18n.t("errors.no_match_for", input: argument)
+        when 1
+          begin
+            keys.first.delete!
+            I18n.t('plugins.key_management.deleted', key_string: keys.first.fingerprint)
+          rescue GPGME::Error::Conflict
+            I18n.t('plugins.key_management.not_deletable', key_string: keys.first.fingerprint)
+          end
         else
-          "Not found: #{argument}."
+          I18n.t('errors.too_many_matching_keys', {
+              input: argument,
+              key_strings: keys.map(&:to_s).join("\n")
+            })
         end
-      end
+      end.join("\n\n")
     end
 
     def self.list_keys(arguments, list, mail)

@@ -71,11 +71,17 @@ en:
     file_not_found: "File not found: '%{file}'."
     not_pgp_mime: "Message was not encrypted in the pgp/mime-format."
     delivery_error: "The following error occurred while sending a message to %{email}: %{error}"
+    no_match_for: "No match found for %{input}"
+    too_many_matching_keys: |
+      Too many matching keys for '%{input}':
+      %{key_strings}
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
     keyword_admin_notify: "%{signer} sent keyword '%{keyword}' and received this response:"
     key_management:
+      deleted: "Deleted: %{key_string}"
+      not_deletable: "May not be deleted: %{key_string}"
       import_result: "Import result:"
       key_import_status:
         imported: imported
