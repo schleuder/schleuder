@@ -14,6 +14,24 @@ module GPGME
       result
     end
 
+    def find_keys(input=nil, secret_only=nil)
+      _, input = clean_and_classify_input(input)
+      keys(input, secret_only)
+    end
+
+    def clean_and_classify_input(input)
+      case input
+      when /.*?([^ <>]+@[^ <>]+).*?/
+        [:email, "<#{$1}>"]
+      when /^http/
+        [:url, input]
+      when /\A(0x)?([a-f0-9]{32,})\z/i
+        [:fingerprint, "0x#{$2}"]
+      else
+        [nil, input]
+      end
+    end
+
     # Tell gpgme to use the given binary.
     def self.set_gpg_path_from_env
       path = ENV['GPGBIN'].to_s

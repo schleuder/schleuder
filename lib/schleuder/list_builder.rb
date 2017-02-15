@@ -61,7 +61,7 @@ module Schleuder
         # Try if we can find the admin-key "manually". Maybe it's present
         # in the keyring aleady.
         if admin_fpr.blank?
-          admin_key = list.keys_by_email(@adminemail).first
+          admin_key = list.keys(@adminemail).first
           if admin_key.present?
             admin_fpr = admin_key.fingerprint
           end
@@ -87,7 +87,7 @@ module Schleuder
       gpg.generate_key(key_params(list))
 
       # Get key without knowing the fingerprint yet.
-      keys = list.keys_by_email(@listname)
+      keys = list.keys(@listname)
       if keys.empty?
         raise Errors::KeyGenerationFailed.new(@list_dir, @listname)
       elsif keys.size > 1

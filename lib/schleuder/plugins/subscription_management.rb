@@ -62,10 +62,6 @@ module Schleuder
     end
 
     def self.list_subscriptions(arguments, list, mail)
-      out = [
-        "#{I18n.t("plugins.subscription_management.list_of_subscriptions")}:"
-      ]
-
       subs = if arguments.blank?
                 list.subscriptions.all.to_a
              else
@@ -73,6 +69,14 @@ module Schleuder
                  list.subscriptions.where("email like ?", "%#{argument}%").to_a
                end.flatten
              end
+
+      if subs.blank?
+        return nil
+      end
+
+      out = [
+        "#{I18n.t("plugins.subscription_management.list_of_subscriptions")}:"
+      ]
 
       out << subs.map do |subscription|
         # Fingerprints are at most 40 characters long, and lines shouldn't
@@ -89,15 +93,19 @@ module Schleuder
     end
 
     def self.set_fingerprint(arguments, list, mail)
-      email = if list.admin?(mail.signer.email)
-                arguments.first
-              else
-                # TODO: send error message if signer tried to set another
-                # fingerprint than hir own.
-                mail.signer.email
-              end
+      if arguments.first.match(/@/)
+        if arguments.first == mail.signer.email || list.from_admin?(mail)
+          email = arguments.first
+        else
+          return I18n.t(
+            "plugins.subscription_management.set_fingerprint_only_self"
+          )
+        end
+      else
+        email = mail.signer.email
+      end
 
-      sub = list.subscriptions.where(email: mail.signer.email)
+      sub = list.subscriptions.where(email: email).first
 
       if sub.blank?
         return I18n.t(
@@ -118,7 +126,7 @@ module Schleuder
           "plugins.subscription_management.setting_fingerprint_failed",
           email: email,
           fingerprint: arguments.last,
-          error: sub.errors.to_a.join("\n")
+          errors: sub.errors.to_a.join("\n")
         )
       end
     end

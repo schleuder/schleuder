@@ -71,11 +71,17 @@ de:
     file_not_found: "Die Datei existiert nicht: '%{file}'."
     not_pgp_mime: "Deine Email war nicht im pgp/mime-Format verschlüsselt."
     delivery_error: "Beim Versenden einer Email an %{email} ist der folgende Fehler aufgetreten: %{error}"
+    no_match_for: "Keine Treffer für %{input}"
+    too_many_matching_keys: |
+      Zu viele Schlüssel gefunden für '%{input}':
+      %{key_strings}
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
     keyword_admin_notify: "%{signer} schickte das Schlüsselwort '%{keyword}' und erhielt dies als Antwort:"
     key_management:
+      deleted: "Gelöscht: %{key_string}"
+      not_deletable: "Darf nicht gelöscht werden: %{key_string}"
       import_result: "Import-Ergebnis:"
       key_import_status:
         imported: importiert
@@ -103,6 +109,7 @@ de:
 
         %{errors}.
       list_of_subscriptions: Abos
+      set_fingerprint_only_self: Nur admins dürfen den Fingerabdruck für andere Abos festlegen.
       fingerprint_set: Fingerabdruck für %{email} auf %{fingerprint} gesetzt.
       setting_fingerprint_failed: |
         Fingerabdruck für %{email} konnte nicht auf %{fingerprint} gesetzt werden:
