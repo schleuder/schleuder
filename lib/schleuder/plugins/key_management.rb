@@ -60,9 +60,8 @@ module Schleuder
     end
 
     def self.fetch_key(arguments, list, mail)
-      hkp = Hkp.new
       arguments.map do |argument|
-        hkp.fetch_and_import(argument)
+        list.fetch_keys(argument)
       end
     end
 
