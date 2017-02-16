@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    schleuder (3.0.2)
+    schleuder (3.0.3)
       activerecord (~> 4.1)
       mail-gpg (~> 0.3.0)
       rake (~> 10)
@@ -102,6 +102,3 @@ DEPENDENCIES
   hirb
   rspec (~> 3.5.0)
   schleuder!
-
-BUNDLED WITH
-   1.13.7

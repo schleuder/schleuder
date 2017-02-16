@@ -3,6 +3,35 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.3] / 2017-02-16
+
+### Changed
+
+* Require fingerprints of lists and subscriptions to be at least 32 characters long. Previously it was possible to assign shorter hexadecimal strings.
+* Key lookup for arguments to X-keywords is stricter than before: if you supply a string containing an "@", gnupg will be told to only match it against email-addresses; if you send a hexadecimal string, gnupg will be told to only match it against fingerprints.
+* Fixed and improved X-DELETE-KEY to only allow deletion of a single key, and only if no matching secret key is present.
+* Fixed and improved X-FETCH-KEY to use the configured keyserver; to handle URLs, fingerprints, and email-addresses alike; and to send internationalized messages.
+* Go back to make mock SKS-server listen on 127.0.0.1 — the former IP resulted in errors on some systems.
+
+
+### Fixed
+
+* Don't break multipart/alternative-parts when inserting our pseudo-headers.
+* X-ADD-KEY handles inline content from Thunderbird correctly.
+* X-SIGN-THIS now looks recursively for attachments to sign.
+* Fixed unsubscribing oneself with X-UNSUBSCRIBE.
+* Fixed setting fingerprint for other subscription than oneself with X-SET-FINGERPRINT.
+* Better output of X-LIST-SUBSCRIPTIONS if no subscriptions are present.
+* Sensible error message if X-GET-KEY doesn't find a matching key.
+* Allow '0x'-prefix of fingerprints when given as keyword-argument.
+* If no keyword generates output, a sensible error message is used.
+
+
+### Added
+
+* More rspec-tests.
+
+
 ## [3.0.2] / 2017-02-01
 
 ### Changed
