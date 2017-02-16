@@ -1,6 +1,5 @@
 module GPGME
   class Ctx
-    FINGERPRINT_REGEXP = /\A(0x)?[a-f0-9]{32,}\z/i
     IMPORT_FLAGS = {
       'new_key' => 1,
       'new_uids' => 2,
@@ -26,8 +25,8 @@ module GPGME
         [:email, "<#{$1}>"]
       when /^http/
         [:url, input]
-      when /\A(0x)?([a-f0-9]{32,})\z/i
-        [:fingerprint, "0x#{$2}"]
+      when Conf::FINGERPRINT_REGEXP
+        [:fingerprint, "0x#{input.gsub(/^0x/, '')}"]
       else
         [nil, input]
       end
@@ -103,7 +102,7 @@ module GPGME
 
     def fetch_key_gpg_arguments_for(input)
       case input
-      when FINGERPRINT_REGEXP
+      when Conf::FINGERPRINT_REGEXP
         "--keyserver #{Conf.keyserver} --recv-key #{input}"
       when /^http/
         "--fetch-key #{input}"
