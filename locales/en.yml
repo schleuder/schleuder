@@ -71,11 +71,17 @@ en:
     file_not_found: "File not found: '%{file}'."
     not_pgp_mime: "Message was not encrypted in the pgp/mime-format."
     delivery_error: "The following error occurred while sending a message to %{email}: %{error}"
+    no_match_for: "No match found for %{input}"
+    too_many_matching_keys: |
+      Too many matching keys for '%{input}':
+      %{key_strings}
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
     keyword_admin_notify: "%{signer} sent keyword '%{keyword}' and received this response:"
     key_management:
+      deleted: "Deleted: %{key_string}"
+      not_deletable: "May not be deleted: %{key_string}"
       import_result: "Import result:"
       key_import_status:
         imported: imported
@@ -103,6 +109,7 @@ en:
 
         %{errors}.
       list_of_subscriptions: Subscriptions
+      set_fingerprint_only_self: Only admins may set fingerprints of subscriptions other than their own.
       fingerprint_set: Fingerprint for %{email} set to %{fingerprint}.
       setting_fingerprint_failed: |
         Setting fingerprint for %{email} to %{fingerprint} failed:
@@ -130,9 +137,12 @@ en:
   refresh_keys: Keys update
   refresh_keys_intro: "Refreshing all keys from the keyring of list %{email} resulted in this:"
   key_updated: Key %{fingerprint} was updated (%{states}).
+  key_fetched: Key %{fingerprint} was fetched (%{states}).
   import_states:
-    new_keys: new keys
+    new_key: new key
     new_uids: new user-IDs
     new_subkeys: new subkeys
     new_signatures: new signatures
+  fetch_key:
+    invalid_input: "Invalid input. Allowed are: URLs, OpenPGP-fingerprints, or email-addresses."
 

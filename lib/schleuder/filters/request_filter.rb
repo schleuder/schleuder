@@ -13,7 +13,10 @@ module Schleuder
       if mail.keywords.empty?
         output = I18n.t(:no_keywords_error)
       else
-        output = Plugins::Runner.run(list, mail).compact
+        output = Plugins::Runner.run(list, mail).flatten.map(&:presence).compact
+        if output.blank?
+          output = I18n.t(:no_output_result)
+        end
       end
       mail.reply_to_signer(output)
       exit

@@ -1,0 +1,77 @@
+To: paz@nadir.org
+From: paz <paz@nadir.org>
+Subject: multi/alt test signed
+Openpgp: id=52507B0163A8D9F0094FFE03B1A36F08069E55DE
+Message-ID: <8aff12ad-3045-a69c-bdcc-f1638c699623@nadir.org>
+Date: Sun, 12 Feb 2017 22:26:47 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.0
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="b3ViXpO41teSXWPCLNnj2VCalcqUBwURw"
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--b3ViXpO41teSXWPCLNnj2VCalcqUBwURw
+Content-Type: multipart/mixed; boundary="wq1LskS7mbBfokmGQFKSgUaVwAn5TCnAA";
+ protected-headers="v1"
+From: paz <paz@nadir.org>
+To: paz@nadir.org
+Message-ID: <8aff12ad-3045-a69c-bdcc-f1638c699623@nadir.org>
+Subject: multi/alt test signed
+
+--wq1LskS7mbBfokmGQFKSgUaVwAn5TCnAA
+Content-Type: multipart/alternative;
+ boundary="------------9168A8DB20220BC208511980"
+
+This is a multi-part message in MIME format.
+--------------9168A8DB20220BC208511980
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+_*This is a test.*_
+
+
+--------------9168A8DB20220BC208511980
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+  <head>
+
+    <meta http-equiv=3D"content-type" content=3D"text/html; charset=3Dutf=
+-8">
+  </head>
+  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
+    <p><u><b>This is a test.</b></u><br>
+    </p>
+  </body>
+</html>
+
+--------------9168A8DB20220BC208511980--
+
+--wq1LskS7mbBfokmGQFKSgUaVwAn5TCnAA--
+
+--b3ViXpO41teSXWPCLNnj2VCalcqUBwURw
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEUlB7AWOo2fAJT/4DsaNvCAaeVd4FAlig0xoACgkQsaNvCAae
+Vd7QzQ//a3DZKrIJeABLD/RfB4rZVmxat+kJAjsNKSnJk7sfxrtcCsDTlNY2QGGt
+SEe8f3HtpcOjFMVqH7FVXSaXM+E/emmPP19js2c2uLVTZi9SLkvF+NX/4dOXq0nR
+6sVwEokN0/dTu4aV8cdTenKFUdIJzAjpfWgAPFOmyCe2KDSzyLrkmYbtBgSqO6l3
+3S5rk4AqVVYrklWp50C+oKxVyE57Rs9848YOn3awRvFT+aocdH+UI74h9PD9Hx8z
+OhaT9qNEJ/KJGYjjCRv4Ls5zbKHok4RCuFozRU9UEvBDzT/NzWnMLWL90eSh4akV
+U/MMLGRSaB27+KBLRuxsre/eSQt6cCQWDGZbkf4VLKTEHtIKWnNPRXzSUb9SQ4xa
+zjHqKDVBZmHW8ftqwWK2fU1EGa9cAOpBqFyIdA/XPRX6w4n0r/Wo+ZVRtVPBiZEv
+K0SMNpXidfo07MgC9urEvPZi8Bo5EqwZYSpVUZsLQSWKvkw+n/+APzIaXyjP1DNs
+4yFc4pqAErtokiftjT2r4P3gCXDTAOJBzHP9e1FzMS4rW9dLw+aa7FyWUvXqiRzd
+F0X/Ah8f8asr9Tpt6uoDYpRZ3Ny3R4/Gr0U9CzqBFbg0PfN1PJmOl2wGc6giIiAx
+Qf3wFp+7EmQJzlfLdEKyb4Nl5n2ColDVcD6r1pA4QNuh0vdgwYs=
+=7nKg
+-----END PGP SIGNATURE-----
+
+--b3ViXpO41teSXWPCLNnj2VCalcqUBwURw--

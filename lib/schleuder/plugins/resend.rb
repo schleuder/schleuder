@@ -91,7 +91,7 @@ module Schleuder
 
     def self.map_with_keys(mail, recipients, encrypted_only)
       Array(recipients).inject({}) do |hash, email|
-        keys = mail.list.keys_by_email(email)
+        keys = mail.list.keys(email)
         case keys.size
         when 1
           hash[email] = keys.first

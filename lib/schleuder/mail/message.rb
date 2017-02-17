@@ -29,6 +29,10 @@ module Mail
       new.gpg list.gpg_sign_options
       new.original_message = self.dup.freeze
       new.recipient = recipient
+      # Trigger method early to save the information. Later some information
+      # might be gone (e.g. request-keywords that delete subscriptions or
+      # keys).
+      new.signer
       new
     end
 
@@ -49,18 +53,26 @@ module Mail
         clean.add_part new_part
       end
 
-      # Attach body or mime-parts, respectively.
+      # Attach body or mime-parts in a new wrapper-part, to preserve the
+      # original mime-structure.
+      # We can't use self.to_s here — that includes all the headers we *don't*
+      # want to copy.
+      wrapper_part = Mail::Part.new
+      # Copy headers to are relevant for the mime-structure.
+      wrapper_part.content_type = self.content_type
+      wrapper_part.content_transfer_encoding = self.content_transfer_encoding if self.content_transfer_encoding
+      wrapper_part.content_disposition = self.content_disposition if self.content_disposition
+      wrapper_part.content_description = self.content_description if self.content_description
+      # Copy contents.
       if self.multipart?
         self.parts.each do |part|
-          clean.add_part Mail::Part.new(part)
+          wrapper_part.add_part(part)
         end
       else
-        # Don't use self.to_s here — that includes all the headers we *don't*
-        # want to copy.
-        new_part = Mail::Part.new
-        new_part.body = self.body.to_s
-        clean.add_part Mail::Part.new(new_part)
+        wrapper_part.body = self.body.to_s
       end
+      clean.add_part(wrapper_part)
+
       clean
     end
 
@@ -106,8 +118,10 @@ module Mail
     end
 
     def signer
-      if signing_key.present?
-        list.subscriptions.where(fingerprint: signing_key.fingerprint).first
+      @signer ||= begin
+        if signing_key.present?
+          list.subscriptions.where(fingerprint: signing_key.fingerprint).first
+        end
       end
     end
 
@@ -162,7 +176,7 @@ module Mail
         end
         # TODO: Find multiline arguments (add-key). Currently add-key has to
         # read the whole body and hope for the best.
-        if line.match(/^x-([^: ]*)[: ]*(.*)/i)
+        if line.match(/^x-([^:\s]*)[:\s]*(.*)/i)
           command = $1.strip.downcase
           arguments = $2.to_s.strip.downcase.split(/[,; ]{1,}/)
           @keywords << [command, arguments]
@@ -326,6 +340,17 @@ module Mail
       end
     end
 
+    def first_plaintext_part(part=nil)
+      part ||= self
+      if part.multipart?
+        first_plaintext_part(part.parts.first)
+      elsif part.mime_type == 'text/plain'
+        part
+      else
+        nil
+      end
+    end
+
     private
 
 
@@ -360,17 +385,6 @@ module Mail
       end
       if fingerprints.uniq.size == 1
         parts.first.signature
-      else
-        nil
-      end
-    end
-
-    def first_plaintext_part(part=nil)
-      part ||= self
-      if part.multipart?
-        first_plaintext_part(part.parts.first)
-      elsif part.mime_type == 'text/plain'
-        part
       else
         nil
       end

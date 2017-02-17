@@ -17,19 +17,33 @@ module Schleuder
 
     def self.delete_key(arguments, list, mail)
       arguments.map do |argument|
-        # TODO: I18n
-        if list.gpg.delete(argument)
-          "Deleted: #{argument}."
+        keys = list.keys(argument)
+        case keys.size
+        when 0
+          I18n.t("errors.no_match_for", input: argument)
+        when 1
+          begin
+            keys.first.delete!
+            I18n.t('plugins.key_management.deleted', key_string: keys.first.fingerprint)
+          rescue GPGME::Error::Conflict
+            I18n.t('plugins.key_management.not_deletable', key_string: keys.first.fingerprint)
+          end
         else
-          "Not found: #{argument}."
+          I18n.t('errors.too_many_matching_keys', {
+              input: argument,
+              key_strings: keys.map(&:to_s).join("\n")
+            })
         end
-      end
+      end.join("\n\n")
     end
 
     def self.list_keys(arguments, list, mail)
-      args = arguments.presence || ['']
+      args = arguments.presence
       args.map do |argument|
-        list.keys(argument).map do |key|
+        # In this case it shall be allowed to match keys by arbitrary
+        # sub-strings, therefore we use `list.gpg` directly to not have the
+        # input filtered.
+        list.gpg.keys(argument).map do |key|
           key.to_s
         end
       end
@@ -37,14 +51,17 @@ module Schleuder
 
     def self.get_key(arguments, list, mail)
       arguments.map do |argument|
-        list.export_key(argument)
+        if keymaterial = list.export_key(argument)
+          keymaterial
+        else
+          I18n.t("errors.no_match_for", input: argument)
+        end
       end
     end
 
     def self.fetch_key(arguments, list, mail)
-      hkp = Hkp.new
       arguments.map do |argument|
-        hkp.fetch_and_import(argument)
+        list.fetch_keys(argument)
       end
     end
 
@@ -74,11 +91,7 @@ module Schleuder
     end
 
     def self.import_key_from_body(list, mail)
-      if mail.parts.first.present?
-        key_material = mail.parts.first.body.to_s
-      else
-        key_material = mail.body.to_s
-      end
+      key_material = mail.first_plaintext_part.body.to_s
 
       list.import_key(key_material) if self.is_armored_key?(key_material)
     end

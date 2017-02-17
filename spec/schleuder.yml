@@ -6,4 +6,4 @@ lists_dir: /tmp/schleuder-test/
 listlogs_dir: /tmp/schleuder-test/
 smtp_settings:
   port: 2523
-keyserver: hkp://127.9.9.9:9999
+keyserver: hkp://127.0.0.1:9999

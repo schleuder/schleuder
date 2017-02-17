@@ -297,15 +297,21 @@ describe Schleuder::List do
       expect(list.keys).to be_kind_of Array
       expect(list.keys.first.fingerprint).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
     end
-  end
 
-  describe "#keys_by_email" do
     it "returns an array with the keys matching the given email address" do
       list = create(:list, email: "schleuder@example.org")
 
-      expect(list.keys_by_email("schleuder@example.org").length).to eq 1
+      expect(list.keys("schleuder@example.org").length).to eq 1
       expect(
-        list.keys_by_email("schleuder@example.org").first.fingerprint
+        list.keys("schleuder@example.org").first.fingerprint
+      ).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
+    end
+
+    it "returns an array with the keys matching the given bracketed email address" do
+      list = create(:list, email: "schleuder@example.org")
+
+      expect(
+        list.keys("bla <schleuder@example.org>").first.fingerprint
       ).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
     end
   end
@@ -448,6 +454,50 @@ describe Schleuder::List do
       list.gpg
 
       expect(ENV["GNUPGHOME"]).to eq list.listdir
+    end
+  end
+
+  context '#fetch_keys' do
+    it 'fetches one key by fingerprint' do
+      list = create(:list)
+      list.subscribe("admin@example.org", nil, true)
+      output = ''
+
+      with_sks_mock do
+        output = list.fetch_keys('98769E8A1091F36BD88403ECF71A3F8412D83889')
+      end
+
+      expect(output).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+
+      teardown_list_and_mailer(list)
+    end
+
+    it 'fetches one key by URL' do
+      list = create(:list)
+      list.subscribe("admin@example.org", nil, true)
+      output = ''
+
+      with_sks_mock do
+        output = list.fetch_keys('http://127.0.0.1:9999/keys/example.asc')
+      end
+
+      expect(output).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+
+      teardown_list_and_mailer(list)
+    end
+
+    it 'fetches one key by email address' do
+      list = create(:list)
+      list.subscribe("admin@example.org", nil, true)
+      output = ''
+
+      with_sks_mock do
+        output = list.fetch_keys('admin@example.org')
+      end
+
+      expect(output).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+
+      teardown_list_and_mailer(list)
     end
   end
 end

@@ -3,6 +3,7 @@ module Schleuder
     include Singleton
 
     EMAIL_REGEXP = /\A.+@[[:alnum:]_.-]+\z/i
+    FINGERPRINT_REGEXP = /\A(0x)?[a-f0-9]{32,}\z/i
 
     DEFAULTS = {
       'lists_dir' => '/var/lib/schleuder/lists',
