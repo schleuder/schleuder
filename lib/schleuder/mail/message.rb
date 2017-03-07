@@ -69,7 +69,9 @@ module Mail
           wrapper_part.add_part(part)
         end
       else
-        wrapper_part.body = self.body.to_s
+        # We copied the content-headers, so we need to copy the body encoded.
+        # Otherwise the content might become unlegible.
+        wrapper_part.body = self.body.encoded
       end
       clean.add_part(wrapper_part)
 
