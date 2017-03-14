@@ -37,10 +37,9 @@ module Schleuder
           out = @plugin_module.send(command, arguments, @list, @mail)
           response = Array(out).flatten.join("\n\n")
           if @list.keywords_admin_notify.include?(keyword)
-            explanation = I18n.t('plugins.keyword_admin_notify', 
+            explanation = I18n.t('plugins.keyword_admin_notify',
                                     signer: @mail.signer,
-                                    keyword: keyword,
-                                    response: response
+                                    keyword: keyword
                                 )
             @list.logger.notify_admin("#{explanation}\n\n#{response}\n", nil, 'Notice')
           end
