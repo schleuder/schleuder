@@ -102,8 +102,8 @@ describe 'cli' do
 
       expect(Mail::TestMailer.deliveries.length).to eq 1
       expect(mail.to_s).to include("Refreshing all keys from the keyring of list #{list.email} resulted in this")
-      expect(mail.to_s).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was updated (new signatures).\r\n")
-      expect(mail.to_s).to include("6EE51D78FD0B33DE65CCF69D2104E20E20889F66 was updated (new user-IDs, new signatures).\r\n")
+      expect(mail.to_s).to include("Key 98769E8A1091F36BD88403ECF71A3F8412D83889 was updated (new signatures).\r\n")
+      expect(mail.to_s).to include("Key 6EE51D78FD0B33DE65CCF69D2104E20E20889F66 was updated (new user-IDs, new signatures).\r\n")
 
       teardown_list_and_mailer(list)
     end
