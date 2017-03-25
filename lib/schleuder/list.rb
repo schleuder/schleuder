@@ -148,6 +148,7 @@ module Schleuder
                           fingerprint: key.fingerprint,
                           email: key.email
                       })
+        text << "\n"
       end
 
       unusable.each do |key,usability_issue|
@@ -156,6 +157,7 @@ module Schleuder
                           fingerprint: key.fingerprint,
                           email: key.email
                       })
+        text << "\n"
       end
       text
     end
