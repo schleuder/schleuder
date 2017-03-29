@@ -78,7 +78,7 @@ de:
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
-    keyword_admin_notify: "%{signer} schickte das Schlüsselwort '%{keyword}' und erhielt dies als Antwort:"
+    keyword_admin_notify: "%{signer} schickte das Schlüsselwort '%{keyword}: %{arguments}' und erhielt dies als Antwort:"
     key_management:
       deleted: "Gelöscht: %{key_string}"
       not_deletable: "Darf nicht gelöscht werden: %{key_string}"

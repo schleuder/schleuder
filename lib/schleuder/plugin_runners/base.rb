@@ -33,7 +33,7 @@ module Schleuder
           response = run_command(command, arguments)
           response = Array(response).join("\n\n")
           if @list.keywords_admin_notify.include?(keyword)
-            notify_admins(keyword, response)
+            notify_admins(keyword, arguments, response)
           end
           return response
         end

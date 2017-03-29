@@ -4,10 +4,11 @@ module Schleuder
       extend Base
 
       # TODO: adapt for list-plugins.
-      def self.notify_admins(keyword, response)
+      def self.notify_admins(keyword, arguments, response)
         explanation = I18n.t('plugins.keyword_admin_notify',
                                 signer: @mail.signer,
-                                keyword: keyword
+                                keyword: keyword,
+                                arguments: arguments
                             )
         msg = "#{explanation}\n\n#{response}"
         @list.logger.notify_admin(msg, nil, 'Notice')
