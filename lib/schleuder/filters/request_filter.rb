@@ -13,7 +13,8 @@ module Schleuder
       if mail.keywords.empty?
         output = I18n.t(:no_keywords_error)
       else
-        output = Plugins::Runner.run(list, mail).flatten.map(&:presence).compact
+        output = PluginRunners::RequestPluginsRunner.run(list, mail)
+        output = output.flatten.map(&:presence).compact
         if output.blank?
           output = I18n.t(:no_output_result)
         end
