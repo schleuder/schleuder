@@ -83,7 +83,7 @@ en:
     key_management:
       deleted: "Deleted: %{key_string}"
       not_deletable: "May not be deleted: %{key_string}"
-      import_result: "Import result:"
+      import_result: "Import result:\n"
       key_import_status:
         imported: imported
         updated: updated
@@ -109,7 +109,7 @@ en:
         Subscribing %{email} failed:
 
         %{errors}.
-      list_of_subscriptions: Subscriptions
+      list_of_subscriptions: "Subscriptions:\n"
       set_fingerprint_only_self: Only admins may set fingerprints of subscriptions other than their own.
       fingerprint_set: Fingerprint for %{email} set to %{fingerprint}.
       setting_fingerprint_failed: |

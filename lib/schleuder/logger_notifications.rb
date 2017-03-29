@@ -14,23 +14,16 @@ module Schleuder
       notify_admin(string, original_message)
     end
 
-    def notify_admin(string, original_message=nil, subject='Error')
+    def notify_admin(thing, original_message=nil, subject='Error')
       # Minimize using other classes here, we don't know what caused the error.
+      msg_parts = convert_to_msg_parts(thing, original_message)
       Array(adminaddresses).each do |address, key|
         mail = Mail.new
         mail.from = @from
         mail.to = address
         mail.subject = subject
-        msgpart = Mail::Part.new
-        msgpart.charset = 'UTF-8'
-        msgpart.body = string.to_s
-        mail.add_part msgpart
-        if original_message
-          orig_part = Mail::Part.new
-          orig_part.content_type = 'message/rfc822'
-          orig_part.content_description = 'The originally incoming message'
-          orig_part.body = original_message.to_s
-          mail.add_part orig_part
+        msg_parts.each do |msg_part|
+          mail.add_part(msg_part)
         end
         if @list.present?
           gpg_opts = @list.gpg_sign_options
@@ -45,6 +38,18 @@ module Schleuder
     end
 
     private
+
+    def convert_to_msg_parts(thing, original_message)
+      msg_parts = Mail::Message.all_to_message_part(thing)
+      if original_message.present?
+        orig_part = Mail::Part.new
+        orig_part.content_type = 'message/rfc822'
+        orig_part.content_description = 'The originally incoming message'
+        orig_part.body = original_message.to_s
+        msg_parts << orig_part
+      end
+      msg_parts
+    end
 
     def append_original_message(original_message)
       if original_message

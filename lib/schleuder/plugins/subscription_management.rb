@@ -74,9 +74,7 @@ module Schleuder
         return nil
       end
 
-      out = [
-        "#{I18n.t("plugins.subscription_management.list_of_subscriptions")}:"
-      ]
+      out = [ I18n.t("plugins.subscription_management.list_of_subscriptions") ]
 
       out << subs.map do |subscription|
         # Fingerprints are at most 40 characters long, and lines shouldn't
@@ -90,6 +88,8 @@ module Schleuder
         end
         s
       end
+
+      out.join("\n")
     end
 
     def self.set_fingerprint(arguments, list, mail)

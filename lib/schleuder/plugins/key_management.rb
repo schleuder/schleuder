@@ -13,6 +13,8 @@ module Schleuder
         str = I18n.t("plugins.key_management.key_import_status.#{import_status.action}")
         "#{import_status.fpr}: #{str}"
       end
+
+      out.join("\n")
     end
 
     def self.delete_key(arguments, list, mail)
@@ -46,7 +48,7 @@ module Schleuder
         list.gpg.keys(argument).map do |key|
           key.to_s
         end
-      end
+      end.join("\n\n")
     end
 
     def self.get_key(arguments, list, mail)

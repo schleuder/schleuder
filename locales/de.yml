@@ -83,7 +83,7 @@ de:
     key_management:
       deleted: "Gelöscht: %{key_string}"
       not_deletable: "Darf nicht gelöscht werden: %{key_string}"
-      import_result: "Import-Ergebnis:"
+      import_result: "Import-Ergebnis:\n"
       key_import_status:
         imported: importiert
         updated: aktualisiert
@@ -109,7 +109,7 @@ de:
         Abo für %{email} nicht eingetragen:
 
         %{errors}.
-      list_of_subscriptions: Abos
+      list_of_subscriptions: "Abos:\n"
       set_fingerprint_only_self: Nur admins dürfen den Fingerabdruck für andere Abos festlegen.
       fingerprint_set: Fingerabdruck für %{email} auf %{fingerprint} gesetzt.
       setting_fingerprint_failed: |

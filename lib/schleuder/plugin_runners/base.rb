@@ -31,7 +31,6 @@ module Schleuder
           return I18n.t('plugins.unknown_keyword', keyword: keyword)
         else
           response = run_command(command, arguments)
-          response = Array(response).join("\n\n")
           if @list.keywords_admin_notify.include?(keyword)
             notify_admins(keyword, arguments, response)
           end
@@ -88,6 +87,5 @@ module Schleuder
       end
 
     end
-
   end
 end
