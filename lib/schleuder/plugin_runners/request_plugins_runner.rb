@@ -4,7 +4,7 @@ module Schleuder
       extend Base
 
       def self.notify_admins(keyword, arguments, response)
-        explanation = I18n.t('plugins.keyword_admin_notify',
+        explanation = I18n.t('plugins.keyword_admin_notify_request',
                                 signer: @mail.signer,
                                 keyword: keyword,
                                 arguments: arguments

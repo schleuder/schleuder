@@ -78,7 +78,7 @@ en:
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
-    keyword_admin_notify: "%{signer} sent keyword '%{keyword}: %{arguments}' and received this response:"
+    keyword_admin_notify_request: "%{signer} sent the keyword '%{keyword}' with the values '%{arguments}' and received this response:"
     keyword_admin_notify_lists: "%{signer} used the keyword '%{keyword}' with the values '%{arguments}' in a message sent to the list."
     key_management:
       deleted: "Deleted: %{key_string}"
