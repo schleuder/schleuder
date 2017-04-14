@@ -88,6 +88,7 @@ en:
         imported: imported
         updated: updated
         unchanged: unchanged
+      matching_keys_intro: All keys from the list's keyring matching '%{input}' are attached to this message.
     resend:
       not_resent_no_keys: Resending to <%{email}> failed (%{num_keys} keys found and unencrypted sending disallowed).
       encrypted_to: Encrypted to

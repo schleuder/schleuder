@@ -53,10 +53,19 @@ module Schleuder
 
     def self.get_key(arguments, list, mail)
       arguments.map do |argument|
-        if keymaterial = list.export_key(argument)
-          keymaterial
-        else
+        keys = list.keys(argument)
+        if keys.blank?
           I18n.t("errors.no_match_for", input: argument)
+        else
+          result = [I18n.t('plugins.key_management.matching_keys_intro', input: argument)]
+          keys.each do |key|
+            atchm = Mail::Part.new
+            atchm.body = key.armored
+            atchm.content_type = 'application/pgp-keys'
+            atchm.content_disposition = "attachment; filename=#{key.fingerprint}.asc"
+            result << atchm
+          end
+          result.flatten
         end
       end
     end

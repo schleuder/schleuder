@@ -88,6 +88,7 @@ de:
         imported: importiert
         updated: aktualisiert
         unchanged: unverändert
+      matching_keys_intro: Alle Schlüssel aus dem Schlüsselring der Liste, die '%{input}' enthalten, sind an diese Email angehängt.
     resend:
       not_resent_no_keys: Resending an <%{email}> fehlgeschlagen (%{num_keys} Schlüssel gefunden und unverschlüsseltes Senden verboten).
       encrypted_to: Verschlüsselt an
