@@ -3,6 +3,20 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.4] / 2017-04-15
+
+### Changed
+
+* Harmonize format of key `check` and `update` texts.
+
+
+### Fixed
+
+* Fix unlegible messages (we mis-handled base64-encoded message-parts under some circumstances).
+* Avoid run-on paragraphs in key `check` and `update` reports (Thanks, dkg!)
+* Let schleuder-cli request check keys (allow /keys/check_keys.json to be reached).
+
+
 ## [3.0.3] / 2017-02-16
 
 ### Changed
