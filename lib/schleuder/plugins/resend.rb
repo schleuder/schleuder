@@ -35,10 +35,6 @@ module Schleuder
       if do_resend(mail, recip_map, :cc, encrypted_only)
         mail.add_subject_prefix_out!
       end
-
-      # Return nil to prevent any accidental output to be interpreted as an
-      # error.
-      nil
     end
 
     def self.resend_it(arguments, mail, encrypted_only)
@@ -52,10 +48,6 @@ module Schleuder
         # At least one message has been resent
         mail.add_subject_prefix_out!
       end
-
-      # Return nil to prevent any accidental output to be interpreted as an
-      # error.
-      nil
     end
 
     def self.do_resend(mail, recipients_map, to_or_cc, encrypted_only)
