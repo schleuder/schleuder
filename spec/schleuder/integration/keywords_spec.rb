@@ -1395,4 +1395,43 @@ describe "user sends keyword" do
 
     teardown_list_and_mailer(list)
   end
+
+  it "x-attach-listkey" do
+    list = create(:list, log_level: 'debug')
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.email => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    content_body = "something something list-key"
+    mail.body = "x-listname: #{list.email}\nX-attach-listkey\n#{content_body}"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.email, list)
+
+    expect(message.parts.length).to eql(2)
+    expect(message.parts.last.parts.length).to eql(2)
+    expect(message.parts.last.parts.first.body.to_s).to eql(content_body)
+    expect(message.parts.last.parts.last.content_type.to_s).to eql("application/pgp-keys")
+    expect(message.parts.last.parts.last.body.decoded).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
+    expect(message.parts.last.parts.last.body.decoded).to include("-----BEGIN PGP PUBLIC KEY BLOCK-----")
+    expect(message.parts.last.parts.last.body.decoded).to include("mQINBFhGvz0BEADXbbTWo/PStyTznAo/f1UobY0EiVPNKNERvYua2Pnq8BwOQ5bS")
+
+    teardown_list_and_mailer(list)
+  end
 end
