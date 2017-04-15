@@ -2,38 +2,30 @@ module Schleuder
   module RequestPlugins
     def self.sign_this(arguments, list, mail)
       if mail.has_attachments?
-        # Here we need to send our reply manually because we're sending
-        # attachments.
-        # TODO: Maybe move this ability into the plugin-runner?
-        reply_msg = sign_attachments(mail.reply, list, mail)
-        reply_msg.body = I18n.t('plugins.signatures_attached')
-        list.logger.info "Replying directly to sender"
-        mail.signer.send_mail(reply_msg)
-        list.logger.info "Exiting."
-        exit
+        list.logger.debug "Signing each attachment's body"
+        intro = I18n.t('plugins.signatures_attached')
+        parts = mail.attachments.map do |attachment|
+          make_signature_part(attachment, list)
+        end
+        [intro, parts].flatten
       else
-        # Single text/plain-output is handled by the plugin-runner well, we
-        # don't need to take care of the reply.
         list.logger.debug "Clear-signing first available text/plain part"
         clearsign(mail.first_plaintext_part)
       end
     end
 
-    def self.sign_attachments(reply_msg, list, mail)
-      list.logger.debug "Signing each attachment's body"
-      mail.attachments.each do |attachment|
-        material = attachment.body.to_s
-        next if material.strip.blank?
-        file_basename = attachment.filename.presence || Digest::SHA256.hexdigest(material)
-        list.logger.debug "Signing #{file_basename}"
-        filename = "#{file_basename}.sig"
-        reply_msg.add_file({
-            filename: filename,
-            content: detachsign(material)
-          })
-        reply_msg.attachments[filename].content_description = "OpenPGP signature for '#{file_basename}'"
-      end
-      reply_msg
+    def self.make_signature_part(attachment, list)
+      material = attachment.body.to_s
+      return nil if material.strip.blank?
+      file_basename = attachment.filename.presence || Digest::SHA256.hexdigest(material)
+      list.logger.debug "Signing #{file_basename}"
+      filename = "#{file_basename}.sig"
+      part = Mail::Part.new
+      part.body = detachsign(material)
+      part.content_type = 'application/pgp-signature'
+      part.content_disposition = "attachment; filename=#{filename}"
+      part.content_description = "OpenPGP signature for '#{file_basename}'"
+      part
     end
 
     def self.detachsign(thing)
@@ -45,7 +37,7 @@ module Schleuder
     end
 
     def self.crypto
-      @crypto ||= GPGME::Crypto.new
+      @crypto ||= GPGME::Crypto.new(armor: true)
     end
   end
 end
