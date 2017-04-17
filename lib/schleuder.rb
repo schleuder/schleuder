@@ -20,6 +20,7 @@ rootdir = libdir.dirname
 $:.unshift libdir
 
 # Monkeypatches
+require 'schleuder/mail/parts_list.rb'
 require 'schleuder/mail/message.rb'
 require 'schleuder/gpgme/import_status.rb'
 require 'schleuder/gpgme/key.rb'
