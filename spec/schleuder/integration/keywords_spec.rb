@@ -982,10 +982,12 @@ describe "user sends keyword" do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
+    keywords = Mail::Part.new
+    keywords.body = "\n\nx-listname: #{list.email}\nx-sign-this:"
+    mail.parts << keywords
     signed_content = File.read('spec/fixtures/example_key.txt')
     mail.attachments['example_key.txt'] = { mime_type: 'application/pgp-key',
                                             content: signed_content }
-    mail.body = "\n\nx-listname: #{list.email}\nx-sign-this:"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
