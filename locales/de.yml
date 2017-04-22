@@ -120,6 +120,7 @@ de:
     list_management:
       no_logfile: Keine Log-Datei für %{listname} gefunden. (Das kann an einem hohem Log-Level und der Abwesenheit von Fehlern liegen.)
       logfile_attached: Die Log-Datei für %{listname} hängt an.
+  list_public_key_subject: Schlüssel dieser Adresse
   list_public_key_attached: Der Schlüssel zu dieser Adresse hängt an.
   no_output_result: Deine Email ergab keinen Ausgabe-Text.
   owner_forward_prefix: Die folgende Email ging für die Listen-Besitzer/innen ein.

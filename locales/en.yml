@@ -120,6 +120,7 @@ en:
     list_management:
       no_logfile: No logfile could be found for %{listname}. (This might be caused by a high log-level and the absence of errors.)
       logfile_attached: The logfile for %{listname} is attached.
+  list_public_key_subject: Key for this address
   list_public_key_attached: Find the key for this address attached.
   no_output_result: Your message resulted in no output.
   owner_forward_prefix: The following message was received for the list-owners.

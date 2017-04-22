@@ -287,6 +287,29 @@ module Schleuder
       self.send("#{attrib}=", value)
     end
 
+    def send_list_key_to_subscriptions
+      mail = Mail.new
+      mail.from = self.email
+      mail.subject = I18n.t('list_public_key_subject')
+      mail.body = I18n.t('list_public_key_attached')
+      mail.attach_list_key!(self)
+      send_to_subscriptions(mail)
+      true
+    end
+
+    def send_to_subscriptions(mail)
+      logger.debug "Sending to subscriptions."
+      self.subscriptions.each do |subscription|
+        begin
+          subscription.send_mail(mail)
+        rescue => exc
+          msg = I18n.t('errors.delivery_error',
+                       { email: subscription.email, error: exc.to_s })
+          logger.error msg
+        end
+      end
+    end
+
     private
 
     def set_gnupg_home
