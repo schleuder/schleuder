@@ -21,8 +21,10 @@ module Schleuder
     end
 
     def fingerprint=(arg)
-      # Strip whitespace from incoming arg.
-      write_attribute(:fingerprint, arg.to_s.gsub(/\s*/, '').chomp)
+      # Allow input to contain whitespace and '0x'-prefix, but don't store it
+      # into the DB.
+      value = arg.to_s.gsub(/\s*/, '').gsub(/^0x/, '').chomp
+      write_attribute(:fingerprint, value)
     end
 
     def key

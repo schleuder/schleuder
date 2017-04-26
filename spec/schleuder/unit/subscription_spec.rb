@@ -48,7 +48,7 @@ describe Schleuder::Subscription do
   end
 
   it "normalizes the fingerprint" do
-    fingerprint = " 99 991 1000 10"
+    fingerprint = "0x 99 991 1000 10"
     subscription = build(:subscription, fingerprint: fingerprint)
 
     expect(subscription.fingerprint).to eq "99991100010"
