@@ -1290,7 +1290,6 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
-
   it "x-delete-key with not distincly matching argument" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
@@ -1326,8 +1325,74 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "x-get-logfile with debug level sends non-empty logfile" do
+    list = create(:list)
+    list.update_attribute(:log_level, 'debug')
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-get-logfile"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.request_address, list)
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.parts.last.body.to_s.lines.size).to be > 1
+    expect(message.parts.last.body.to_s).to include("Logfile created on")
+    expect(message.parts.last.body.to_s).to include("DEBUG")
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-get-logfile with error-level sends empty logfile" do
+    list = create(:list)
+    list.update_attribute(:log_level, 'error')
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-get-logfile"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.request_address, list)
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.first_plaintext_part.body.to_s.lines.size).to eql(1)
+    expect(message.body.to_s).to include("Logfile created on")
+
+    teardown_list_and_mailer(list)
+  end
 end
-
-
-
-
