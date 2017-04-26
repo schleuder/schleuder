@@ -138,8 +138,25 @@ module Mail
 
     def reply_to_signer(output)
       reply = self.reply
-      reply.body = Array(output).join("\n")
+      self.class.all_to_message_part(output).each do |part|
+        reply.add_part(part)
+      end
       self.signer.send_mail(reply)
+    end
+
+    def self.all_to_message_part(input)
+      Array(input).map do |thing|
+        case thing
+        when Mail::Part
+          thing
+        when String
+          Mail::Part.new do
+            body thing.to_s
+          end
+        else
+          raise "Don't know how to handle input: #{thing.inspect}"
+        end
+      end
     end
 
     def sendkey_request?

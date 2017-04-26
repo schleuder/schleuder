@@ -78,15 +78,17 @@ en:
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
-    keyword_admin_notify: "%{signer} sent keyword '%{keyword}' and received this response:"
+    keyword_admin_notify_request: "%{signer} sent the keyword '%{keyword}' with the values '%{arguments}' and received this response:"
+    keyword_admin_notify_lists: "%{signer} used the keyword '%{keyword}' with the values '%{arguments}' in a message sent to the list."
     key_management:
       deleted: "Deleted: %{key_string}"
       not_deletable: "May not be deleted: %{key_string}"
-      import_result: "Import result:"
+      import_result: "Import result:\n"
       key_import_status:
         imported: imported
         updated: updated
         unchanged: unchanged
+      matching_keys_intro: All keys from the list's keyring matching '%{input}' are attached to this message.
     resend:
       not_resent_no_keys: Resending to <%{email}> failed (%{num_keys} keys found and unencrypted sending disallowed).
       encrypted_to: Encrypted to
@@ -108,7 +110,7 @@ en:
         Subscribing %{email} failed:
 
         %{errors}.
-      list_of_subscriptions: Subscriptions
+      list_of_subscriptions: "Subscriptions:\n"
       set_fingerprint_only_self: Only admins may set fingerprints of subscriptions other than their own.
       fingerprint_set: Fingerprint for %{email} set to %{fingerprint}.
       setting_fingerprint_failed: |

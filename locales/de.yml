@@ -78,15 +78,17 @@ de:
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
-    keyword_admin_notify: "%{signer} schickte das Schlüsselwort '%{keyword}' und erhielt dies als Antwort:"
+    keyword_admin_notify_request: "%{signer} schickte das Schlüsselwort '%{keyword}' mit den Werten '%{arguments}' und erhielt dies als Antwort:"
+    keyword_admin_notify_lists: "%{signer} benutzte das Schlüsselwort '%{keyword}' mit den Werten '%{arguments}' in einer Email an die Liste."
     key_management:
       deleted: "Gelöscht: %{key_string}"
       not_deletable: "Darf nicht gelöscht werden: %{key_string}"
-      import_result: "Import-Ergebnis:"
+      import_result: "Import-Ergebnis:\n"
       key_import_status:
         imported: importiert
         updated: aktualisiert
         unchanged: unverändert
+      matching_keys_intro: Alle Schlüssel aus dem Schlüsselring der Liste, die '%{input}' enthalten, sind an diese Email angehängt.
     resend:
       not_resent_no_keys: Resending an <%{email}> fehlgeschlagen (%{num_keys} Schlüssel gefunden und unverschlüsseltes Senden verboten).
       encrypted_to: Verschlüsselt an
@@ -108,7 +110,7 @@ de:
         Abo für %{email} nicht eingetragen:
 
         %{errors}.
-      list_of_subscriptions: Abos
+      list_of_subscriptions: "Abos:\n"
       set_fingerprint_only_self: Nur admins dürfen den Fingerabdruck für andere Abos festlegen.
       fingerprint_set: Fingerabdruck für %{email} auf %{fingerprint} gesetzt.
       setting_fingerprint_failed: |

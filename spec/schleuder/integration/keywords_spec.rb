@@ -446,7 +446,7 @@ describe "user sends keyword" do
     message = raw.setup(list.request_address, list)
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.body.to_s.lines.size).to eql(3)
+    expect(message.first_plaintext_part.body.to_s.lines.size).to eql(3)
     expect(message.to_s).to include("schleuder@example.org	0x59C71FB38AEE22E091C78259D06350440F759BD3")
 
     teardown_list_and_mailer(list)
@@ -480,7 +480,7 @@ describe "user sends keyword" do
     message = raw.setup(list.request_address, list)
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.body.to_s.lines.size).to eql(3)
+    expect(message.first_plaintext_part.body.to_s.lines.size).to eql(3)
     expect(message.to_s).to include("schleuder@example.org	0x59C71FB38AEE22E091C78259D06350440F759BD3")
 
     teardown_list_and_mailer(list)
@@ -514,7 +514,7 @@ describe "user sends keyword" do
     message = raw.setup(list.request_address, list)
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.body.to_s.lines.size).to eql(1)
+    expect(message.first_plaintext_part.body.to_s.lines.size).to eql(1)
     expect(message.to_s).to include("Your message resulted in no output")
 
     teardown_list_and_mailer(list)
