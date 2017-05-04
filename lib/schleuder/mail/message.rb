@@ -370,6 +370,18 @@ module Mail
       end
     end
 
+
+    def attach_list_key!(list)
+      filename = "#{list.email}.asc"
+      self.add_file({
+        filename: filename,
+        content: list.export_key
+      })
+      self.attachments[filename].content_type = 'application/pgp-keys'
+      self.attachments[filename].content_description = 'OpenPGP public key'
+      true
+    end
+
     private
 
 
