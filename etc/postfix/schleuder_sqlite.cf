@@ -20,9 +20,9 @@
 
 dbpath = /var/lib/schleuder/db.sqlite
 
-query = select 'present' where '%s' in (
-  select email from lists union
-  select replace(email, '@', '-bounces@') from lists union
-  select replace(email, '@', '-owner@') from lists union
-  select replace(email, '@', '-request@') from lists union
-  select replace(email, '@', '-sendkey@') from lists)
+query = select 'present' from lists
+          where email = '%s'
+          or    email = replace('%s', '-bounces@', '@')
+          or    email = replace('%s', '-owner@', '@')
+          or    email = replace('%s', '-request@', '@')
+          or    email = replace('%s', '-sendkey@', '@')
