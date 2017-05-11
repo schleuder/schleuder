@@ -5,9 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.1.0] / Unreleased
 
+### Added
+
+* `X-GET-LOGFILE`. Sends you the logfile of the list.
+* `X-ATTACH-LISTKEY`. Attaches the list's key to a message. Useful in combination with `X-RESEND`.
+* `X-GET-VERSION`. Sends you the version of Schleuder that is running your list.
+* API-endpoint to trigger sending the list's key to all subscriptions.
+
+### Changed
+
+* Don't write errors of list-plugins into the list of pseudo-headers. List-plugins must handle errors on their own.
+* Fix x-get-key for multiple keys per match, and attach the resulting keys.
+* Tolerate 0x-prefix on input for fingerprints of subscriptions.
+* `X-GET-KEY` returns keys as attachments now.
+
 ### Fixed
 
-* Fix excessive empty lines in output of refresh-keys.
+* Make `public_footer` appear at the bottom of messages, not at the top.
+* Remove excessive empty lines in output of refresh-keys.
+* Amended list of dependencies in README.
+* Fix `X-GET-KEY` for multiple keys per match.
 
 
 ## [3.0.4] / 2017-04-15
