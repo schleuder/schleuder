@@ -17,6 +17,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Don't write errors of list-plugins into the list of pseudo-headers. List-plugins must handle errors on their own.
 * Fix x-get-key for multiple keys per match, and attach the resulting keys.
 * Tolerate 0x-prefix on input for fingerprints of subscriptions.
+* Tolerate spaces on input for fingerprints in keywords.
 * `X-GET-KEY` returns keys as attachments now.
 
 ### Fixed
