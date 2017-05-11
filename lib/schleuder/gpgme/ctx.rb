@@ -64,9 +64,9 @@ module GPGME
       output = keys.map do |key|
         # Sleep a short while to make traffic analysis less easy.
         sleep rand(1.0..5.0)
-        refresh_key(key.fingerprint)
+        refresh_key(key.fingerprint).presence
       end
-      output.join("\n")
+      output.compact.join("\n")
     end
 
     def refresh_key(fingerprint)
@@ -80,7 +80,7 @@ module GPGME
         [
           refresh_key_filter_messages(gpgerr),
           refresh_key_filter_messages(gpgout).grep(/^gpgkeys: /)
-        ].flatten.compact
+        ].flatten.compact.join("\n")
       else
         translate_output('key_updated', gpgout)
       end

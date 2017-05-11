@@ -3,6 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.0] / Unreleased
+
+### Fixed
+
+* Fix excessive empty lines in output of refresh-keys.
+
+
 ## [3.0.4] / 2017-04-15
 
 ### Changed
