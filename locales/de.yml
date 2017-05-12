@@ -133,8 +133,8 @@ de:
   notice: Hinweis
   incoming_message: Eingehende Email
   forward_all_incoming_to_admins: Die angehängte Email ging ein.
-  forward_bounce_to_admins: Die angehängte Email ging als zurückgewiesen (bounce) ein.
-  bounce: Zurückgewiesene Nachricht
+  forward_automated_message_to_admins: Die angehängte Email wurde vermutlich von einer Maschine und nicht von einem Menschen versendet. Daher ist sie nicht über die Liste verteilt sondern an euch Admins weitergeleitet worden.
+  automated_message_subject: Automatische Nachricht empfangen
   check_keys: Schlüsselprüfung
   check_keys_intro: "Bitte kümmere dich um die folgenden Schlüssel für Liste %{email}."
   key_expires: Schlüssel %{fingerprint} %{email} läuft in %{days} Tagen ab.

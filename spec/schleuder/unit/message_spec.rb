@@ -17,5 +17,26 @@ describe Mail::Message do
     expect(message.parts.first.mime_type).to eql('image/png')
     expect(message.parts.last.mime_type).to eql('text/plain')
   end
+
+  # TODO: test message with "null" address ("<>") as Return-Path. I couldn't
+  # bring Mail to generate such a message, yet.
+  
+  it "recognizes a message sent to listname-bounce@hostname as automated
+  message" do
+    list = create(:list)
+    mail = Mail.new
+    mail = mail.setup('something-bounce@localhost', list)
+
+    expect(mail.automated_message?).to be(true)
+  end
+
+  it "recognizes a message with 'Auto-Submitted'-header as automated message" do
+    list = create(:list)
+    mail = Mail.new
+    mail.header['Auto-Submitted'] = 'yes'
+    mail = mail.setup('something@localhost', list)
+
+    expect(mail.automated_message?).to be(true)
+  end
 end
 

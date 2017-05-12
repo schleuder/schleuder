@@ -171,7 +171,7 @@ module Mail
       @recipient.match(/-request@/)
     end
 
-    def bounce?
+    def automated_message?
       @recipient.match(/-bounce@/) ||
           # Empty Return-Path
           self.return_path.to_s == '<>' ||
