@@ -22,7 +22,7 @@ dbpath = /var/lib/schleuder/db.sqlite
 
 query = select 'present' from lists
           where email = '%s'
-          or    email = replace('%s', '-bounces@', '@')
+          or    email = replace('%s', '-bounce@', '@')
           or    email = replace('%s', '-owner@', '@')
           or    email = replace('%s', '-request@', '@')
           or    email = replace('%s', '-sendkey@', '@')
