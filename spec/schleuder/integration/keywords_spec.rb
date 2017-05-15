@@ -906,6 +906,40 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "x-fetch-key with fingerprint of unchanged key" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-fetch-KEY: 0x59C71FB38AEE22E091C78259D06350440F759BD3"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    with_sks_mock do
+      begin
+        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+      rescue SystemExit
+      end
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.request_address, list)
+
+    expect(message.first_plaintext_part.body.to_s).to eql("Key 59C71FB38AEE22E091C78259D06350440F759BD3 was fetched (unchanged).")
+
+    teardown_list_and_mailer(list)
+  end
+
   it "x-resend" do
     list = create(:list, public_footer: "-- \nblablabla")
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
