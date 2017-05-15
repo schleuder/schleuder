@@ -1371,7 +1371,7 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
-  it "x-delete-key with not distincly matching argument" do
+  it "x-delete-key with not distinctly matching argument" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     list.import_key(File.read('spec/fixtures/example_key.txt'))
