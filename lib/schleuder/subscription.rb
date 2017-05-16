@@ -71,7 +71,7 @@ module Schleuder
     def ensure_headers(mail)
       mail.to = self.email
       mail.from = self.list.email
-      mail.return_path = self.list.bounce_address
+      mail.sender = self.list.bounce_address
       mail
     end
 

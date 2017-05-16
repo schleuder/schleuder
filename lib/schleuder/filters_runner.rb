@@ -67,7 +67,7 @@ module Schleuder
         logger.debug "Replying to #{sender_addr.inspect}"
         reply = @mail.reply
         reply.from = @list.email
-        reply.return_path = @list.bounce_address
+        reply.sender = @list.bounce_address
         reply.body = msg
         gpg_opts = @list.gpg_sign_options
         if @list.keys("<#{sender_addr}>").present?
