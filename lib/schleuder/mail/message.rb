@@ -172,7 +172,7 @@ module Mail
     end
 
     def automated_message?
-      @recipient.match(/-bounce@/) ||
+      @recipient.match(/-bounce@/).present? ||
           # Empty Return-Path
           self.return_path.to_s == '<>' ||
           # Auto-Submitted exists and does not equal 'no'
