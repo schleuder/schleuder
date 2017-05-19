@@ -133,8 +133,8 @@ en:
   notice: Notice
   incoming_message: Incoming message
   forward_all_incoming_to_admins: The attached message was received.
-  forward_bounce_to_admins: The attached message was received as bounce.
-  bounce: Bounced message
+  forward_automated_message_to_admins: Attached is a message that probably was sent by a machine, not a human. Therefore it has not been passed on to the list, but only to you, the admins.
+  automated_message_subject: Automated message received
   check_keys: Keys check
   check_keys_intro: "Please take care of these keys for list %{email}."
   key_expires: Key %{fingerprint} expires in %{days} days.

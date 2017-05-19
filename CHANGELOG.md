@@ -19,6 +19,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Tolerate 0x-prefix on input for fingerprints of subscriptions.
 * Tolerate spaces on input for fingerprints in keywords.
 * `X-GET-KEY` returns keys as attachments now.
+* The texts that describe the forwarded automated messages now reflect that not all of those were bounces.
 
 ### Fixed
 

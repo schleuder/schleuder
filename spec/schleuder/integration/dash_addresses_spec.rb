@@ -85,8 +85,8 @@ describe 'someone sends an email to a listname-dash-address' do
     message = raw_msg.setup(list.email, list)
 
     expect(message.to).to eql(['admin@example.org'])
-    expect(message.subject).to eql('Bounced message')
-    expect(message.parts.first.body.to_s).to eql('The attached message was received as bounce.')
+    expect(message.subject).to eql(I18n.t('automated_message_subject'))
+    expect(message.parts.first.body.to_s).to eql(I18n.t('forward_automated_message_to_admins'))
     expect(message.parts.last.mime_type).to eql('message/rfc822')
     expect(message.parts.last.body.to_s).to include('From: mailer-daemon@example.org')
     expect(message.parts.last.body.to_s).to include(mail.message_id)
