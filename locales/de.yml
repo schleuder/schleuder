@@ -145,6 +145,7 @@ de:
   key_updated: Schlüssel %{fingerprint} wurde aktualisiert (%{states}).
   key_fetched: Schlüssel %{fingerprint} wurde geholt (%{states}).
   import_states:
+    unchanged: unverändert
     new_key: neuer Schlüssel
     new_uids: neue User-IDs
     new_subkeys: neue Unterschlüssel

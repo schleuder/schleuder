@@ -27,6 +27,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Remove excessive empty lines in output of refresh-keys.
 * Amended list of dependencies in README.
 * Fix `X-GET-KEY` for multiple keys per match.
+* Also report if a key-import didn't change a present key.
 
 
 ## [3.0.4] / 2017-04-15

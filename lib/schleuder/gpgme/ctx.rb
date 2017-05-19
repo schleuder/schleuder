@@ -131,12 +131,15 @@ module GPGME
 
         import_status, fingerprint = import_ok.split(/\s/).slice(2, 2)
         import_status = import_status.to_i
-        next if import_status == 0
-
         states = []
-        IMPORT_FLAGS.each do |text, int|
-          if (import_status & int) > 0
-            states << I18n.t("import_states.#{text}")
+
+        if import_status == 0
+          states << I18n.t("import_states.unchanged")
+        else
+          IMPORT_FLAGS.each do |text, int|
+            if (import_status & int) > 0
+              states << I18n.t("import_states.#{text}")
+            end
           end
         end
         result[fingerprint] = states
