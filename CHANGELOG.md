@@ -15,11 +15,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 * Don't write errors of list-plugins into the list of pseudo-headers. List-plugins must handle errors on their own.
+* Allow request-plugins to return attachments.
 * Fix x-get-key for multiple keys per match, and attach the resulting keys.
 * Tolerate 0x-prefix on input for fingerprints of subscriptions.
 * Tolerate spaces on input for fingerprints in keywords.
 * `X-GET-KEY` returns keys as attachments now.
+* `X-SIGN-THIS` returns attachments now, too.
 * The texts that describe the forwarded automated messages now reflect that not all of those were bounces.
+* Use single SQL-query instead of five, in select-statement in postfix/schleuder_sqlite.cf.
+* Use sender() to specify the return-address, instead of setting a Return-Path.
 
 ### Fixed
 
@@ -28,6 +32,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Amended list of dependencies in README.
 * Fix `X-GET-KEY` for multiple keys per match.
 * Also report if a key-import didn't change a present key.
+* Fix bounce-address in postfix/schleuder_sqlite.cf.
 
 
 ## [3.0.4] / 2017-04-15
