@@ -38,5 +38,15 @@ describe Mail::Message do
 
     expect(mail.automated_message?).to be(true)
   end
+
+  it "recognizes a cron message with 'Auto-Submitted'-header NOT as automated message" do
+    list = create(:list)
+    mail = Mail.new
+    mail.header['Auto-Submitted'] = 'yes'
+    mail.header['X-Cron-Env'] = '<MAILTO=root>'
+    mail = mail.setup('something@localhost', list)
+
+    expect(mail.automated_message?).to be(false)
+  end
 end
 

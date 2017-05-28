@@ -175,8 +175,11 @@ module Mail
       @recipient.match(/-bounce@/).present? ||
           # Empty Return-Path
           self.return_path.to_s == '<>' ||
-          # Auto-Submitted exists and does not equal 'no'
-          ( self['Auto-Submitted'].present? && self['Auto-Submitted'].to_s.downcase != 'no' )
+          # Auto-Submitted exists and does not equal 'no' and no cron header
+          # present, as cron emails have the auto-submitted header.
+          ( self['Auto-Submitted'].present? && \
+            self['Auto-Submitted'].to_s.downcase != 'no' && \
+            !self['X-Cron-Env'].present?)
     end
 
     def keywords
