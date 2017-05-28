@@ -109,6 +109,19 @@ describe 'cli' do
       expect(subscription_emails.sort).to eq(['schleuder2@example.org',
                                               'schleuder2-member@example.org'].sort)
     end
+    it "does not fail on admin without key" do
+      v2list_path = 'spec/fixtures/v2list_admin_without_key'
+
+      output = run_cli("migrate #{v2list_path}")
+      expect(output).not_to match('Error:')
+
+      list = Schleuder::List.by_recipient('v2list@example.org')
+      admin_emails = list.admins.map(&:email)
+
+
+      expect(admin_emails.sort).to eq( ['schleuder2@example.org',
+                                        'schleuder2-nokey@example.org' ].sort)
+    end
   end
 
   context '#refresh_keys' do
