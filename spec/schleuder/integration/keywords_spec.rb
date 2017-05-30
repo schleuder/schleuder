@@ -1015,6 +1015,80 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "x-resend with two matching keys, one of which is expired" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    list.import_key(File.read("spec/fixtures/expired_key.txt"))
+    list.import_key(File.read("spec/fixtures/bla_foo_key.txt"))
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.email => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    content_body = "Hello again!\n"
+    mail.body = "x-listname: #{list.email}\nX-resend-encrypted-only: bla@foo\n#{content_body}"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+    rescue SystemExit
+    end
+    resent_message = Mail::TestMailer.deliveries.first
+    raw = Mail::TestMailer.deliveries.last
+    message = raw.setup(list.email, list)
+
+    expect(list.keys('bla@foo').size).to eql(2)
+    expect(resent_message.to).to eql(['bla@foo'])
+    expect(resent_message.content_type).to match(/^multipart\/encrypted.*application\/pgp-encrypted/)
+    expect(message.first_plaintext_part.body.to_s).to include("Resent: Encrypted to bla@foo (87E65ED2081AE3D16BE4F0A5EBDBE899251F2412)")
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-resend with expired key" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    list.import_key(File.read("spec/fixtures/expired_key.txt"))
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.email => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    content_body = "Hello again!\n"
+    mail.body = "x-listname: #{list.email}\nX-resend-encrypted-only: bla@foo\n#{content_body}"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.email, list)
+
+    expect(list.keys('bla@foo').size).to eql(1)
+    expect(message.first_plaintext_part.to_s).to include("Resending to <bla@foo> failed (0 keys found")
+
+    teardown_list_and_mailer(list)
+  end
+
   it "x-resend with wrong x-listname" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
