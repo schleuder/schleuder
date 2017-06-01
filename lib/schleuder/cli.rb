@@ -213,7 +213,9 @@ module Schleuder
       list.save!
 
       # Subscribe members
-      YAML.load(File.read(dir + 'members.conf')).each do |member|
+      members = YAML.load(File.read(dir + 'members.conf'))
+      members.uniq!{|m| m['email'] }
+      members.each do |member|
         list.subscribe(member['email'], member['key_fingerprint'])
       end
 

@@ -86,6 +86,17 @@ describe 'cli' do
 
       expect(subscription_emails).to eq ['schleuder2@example.org']
     end
+
+    it "does not fail on duplicated v2 subscriptions" do
+      v2list_path = 'spec/fixtures/v2list_duplicate_members'
+
+      output = run_cli("migrate #{v2list_path}")
+      expect(output).not_to match('Error:')
+      list = Schleuder::List.by_recipient('v2list@example.org')
+      subscription_emails = list.subscriptions.map(&:email)
+
+      expect(subscription_emails).to eq ['schleuder2@example.org']
+    end
   end
 
   context '#refresh_keys' do
