@@ -9,6 +9,7 @@ module Mail
     # strange errors about wrong number of arguments when overriding
     # Message#initialize.
     def setup(recipient, list)
+      strip_html_from_alternative!
       if self.encrypted?
         new = self.decrypt(verify: true)
         ## Work around a bug in mail-gpg: when decrypting pgp/mime the
@@ -33,7 +34,23 @@ module Mail
       # might be gone (e.g. request-keywords that delete subscriptions or
       # keys).
       new.signer
+      self.dynamic_pseudoheaders.each do |str|
+        new.add_pseudoheader(str)
+      end
       new
+    end
+
+    def strip_html_from_alternative!
+      if self[:content_type].content_type != 'multipart/alternative' || ! self.to_s.include?('BEGIN PGP ')
+        return false
+      end
+
+      Schleuder.logger.debug "Stripping html-part from multipart/alternative-message"
+      self.parts.delete_if do |part|
+        part[:content_type].content_type == 'text/html'
+      end
+      self.content_type = 'multipart/mixed'
+      add_pseudoheader(:note, I18n.t("pseudoheaders.stripped_html_from_multialt"))
     end
 
     def clean_copy(with_pseudoheaders=false)
@@ -223,9 +240,13 @@ module Mail
       _add_subject_prefix(:out)
     end
 
-    def add_pseudoheader(key, value)
+    def add_pseudoheader(string_or_key, value=nil)
       @dynamic_pseudoheaders ||= []
-      @dynamic_pseudoheaders << make_pseudoheader(key, value)
+      if value.present?
+        @dynamic_pseudoheaders << make_pseudoheader(string_or_key, value)
+      else
+        @dynamic_pseudoheaders << string_or_key.to_s
+      end
     end
 
     def make_pseudoheader(key, value)

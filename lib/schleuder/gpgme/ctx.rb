@@ -173,7 +173,7 @@ module GPGME
         else
           output = stdout.readlines
         end
-        stdin.close
+        stdin.close if ! stdin.closed?
         errors = stderr.readlines
         exitcode = thread.value.exitstatus
       end

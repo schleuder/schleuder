@@ -54,5 +54,43 @@ describe Mail::Message do
 
     expect(mail.automated_message?).to be(false)
   end
+
+  it "#setup strips HTML-part from multipart/alternative-message that contains ascii-armored PGP-data" do
+    list = create(:list)
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = 'outside@example.org'
+    content = encrypt_string(list, "blabla")
+    mail.text_part = content
+    mail.html_part = "<p>#{content}</p>"
+    mail.subject = "test"
+
+    message = mail.setup(list.email, list)
+
+    expect(message[:content_type].content_type).to eql("multipart/mixed")
+    expect(message.parts.size).to be(1)
+    expect(message.parts.first[:content_type].content_type).to eql("text/plain")
+    expect(message.dynamic_pseudoheaders).to include("Note: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.")
+  end
+
+  it "#setup does NOT strip HTML-part from multipart/alternative-message that does NOT contain ascii-armored PGP-data" do
+    list = create(:list)
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = 'outside@example.org'
+    content = "blabla"
+    mail.text_part = content
+    mail.html_part = "<p>#{content}</p>"
+    mail.subject = "test"
+
+    message = mail.setup(list.email, list)
+
+    expect(message[:content_type].content_type).to eql("multipart/alternative")
+    expect(message.parts.size).to be(2)
+    expect(message.parts.first[:content_type].content_type).to eql("text/plain")
+    expect(message.parts.last[:content_type].content_type).to eql("text/html")
+    expect(message.dynamic_pseudoheaders).not_to include("Note: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.")
+  end
+
 end
 
