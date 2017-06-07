@@ -65,9 +65,6 @@ ENV["SCHLEUDER_ROOT"] = rootdir.to_s
 GPGME::Ctx.set_gpg_path_from_env
 GPGME::Ctx.check_gpg_version
 
-# Require lib for database specified in config.
-require Schleuder::Conf.database['adapter']
-
 # TODO: Test if database is writable if sqlite.
 ActiveRecord::Base.establish_connection(Schleuder::Conf.database)
 ActiveRecord::Base.logger = Schleuder.logger
