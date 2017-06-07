@@ -25,6 +25,8 @@ describe Mail::Message do
   message" do
     list = create(:list)
     mail = Mail.new
+    # Trigger the setting of mandatory headers.
+    mail.to_s
     mail = mail.setup('something-bounce@localhost', list)
 
     expect(mail.automated_message?).to be(true)
@@ -34,6 +36,8 @@ describe Mail::Message do
     list = create(:list)
     mail = Mail.new
     mail.header['Auto-Submitted'] = 'yes'
+    # Trigger the setting of mandatory headers.
+    mail.to_s
     mail = mail.setup('something@localhost', list)
 
     expect(mail.automated_message?).to be(true)
@@ -44,6 +48,8 @@ describe Mail::Message do
     mail = Mail.new
     mail.header['Auto-Submitted'] = 'yes'
     mail.header['X-Cron-Env'] = '<MAILTO=root>'
+    # Trigger the setting of mandatory headers.
+    mail.to_s
     mail = mail.setup('something@localhost', list)
 
     expect(mail.automated_message?).to be(false)
