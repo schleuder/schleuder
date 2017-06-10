@@ -36,6 +36,25 @@ module Schleuder
       list.keys("0x#{self.fingerprint}").first
     end
 
+    def replace_key(material)
+      imports = list.import_key(material)
+      case imports.size
+      when 0
+        return [false, "Error: No key material found in body or attachments."]
+      when 1
+        fingerprint = imports.first.fpr
+        old_key = key.dup
+        self.update_attribute(:fingerprint, fingerprint)
+        if ! list.admin_only?('delete-key')
+          old_key.delete!
+        end
+        return [true, "Assigned #{fingerprint} to subscription"]
+      else
+        # send error and exit: too many keys
+        return [false, "Too many keys in input! All have been imported, but none has been assigned.\nFound keys:\n\n#{imports.map(&:to_s)}"]
+      end
+    end
+
     def send_mail(mail)
       list.logger.debug "Preparing sending to #{self.inspect}"
 

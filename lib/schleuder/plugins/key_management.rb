@@ -3,18 +3,24 @@ module Schleuder
     def self.add_key(arguments, list, mail)
       out = [I18n.t('plugins.key_management.import_result')]
 
-      if mail.has_attachments?
-        results = self.import_keys_from_attachments(list, mail)
-      else
-        results = [self.import_key_from_body(list, mail)]
-      end
-
-      out << results.compact.collect(&:imports).flatten.map do |import_status|
+      out << import_keys(mail).map do |import_status|
         str = I18n.t("plugins.key_management.key_import_status.#{import_status.action}")
         "#{import_status.fpr}: #{str}"
       end
 
       out.join("\n")
+    end
+
+    def self.replace_key(arguments, list, mail)
+      # TODO: texts, errors, enable for other subscriptions if signer is admin
+      if mail.has_attachments?
+        key_material = mail.attachments.find { |attchm| is_armored_key?(attchm.body.to_s) }
+      else
+        key_material = mail.first_plaintext_part.body.to_s
+      end
+
+      _, text = mail.signer.replace_key(key_material)
+      text
     end
 
     def self.delete_key(arguments, list, mail)
@@ -91,6 +97,15 @@ module Schleuder
       lines.map do |line|
         /\A((comment|version|messageid|hash|charset):.*|[0-9a-z\/=+]+)\Z/i =~ line
       end.all?
+    end
+
+    def self.import_keys(mail)
+      if mail.has_attachments?
+        results = self.import_keys_from_attachments(mail.list, mail)
+      else
+        results = [self.import_key_from_body(mail.list, mail)]
+      end
+      results.compact.collect(&:imports).flatten
     end
 
     def self.import_keys_from_attachments(list, mail)
