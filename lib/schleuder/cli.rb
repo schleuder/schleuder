@@ -225,7 +225,7 @@ module Schleuder
           sub.admin = true
           sub.save!
         else
-          adminfpr = member['key_fingerprint'] || list.keys(member['email']).first.fingerprint
+          adminfpr = find_fingerprint(member, list)
           list.subscribe(member['email'], adminfpr, true)
         end
       end
