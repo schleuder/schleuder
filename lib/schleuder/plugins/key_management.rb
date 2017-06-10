@@ -19,7 +19,7 @@ module Schleuder
 
     def self.delete_key(arguments, list, mail)
       arguments.map do |argument|
-        keys = list.keys(argument)
+        keys = list.all_keys(argument)
         case keys.size
         when 0
           I18n.t("errors.no_match_for", input: argument)
@@ -53,7 +53,7 @@ module Schleuder
 
     def self.get_key(arguments, list, mail)
       arguments.map do |argument|
-        keys = list.keys(argument)
+        keys = list.all_keys(argument)
         if keys.blank?
           I18n.t("errors.no_match_for", input: argument)
         else

@@ -280,12 +280,13 @@ describe Schleuder::List do
     end
   end
 
-  describe "#keys" do
+  # TODO: test new methods
+  describe "#all_keys" do
     it "it returns an array with the keys of the list" do
       list = create(:list)
 
-      expect(list.keys).to be_kind_of Array
-      expect(list.keys.length).to eq 1
+      expect(list.all_keys).to be_kind_of Array
+      expect(list.all_keys.length).to eq 1
     end
 
     it "returns an array of keys matching the given fingerprint" do
@@ -294,16 +295,16 @@ describe Schleuder::List do
         fingerprint: "59C71FB38AEE22E091C78259D06350440F759BD3"
       )
 
-      expect(list.keys).to be_kind_of Array
-      expect(list.keys.first.fingerprint).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
+      expect(list.all_keys).to be_kind_of Array
+      expect(list.all_keys.first.fingerprint).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
     end
 
     it "returns an array with the keys matching the given email address" do
       list = create(:list, email: "schleuder@example.org")
 
-      expect(list.keys("schleuder@example.org").length).to eq 1
+      expect(list.all_keys("schleuder@example.org").length).to eq 1
       expect(
-        list.keys("schleuder@example.org").first.fingerprint
+        list.all_keys("schleuder@example.org").first.fingerprint
       ).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
     end
 
@@ -311,7 +312,7 @@ describe Schleuder::List do
       list = create(:list, email: "schleuder@example.org")
 
       expect(
-        list.keys("bla <schleuder@example.org>").first.fingerprint
+        list.all_keys("bla <schleuder@example.org>").first.fingerprint
       ).to eq "59C71FB38AEE22E091C78259D06350440F759BD3"
     end
   end
@@ -321,7 +322,7 @@ describe Schleuder::List do
       list = create(:list)
       key = File.read("spec/fixtures/example_key.txt")
 
-      expect { list.import_key(key) }.to change { list.keys.count }.by(1)
+      expect { list.import_key(key) }.to change { list.all_keys.count }.by(1)
 
       list.delete_key("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
     end
@@ -335,7 +336,7 @@ describe Schleuder::List do
 
       expect do
         list.delete_key("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
-      end.to change { list.keys.count }.by(-1)
+      end.to change { list.all_keys.count }.by(-1)
     end
 
     it "returns false if no key with the fingerprint was found" do

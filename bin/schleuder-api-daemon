@@ -309,7 +309,7 @@ class SchleuderApiDaemon < Sinatra::Base
 
   namespace '/keys' do
     get '.json' do
-      keys = list.keys.sort_by(&:email).map do |key|
+      keys = list.all_keys.sort_by(&:email).map do |key|
         key_to_json(key)
       end
       json keys
@@ -328,7 +328,7 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     get '/:fingerprint.json' do |fingerprint|
-      if key = list.key(fingerprint)
+      if key = list.all_keys(fingerprint).first
         json key_to_json(key)
       else
         404

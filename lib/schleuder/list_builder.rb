@@ -87,7 +87,7 @@ module Schleuder
       gpg.generate_key(key_params(list))
 
       # Get key without knowing the fingerprint yet.
-      keys = list.keys(@listname)
+      keys = list.usable_keys(@listname)
       if keys.empty?
         raise Errors::KeyGenerationFailed.new(@list_dir, @listname)
       elsif keys.size > 1

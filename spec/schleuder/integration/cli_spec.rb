@@ -20,7 +20,7 @@ describe 'cli' do
 
       expect(output).not_to match('Error:')
 
-      keys = list.keys.map(&:fingerprint)
+      keys = list.all_keys.map(&:fingerprint)
       expect(list.key.fingerprint).to eq '0392CF72B345256BB730049789226FD6A42B2A7A'
       expect(keys).to include 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE'
     end

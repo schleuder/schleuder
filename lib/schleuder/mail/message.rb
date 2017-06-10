@@ -132,7 +132,7 @@ module Mail
     # primary keys, so we need to look up the key.
     def signing_key
       if signature.present?
-        @signing_key ||= list.keys(signature.fpr).first
+        @signing_key ||= list.all_keys(signature.fpr).first
       end
     end
 

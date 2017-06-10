@@ -14,9 +14,14 @@ module GPGME
       result
     end
 
-    def find_keys(input=nil, secret_only=nil)
+    def find_all_keys(input=nil, secret_only=false)
       _, input = clean_and_classify_input(input)
       keys(input, secret_only)
+    end
+
+    def find_keys(input=nil, secret_only=false)
+      keys = find_all_keys(input, secret_only)
+      keys.select! { |key| key.usable_for?(:encrypt) }
     end
 
     def clean_and_classify_input(input)

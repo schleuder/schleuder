@@ -89,20 +89,24 @@ module Schleuder
       subscriptions.where(admin: true)
     end
 
-    def key(fingerprint=self.fingerprint)
-      keys(fingerprint).first
+    def key
+      gpg.find_usable_keys(self.fingerprint).first
     end
 
     def secret_key
-      keys(self.fingerprint, true).first
+      gpg.find_usable_keys(self.fingerprint, true).first
     end
 
-    def keys(identifier=nil, secret_only=nil)
-      gpg.find_keys(identifier, secret_only)
+    def usable_keys(identifier=nil)
+      gpg.find_usable_keys(identifier)
+    end
+
+    def all_keys(identifier=nil)
+      gpg.find_all_keys(identifier)
     end
 
     def distinct_key(identifier)
-      keys = keys(identifier)
+      keys = usable_keys(identifier)
       if keys.size == 1
         return [keys.first, 1]
       else
@@ -115,7 +119,7 @@ module Schleuder
     end
 
     def delete_key(fingerprint)
-      if key = keys(fingerprint).first
+      if key = key(fingerprint)
         key.delete!
         true
       else
@@ -124,7 +128,7 @@ module Schleuder
     end
 
     def export_key(fingerprint=self.fingerprint)
-      key = keys(fingerprint).first
+      key = key(fingerprint)
       if key.blank?
         return false
       end
@@ -137,7 +141,7 @@ module Schleuder
       unusable = []
       expiring = []
 
-      keys.each do |key|
+      all_keys.each do |key|
         expiry = key.subkeys.first.expires
         if expiry && expiry > now && expiry < checkdate
           # key expires in the near future
@@ -172,7 +176,7 @@ module Schleuder
     end
 
     def refresh_keys
-      gpg.refresh_keys(self.keys)
+      gpg.refresh_keys(self.all_keys)
     end
 
     def fetch_keys(input)
