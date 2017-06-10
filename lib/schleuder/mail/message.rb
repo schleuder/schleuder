@@ -341,7 +341,7 @@ module Mail
           pref << ')'
         end
 
-        fingerprint = list.key.fingerprint
+        fingerprint = list.fingerprint
         comment = "(Send an email to #{list.sendkey_address} to receive the public-key)"
 
         self['OpenPGP'] = "id=0x#{fingerprint} #{comment}; #{pref}"
