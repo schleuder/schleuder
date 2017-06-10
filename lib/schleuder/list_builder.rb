@@ -61,9 +61,9 @@ module Schleuder
         # Try if we can find the admin-key "manually". Maybe it's present
         # in the keyring aleady.
         if admin_fpr.blank?
-          admin_key = list.keys(@adminemail).first
-          if admin_key.present?
-            admin_fpr = admin_key.fingerprint
+          key, _ = list.distinct_key(@adminemail)
+          if key
+            admin_fpr = key.fingerprint
           end
         end
         sub = list.subscribe(@adminemail, admin_fpr, true)
