@@ -152,7 +152,8 @@ class SchleuderApiDaemon < Sinatra::Base
         email: key.email,
         ascii: key.armored,
         expiry: key.expires,
-        trust_issues: key.usability_issue
+        trust_issues: key.usability_issue,
+        generated_at: key.subkeys.first.timestamp.strftime("%Y-%m-%d")
       }
     end
   end
