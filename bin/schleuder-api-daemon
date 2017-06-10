@@ -319,6 +319,10 @@ class SchleuderApiDaemon < Sinatra::Base
       json list(requested_list_id).import_key(input)
     end
 
+    get '/check_keys.json' do
+      json result: list.check_keys
+    end
+
     get '/:fingerprint.json' do |fingerprint|
       if key = list.key(fingerprint)
         json key_to_json(key)
@@ -333,10 +337,6 @@ class SchleuderApiDaemon < Sinatra::Base
       else
         404
       end
-    end
-
-    get '/check_keys.json' do
-      json result: list.check_keys
     end
   end
 

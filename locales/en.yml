@@ -130,9 +130,9 @@ en:
   forward_bounce_to_admins: The attached message was received as bounce.
   bounce: Bounced message
   check_keys: Keys check
-  check_keys_intro: "Please take care of these keys for list %{email}.\n"
-  key_expires: "Expires in %{days} days:\n0x%{fingerprint} %{email}"
-  key_unusable: "Is %{usability_issue}:\n0x%{fingerprint} %{email}"
+  check_keys_intro: "Please take care of these keys for list %{email}."
+  key_expires: Key %{fingerprint} expires in %{days} days.
+  key_unusable: Key %{fingerprint} is %{usability_issue}.
   missed_message_due_to_unusable_key: "You missed an email from %{list_email} because your subscription isn't associated with a (usable) OpenPGP key. Please fix this."
   refresh_keys: Keys update
   refresh_keys_intro: "Refreshing all keys from the keyring of list %{email} resulted in this:"

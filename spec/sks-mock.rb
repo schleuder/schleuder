@@ -19,6 +19,8 @@ class SksMock < Sinatra::Base
     case params['search']
     when '0x98769E8A1091F36BD88403ECF71A3F8412D83889', 'admin@example.org'
       File.read('spec/fixtures/expired_key_extended.txt')
+    when '0x6EE51D78FD0B33DE65CCF69D2104E20E20889F66', 'old@example.org'
+      File.read('spec/fixtures/olduid_key_with_newuid.txt')
     else
       404
     end

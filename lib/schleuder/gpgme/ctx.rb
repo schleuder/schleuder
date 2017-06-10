@@ -66,7 +66,7 @@ module GPGME
         sleep rand(1.0..5.0)
         refresh_key(key.fingerprint)
       end
-      output.join
+      output.join("\n")
     end
 
     def refresh_key(fingerprint)
