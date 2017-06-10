@@ -496,4 +496,18 @@ describe Schleuder::List do
       teardown_list_and_mailer(list)
     end
   end
+
+  describe "send_list_key_to_subscriptions" do
+    it "sends its key to all subscriptions" do
+      list = create(:list, send_encrypted_only: false)
+      list.subscribe("admin@example.org", nil, true)
+      list.send_list_key_to_subscriptions
+
+      raw = Mail::TestMailer.deliveries.first
+
+      expect(raw.parts.first.parts.first.body.to_s).to eql("Find the key for this address attached.")
+      expect(raw.parts.first.parts.last.body.to_s).to include("4096R/59C71FB38AEE22E091C78259D06350440F759BD3")
+      expect(raw.parts.first.parts.last.body.to_s).to include("-----BEGIN PGP PUBLIC KEY BLOCK-----")
+    end
+  end
 end

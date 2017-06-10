@@ -21,6 +21,8 @@ class SksMock < Sinatra::Base
       File.read('spec/fixtures/expired_key_extended.txt')
     when '0x6EE51D78FD0B33DE65CCF69D2104E20E20889F66', 'old@example.org'
       File.read('spec/fixtures/olduid_key_with_newuid.txt')
+    when '0x59C71FB38AEE22E091C78259D06350440F759BD3'
+      File.read('spec/fixtures/default_list_key.txt')
     else
       404
     end

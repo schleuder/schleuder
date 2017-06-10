@@ -138,8 +138,25 @@ module Mail
 
     def reply_to_signer(output)
       reply = self.reply
-      reply.body = Array(output).join("\n")
+      self.class.all_to_message_part(output).each do |part|
+        reply.add_part(part)
+      end
       self.signer.send_mail(reply)
+    end
+
+    def self.all_to_message_part(input)
+      Array(input).map do |thing|
+        case thing
+        when Mail::Part
+          thing
+        when String
+          Mail::Part.new do
+            body thing.to_s
+          end
+        else
+          raise "Don't know how to handle input: #{thing.inspect}"
+        end
+      end
     end
 
     def sendkey_request?
@@ -154,8 +171,8 @@ module Mail
       @recipient.match(/-request@/)
     end
 
-    def bounce?
-      @recipient.match(/-bounce@/) ||
+    def automated_message?
+      @recipient.match(/-bounce@/).present? ||
           # Empty Return-Path
           self.return_path.to_s == '<>' ||
           # Auto-Submitted exists and does not equal 'no'
@@ -351,6 +368,18 @@ module Mail
       else
         nil
       end
+    end
+
+
+    def attach_list_key!(list)
+      filename = "#{list.email}.asc"
+      self.add_file({
+        filename: filename,
+        content: list.export_key
+      })
+      self.attachments[filename].content_type = 'application/pgp-keys'
+      self.attachments[filename].content_description = 'OpenPGP public key'
+      true
     end
 
     private

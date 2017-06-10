@@ -78,15 +78,17 @@ de:
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
-    keyword_admin_notify: "%{signer} schickte das Schlüsselwort '%{keyword}' und erhielt dies als Antwort:"
+    keyword_admin_notify_request: "%{signer} schickte das Schlüsselwort '%{keyword}' mit den Werten '%{arguments}' und erhielt dies als Antwort:"
+    keyword_admin_notify_lists: "%{signer} benutzte das Schlüsselwort '%{keyword}' mit den Werten '%{arguments}' in einer Email an die Liste."
     key_management:
       deleted: "Gelöscht: %{key_string}"
       not_deletable: "Darf nicht gelöscht werden: %{key_string}"
-      import_result: "Import-Ergebnis:"
+      import_result: "Import-Ergebnis:\n"
       key_import_status:
         imported: importiert
         updated: aktualisiert
         unchanged: unverändert
+      matching_keys_intro: Alle Schlüssel aus dem Schlüsselring der Liste, die '%{input}' enthalten, sind an diese Email angehängt.
     resend:
       not_resent_no_keys: Resending an <%{email}> fehlgeschlagen (%{num_keys} Schlüssel gefunden und unverschlüsseltes Senden verboten).
       encrypted_to: Verschlüsselt an
@@ -108,13 +110,17 @@ de:
         Abo für %{email} nicht eingetragen:
 
         %{errors}.
-      list_of_subscriptions: Abos
+      list_of_subscriptions: "Abos:\n"
       set_fingerprint_only_self: Nur admins dürfen den Fingerabdruck für andere Abos festlegen.
       fingerprint_set: Fingerabdruck für %{email} auf %{fingerprint} gesetzt.
       setting_fingerprint_failed: |
         Fingerabdruck für %{email} konnte nicht auf %{fingerprint} gesetzt werden:
         %{errors}.
     signatures_attached: Die Signaturen hängen an.
+    list_management:
+      no_logfile: Keine Log-Datei für %{listname} gefunden. (Das kann an einem hohem Log-Level und der Abwesenheit von Fehlern liegen.)
+      logfile_attached: Die Log-Datei für %{listname} hängt an.
+  list_public_key_subject: Schlüssel dieser Adresse
   list_public_key_attached: Der Schlüssel zu dieser Adresse hängt an.
   no_output_result: Deine Email ergab keinen Ausgabe-Text.
   owner_forward_prefix: Die folgende Email ging für die Listen-Besitzer/innen ein.
@@ -127,8 +133,8 @@ de:
   notice: Hinweis
   incoming_message: Eingehende Email
   forward_all_incoming_to_admins: Die angehängte Email ging ein.
-  forward_bounce_to_admins: Die angehängte Email ging als zurückgewiesen (bounce) ein.
-  bounce: Zurückgewiesene Nachricht
+  forward_automated_message_to_admins: Die angehängte Email wurde vermutlich von einer Maschine und nicht von einem Menschen versendet. Daher ist sie nicht über die Liste verteilt sondern an euch Admins weitergeleitet worden.
+  automated_message_subject: Automatische Nachricht empfangen
   check_keys: Schlüsselprüfung
   check_keys_intro: "Bitte kümmere dich um die folgenden Schlüssel für Liste %{email}."
   key_expires: Schlüssel %{fingerprint} %{email} läuft in %{days} Tagen ab.
@@ -139,6 +145,7 @@ de:
   key_updated: Schlüssel %{fingerprint} wurde aktualisiert (%{states}).
   key_fetched: Schlüssel %{fingerprint} wurde geholt (%{states}).
   import_states:
+    unchanged: unverändert
     new_key: neuer Schlüssel
     new_uids: neue User-IDs
     new_subkeys: neue Unterschlüssel

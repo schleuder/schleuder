@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    schleuder (3.0.4)
+    schleuder (3.1.0)
       activerecord (~> 4.1)
       mail-gpg (~> 0.3.0)
       rake (~> 10)
@@ -33,7 +33,7 @@ GEM
     daemons (1.2.4)
     database_cleaner (1.5.3)
     diff-lcs (1.2.5)
-    eventmachine (1.2.1)
+    eventmachine (1.2.3)
     factory_girl (4.8.0)
       activesupport (>= 3.0.0)
     gpgme (2.0.12)

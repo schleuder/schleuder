@@ -86,6 +86,48 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "x-subscribe with attributes and spaces-separated fingerprint" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint.dup.insert(4, ' ')} true false"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.request_address, list)
+    subscription = list.subscriptions.where(email: 'test@example.org').first
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.to_s).to include("test@example.org has been subscribed")
+    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint.downcase}/)
+    expect(message.to_s).to include("Admin? true")
+    expect(message.to_s).to include("Email-delivery enabled? false")
+
+    expect(subscription).to be_present
+    expect(subscription.fingerprint).to eql(list.fingerprint.downcase)
+    expect(subscription.admin).to eql(true)
+    expect(subscription.delivery_enabled).to eql(false)
+
+    teardown_list_and_mailer(list)
+  end
+
   it "x-unsubscribe without argument" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
@@ -210,6 +252,45 @@ describe "user sends keyword" do
     }
     mail.gpg(gpg_opts)
     mail.body = "x-listname: #{list.email}\nX-set-fingerprint: schleuder@example.org C4D60F8833789C7CAA44496FD3FFA6613AB10ECE"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.request_address, list)
+    subscription = list.subscriptions.where(email: 'schleuder@example.org').first
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.to_s).to include("Fingerprint for schleuder@example.org set to c4d60f8833789c7caa44496fd3ffa6613ab10ece")
+
+    expect(subscription).to be_present
+    expect(subscription.fingerprint).to eql('c4d60f8833789c7caa44496fd3ffa6613ab10ece')
+
+    teardown_list_and_mailer(list)
+  end
+
+
+  it "x-set-fingerprint with own email-address and valid, spaces-separated fingerprint" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list.import_key(File.read('spec/fixtures/example_key.txt'))
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-set-fingerprint: schleuder@example.org C4D6 0F88 3378 9C7C  AA44 496F D3FF A661 3AB1 0ECE"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -446,7 +527,7 @@ describe "user sends keyword" do
     message = raw.setup(list.request_address, list)
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.body.to_s.lines.size).to eql(3)
+    expect(message.first_plaintext_part.body.to_s.lines.size).to eql(3)
     expect(message.to_s).to include("schleuder@example.org	0x59C71FB38AEE22E091C78259D06350440F759BD3")
 
     teardown_list_and_mailer(list)
@@ -480,7 +561,7 @@ describe "user sends keyword" do
     message = raw.setup(list.request_address, list)
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.body.to_s.lines.size).to eql(3)
+    expect(message.first_plaintext_part.body.to_s.lines.size).to eql(3)
     expect(message.to_s).to include("schleuder@example.org	0x59C71FB38AEE22E091C78259D06350440F759BD3")
 
     teardown_list_and_mailer(list)
@@ -514,7 +595,7 @@ describe "user sends keyword" do
     message = raw.setup(list.request_address, list)
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.body.to_s.lines.size).to eql(1)
+    expect(message.first_plaintext_part.body.to_s.lines.size).to eql(1)
     expect(message.to_s).to include("Your message resulted in no output")
 
     teardown_list_and_mailer(list)
@@ -825,6 +906,40 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "x-fetch-key with fingerprint of unchanged key" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-fetch-KEY: 0x59C71FB38AEE22E091C78259D06350440F759BD3"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    with_sks_mock do
+      begin
+        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+      rescue SystemExit
+      end
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.request_address, list)
+
+    expect(message.first_plaintext_part.body.to_s).to eql("Key 59C71FB38AEE22E091C78259D06350440F759BD3 was fetched (unchanged).")
+
+    teardown_list_and_mailer(list)
+  end
+
   it "x-resend" do
     list = create(:list, public_footer: "-- \nblablabla")
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
@@ -982,10 +1097,12 @@ describe "user sends keyword" do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
+    keywords = Mail::Part.new
+    keywords.body = "\n\nx-listname: #{list.email}\nx-sign-this:"
+    mail.parts << keywords
     signed_content = File.read('spec/fixtures/example_key.txt')
     mail.attachments['example_key.txt'] = { mime_type: 'application/pgp-key',
                                             content: signed_content }
-    mail.body = "\n\nx-listname: #{list.email}\nx-sign-this:"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1288,8 +1405,7 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
-
-  it "x-delete-key with not distincly matching argument" do
+  it "x-delete-key with not distinctly matching argument" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     list.import_key(File.read('spec/fixtures/example_key.txt'))
@@ -1324,8 +1440,148 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "x-get-logfile with debug level sends non-empty logfile" do
+    list = create(:list)
+    list.update_attribute(:log_level, 'debug')
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-get-logfile"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.request_address, list)
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.parts.last.body.to_s.lines.size).to be > 1
+    expect(message.parts.last.body.to_s).to include("Logfile created on")
+    expect(message.parts.last.body.to_s).to include("DEBUG")
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-get-logfile with error-level sends empty logfile" do
+    list = create(:list)
+    list.update_attribute(:log_level, 'error')
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-get-logfile"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.request_address, list)
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.first_plaintext_part.body.to_s.lines.size).to eql(1)
+    expect(message.body.to_s).to include("Logfile created on")
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-attach-listkey" do
+    list = create(:list, log_level: 'debug')
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.email => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    content_body = "something something list-key"
+    mail.body = "x-listname: #{list.email}\nX-attach-listkey\n#{content_body}"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.email, list)
+
+    expect(message.parts.length).to eql(2)
+    expect(message.parts.last.parts.length).to eql(2)
+    expect(message.parts.last.parts.first.body.to_s).to eql(content_body)
+    expect(message.parts.last.parts.last.content_type.to_s).to eql("application/pgp-keys")
+    expect(message.parts.last.parts.last.body.decoded).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
+    expect(message.parts.last.parts.last.body.decoded).to include("-----BEGIN PGP PUBLIC KEY BLOCK-----")
+    expect(message.parts.last.parts.last.body.decoded).to include("mQINBFhGvz0BEADXbbTWo/PStyTznAo/f1UobY0EiVPNKNERvYua2Pnq8BwOQ5bS")
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-get-version" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-get-version"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = raw.setup(list.request_address, list)
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.first_plaintext_part.body.to_s.lines.size).to eql(1)
+    expect(message.first_plaintext_part.body.to_s).to eql(Schleuder::VERSION)
+
+    teardown_list_and_mailer(list)
+  end
+
 end
-
-
-
-

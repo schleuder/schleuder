@@ -78,15 +78,17 @@ en:
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
-    keyword_admin_notify: "%{signer} sent keyword '%{keyword}' and received this response:"
+    keyword_admin_notify_request: "%{signer} sent the keyword '%{keyword}' with the values '%{arguments}' and received this response:"
+    keyword_admin_notify_lists: "%{signer} used the keyword '%{keyword}' with the values '%{arguments}' in a message sent to the list."
     key_management:
       deleted: "Deleted: %{key_string}"
       not_deletable: "May not be deleted: %{key_string}"
-      import_result: "Import result:"
+      import_result: "Import result:\n"
       key_import_status:
         imported: imported
         updated: updated
         unchanged: unchanged
+      matching_keys_intro: All keys from the list's keyring matching '%{input}' are attached to this message.
     resend:
       not_resent_no_keys: Resending to <%{email}> failed (%{num_keys} keys found and unencrypted sending disallowed).
       encrypted_to: Encrypted to
@@ -108,13 +110,17 @@ en:
         Subscribing %{email} failed:
 
         %{errors}.
-      list_of_subscriptions: Subscriptions
+      list_of_subscriptions: "Subscriptions:\n"
       set_fingerprint_only_self: Only admins may set fingerprints of subscriptions other than their own.
       fingerprint_set: Fingerprint for %{email} set to %{fingerprint}.
       setting_fingerprint_failed: |
         Setting fingerprint for %{email} to %{fingerprint} failed:
         %{errors}.
     signatures_attached: Find the signatures attached.
+    list_management:
+      no_logfile: No logfile could be found for %{listname}. (This might be caused by a high log-level and the absence of errors.)
+      logfile_attached: The logfile for %{listname} is attached.
+  list_public_key_subject: Key for this address
   list_public_key_attached: Find the key for this address attached.
   no_output_result: Your message resulted in no output.
   owner_forward_prefix: The following message was received for the list-owners.
@@ -127,8 +133,8 @@ en:
   notice: Notice
   incoming_message: Incoming message
   forward_all_incoming_to_admins: The attached message was received.
-  forward_bounce_to_admins: The attached message was received as bounce.
-  bounce: Bounced message
+  forward_automated_message_to_admins: Attached is a message that probably was sent by a machine, not a human. Therefore it has not been passed on to the list, but only to you, the admins.
+  automated_message_subject: Automated message received
   check_keys: Keys check
   check_keys_intro: "Please take care of these keys for list %{email}."
   key_expires: Key %{fingerprint} expires in %{days} days.
@@ -139,6 +145,7 @@ en:
   key_updated: Key %{fingerprint} was updated (%{states}).
   key_fetched: Key %{fingerprint} was fetched (%{states}).
   import_states:
+    unchanged: unchanged
     new_key: new key
     new_uids: new user-IDs
     new_subkeys: new subkeys

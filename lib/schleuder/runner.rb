@@ -35,13 +35,7 @@ module Schleuder
       elsif @mail.was_validly_signed?
         # Plugins
         logger.debug "Message was encrypted and validly signed"
-        output = Plugins::Runner.run(list, @mail).compact
-
-        # Any output will be treated as error-message. Text meant for users
-        # should have been put into the mail by the plugin.
-        output.each do |something|
-          @mail.add_pseudoheader(:error, something.to_s) if something.present?
-        end
+        PluginRunners::ListPluginsRunner.run(list, @mail).compact
       end
 
       # Don't send empty messages over the list.
@@ -54,26 +48,13 @@ module Schleuder
       @mail.add_subject_prefix!
 
       # Subscriptions
-      send_to_subscriptions
+      logger.debug "Creating clean copy of message"
+      copy = @mail.clean_copy(true)
+      list.send_to_subscriptions(copy)
       nil
     end
 
     private
-
-    def send_to_subscriptions
-      logger.debug "Sending to subscriptions."
-      logger.debug "Creating clean copy of message"
-      new = @mail.clean_copy(true)
-      list.subscriptions.each do |subscription|
-        begin
-          subscription.send_mail(new)
-        rescue => exc
-          msg = I18n.t('errors.delivery_error',
-                       { email: subscription.email, error: exc.to_s })
-          logger.error msg
-        end
-      end
-    end
 
     def list
       @list

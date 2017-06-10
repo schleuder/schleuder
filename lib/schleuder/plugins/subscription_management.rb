@@ -2,12 +2,16 @@ module Schleuder
   module RequestPlugins
     def self.subscribe(arguments, list, mail)
       email = arguments.shift
-      fingerprint = arguments.shift
+
+      # Pop the last two in order to be tolerant about spaces in the
+      # fingerprint.
+      deliveryflag = arguments.pop
+      adminflag = arguments.pop
+      # Use the remainders as fingerprint. This enables tolerating spaces.
+      fingerprint = arguments.join
       if fingerprint.present?
         fingerprint.sub!(/^0x/, '')
       end
-      adminflag = arguments.shift
-      deliveryflag = arguments.shift
 
       sub = list.subscribe(email, fingerprint, adminflag, deliveryflag)
 
@@ -74,9 +78,7 @@ module Schleuder
         return nil
       end
 
-      out = [
-        "#{I18n.t("plugins.subscription_management.list_of_subscriptions")}:"
-      ]
+      out = [ I18n.t("plugins.subscription_management.list_of_subscriptions") ]
 
       out << subs.map do |subscription|
         # Fingerprints are at most 40 characters long, and lines shouldn't
@@ -90,12 +92,14 @@ module Schleuder
         end
         s
       end
+
+      out.join("\n")
     end
 
     def self.set_fingerprint(arguments, list, mail)
       if arguments.first.match(/@/)
         if arguments.first == mail.signer.email || list.from_admin?(mail)
-          email = arguments.first
+          email = arguments.shift
         else
           return I18n.t(
             "plugins.subscription_management.set_fingerprint_only_self"
@@ -113,7 +117,7 @@ module Schleuder
         )
       end
 
-      sub.fingerprint = arguments.last
+      sub.fingerprint = arguments.join
 
       if sub.save
         I18n.t(

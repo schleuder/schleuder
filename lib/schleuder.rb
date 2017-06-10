@@ -20,6 +20,7 @@ rootdir = libdir.dirname
 $:.unshift libdir
 
 # Monkeypatches
+require 'schleuder/mail/parts_list.rb'
 require 'schleuder/mail/message.rb'
 require 'schleuder/gpgme/import_status.rb'
 require 'schleuder/gpgme/key.rb'
@@ -37,7 +38,9 @@ require 'schleuder/version'
 require 'schleuder/logger_notifications'
 require 'schleuder/logger'
 require 'schleuder/listlogger'
-require 'schleuder/plugins_runner'
+require 'schleuder/plugin_runners/base'
+require 'schleuder/plugin_runners/list_plugins_runner'
+require 'schleuder/plugin_runners/request_plugins_runner'
 Dir["#{libdir}/schleuder/plugins/*.rb"].each do |file|
   require file
 end

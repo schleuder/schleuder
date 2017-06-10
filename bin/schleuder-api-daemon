@@ -184,6 +184,10 @@ class SchleuderApiDaemon < Sinatra::Base
       json(List.configurable_attributes) + "\n"
     end
 
+    post '/send_list_key_to_subscriptions.json' do
+      json(result: list.send_list_key_to_subscriptions)
+    end
+
     get '/new.json' do
       json List.new
     end
