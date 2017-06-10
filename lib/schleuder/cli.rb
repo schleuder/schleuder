@@ -227,10 +227,7 @@ module Schleuder
           sub.admin = true
           sub.save!
         else
-          adminfpr = member['key_fingerprint']
-          unless adminfpr
-            adminfpr = list.keys(member['email']).first.try(:fingerprint)
-          end
+          adminfpr = find_fingerprint(member, list)
           # if we didn't find an already imported  subscription for the admin
           # address, it wasn't a member, so we don't enable delivery for it
           list.subscribe(member['email'], adminfpr, true, false)
