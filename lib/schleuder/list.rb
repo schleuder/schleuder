@@ -101,6 +101,15 @@ module Schleuder
       gpg.find_keys(identifier, secret_only)
     end
 
+    def distinct_key(identifier)
+      keys = keys(identifier)
+      if keys.size == 1
+        return [keys.first, 1]
+      else
+        return [nil, keys.size]
+      end
+    end
+
     def import_key(importable)
       gpg.keyimport(importable)
     end

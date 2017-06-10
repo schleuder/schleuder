@@ -214,7 +214,8 @@ module Schleuder
 
       # Subscribe members
       YAML.load(File.read(dir + 'members.conf')).each do |member|
-        list.subscribe(member['email'], member['key_fingerprint'])
+        fingerprint = find_fingerprint(member, list)
+        list.subscribe(member['email'], fingerprint)
       end
 
       # Subscribe or flag admins
@@ -284,6 +285,21 @@ Please notify the users and admins of this list of these changes.
         end.compact
       end
 
+      def find_fingerprint(member, list)
+        email = member['email']
+        fingerprint = member['key_fingerprint']
+        if fingerprint.present?
+          return fingerprint
+        end
+
+        key, num = list.distinct_key(email)
+        if key
+          return key.fingerprint
+        elsif num > 1
+          say "Problem with #{email}: No key_fingerprint and multiple matching keys found. This email address will receive unencrypted emails if that is not fixed manually!"
+          return nil
+        end
+      end
     end
   end
 end
