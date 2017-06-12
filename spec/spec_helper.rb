@@ -103,4 +103,14 @@ RSpec.configure do |config|
     FileUtils.rm_rf(list.listdir)
     Mail::TestMailer.deliveries.clear
   end
+
+  def encrypt_string(list, str)
+    _, ciphertext, _ = list.gpg.class.gpgcli("--recipient #{list.fingerprint} --encrypt") do |stdin, stdout, stderr|
+      stdin.puts str
+      # Apparently it differs between ruby-version if we have to close the stream manually.
+      stdin.close if ! stdin.closed?
+      stdout.readlines
+    end
+    ciphertext.reject { |line| line.match(/^\[GNUPG:\]/) }.join
+  end
 end

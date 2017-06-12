@@ -154,4 +154,6 @@ en:
     new_signatures: new signatures
   fetch_key:
     invalid_input: "Invalid input. Allowed are: URLs, OpenPGP-fingerprints, or email-addresses."
+  pseudoheaders:
+    stripped_html_from_multialt: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.
 
