@@ -533,6 +533,47 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "x-list-subscriptions without arguments but with admin-notification" do
+    list = create(:list, keywords_admin_notify: ['list-subscriptions'])
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list.subscribe("user@example.org")
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-list-subscriptions:"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    notification = raw.setup(list.request_address, list)
+    raw = Mail::TestMailer.deliveries[1]
+    response = raw.setup(list.request_address, list)
+    expected_text = "Subscriptions:\n\nschleuder@example.org\t0x59C71FB38AEE22E091C78259D06350440F759BD3\nuser@example.org"
+
+    expect(Mail::TestMailer.deliveries.size).to eql(2)
+    expect(notification.to).to eql(['schleuder@example.org'])
+    expect(notification.first_plaintext_part.body.to_s).to eql("schleuder@example.org sent the keyword 'list-subscriptions' and received this response:\n\n#{expected_text}")
+
+    expect(response.to).to eql(['schleuder@example.org'])
+    expect(response.first_plaintext_part.body.to_s).to eql(expected_text)
+
+    teardown_list_and_mailer(list)
+  end
+
   it "x-list-subscriptions with matching argument" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
@@ -976,6 +1017,47 @@ describe "user sends keyword" do
     expect(resent_message.to).to include("someone@example.org")
     expect(resent_message.to_s).not_to include("Resent: Unencrypted to someone@example.org")
     expect(resent_message_body).to eql(content_body + list.public_footer.to_s)
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-resend with admin-notification" do
+    list = create(:list, keywords_admin_notify: ['resend'])
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.email => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    content_body = "Hello again!\n"
+    mail.body = "x-listname: #{list.email}\nX-resend: someone@example.org\n#{content_body}"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries[1]
+    notification = raw.setup(list.email, list)
+    raw = Mail::TestMailer.deliveries[2]
+    message = raw.setup(list.email, list)
+
+    expect(Mail::TestMailer.deliveries.size).to eql(3)
+
+    expect(notification.to).to eql(['schleuder@example.org'])
+    expect(notification.first_plaintext_part.body.to_s).to eql("schleuder@example.org used the keyword 'resend' with the values 'someone@example.org' in a message sent to the list.")
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.to_s).to include("Resent: Unencrypted to someone@example.org")
 
     teardown_list_and_mailer(list)
   end
