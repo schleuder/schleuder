@@ -216,7 +216,8 @@ module Schleuder
       members = YAML.load(File.read(dir + 'members.conf'))
       members.uniq!{|m| m['email'] }
       members.each do |member|
-        list.subscribe(member['email'], member['key_fingerprint'])
+        fingerprint = find_fingerprint(member, list)
+        list.subscribe(member['email'], fingerprint)
       end
 
       # Subscribe or flag admins
@@ -226,10 +227,7 @@ module Schleuder
           sub.admin = true
           sub.save!
         else
-          adminfpr = member['key_fingerprint']
-          unless adminfpr
-            adminfpr = list.keys(member['email']).first.try(:fingerprint)
-          end
+          adminfpr = find_fingerprint(member, list)
           # if we didn't find an already imported  subscription for the admin
           # address, it wasn't a member, so we don't enable delivery for it
           list.subscribe(member['email'], adminfpr, true, false)
@@ -291,6 +289,20 @@ Please notify the users and admins of this list of these changes.
         end.compact
       end
 
+      def find_fingerprint(member, list)
+        email = member['email']
+        fingerprint = member['key_fingerprint']
+        if fingerprint.present?
+          return fingerprint
+        end
+
+        key = list.distinct_key(email)
+        if key
+          return key.fingerprint
+        else
+          return nil
+        end
+      end
     end
   end
 end

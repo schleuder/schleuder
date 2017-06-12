@@ -80,11 +80,21 @@ describe 'cli' do
 
       output = run_cli("migrate #{v2list_path}")
       list = Schleuder::List.by_recipient('v2list@example.org')
+      admins_emails = list.admins.map(&:email)
       subscription_emails = list.subscriptions.map(&:email)
 
       expect(output).not_to match('Error:')
 
-      expect(subscription_emails).to eq ['schleuder2@example.org']
+      expect(admins_emails).to eql(["schleuder2@example.org"])
+
+      expect(subscription_emails).to eql(["anotherone@example.org", "anyone@example.org", "bla@foo", "old@example.org", "schleuder2@example.org", "someone@example.org"])
+      expect(list.subscriptions.where(email: "anotherone@example.org").first.fingerprint).to eql('')
+      expect(list.subscriptions.where(email: "anyone@example.org").first.fingerprint).to     eql("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+      expect(list.subscriptions.where(email: "bla@foo").first.fingerprint).to                eql("87E65ED2081AE3D16BE4F0A5EBDBE899251F2412")
+      expect(list.subscriptions.where(email: "old@example.org").first.fingerprint).to        eql("6EE51D78FD0B33DE65CCF69D2104E20E20889F66")
+      expect(list.subscriptions.where(email: "schleuder2@example.org").first.fingerprint).to eql("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+      expect(list.subscriptions.where(email: "someone@example.org").first.fingerprint).to    eql('')
+            
     end
 
     it "does not fail on duplicated v2 subscriptions" do
