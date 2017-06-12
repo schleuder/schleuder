@@ -21,8 +21,7 @@ describe Mail::Message do
   # TODO: test message with "null" address ("<>") as Return-Path. I couldn't
   # bring Mail to generate such a message, yet.
   
-  it "recognizes a message sent to listname-bounce@hostname as automated
-  message" do
+  it "recognizes a message sent to listname-bounce@hostname as automated message" do
     list = create(:list)
     mail = Mail.new
     # Trigger the setting of mandatory headers.
