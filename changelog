@@ -1,3 +1,10 @@
+schleuder (3.1.0-2) unstable; urgency=medium
+
+  * debian/tests/upstream-tests: Ensure haveged is running before executing
+    the upstream provided tests, which rely heavily on entropy.
+
+ -- Georg Faerber <georg@riseup.net>  Tue, 13 Jun 2017 00:28:23 +0200
+
 schleuder (3.1.0-1) unstable; urgency=medium
 
   * New upstream release.
