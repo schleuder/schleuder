@@ -97,6 +97,15 @@ describe 'cli' do
 
       expect(subscription_emails).to eq ['schleuder2@example.org']
     end
+    it "respects non delivery status of admins" do
+      v2list_path = 'spec/fixtures/v2list_admin_non_delivery'
+
+      subscriptions = list.subscriptions
+      expect(subscriptions.find{|s| s.email == 'schleuder2@example.org' }.delivery_enabled).to eq false
+      subscription_emails = subscriptions.map(&:email)
+      expect(subscription_emails.sort).to eq(['schleuder2@example.org',
+                                              'schleuder2-member@example.org'].sort)
+    end
   end
 
   context '#refresh_keys' do

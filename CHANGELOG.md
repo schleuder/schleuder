@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Don't require database-adapter early. Helps when using a different database-system than sqlite.
 * Skip unusable keys when resending.
 * Don't fail on importing v2 lists where members might be subscribed multiple times (#208)
+* Fix #213 - Do not enable delivery for admins that weren't members in v2 lists. (#213)
 
 ## [3.1.0] / 2017-05-21
 
