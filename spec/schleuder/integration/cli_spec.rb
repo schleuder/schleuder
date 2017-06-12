@@ -100,6 +100,9 @@ describe 'cli' do
     it "respects non delivery status of admins" do
       v2list_path = 'spec/fixtures/v2list_admin_non_delivery'
 
+      output = run_cli("migrate #{v2list_path}")
+      expect(output).not_to match('Error:')
+      list = Schleuder::List.by_recipient('v2list@example.org')
       subscriptions = list.subscriptions
       expect(subscriptions.find{|s| s.email == 'schleuder2@example.org' }.delivery_enabled).to eq false
       subscription_emails = subscriptions.map(&:email)
