@@ -2,6 +2,9 @@ schleuder (3.1.0-2) unstable; urgency=medium
 
   * debian/tests/upstream-tests: Ensure haveged is running before executing
     the upstream provided tests, which rely heavily on entropy.
+  * debian/tests/control: Add 'needs-root' restriction to actually be able to
+    start haveged manually. The provided init script disables the automatic
+    start in containerized environments.
 
  -- Georg Faerber <georg@riseup.net>  Tue, 13 Jun 2017 00:28:23 +0200
 
