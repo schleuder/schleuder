@@ -1,0 +1,58 @@
+From: someone@example.org
+To: schleuder@example.org
+Message-ID: <098234lkj098324lkajsdfklj09er09a842d@localhost>
+Date: Thu, 01 01 2017 12:13:14 +0100
+Subject: hotmail mangled message
+Content-Type: multipart/mixed;
+    boundary="_003_MIME_"
+MIME-Version: 1.0
+X-OriginatorOrg: hotmail.com
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 May 2017 00:00:00.0000
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Internet
+X-MS-Exchange-CrossTenant-id: dajfkajfkljaklfj
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HEADERSTAMP
+
+--_003_MIME_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+
+--_003_MIME_
+Content-Type: application/pgp-encrypted;
+    name="PGPMIME version identification"
+Content-Description: PGP/MIME version identification
+Content-Disposition: attachment; filename="PGPMIME version identification";
+    size=12; creation-date="Mon, 29 May 2017 00:00:00 GMT";
+    modification-date="Mon, 29 May 2017 00:00:00 GMT"
+Content-ID: <ID@eurprd02.prod.outlook.com>
+Content-Transfer-Encoding: base64
+
+VmVyc2lvbjogMQoK
+
+--_003_MIME_
+Content-Type: application/octet-stream; name="encrypted.asc"
+Content-Description: OpenPGP encrypted message.asc
+Content-Disposition: attachment; filename="encrypted.asc";
+    creation-date="Mon, 29 May 2017 00:00:00 GMT";
+    modification-date="Mon, 29 May 2017 00:00:00 GMT"
+Content-ID: <ID@eurprd02.prod.outlook.com>
+Content-Transfer-Encoding: base64
+
+LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tCgpoUUlNQTY5MVg4R2wyTUFyQVEvL1d3SEx1Nlp2
+WE15M0VkemlaYUZnaytqQ2NxOHZXS3dTc1FQS25zWTdSRWxKCkpsdENta1JSZ2d0ajVDbDNaWWIv
+eVhLVEhNUElUd0hnQ3F3MVFhVFpIT2ZCT3FET3lyWVJndExEWHpabXd3RnQKQVdSWmVDWndQenJp
+OElKbmJaMHdlaUhMRzFiMzR2c1pqc2pIN1E3dHd4clRVbEFmbTJuUXY3TU9naFpibFRKQwpOUlY5
+ekdSM0lNa0JEbURhMy9kUkRkam5kaG02dFJxMVFNS1FjdUNYekpScHUwQlNuMFFacnFHcitKdmQz
+TnN1CjVqTlR4dHQyV3Z6d296eHdHbVltckZ4U3E3L2VXdjdTWnFEMWFicEFQY0RrQmxIdkdobi9a
+Z29sZUovVGJKb2oKaWpRb1RzUDQ5YnFWUm5HRUtFK3RWVmt5dmpmeFgrTDNIUGpVdjVheFpoRFRp
+ejNsQnZBWWRTZlZ4cHFDWTVHMApDVWFJNFlxb3lEUlY3a2UyY0FxOFV5ODA2akFmYkUzMi9qUGlQ
+VkxjUDROem9WRGVyRkZ5NDBVMFp6cGtLL2pCCnpNdUVxZE9nd09xZUtHdkZCMEd5OWFXcVZYUWJZ
+Y1FoZ0dRV3Jxck9Jb1pTbmt3SnlhSjdqNXIvV0tFMDZuRVUKdEVXcEFEWDlHVlRFL1EyL0ZJMzB6
+UCtzMnU2S2FLclB5dXZORTZXMk1abFNZMFUzaVFtY1dwQlFQZUZGOEhhYQpMM1hvMy9SdVFCRlBX
+S2hWTzh4ZlAxRllVc2lnallYcjJIcGpXaVdBejkxVG00MC95RjRObWN0STZEejFzaExTCkI2aGds
+Z2hneFZEdkZIcUprREVlRGk2R1lsTTVaaGg0WklpeDBlVWFjcGRybVM3TUZaenhzMjA0T3prQ21n
+UFMKV1FHbWV6NWlvNmxtbUZLZlhWYXJOajBwVHZHOVUzekJGUUozWldEUUZDZCtidGtrUm5ndWhH
+K3NiN2taZmkrTAo1U1ZqZDNWRGRReTU5TlNIbzk4Ukl2dEtIZlhnU0l1WU5Lc2pDTHpOcFhMNGM0
+WGYzY0U0ZndNWQo9VXU1SAotLS0tLUVORCBQR1AgTUVTU0FHRS0tLS0tCg==
+--_003_MIME_
