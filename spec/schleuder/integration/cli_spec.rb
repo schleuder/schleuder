@@ -150,6 +150,26 @@ describe 'cli' do
 
       teardown_list_and_mailer(list)
     end
+    it 'updates keys from the keyserver for only a specific list' do
+      list1 = create(:list)
+      list2 = create(:list)
+      [list1,list2].each do |list|
+        list.subscribe("admin@example.org", nil, true)
+        list.import_key(File.read("spec/fixtures/expired_key.txt"))
+        list.import_key(File.read("spec/fixtures/olduid_key.txt"))
+      end
+
+      with_sks_mock do
+        Cli.new.refresh_keys list1.email
+      end
+      mail = Mail::TestMailer.deliveries.first
+
+      expect(Mail::TestMailer.deliveries.length).to eq 1
+      expect(mail.first_plaintext_part.body.to_s).to eql("Refreshing all keys from the keyring of list #{list1.email} resulted in this:\n\nKey 59C71FB38AEE22E091C78259D06350440F759BD3 was updated (unchanged).\nKey 98769E8A1091F36BD88403ECF71A3F8412D83889 was updated (new signatures).\nKey 6EE51D78FD0B33DE65CCF69D2104E20E20889F66 was updated (new user-IDs, new signatures).")
+
+      teardown_list_and_mailer(list1)
+      teardown_list_and_mailer(list2)
+    end
 
     it 'reports errors from refreshing keys' do
       list = create(:list)
@@ -190,6 +210,30 @@ describe 'cli' do
       expect(mail.first_plaintext_part.body.to_s).to eql("While checking all subscriptions of list #{list.email} we were pinning a matching key for the following subscriptions:\n\nschleuder2@example.org: C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
 
       teardown_list_and_mailer(list)
+    end
+    it 'only works on the specific list' do
+      list1 = create(:list)
+      list2 = create(:list)
+      [list1,list2].each do |list|
+        list.subscribe("admin@example.org", nil, true)
+        list.subscribe("schleuder2@example.org", nil, false)
+        list.import_key(File.read('spec/fixtures/example_key.txt'))
+        expect(list.subscriptions_without_fingerprint.size).to eq 2
+      end
+
+      Cli.new.pin_keys list1.email
+
+      expect(list1.subscriptions_without_fingerprint.size).to eq 1
+      expect(list1.subscriptions_without_fingerprint.collect(&:email)).to eq ['admin@example.org']
+      expect(list2.subscriptions_without_fingerprint.size).to eq 2
+
+      mail = Mail::TestMailer.deliveries.first
+
+      expect(Mail::TestMailer.deliveries.length).to eq 1
+      expect(mail.first_plaintext_part.body.to_s).to eql("While checking all subscriptions of list #{list1.email} we were pinning a matching key for the following subscriptions:\n\nschleuder2@example.org: C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+
+      teardown_list_and_mailer(list1)
+      teardown_list_and_mailer(list2)
     end
 
     it 'does not report anything if nothing was done' do

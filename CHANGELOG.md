@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 * Provide an administrative command `pin_keys`, to pin subscriptions to a distinct key (#225)
+* Allow to run `pin_keys` or `refresh_keys` only for certain lists.
 
 ### Fixed
 
