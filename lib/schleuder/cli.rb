@@ -65,14 +65,12 @@ module Schleuder
 
     desc 'refresh_keys', "Refresh all keys of all list from the keyservers sequentially (one by one). (This is supposed to be run from cron weekly.)"
     def refresh_keys
-      List.all.each do |list|
-        I18n.locale = list.language
-        output = list.refresh_keys
-        if output.present?
-          msg = "#{I18n.t('refresh_keys_intro', email: list.email)}\n\n#{output}"
-          list.logger.notify_admin(msg, nil, I18n.t('refresh_keys'))
-        end
-      end
+      work_on_lists(:refresh_keys)
+    end
+
+    desc 'pin_keys', "Find keys for subscriptions without a pinned key and try to pin a certain key"
+    def pin_keys
+      work_on_lists(:pin_keys)
     end
 
     desc 'install', "Set-up or update Schleuder environment (create folders, copy files, fill the database)."
@@ -304,5 +302,17 @@ Please notify the users and admins of this list of these changes.
         end
       end
     end
+    private
+    def work_on_lists(subj)
+      List.all.each do |list|
+        I18n.locale = list.language
+        output = list.send(subj)
+        if output.present?
+          msg = "#{I18n.t("#{subj}_intro", email: list.email)}\n\n#{output}"
+          list.logger.notify_admin(msg, nil, I18n.t(subj))
+        end
+      end
+    end
+
   end
 end

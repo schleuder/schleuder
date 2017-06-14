@@ -94,7 +94,6 @@ describe 'cli' do
       expect(list.subscriptions.where(email: "old@example.org").first.fingerprint).to        eql("6EE51D78FD0B33DE65CCF69D2104E20E20889F66")
       expect(list.subscriptions.where(email: "schleuder2@example.org").first.fingerprint).to eql("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
       expect(list.subscriptions.where(email: "someone@example.org").first.fingerprint).to    eql('')
-            
     end
 
     it "does not fail on duplicated v2 subscriptions" do
@@ -168,6 +167,41 @@ describe 'cli' do
         # The wording differs slightly among versions.
         expect(mail.to_s).to match(/gpgkeys: .* error .* connect/)
       end
+
+      teardown_list_and_mailer(list)
+    end
+  end
+  context '#pin_keys' do
+    it 'pins fingerprints on not yet set keys' do
+      list = create(:list)
+      list.subscribe("admin@example.org", nil, true)
+      list.subscribe("schleuder2@example.org", nil, false)
+      list.import_key(File.read('spec/fixtures/example_key.txt'))
+      expect(list.subscriptions_without_fingerprint.size).to eq 2
+
+      Cli.new.pin_keys
+
+      expect(list.subscriptions_without_fingerprint.size).to eq 1
+      expect(list.subscriptions_without_fingerprint.collect(&:email)).to eq ['admin@example.org']
+
+      mail = Mail::TestMailer.deliveries.first
+
+      expect(Mail::TestMailer.deliveries.length).to eq 1
+      expect(mail.first_plaintext_part.body.to_s).to eql("While checking all subscriptions of list #{list.email} we were pinning a matching key for the following subscriptions:\n\nschleuder2@example.org: C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+
+      teardown_list_and_mailer(list)
+    end
+
+    it 'does not report anything if nothing was done' do
+      list = create(:list)
+      list.subscribe("admin@example.org", nil, true)
+      list.subscribe("schleuder2@example.org", nil, false)
+      expect(list.subscriptions_without_fingerprint.size).to eq 2
+
+      Cli.new.pin_keys
+
+      expect(list.subscriptions_without_fingerprint.size).to eq 2
+      expect(Mail::TestMailer.deliveries.empty?).to eq true
 
       teardown_list_and_mailer(list)
     end

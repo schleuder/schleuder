@@ -89,6 +89,10 @@ module Schleuder
       subscriptions.where(admin: true)
     end
 
+    def subscriptions_without_fingerprint
+      subscriptions.without_fingerprint
+    end
+
     def key(fingerprint=self.fingerprint)
       keys(fingerprint).first
     end
@@ -177,6 +181,19 @@ module Schleuder
 
     def fetch_keys(input)
       gpg.fetch_key(input)
+    end
+
+    def pin_keys
+      updated_emails = subscriptions_without_fingerprint.collect do |subscription|
+        key = distinct_key(subscription.email)
+        if key
+          subscription.update(fingerprint: key.fingerprint)
+          "#{subscription.email}: #{key.fingerprint}"
+        else
+          nil
+        end
+      end
+      updated_emails.compact.join("\n")
     end
 
     def self.by_recipient(recipient)

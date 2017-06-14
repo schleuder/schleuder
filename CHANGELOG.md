@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.1.x] / 2017-06-xx (unreleased)
 
+### Added
+
+* Provide an administrative command `pin_keys`, to pin subscriptions to a distinct key (#225)
+
 ### Fixed
 
 * Do not detect Cron-Emails as bounce (#205)
