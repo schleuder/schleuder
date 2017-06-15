@@ -91,5 +91,52 @@ describe Mail::Message do
     expect(message.dynamic_pseudoheaders).not_to include("Note: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.")
   end
 
+  context '#add_subject_prefix!' do
+    it 'adds a configured subject prefix' do
+      list = create(:list)
+      list.subject_prefix = '[prefix]'
+      list.subscribe('admin@example.org',nil,true)
+      mail = Mail.new
+      mail.from 'someone@example.org'
+      mail.to list.email
+      mail.text_part = 'blabla'
+      mail.subject = 'test'
+
+      message = mail.setup(list.email, list)
+      message.add_subject_prefix!
+
+      expect(message.subject).to eql('[prefix] test')
+    end
+    it 'adds a configured subject prefix without subject' do
+      list = create(:list)
+      list.subject_prefix = '[prefix]'
+      list.subscribe('admin@example.org',nil,true)
+      mail = Mail.new
+      mail.from 'someone@example.org'
+      mail.to list.email
+      mail.text_part = 'blabla'
+
+      message = mail.setup(list.email, list)
+      message.add_subject_prefix!
+
+      expect(message.subject).to eql('[prefix]')
+    end
+    it 'does not add a subject prefix if already present' do
+      list = create(:list)
+      list.subject_prefix = '[prefix]'
+      list.subscribe('admin@example.org',nil,true)
+      mail = Mail.new
+      mail.from 'someone@example.org'
+      mail.to list.email
+      mail.text_part = 'blabla'
+      mail.subject = 'Re: [prefix] test'
+
+      message = mail.setup(list.email, list)
+      message.add_subject_prefix!
+
+      expect(message.subject).to eql('Re: [prefix] test')
+    end
+  end
+
 end
 

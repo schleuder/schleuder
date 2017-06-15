@@ -422,8 +422,10 @@ module Mail
       if ! string.empty?
         prefix = "#{string} "
         # Only insert prefix if it's not present already.
-        if ! self.subject.include?(prefix)
-          self.subject = "#{string} #{self.subject}"
+        if self.subject.nil?
+          self.subject = string
+        elsif ! self.subject.include?(prefix)
+          self.subject = "#{prefix}#{self.subject}"
         end
       end
     end
