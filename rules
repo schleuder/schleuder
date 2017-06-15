@@ -8,13 +8,11 @@ export DH_RUBY
 override_dh_systemd_enable:
 	dh_systemd_enable --name=schleuder-api-daemon
 
-# We're using '--no-start' here because we've to first set up the
-# database; see 'debian/schleuder.postinst' as well.
 override_dh_systemd_start:
-	dh_systemd_start --no-start --name=schleuder-api-daemon
+	dh_systemd_start --name=schleuder-api-daemon
 
 override_dh_systemd_stop:
 	dh_systemd_stop --name=schleuder-api-daemon
 
 override_dh_installinit:
-	dh_installinit --name=schleuder-api-daemon --no-start 
+	dh_installinit --name=schleuder-api-daemon
