@@ -1,7 +1,11 @@
 module Schleuder
   module LoggerNotifications
     def adminaddresses
-      @adminaddresses.presence || Conf.superadmin.presence || 'root@localhost'
+      @adminaddresses.presence || superadmin
+    end
+
+    def superadmin
+      Conf.superadmin.presence
     end
 
     def error(string)
@@ -22,6 +26,8 @@ module Schleuder
         mail.from = @from
         mail.to = address
         mail.subject = subject
+        mail[:Errors_To] = superadmin
+        mail.sender = superadmin
         msg_parts.each do |msg_part|
           mail.add_part(msg_part)
         end

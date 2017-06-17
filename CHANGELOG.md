@@ -15,6 +15,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Don't fail on importing v2 lists where admins do not have a proper key. (#207)
 * Don't fail on adding prefix to an empty subject (#226)
 * Don't report unchanged keys when refreshing keys.
+* Avoid loops on notifying list admins (#229)
 
 ## [3.1.0] / 2017-05-21
 
