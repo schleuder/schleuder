@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Do not enable delivery for admins that weren't members in v2 lists. (#213)
 * Don't fail on importing v2 lists where admins do not have a proper key. (#207)
 * Don't fail on adding prefix to an empty subject (#226)
+* Don't report unchanged keys when refreshing keys.
 
 ## [3.1.0] / 2017-05-21
 

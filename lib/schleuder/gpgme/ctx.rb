@@ -82,7 +82,11 @@ module GPGME
           refresh_key_filter_messages(gpgout).grep(/^gpgkeys: /)
         ].flatten.compact.join("\n")
       else
-        translate_output('key_updated', gpgout)
+        lines = translate_output('key_updated', gpgout).reject do |line|
+          # Reduce the noise a little.
+          line.match(/.* \(unchanged\)\.$/)
+        end
+        lines.join("\n")
       end
     end
 
@@ -96,7 +100,7 @@ module GPGME
       if exitcode > 0 || gpgerr.grep(/ unable to fetch /).presence
         "Fetching #{input} did not succeed:\n#{gpgerr.join("\n")}"
       else
-        translate_output('key_fetched', gpgout)
+        translate_output('key_fetched', gpgout).join("\n")
       end
     end
 
@@ -121,7 +125,7 @@ module GPGME
         I18n.t(locale_key, { fingerprint: fingerprint,
                              states: states.join(', ') })
       end
-      strings.join("\n")
+      strings
     end
 
     def translate_import_data(gpgoutput)
