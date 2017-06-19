@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+* Lookup keys for subscriptions when importing a v2-list, and assign the fingerprint if it was a distint match. Otherwise people, that had no fingerprint set before, will receive plaintext emails as for subscriptions we're not anymore looking up keys by email address.
+* Assign looked up fingerprint to admins only if it was a distinct match.
 * Do not detect Cron-Emails as bounce (#205)
 * Don't require database-adapter early. Helps when using a different database-system than sqlite.
 * Skip unusable keys when resending.
@@ -15,6 +17,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Don't fail on importing v2 lists where admins do not have a proper key. (#207)
 * Don't fail on adding prefix to an empty subject (#226)
 * Don't report unchanged keys when refreshing keys.
+* Only use distinct keys for admins when creating lists.
+* Fix text of admin-notification from plugin-runners.
+* Fix working with multipart/alternative-messages that contain inline OpenPGP-data. We're now stripping the HTML-part to enable properly handling the ciphertext.
 
 ## [3.1.0] / 2017-05-21
 
