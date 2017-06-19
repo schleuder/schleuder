@@ -235,8 +235,8 @@ module Schleuder
 
     def subscribe(email, fingerprint=nil, adminflag=false, deliveryflag=true)
       # Ensure we have true or false as values for these two attributes.
-      admin            = adminflag.to_s == 'true'
-      delivery_enabled = deliveryflag.to_s != 'false'
+      admin            =  (['true', '1'].include?  adminflag.to_s)
+      delivery_enabled = !(['false', '0'].include? deliveryflag.to_s)
 
       sub = Subscription.new(
           list_id: self.id,
