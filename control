@@ -5,7 +5,7 @@ Maintainer: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.al
 Uploaders: Georg Faerber <georg@riseup.net>
 Build-Depends: debhelper (>= 10~),
                dh-systemd,
-	       dirmngr,
+               dirmngr,
                gem2deb,
                rake (>= 10~),
                ruby-activerecord (>= 4.1~),
@@ -30,10 +30,10 @@ Architecture: all
 XB-Ruby-Versions: ${ruby:Versions}
 Depends: adduser,
          cron | cron-daemon,
-	 dirmngr,
+         dirmngr,
          exim4 | mail-transport-agent,
          init-system-helpers,
-	 lsb-base,
+         lsb-base,
          rake (>= 10~),
          ruby | ruby-interpreter,
          ruby-activerecord (>= 4.1~),
