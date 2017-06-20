@@ -20,6 +20,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Only use distinct keys for admins when creating lists.
 * Fix text of admin-notification from plugin-runners.
 * Fix working with multipart/alternative-messages that contain inline OpenPGP-data. We're now stripping the HTML-part to enable properly handling the ciphertext.
+* Validate that an email address can be subscribed only once per list.
 
 ## [3.1.0] / 2017-05-21
 
