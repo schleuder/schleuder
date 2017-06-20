@@ -18,6 +18,11 @@ case "$1" in
 		# Ensure sane permissions.
 		chown -R schleuder:schleuder /var/lib/schleuder /var/log/schleuder /etc/schleuder
 		chmod -R 750 /var/lib/schleuder /var/log/schleuder /etc/schleuder
+
+        if [ -d /var/backup/schleuder ]; then
+            chown -R schleuder:schleuder /var/backup/schleuder
+            chmod -R 750 /var/backup/schleuder
+        fi
 	fi
 	;;
 
