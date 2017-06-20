@@ -18,16 +18,6 @@ case "$1" in
 		# Ensure sane permissions.
 		chown -R schleuder:schleuder /var/lib/schleuder /var/log/schleuder /etc/schleuder
 		chmod -R 750 /var/lib/schleuder /var/log/schleuder /etc/schleuder
-
-		# Enable and start 'schleuder-api-daemon' by default.
-		# We're doing this here manually instead of just relying on debhelper because we need
-		# to set up the database first, see above and 'debian/rules'.
-		deb-systemd-helper enable schleuder-api-daemon.service
-		deb-systemd-invoke restart schleuder-api-daemon.service
-
-	# Upgrades of schleuder (>= 3.0).
-	else
-		deb-systemd-invoke restart schleuder-api-daemon.service
 	fi
 	;;
 
