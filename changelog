@@ -1,3 +1,34 @@
+schleuder (3.1.0-3) unstable; urgency=medium
+
+  * debian/rules:
+    - Install SysV init script.
+    - Drop unneeded debhelper '--no-start' overrides; debhelper should
+      enable and start the Schleuder API daemon.
+  * debian/control:
+    - Depend on lsb-base package for init-functions.
+    - Fix (Build-)Depends: formatting.
+    - Bump Standards-Version to 4.0.0.
+  * debian/schleuder-api-daemon.init: Rework SysVinit script: Fix formatting
+    and styling, add required and recommend commands status, reload,
+    force-reload by Lintian.
+  * debian/schleuder.cron.weekly: Refresh keys first, ignore errors and don't
+    exit early. (Closes: #853836)
+  * debian/schleuder.preinst: If upgrading from schleuder 2, move data to
+    separate backup dir and inform the user. (Closes: #853841)
+  * debian/schleuder.postinst: 
+    - Remove obsolete deb-systemd-helper calls, this is handled by debhelper
+      now.
+    - Ensure sane permissions of backup dir. (Closes: #853841)
+  * debian/schleuder.postrm: Remove the backup dir if purging the package.
+    (Closes: #853841)
+  * debian/README.Debian: Add notes to migrate lists from schleuder 2 to 3.
+    (Closes: #853841)
+  * debian/patches: As data is now moved to a separate backup dir if upgrading
+    from schleuder 2, drop the obsolete patching of 'schleuder install', which
+    disabled the check for existing data. (Closes: #853841)
+
+ -- Georg Faerber <georg@riseup.net>  Tue, 20 Jun 2017 13:17:00 +0200
+
 schleuder (3.1.0-2) unstable; urgency=medium
 
   * debian/tests/upstream-tests: Ensure haveged is running before executing
