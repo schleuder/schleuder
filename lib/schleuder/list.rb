@@ -233,6 +233,7 @@ module Schleuder
       @listdir ||= self.class.listdir(self.email)
     end
 
+    # TODO: get rid of this method in the future
     def subscribe(email, fingerprint=nil, adminflag=false, deliveryflag=true)
       # Ensure we have true or false as values for these two attributes.
       admin            =  (['true', '1'].include?  adminflag.to_s)
