@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Lookup keys for subscriptions when importing a v2-list, and assign the fingerprint if it was a distinct match. Otherwise people, that had no fingerprint set before, will receive plaintext emails as for subscriptions we're not anymore looking up keys by email address.
 * Assign looked up fingerprint to admins only if it was a distinct match.
+* schleuder-api-daemon SysV init script: Fix formatting and styling, add recommend and required commands {status,reload,force-reload} by Lintian. (#230)
 * Do not detect Cron-Emails as bounce (#205)
 * Don't require database-adapter early. Helps when using a different database-system than sqlite.
 * Skip unusable keys when resending.
