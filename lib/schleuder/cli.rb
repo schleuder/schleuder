@@ -63,16 +63,14 @@ module Schleuder
       end
     end
 
-    desc 'refresh_keys', "Refresh all keys of all list from the keyservers sequentially (one by one). (This is supposed to be run from cron weekly.)"
-    def refresh_keys
-      List.all.each do |list|
-        I18n.locale = list.language
-        output = list.refresh_keys
-        if output.present?
-          msg = "#{I18n.t('refresh_keys_intro', email: list.email)}\n\n#{output}"
-          list.logger.notify_admin(msg, nil, I18n.t('refresh_keys'))
-        end
-      end
+    desc 'refresh_keys [list1@example.com]', "Refresh all keys of all list from the keyservers sequentially (one by one or on the passed list). (This is supposed to be run from cron weekly.)"
+    def refresh_keys(list=nil)
+      work_on_lists(:refresh_keys,list)
+    end
+
+    desc 'pin_keys [list1@example.com]', "Find keys for subscriptions without a pinned key and try to pin a certain key (one by one or based on the passed list)."
+    def pin_keys(list=nil)
+      work_on_lists(:pin_keys,list)
     end
 
     desc 'install', "Set-up or update Schleuder environment (create folders, copy files, fill the database)."
@@ -304,5 +302,22 @@ Please notify the users and admins of this list of these changes.
         end
       end
     end
+    private
+    def work_on_lists(subj, list=nil)
+      selected_lists = if list.nil?
+        List.all
+      else
+        List.where(email: list)
+      end
+      selected_lists.each do |list|
+        I18n.locale = list.language
+        output = list.send(subj)
+        if output.present?
+          msg = "#{I18n.t("#{subj}_intro", email: list.email)}\n\n#{output}"
+          list.logger.notify_admin(msg, nil, I18n.t(subj))
+        end
+      end
+    end
+
   end
 end

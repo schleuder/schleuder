@@ -9,6 +9,7 @@ module Mail
     # strange errors about wrong number of arguments when overriding
     # Message#initialize.
     def setup(recipient, list)
+      fix_hotmail_messages!
       strip_html_from_alternative!
       if self.encrypted?
         new = self.decrypt(verify: true)
@@ -51,6 +52,17 @@ module Mail
       end
       self.content_type = 'multipart/mixed'
       add_pseudoheader(:note, I18n.t("pseudoheaders.stripped_html_from_multialt"))
+    end
+
+    def fix_hotmail_messages!
+      if header['X-OriginatorOrg'].to_s.match(/(hotmail|outlook).com/) &&
+              parts[0][:content_type].content_type == 'text/plain' &&
+              parts[0].body.to_s.blank? &&
+              parts[1][:content_type].content_type == 'application/pgp-encrypted' &&
+              parts[2][:content_type].content_type == 'application/octet-stream'
+        self.parts.delete_at(0)
+        self.content_type = [:multipart, :encrypted, {protocol: "application/pgp-encrypted", boundary: self.boundary}]
+      end
     end
 
     def clean_copy(with_pseudoheaders=false)

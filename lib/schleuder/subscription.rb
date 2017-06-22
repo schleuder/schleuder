@@ -6,11 +6,13 @@ module Schleuder
                           in: -> (id) { List.pluck(:id) },
                           message: "must refer to an existing list"
                         }
-    validates :email, presence: true, email: true
+    validates :email, presence: true, email: true, uniqueness: {scope: :list_id}
     validates :fingerprint, allow_blank: true, fingerprint: true
     validates :delivery_enabled, :admin, boolean: true
 
     default_scope { order(:email) }
+
+    scope :without_fingerprint, -> { where(fingerprint: [nil,'']) }
 
     def to_s
       email

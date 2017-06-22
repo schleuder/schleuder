@@ -138,5 +138,18 @@ describe Mail::Message do
     end
   end
 
+  it "#setup fixes pgp/mime-messages that were mangled by hotmail" do
+    list = create(:list)
+    # For some reason I have to call list.key once to avoid a "decryption
+    # failed" error from GPG.
+    list.key
+    mail = Mail.read("spec/fixtures/mails/hotmail.eml")
+
+    message = mail.setup(list.email, list)
+
+    expect(message[:content_type].content_type).to eql("text/plain")
+    expect(message.body.to_s).to eql("foo\n")
+  end
+
 end
 
