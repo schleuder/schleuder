@@ -27,6 +27,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Fix text of admin-notification from plugin-runners.
 * Fix working with multipart/alternative-messages that contain inline OpenPGP-data. We're now stripping the HTML-part to enable properly handling the ciphertext.
 * Validate that an email address can be subscribed only once per list.
+* Avoid loops on notifying list admins (#229)
+
 
 ## [3.1.0] / 2017-05-21
 

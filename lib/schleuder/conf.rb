@@ -10,6 +10,7 @@ module Schleuder
       'listlogs_dir' => '/var/lib/schleuder/lists',
       'plugins_dir' => '/etc/schleuder/plugins',
       'log_level' => 'warn',
+      'superadmin' => 'root@localhost',
       'keyserver' => 'hkp://pool.sks-keyservers.net',
       'smtp_settings' => {
         'address' => 'localhost',

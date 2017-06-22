@@ -1,6 +1,32 @@
 require "spec_helper"
 
 describe Schleuder::LoggerNotifications do
+  context 'return path' do
+    it 'sets default superadmin' do
+      list = create(:list, send_encrypted_only: false)
+      list.subscribe("schleuder@example.org", nil, true)
+      list.logger.notify_admin("Something", nil, I18n.t('notice'))
+
+      message = Mail::TestMailer.deliveries.first
+
+      expect(message.sender).to eql('root@localhost')
+      expect(message[:Errors_To].to_s).to eql('root@localhost')
+    end
+
+    it 'sets superadmin' do
+      oldval = Conf.instance.config['superadmin']
+      Conf.instance.config['superadmin'] = 'schleuder-admin@example.org'
+      list = create(:list, send_encrypted_only: false)
+      list.subscribe("schleuder@example.org", nil, true)
+      list.logger.notify_admin("Something", nil, I18n.t('notice'))
+
+      message = Mail::TestMailer.deliveries.first
+
+      expect(message.sender).to eql('schleuder-admin@example.org')
+      expect(message[:Errors_To].to_s).to eql('schleuder-admin@example.org')
+      Conf.instance.config['superadmin'] = oldval
+    end
+  end
   it "notifies admins of simple text-message" do
     list = create(:list, send_encrypted_only: false)
     list.subscribe("schleuder@example.org", nil, true)
