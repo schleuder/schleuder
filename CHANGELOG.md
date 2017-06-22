@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.1.x] / 2017-06-xx (unreleased)
 
+### Added
+
+* Provide an administrative command `pin_keys`, to pin subscriptions to a distinct key (#225)
+* Allow to run `pin_keys` or `refresh_keys` only for certain lists.
+
 ### Fixed
 
 * Lookup keys for subscriptions when importing a v2-list, and assign the fingerprint if it was a distinct match. Otherwise people, that had no fingerprint set before, will receive plaintext emails as for subscriptions we're not anymore looking up keys by email address.
