@@ -20,11 +20,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * When migrating a v2-list, do not enable delivery for admins that weren't a member. (#213)
 * When migrating a v2-list, subscribe duplicated members only once (#208)
 * When migrating a v2-list, properly deal with admins that have no (valid) key. (#207)
+* When creating a list, only use distinctly found keys for admins.
 * Skip unusable keys when resending.
 * Don't report unchanged keys when refreshing keys.
-* Do not detect emails sent from cron-scripts as bounces (#205)
 * Fix adding the subject-prefix to an empty subject (#226)
-* Only use distinct keys for admins when creating lists.
+* Do not detect emails sent from cron-scripts as bounces (#205)
 * Fix working with multipart/alternative-messages that contain inline OpenPGP-data. We're now stripping the HTML-part to enable properly handling the ciphertext.
 * Validate that an email address can be subscribed only once per list.
 * Fixed settings subscription-attributes (admin, delivery_enabled) when suscribing through schleuder-web.
