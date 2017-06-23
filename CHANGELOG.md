@@ -20,18 +20,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * When migrating a v2-list, do not enable delivery for admins that weren't a member. (#213)
 * When migrating a v2-list, subscribe duplicated members only once (#208)
 * When migrating a v2-list, properly deal with admins that have no (valid) key. (#207)
-* schleuder-api-daemon SysV init script: Fix formatting and styling, add recommend and required commands {status,reload,force-reload} by Lintian. (#230)
-* Do not detect Cron-Emails as bounces (#205)
-* Don't require database-adapter early. Helps when using a different database-system than sqlite.
 * Skip unusable keys when resending.
-* Fix adding the subject-prefix to an empty subject (#226)
 * Don't report unchanged keys when refreshing keys.
+* Do not detect emails sent from cron-scripts as bounces (#205)
+* Fix adding the subject-prefix to an empty subject (#226)
 * Only use distinct keys for admins when creating lists.
-* Fix text of admin-notification from plugin-runners.
 * Fix working with multipart/alternative-messages that contain inline OpenPGP-data. We're now stripping the HTML-part to enable properly handling the ciphertext.
 * Validate that an email address can be subscribed only once per list.
-* Avoid loops on notifying list admins (#229)
 * Fixed settings subscription-attributes (admin, delivery_enabled) when suscribing through schleuder-web.
+* schleuder-api-daemon SysV init script: Fix formatting and styling, add recommend and required commands {status,reload,force-reload} by Lintian. (#230)
+* Don't require database-adapter early. Helps when using a different database-system than sqlite.
+* Fix text of admin-notification from plugin-runners.
+* Avoid loops on notifying list admins (#229)
 
 
 ## [3.1.0] / 2017-05-21
