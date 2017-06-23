@@ -28,6 +28,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Fix working with multipart/alternative-messages that contain inline OpenPGP-data. We're now stripping the HTML-part to enable properly handling the ciphertext.
 * Validate that an email address can be subscribed only once per list.
 * Avoid loops on notifying list admins (#229)
+* Fixed settings subscription-attributes (admin, delivery_enabled) when suscribing through schleuder-web.
 
 
 ## [3.1.0] / 2017-05-21
