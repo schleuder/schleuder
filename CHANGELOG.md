@@ -18,7 +18,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * **When migrating a v2-list, lookup keys for subscriptions** and assign the fingerprint if it was a distinct match. Otherwise people that had no fingerprint set before will receive plaintext emails — because in v3 we're not anymore looking up keys for subscriptions by email address. (To fix this for already migrated lists please use `schleuder pin_keys $listname`).
 * When migrating a v2-list, assign the looked up fingerprint to an admin only if it was a distinct match.
 * When migrating a v2-list, do not enable delivery for admins that weren't a member. (#213)
-* When migration a v2-list, subscribe duplicated members only once (#208)
+* When migrating a v2-list, subscribe duplicated members only once (#208)
 * When migrating a v2-list, properly deal with admins that have no (valid) key. (#207)
 * schleuder-api-daemon SysV init script: Fix formatting and styling, add recommend and required commands {status,reload,force-reload} by Lintian. (#230)
 * Do not detect Cron-Emails as bounces (#205)
