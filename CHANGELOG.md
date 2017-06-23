@@ -15,7 +15,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-* **!** When migrating a v2-list, lookup keys for subscriptions and assign the fingerprint if it was a distinct match. Otherwise people, that had no fingerprint set before (`key_fingerprint`), will receive plaintext emails — because in v3 we're not anymore looking up keys for subscriptions by email address. (To fix this for already migrated lists please use `schleuder pin_keys $listname`).
+* **When migrating a v2-list, lookup keys for subscriptions** and assign the fingerprint if it was a distinct match. Otherwise people that had no fingerprint set before will receive plaintext emails — because in v3 we're not anymore looking up keys for subscriptions by email address. (To fix this for already migrated lists please use `schleuder pin_keys $listname`).
 * When migrating a v2-list, assign the looked up fingerprint to an admin only if it was a distinct match.
 * When migrating a v2-list, do not enable delivery for admins that weren't a member. (#213)
 * Fix importing v2 lists with duplicated members (#208)
