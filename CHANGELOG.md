@@ -7,21 +7,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-* Provide an administrative command `pin_keys`, to pin subscriptions to a distinct key (#225)
-* Allow to run `pin_keys` or `refresh_keys` only for certain lists.
+* New cli-command `pin_keys` to pin the subscriptions of a list to a respective key (#225). Running this fixes the shortcoming of the code for list-migration mentioned below.
+
+### Changed
+
+* Allow to run `refresh_keys` only for a given list.
 
 ### Fixed
 
-* Lookup keys for subscriptions when importing a v2-list, and assign the fingerprint if it was a distinct match. Otherwise people, that had no fingerprint set before, will receive plaintext emails as for subscriptions we're not anymore looking up keys by email address.
-* Assign looked up fingerprint to admins only if it was a distinct match.
+* **!** When migrating a v2-list, lookup keys for subscriptions and assign the fingerprint if it was a distinct match. Otherwise people, that had no fingerprint set before (`key_fingerprint`), will receive plaintext emails — because in v3 we're not anymore looking up keys for subscriptions by email address. (To fix this for already migrated lists please use `schleuder pin_keys $listname`).
+* When migrating a v2-list, assign the looked up fingerprint to an admin only if it was a distinct match.
+* When migrating a v2-list, do not enable delivery for admins that weren't a member. (#213)
+* Fix importing v2 lists with duplicated members (#208)
+* Fix importing v2 lists where admins do not have a proper key. (#207)
 * schleuder-api-daemon SysV init script: Fix formatting and styling, add recommend and required commands {status,reload,force-reload} by Lintian. (#230)
-* Do not detect Cron-Emails as bounce (#205)
+* Do not detect Cron-Emails as bounces (#205)
 * Don't require database-adapter early. Helps when using a different database-system than sqlite.
 * Skip unusable keys when resending.
-* Don't fail on importing v2 lists where members might be subscribed multiple times (#208)
-* Do not enable delivery for admins that weren't members in v2 lists. (#213)
-* Don't fail on importing v2 lists where admins do not have a proper key. (#207)
-* Don't fail on adding prefix to an empty subject (#226)
+* Fix adding the subject-prefix to an empty subject (#226)
 * Don't report unchanged keys when refreshing keys.
 * Only use distinct keys for admins when creating lists.
 * Fix text of admin-notification from plugin-runners.
