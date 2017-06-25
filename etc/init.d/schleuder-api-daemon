@@ -2,8 +2,8 @@
 
 ### BEGIN INIT INFO
 # Provides:          schleuder-api-daemon
-# Required-Start:    $local_fs $network $syslog
-# Required-Stop:     $local_fs $network $syslog
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Schleuder API daemon
@@ -18,61 +18,70 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 
 NAME=schleuder-api-daemon
 DAEMON=/usr/local/bin/schleuder-api-daemon
+DESC="Schleuder API daemon"
 PIDFILE=/var/run/$NAME.pid
 USER=schleuder
 GROUP=schleuder
 
 test -x $DAEMON || exit 5
 
-start() {
-  if [ -f /var/run/$NAME.pid ]; then
-        log_failure_msg "$NAME is running already, please stop it first"
+start_schleuder_api_daemon() {
+    if [ -f "$PIDFILE" ]; then
+        echo ""
+        log_failure_msg "$DESC is running already, please stop it first"
         exit 1
-  fi
-
-  if ! id $USER >/dev/null 2>&1; then
+    fi
+    
+    if ! id $USER >/dev/null 2>&1; then
         log_failure_msg "User \"$USER\" does not exist"
         exit 1
-  fi
-
-  if ! getent group $GROUP >/dev/null 2>&1; then
+    fi
+    
+    if ! getent group $GROUP >/dev/null 2>&1; then
         log_failure_msg "Group \"$GROUP\" does not exist"
         exit 1
-  fi
-
-  log_daemon_msg "Starting $NAME" "$DAEMON"
-  start-stop-daemon --chuid "$USER":"$GROUP" --pidfile $PIDFILE --make-pidfile --background --exec $DAEMON --start
-  log_end_msg $?
+    fi
+    
+    start-stop-daemon --chuid "$USER":"$GROUP" --start --pidfile $PIDFILE  --make-pidfile --background --startas $DAEMON -- $NAME
 }
 
-stop() {
-  if ! [ -f /var/run/$NAME.pid ]; then
-        log_failure_msg "$NAME isn't running currently, nothing to do"
-        exit 1
-  fi
-
-  log_daemon_msg "Stopping $NAME" "$DAEMON"
-  start-stop-daemon --oknodo --pidfile $PIDFILE --stop --retry 10
-  log_end_msg $?
-  rm $PIDFILE
+stop_schleuder_api_daemon() {
+    if [ -f "$PIDFILE" ]; then
+        start-stop-daemon --stop --retry TERM/10/KILL/5 --pidfile $PIDFILE --quiet --oknodo --pidfile "$PIDFILE"
+        rm -f $PIDFILE
+    fi
 }
 
-restart() {
-  stop
-  start
+status_schleuder_api_daemon() {
+    if [ ! -e $PIDFILE ]; then
+        status_of_proc "${DAEMON}" "${DESC}"
+    else
+        status_of_proc -p "${PIDFILE}" "${DAEMON}" "${DESC}"
+    fi
 }
 
 case "$1" in
-  start)
-    start
-    ;;
-  stop)
-    stop
-    ;;
-  restart)
-    restart
-    ;;
-  *)
-    log_success_msg "Usage: $0 {start|stop|restart}"
-    exit 1
+    start)
+        log_begin_msg "Starting $DESC"
+        start_schleuder_api_daemon
+        log_end_msg $?
+        ;;
+    stop)
+        log_begin_msg "Stopping $DESC"
+        stop_schleuder_api_daemon
+        log_end_msg $?
+        ;;
+    status)
+        status_schleuder_api_daemon
+        ;;
+    restart|reload|force-reload)
+        log_begin_msg "Restarting $DESC"
+        stop_schleuder_api_daemon
+        start_schleuder_api_daemon
+        log_end_msg $?
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status|restart|reload|force-reload}"
+        exit 1
+        ;;
 esac

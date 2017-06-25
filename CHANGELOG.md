@@ -3,6 +3,37 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.1] / 2017-06-24
+
+### Added
+
+* New cli-command `pin_keys` to pin the subscriptions of a list to a respective key (#225). Running this fixes the shortcoming of the code for list-migration mentioned below.
+
+### Changed
+
+* Allow to run `refresh_keys` only for a given list.
+
+### Fixed
+
+* **When migrating a v2-list, lookup keys for subscriptions** and assign the fingerprint if it was a distinct match. Otherwise people that had no fingerprint set before will receive plaintext emails — because in v3 we're not anymore looking up keys for subscriptions by email address. (To fix this for already migrated lists please use `schleuder pin_keys $listname`).
+* When migrating a v2-list, assign the looked up fingerprint to an admin only if it was a distinct match.
+* When migrating a v2-list, do not enable delivery for admins that weren't a member. (#213)
+* When migrating a v2-list, subscribe duplicated members only once (#208)
+* When migrating a v2-list, properly deal with admins that have no (valid) key. (#207)
+* When creating a list, only use distinctly found keys for admins.
+* Skip unusable keys when resending.
+* Don't report unchanged keys when refreshing keys.
+* Fix adding the subject-prefix to an empty subject (#226)
+* Do not detect emails sent from cron-scripts as bounces (#205)
+* Fix working with multipart/alternative-messages that contain inline OpenPGP-data. We're now stripping the HTML-part to enable properly handling the ciphertext.
+* Validate that an email address can be subscribed only once per list.
+* Fixed settings subscription-attributes (admin, delivery_enabled) when suscribing through schleuder-web.
+* schleuder-api-daemon SysV init script: Fix formatting and styling, add recommend and required commands {status,reload,force-reload} by Lintian. (#230)
+* Don't require database-adapter early. Helps when using a different database-system than sqlite.
+* Fix text of admin-notification from plugin-runners.
+* Avoid loops on notifying list admins (#229)
+
+
 ## [3.1.0] / 2017-05-21
 
 ### Added

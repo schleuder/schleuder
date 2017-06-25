@@ -9,6 +9,8 @@ module Mail
     # strange errors about wrong number of arguments when overriding
     # Message#initialize.
     def setup(recipient, list)
+      fix_hotmail_messages!
+      strip_html_from_alternative!
       if self.encrypted?
         new = self.decrypt(verify: true)
         ## Work around a bug in mail-gpg: when decrypting pgp/mime the
@@ -33,7 +35,34 @@ module Mail
       # might be gone (e.g. request-keywords that delete subscriptions or
       # keys).
       new.signer
+      self.dynamic_pseudoheaders.each do |str|
+        new.add_pseudoheader(str)
+      end
       new
+    end
+
+    def strip_html_from_alternative!
+      if self[:content_type].content_type != 'multipart/alternative' || ! self.to_s.include?('BEGIN PGP ')
+        return false
+      end
+
+      Schleuder.logger.debug "Stripping html-part from multipart/alternative-message"
+      self.parts.delete_if do |part|
+        part[:content_type].content_type == 'text/html'
+      end
+      self.content_type = 'multipart/mixed'
+      add_pseudoheader(:note, I18n.t("pseudoheaders.stripped_html_from_multialt"))
+    end
+
+    def fix_hotmail_messages!
+      if header['X-OriginatorOrg'].to_s.match(/(hotmail|outlook).com/) &&
+              parts[0][:content_type].content_type == 'text/plain' &&
+              parts[0].body.to_s.blank? &&
+              parts[1][:content_type].content_type == 'application/pgp-encrypted' &&
+              parts[2][:content_type].content_type == 'application/octet-stream'
+        self.parts.delete_at(0)
+        self.content_type = [:multipart, :encrypted, {protocol: "application/pgp-encrypted", boundary: self.boundary}]
+      end
     end
 
     def clean_copy(with_pseudoheaders=false)
@@ -175,8 +204,11 @@ module Mail
       @recipient.match(/-bounce@/).present? ||
           # Empty Return-Path
           self.return_path.to_s == '<>' ||
-          # Auto-Submitted exists and does not equal 'no'
-          ( self['Auto-Submitted'].present? && self['Auto-Submitted'].to_s.downcase != 'no' )
+          # Auto-Submitted exists and does not equal 'no' and no cron header
+          # present, as cron emails have the auto-submitted header.
+          ( self['Auto-Submitted'].present? && \
+            self['Auto-Submitted'].to_s.downcase != 'no' && \
+            !self['X-Cron-Env'].present?)
     end
 
     def keywords
@@ -220,9 +252,13 @@ module Mail
       _add_subject_prefix(:out)
     end
 
-    def add_pseudoheader(key, value)
+    def add_pseudoheader(string_or_key, value=nil)
       @dynamic_pseudoheaders ||= []
-      @dynamic_pseudoheaders << make_pseudoheader(key, value)
+      if value.present?
+        @dynamic_pseudoheaders << make_pseudoheader(string_or_key, value)
+      else
+        @dynamic_pseudoheaders << string_or_key.to_s
+      end
     end
 
     def make_pseudoheader(key, value)
@@ -338,7 +374,7 @@ module Mail
           pref << ')'
         end
 
-        fingerprint = list.key.fingerprint
+        fingerprint = list.fingerprint
         comment = "(Send an email to #{list.sendkey_address} to receive the public-key)"
 
         self['OpenPGP'] = "id=0x#{fingerprint} #{comment}; #{pref}"
@@ -398,8 +434,10 @@ module Mail
       if ! string.empty?
         prefix = "#{string} "
         # Only insert prefix if it's not present already.
-        if ! self.subject.include?(prefix)
-          self.subject = "#{string} #{self.subject}"
+        if self.subject.nil?
+          self.subject = string
+        elsif ! self.subject.include?(prefix)
+          self.subject = "#{prefix}#{self.subject}"
         end
       end
     end

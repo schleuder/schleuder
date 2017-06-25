@@ -85,6 +85,8 @@ module Schleuder
     def self.map_with_keys(mail, recipients, encrypted_only)
       Array(recipients).inject({}) do |hash, email|
         keys = mail.list.keys(email)
+        # Exclude unusable keys.
+        keys.select! { |key| key.usable_for?(:encrypt) }
         case keys.size
         when 1
           hash[email] = keys.first

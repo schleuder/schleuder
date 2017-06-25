@@ -92,5 +92,16 @@ describe Schleuder::Subscription do
       expect(subscription.errors.messages[subscription_attribute]).to include("must be true or false")
     end
   end
+
+  it "is invalid if the given email is already subscribed for the list" do
+    subscription1 = create(:subscription)
+    subscription2 = build(:subscription, email: subscription1.email)
+    subscription3 = build(:subscription, email: subscription1.email, list_id: subscription1.list_id)
+
+    expect(subscription1).to be_valid
+    expect(subscription2).to be_valid
+    expect(subscription3).not_to be_valid
+    expect(subscription3.errors[:email]).to eql(["is already subscribed"])
+  end
 end
 

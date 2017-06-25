@@ -89,6 +89,10 @@ module Schleuder
       subscriptions.where(admin: true)
     end
 
+    def subscriptions_without_fingerprint
+      subscriptions.without_fingerprint
+    end
+
     def key(fingerprint=self.fingerprint)
       keys(fingerprint).first
     end
@@ -99,6 +103,15 @@ module Schleuder
 
     def keys(identifier=nil, secret_only=nil)
       gpg.find_keys(identifier, secret_only)
+    end
+
+    def distinct_key(identifier)
+      keys = keys(identifier).select { |key| key.usable_for?(:encrypt) }
+      if keys.size == 1
+        return keys.first
+      else
+        return nil
+      end
     end
 
     def import_key(importable)
@@ -170,6 +183,19 @@ module Schleuder
       gpg.fetch_key(input)
     end
 
+    def pin_keys
+      updated_emails = subscriptions_without_fingerprint.collect do |subscription|
+        key = distinct_key(subscription.email)
+        if key
+          subscription.update(fingerprint: key.fingerprint)
+          "#{subscription.email}: #{key.fingerprint}"
+        else
+          nil
+        end
+      end
+      updated_emails.compact.join("\n")
+    end
+
     def self.by_recipient(recipient)
       listname = recipient.gsub(/-(sendkey|request|owner|bounce)@/, '@')
       where(email: listname).first
@@ -233,10 +259,11 @@ module Schleuder
       @listdir ||= self.class.listdir(self.email)
     end
 
+    # TODO: get rid of this method in the future
     def subscribe(email, fingerprint=nil, adminflag=false, deliveryflag=true)
       # Ensure we have true or false as values for these two attributes.
-      admin            = adminflag.to_s == 'true'
-      delivery_enabled = deliveryflag.to_s != 'false'
+      admin            =  (['true', '1'].include?  adminflag.to_s)
+      delivery_enabled = !(['false', '0'].include? deliveryflag.to_s)
 
       sub = Subscription.new(
           list_id: self.id,

@@ -79,7 +79,9 @@ en:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
     keyword_admin_notify_request: "%{signer} sent the keyword '%{keyword}' with the values '%{arguments}' and received this response:"
+    keyword_admin_notify_request_without_arguments: "%{signer} sent the keyword '%{keyword}' and received this response:"
     keyword_admin_notify_lists: "%{signer} used the keyword '%{keyword}' with the values '%{arguments}' in a message sent to the list."
+    keyword_admin_notify_lists_without_arguments: "%{signer} used the keyword '%{keyword}' in a message sent to the list."
     key_management:
       deleted: "Deleted: %{key_string}"
       not_deletable: "May not be deleted: %{key_string}"
@@ -142,6 +144,8 @@ en:
   missed_message_due_to_unusable_key: "You missed an email from %{list_email} because your subscription isn't associated with a (usable) OpenPGP key. Please fix this."
   refresh_keys: Keys update
   refresh_keys_intro: "Refreshing all keys from the keyring of list %{email} resulted in this:"
+  pin_keys: Keys pinning
+  pin_keys_intro: "While checking all subscriptions of list %{email} we were pinning a matching key for the following subscriptions:"
   key_updated: Key %{fingerprint} was updated (%{states}).
   key_fetched: Key %{fingerprint} was fetched (%{states}).
   import_states:
@@ -152,4 +156,13 @@ en:
     new_signatures: new signatures
   fetch_key:
     invalid_input: "Invalid input. Allowed are: URLs, OpenPGP-fingerprints, or email-addresses."
+  pseudoheaders:
+    stripped_html_from_multialt: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.
 
+  activerecord:
+    errors:
+      models:
+        schleuder/subscription:
+          attributes:
+            email:
+              taken: 'is already subscribed'
