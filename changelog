@@ -1,3 +1,10 @@
+schleuder (3.1.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/patches/0001-lib-fix-paths.patch: Refresh for new release.
+
+ -- Georg Faerber <georg@riseup.net>  Sun, 25 Jun 2017 14:58:01 +0200
+
 schleuder (3.1.0-3) unstable; urgency=medium
 
   * debian/rules:
