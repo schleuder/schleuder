@@ -3,11 +3,11 @@ Upstream-Name: schleuder
 Source: https://git.codecoop.org/schleuder/schleuder3
 
 Files: *
-Copyright: 2014-2016 schleuder dev team <schleuder@nadir.org> 
+Copyright: 2014-2017 schleuder dev team <schleuder@nadir.org> 
 License: GPL-3.0
 
 Files: debian/*
-Copyright: 2016 Georg Faerber <georg@riseup.net>
+Copyright: 2016-2017 Georg Faerber <georg@riseup.net>
 License: GPL-3.0
 Comment: the Debian packaging is licensed under the same terms as the
  original package.
