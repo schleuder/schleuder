@@ -5,9 +5,9 @@ module Schleuder
       return error if error
 
       logger.info "Parsing incoming email."
+      @mail = Mail.new(msg)
       begin
         # This decrypts, verifies, etc.
-        @mail = Mail.new(msg)
         @mail = @mail.setup(recipient, list)
       rescue GPGME::Error::DecryptFailed
         logger.warn "Decryption of incoming message failed."
