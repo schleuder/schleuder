@@ -3,6 +3,12 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.2] / unreleased
+
+### Fixed
+
+* Fix dropping mails on certain headers (e.g. spam), as the headers weren't checked properly so far.
+
 ## [3.1.1] / 2017-06-24
 
 ### Added

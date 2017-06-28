@@ -15,7 +15,7 @@ module Schleuder
       end
 
       # Filters
-      error = Filters::Runner.run(list, @mail)
+      error = filters_runner.run(@mail)
       if error
         if list.bounces_notify_admins?
           text = "#{I18n.t('.bounces_notify_admins')}\n\n#{error}"
@@ -58,6 +58,10 @@ module Schleuder
 
     def list
       @list
+    end
+
+    def filters_runner
+      @filters_runner ||= Filters::Runner.new(list)
     end
 
     def logger

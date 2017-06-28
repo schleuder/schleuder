@@ -16,14 +16,18 @@ module Schleuder
         receive_from_subscribed_emailaddresses_only
       ]
 
-      def self.run(list, mail)
+      attr_reader :list
+
+      def initialize(list)
         @list = list
-        @mail = mail
-        FILTERS.map do |cmd|
-          @list.logger.debug "Calling filter #{cmd}"
+      end
+
+      def run(mail, filters=FILTERS)
+        filters.map do |cmd|
+          list.logger.debug "Calling filter #{cmd}"
           response = Filters.send(cmd, list, mail)
           if stop?(response)
-            if bounce?(response)
+            if bounce?(response, mail)
               return response
             else
               return nil
@@ -32,51 +36,35 @@ module Schleuder
         end
         nil
       end
+      private
 
-      def self.stop?(response)
+      def stop?(response)
         response.kind_of?(StandardError)
       end
 
-      def self.bounce?(response)
-        if @list.bounces_drop_all
-          @list.logger.debug "Dropping bounce as configurated"
-          notify_admins(I18n.t('.bounces_drop_all'))
+      def bounce?(response, mail)
+        if list.bounces_drop_all
+          list.logger.debug "Dropping bounce as configurated"
+          notify_admins(I18n.t('.bounces_drop_all'), mail.original_message)
           return false
         end
 
-        @list.bounces_drop_on_headers.each do |key, value|
-          if @mail.headers[key].to_s.match(/${value}/i)
-            @list.logger.debug "Incoming message header key '#{key}' matches value '#{value}': dropping the bounce."
-            notify_admins(I18n.t('.bounces_drop_on_headers', key: key, value: value))
+        list.bounces_drop_on_headers.each do |key, value|
+          if mail[key].to_s.match(/#{value}/i)
+            list.logger.debug "Incoming message header key '#{key}' matches value '#{value}': dropping the bounce."
+            notify_admins(I18n.t('.bounces_drop_on_headers', key: key, value: value), mail.original_message)
             return false
           end
         end
 
-        @list.logger.debug "Bouncing message"
+        list.logger.debug "Bouncing message"
         true
       end
 
-      def self.notify_admins(reason)
-        if @list.bounces_notify_admins?
-          @list.logger.notify_admin reason, @mail.original_message, I18n.t('notice')
+      def notify_admins(reason, original_message)
+        if list.bounces_notify_admins?
+          list.logger.notify_admin reason, original_message, I18n.t('notice')
         end
-      end
-
-      def self.reply_to_sender(msg)
-        sender_addr = @mail.from.first
-        logger.debug "Replying to #{sender_addr.inspect}"
-        reply = @mail.reply
-        reply.from = @list.email
-        reply.sender = @list.bounce_address
-        reply.body = msg
-        gpg_opts = @list.gpg_sign_options
-        if @list.keys("<#{sender_addr}>").present?
-          logger.debug "Found key for address"
-          gpg_opts[encrypt] = true
-        end
-        reply.gpg gpg_opts
-        list.logger.info "Sending message to #{sender_addr}"
-        reply.deliver
       end
     end
   end
