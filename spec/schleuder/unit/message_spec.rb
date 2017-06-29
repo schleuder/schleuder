@@ -26,7 +26,7 @@ describe Mail::Message do
     mail = Mail.new
     # Trigger the setting of mandatory headers.
     mail.to_s
-    mail = mail.setup('something-bounce@localhost', list)
+    mail = Mail.create_message_to_list(mail.to_s, 'something-bounce@localhost', list).setup
 
     expect(mail.automated_message?).to be(true)
   end
@@ -37,7 +37,7 @@ describe Mail::Message do
     mail.header['Auto-Submitted'] = 'yes'
     # Trigger the setting of mandatory headers.
     mail.to_s
-    mail = mail.setup('something@localhost', list)
+    mail = Mail.create_message_to_list(mail.to_s, 'something@localhost', list).setup
 
     expect(mail.automated_message?).to be(true)
   end
@@ -49,7 +49,7 @@ describe Mail::Message do
     mail.header['X-Cron-Env'] = '<MAILTO=root>'
     # Trigger the setting of mandatory headers.
     mail.to_s
-    mail = mail.setup('something@localhost', list)
+    mail = Mail.create_message_to_list(mail.to_s, 'something@localhost', list).setup
 
     expect(mail.automated_message?).to be(false)
   end
@@ -64,7 +64,7 @@ describe Mail::Message do
     mail.html_part = "<p>#{content}</p>"
     mail.subject = "test"
 
-    message = mail.setup(list.email, list)
+    message = Mail.create_message_to_list(mail.to_s, list.email, list).setup
 
     expect(message[:content_type].content_type).to eql("multipart/mixed")
     expect(message.parts.size).to be(1)
@@ -82,7 +82,7 @@ describe Mail::Message do
     mail.html_part = "<p>#{content}</p>"
     mail.subject = "test"
 
-    message = mail.setup(list.email, list)
+    message = Mail.create_message_to_list(mail.to_s, list.email, list).setup
 
     expect(message[:content_type].content_type).to eql("multipart/alternative")
     expect(message.parts.size).to be(2)
@@ -102,7 +102,7 @@ describe Mail::Message do
       mail.text_part = 'blabla'
       mail.subject = 'test'
 
-      message = mail.setup(list.email, list)
+      message = Mail.create_message_to_list(mail.to_s, list.email, list).setup
       message.add_subject_prefix!
 
       expect(message.subject).to eql('[prefix] test')
@@ -116,7 +116,7 @@ describe Mail::Message do
       mail.to list.email
       mail.text_part = 'blabla'
 
-      message = mail.setup(list.email, list)
+      message = Mail.create_message_to_list(mail.to_s, list.email, list).setup
       message.add_subject_prefix!
 
       expect(message.subject).to eql('[prefix]')
@@ -131,7 +131,7 @@ describe Mail::Message do
       mail.text_part = 'blabla'
       mail.subject = 'Re: [prefix] test'
 
-      message = mail.setup(list.email, list)
+      message = Mail.create_message_to_list(mail.to_s, list.email, list).setup
       message.add_subject_prefix!
 
       expect(message.subject).to eql('Re: [prefix] test')
@@ -145,7 +145,7 @@ describe Mail::Message do
     list.key
     mail = Mail.read("spec/fixtures/mails/hotmail.eml")
 
-    message = mail.setup(list.email, list)
+    message = Mail.create_message_to_list(mail.to_s, list.email, list).setup
 
     expect(message[:content_type].content_type).to eql("text/plain")
     expect(message.body.to_s).to eql("foo\n")

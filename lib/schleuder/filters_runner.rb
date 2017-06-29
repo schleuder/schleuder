@@ -2,13 +2,23 @@ module Schleuder
   module Filters
     class Runner
       # To define priority sort this.
-      FILTERS = %w[
-        request
+      # The method `setup` parses, decrypts etc.
+      # the mail sent to the list. So before
+      # calling setup we do all the things
+      # that won't require e.g. validation of
+      # the sender.
+      PRE_SETUP_FILTERS = %w[
         forward_bounce_to_admins
         forward_all_incoming_to_admins
         send_key
-        forward_to_owner
+      ]
+      # message size must be checked after
+      # decryption as gpg heavily compresses
+      # messages.
+      POST_SETUP_FILTERS = %w[
+        request
         max_message_size
+        forward_to_owner
         receive_admin_only
         receive_authenticated_only
         receive_signed_only
@@ -22,7 +32,7 @@ module Schleuder
         @list = list
       end
 
-      def run(mail, filters=FILTERS)
+      def run(mail, filters)
         filters.map do |cmd|
           list.logger.debug "Calling filter #{cmd}"
           response = Filters.send(cmd, list, mail)

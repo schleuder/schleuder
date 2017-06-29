@@ -8,6 +8,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 * Fix dropping mails on certain headers (e.g. spam), as the headers weren't checked properly so far.
+* Fix processing of bounced messages. If a bounced messaged contained a PGP message (which most messages sent by schleuder have), schleuder tried to decrypt it before processing as a bounced message. This failed in nearly all cases, leading to double bounces. (#234)
+
 
 ## [3.1.1] / 2017-06-24
 

@@ -5,25 +5,21 @@ module Schleuder
       return error if error
 
       logger.info "Parsing incoming email."
-      @mail = Mail.new(msg)
+      @mail = Mail.create_message_to_list(msg, recipient, list)
+
+      error = run_filters(Filters::Runner::PRE_SETUP_FILTERS)
+      return error if error
+
       begin
         # This decrypts, verifies, etc.
-        @mail = @mail.setup(recipient, list)
+        @mail = @mail.setup
       rescue GPGME::Error::DecryptFailed
         logger.warn "Decryption of incoming message failed."
         return Errors::DecryptionFailed.new(list)
       end
 
-      # Filters
-      error = filters_runner.run(@mail)
-      if error
-        if list.bounces_notify_admins?
-          text = "#{I18n.t('.bounces_notify_admins')}\n\n#{error}"
-          # TODO: raw_source is mostly blank?
-          logger.notify_admin text, @mail.original_message, I18n.t('notice')
-        end
-        return error
-      end
+      error = run_filters(Filters::Runner::POST_SETUP_FILTERS)
+      return error if error
 
       if ! @mail.was_validly_signed?
         logger.debug "Message was not validly signed, adding subject_prefix_in"
@@ -58,6 +54,18 @@ module Schleuder
 
     def list
       @list
+    end
+
+    def run_filters(filters)
+      error = filters_runner.run(@mail, filters)
+      if error
+        if list.bounces_notify_admins?
+          text = "#{I18n.t('.bounces_notify_admins')}\n\n#{error}"
+          # TODO: raw_source is mostly blank?
+          logger.notify_admin text, @mail.original_message, I18n.t('notice')
+        end
+        return error
+      end
     end
 
     def filters_runner

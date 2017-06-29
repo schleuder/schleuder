@@ -1,4 +1,16 @@
 module Mail
+  # creates a Mail::Message likes schleuder
+  def self.create_message_to_list(msg, recipient, list)
+    mail = Mail.new(msg)
+    mail.list = list
+    mail.recipient = recipient
+    # don't freeze here, as the mail might not be fully
+    # parsed as body is lazy evaluated and might still
+    # be changed later.
+    mail.original_message = mail.dup #.freeze
+    mail
+  end
+
   # TODO: Test if subclassing breaks integration of mail-gpg.
   class Message
     attr_accessor :recipient
@@ -8,7 +20,7 @@ module Mail
     # TODO: This should be in initialize(), but I couldn't understand the
     # strange errors about wrong number of arguments when overriding
     # Message#initialize.
-    def setup(recipient, list)
+    def setup
       fix_hotmail_messages!
       strip_html_from_alternative!
       if self.encrypted?
@@ -27,10 +39,11 @@ module Mail
         new = self
       end
 
-      new.list = list
+      new.list = self.list
+      new.recipient = self.recipient
+
       new.gpg list.gpg_sign_options
       new.original_message = self.dup.freeze
-      new.recipient = recipient
       # Trigger method early to save the information. Later some information
       # might be gone (e.g. request-keywords that delete subscriptions or
       # keys).
