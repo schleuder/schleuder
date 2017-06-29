@@ -14,10 +14,15 @@ describe 'someone sends an email to a listname-dash-address' do
 
     mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
+    output = nil
     begin
-      Schleuder::Runner.new().run(mail.to_s, list.sendkey_address)
+      output = Schleuder::Runner.new().run(mail.to_s, list.sendkey_address)
     rescue SystemExit
     end
+
+    # if properly exited there was no output
+    expect(output).to be_nil
+
     raw = Mail::TestMailer.deliveries.first
     message = raw.setup(list.email, list)
 
@@ -42,10 +47,15 @@ describe 'someone sends an email to a listname-dash-address' do
 
     mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
+    output = nil
     begin
-      Schleuder::Runner.new().run(mail.to_s, list.owner_address)
+      output = Schleuder::Runner.new().run(mail.to_s, list.owner_address)
     rescue SystemExit
     end
+
+    # if properly exited there was no output
+    expect(output).to be_nil
+
     raw_msgs = Mail::TestMailer.deliveries
     raw_msgs.sort_by { |msg| msg.to.first }
     message1 = raw_msgs[0].setup(list.email, list)
@@ -69,7 +79,7 @@ describe 'someone sends an email to a listname-dash-address' do
     list.subscribe("admin@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
-    mail.to = list.owner_address
+    mail.to = list.bounce_address
     mail.from = 'mailer-daemon@example.org'
     mail.body = 'delivery failure'
     mail.subject = 'something'
@@ -77,10 +87,15 @@ describe 'someone sends an email to a listname-dash-address' do
 
     mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
+    output = nil
     begin
-      Schleuder::Runner.new().run(mail.to_s, list.bounce_address)
+      output = Schleuder::Runner.new().run(mail.to_s, list.bounce_address).inspect
     rescue SystemExit
     end
+
+    # if properly exited there was no output
+    expect(output).to be_nil
+
     raw_msg = Mail::TestMailer.deliveries.first
     message = raw_msg.setup(list.email, list)
 
