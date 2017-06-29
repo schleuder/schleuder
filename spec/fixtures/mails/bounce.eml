@@ -1,0 +1,107 @@
+Received: by schleuder.example.org with local (Exim 4.87)
+	id 1dOBwu-0005qF-LI
+	for schleuder@example.org; Fri, 23 Jun 2017 00:00:00 +0200
+X-Failed-Recipients: paz@nadir.org
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@schleuder.example.org>
+To: schleuder@example.org
+Content-Type: multipart/report; report-type=delivery-status; boundary=1498175744-eximdsn-1404350378
+MIME-Version: 1.0
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <foo-bar-12@schleuder.example.org>
+Date: Fri, 23 Jun 2017 01:55:44 +0200
+--1498175744-eximdsn-1404350378
+Content-type: text/plain; charset=us-ascii
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  paz@nadir.org
+    host 127.0.0.1 [127.0.0.1]
+    SMTP error from remote mail server after RCPT TO:<paz@nadir.org>:
+    450 4.7.1 <paz@nadir.org>: Recipient address rejected:
+    Sorry, your message cannot be delivered to that person because their mailbox is full. If you can contact them another way, you may wish to tell them of this problem:
+    retry timeout exceeded
+
+--1498175744-eximdsn-1404350378
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; schleuder.example.org
+
+Action: failed
+Final-Recipient: rfc822;paz@nadir.org
+Status: 5.0.0
+Remote-MTA: dns; 127.0.0.1
+Diagnostic-Code: smtp; 450 4.7.1 <paz@nadir.org>: Recipient address rejected: Sorry, your message cannot be delivered to that person because their mailbox is full. If you can contact them another way, you may wish to tell them of this problem: retry timeout exceeded
+
+--1498175744-eximdsn-1404350378
+Content-type: message/rfc822
+
+Received: from [IPv6:::1] (localhost.localdomain [IPv6:::1])
+	by flutsch.local (Postfix) with ESMTP id 1DCDC801DD
+	for <schleuder@example.org>; Thu, 29 Dec 2016 15:09:43 +0100 (CET)
+From: schleuder@example.org
+To: paz@nadir.org
+Subject: bounce test
+Message-ID: <ef1bb457-c90c-7773-219c-3cb9365dc7bf@nadir.org>
+Date: Thu, 29 Dec 2016 15:09:29 +0100
+MIME-Version: 1.0
+Content-Type: multipart/encrypted;
+ protocol="application/pgp-encrypted";
+ boundary="V4nVnp5nddnPgg4bACDcs1kSu5wBuHpL9"
+
+This is an OpenPGP/MIME encrypted message (RFC 4880 and 3156)
+--V4nVnp5nddnPgg4bACDcs1kSu5wBuHpL9
+Content-Type: application/pgp-encrypted
+Content-Description: PGP/MIME version identification
+
+Version: 1
+
+--V4nVnp5nddnPgg4bACDcs1kSu5wBuHpL9
+Content-Type: application/octet-stream; name="encrypted.asc"
+Content-Description: OpenPGP encrypted message
+Content-Disposition: inline; filename="encrypted.asc"
+
+-----BEGIN PGP MESSAGE-----
+
+hQIMA6cu5Rea0LntAQ/8CJywntxLtlNWPJT5hnT8V+rC61phsltkY6nX0ukm2x+r
+9yUydIj1aibcnhSO+rnuoxWxRKsCYoYpysw4FDTQFJx7v8xPRl5k1nvOqvZ5v3a4
+/PwErwlxxRJ3SlJ+jMkHp2jXrY0Fm3BKsCtKrmNJnyE79XSCwpMuXQ6EXH7Cbjxi
+xZ8D1U7+XrYiPMhSKMX4aTYB07fZ2cJbFkIQA/J+ckbBFfdAlPcsdnbyigUAYcG2
+BQPUJtM1xzkvG4KS0ygB4waXqdD8TZY7tOoaZJW5GKPcaaxU0PekGFAJmWQsWHQq
+1wJjTP9tEESHpAMXwjHcxfjpzXwKzE3/qTjAoBZwfO/kRoYNE/CfXmEPf8I4q/q8
+KTuqOt2LQIJ3OfOvsjqlR6L/VH849RnjKotmANE+aNLjIOZazKY90kreTzxFgFpb
+h/HcTrRwBF6/bAG3PUbXlk6+TeF+KzB3MWkIdaoeX3PitugT1XU4/Em7rdBElSC6
+mzrWJICzx2XevmjGF5o192A4N4NyGODbtxZIKXo7Jd9eNkYKHk5Bsk6AoSzamTtE
+SjVaGlKPrv1Pe8OTQZxEO/jMkY49+Mdoa6h2q7U0GmgKjKsBtL7wy8VmNpIDKJhN
+dPI5o8INpav5bJAdPGvWnAG1ds/xxfrY1TrP17oF3/I13VcrtFnydDeTRimXgp7S
+6gFMGRzVPGOqIwrSOrGdhSH+PabeAzQOLWdboAkOFXZ448fZAYTuSCMw/yQ1mjNQ
+FGVHKRuu+aMH+jR9BgyRUYqAJey07azxlD8M1yrtpR8bUz/wWNTGQRpi3AxhAAT6
+DUhXvEQs1Vw+6dQR+NgzL/+MVBredG78uq/Kl+/GaZ2uo+1MHWscC8Ry+f3Vw/a1
+wm4GcXQZ+o84cZaXBLB0HUg3T5f7ajTzgwKc+uVasUlpjFKFjUP0RKGS+SBgLoMh
++uIilzFaHz7HTsMJhLMI5r5kHBkrZXbeKaWJrXBnk59jZOUpXsPIXV0ce5gDuQaJ
+p1fxzPL1ra3s0jTxXivMe88l/pwIG/vIKqhALL/Ihk6Tc2QAdtieIue3p7UeXw4j
+v2d/8nzVK/WHndhYp0mNEBq0/y+l0twgkZtyrDURotUootoDCQ5/InRoWf7rJKzv
+B/ecakqMsd5/6A4ESEvb3bT6BbPQJ49gWEqhb9/0B9fcBN+/dqnOB2WEgT6uFWdr
+srM+l0r9xULBnk+v7JOLIKeSfz2S8EBesV+BKF8UZ47+zHFsKbNN5PHlACKb53/q
+0T/Pck4fUNzH0bsc5+nKGVF41IstM8/yD3hPoQQLNJb7PQ13m+wmqS4JwPbJsOl0
+UWdrfFeX4nDyYZOzmjsJbR8VOBI+sHz1jAy/8R0HJDd13s8vZaBzdC1atnYSFfbI
+BjTpw8KptVITAMoFWqLPq5mbrj91hUbf3xnnY33uzZfK+v7BCx20Mo73HkEdSumE
+DJgQRZunx70Vk/wXJmycacZPBXhJzmlm2LAcSjSR5uSdKBS9XSg8D2ZUKxst+6aR
+/mJCMTmW0b8WTxgt7Wdr9uY38+UF7Dmeb9U9RCJn7JxFd9G/PU8461xGzUrtPueM
+dFq/EWbT/+Xxzi9hnAspUmo0bmCNUQxzewd61hKR3lRtaAotswH9R7HRdkrLCfHK
+W9hiveetNwqANaYqgPjLBp3EoN6GLYsg7OAdq/CuRESXY5EJDO/l+RKKrA55rCTR
++4agv1je9jRfpxWpWEGg6jUPVhaUoEjNWfCRJbzce62ykCk+DYFJV+6wHqrH08Do
+y17wdBpaYmjXhuJ2NmejsID/ra9VeuTcLQSPZXfsIAU2CejE/6K+AV3T8CLzt1oc
+N/frB6zMIxJL4Yy3vQ4oET5Bj/Q+A0W+r7vtbBRiWBgwcsHnRKwRG3fBks9mc+El
+DwxMaVdavLbWqRahsuSi16IWCkORP8e+fkDU5PpyQfNRIFwXt3NNUXBzC26YuFWh
+StUeBpR2IsSi7TVJqYieEoL2Zyp4E71yS9dDc8SRi/eCDJe7YhbXNNbcl3wi1qHb
+sN0dsLNeN95oCfYv7lMED/cOSujSvty+HCPdBrtZguo=
+=eXeI
+-----END PGP MESSAGE-----
+
+--V4nVnp5nddnPgg4bACDcs1kSu5wBuHpL9--
+
+--1498175744-eximdsn-1404350378--

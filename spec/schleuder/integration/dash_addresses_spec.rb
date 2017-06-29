@@ -108,5 +108,37 @@ describe 'someone sends an email to a listname-dash-address' do
     expect(message.parts.last.body.to_s).to include("Subject: something")
     expect(message.parts.last.body.to_s).to include("delivery failure")
   end
+
+  it "forwards the message to the admins if extension is -bounce and it's a real bounce mail" do
+    list = create(:list)
+    list.subscribe("admin@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new(File.read('spec/fixtures/mails/bounce.eml'))
+    mail.to = list.owner_address
+    mail.deliver
+
+    mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+    output = nil
+    begin
+      output = Schleuder::Runner.new().run(mail.to_s, list.bounce_address)
+    rescue SystemExit
+    end
+
+    # if properly exited there was no output
+    expect(output).to be_nil
+
+    raw_msg = Mail::TestMailer.deliveries.first
+    message = raw_msg.setup(list.email, list)
+
+    expect(message.to).to eql(['admin@example.org'])
+    expect(message.subject).to eql(I18n.t('automated_message_subject'))
+    expect(message.parts.first.body.to_s).to eql(I18n.t('forward_automated_message_to_admins'))
+    expect(message.parts.last.mime_type).to eql('message/rfc822')
+    expect(message.parts.last.body.to_s).to include('From: mailer-daemon@example.org')
+    expect(message.parts.last.body.to_s).to include(mail.message_id)
+    expect(message.parts.last.body.to_s).to include("Subject: something")
+    expect(message.parts.last.body.to_s).to include("delivery failure")
+  end
 end
 
