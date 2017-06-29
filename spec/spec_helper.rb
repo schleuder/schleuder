@@ -122,4 +122,15 @@ RSpec.configure do |config|
     end
     ciphertext.reject { |line| line.match(/^\[GNUPG:\]/) }.join
   end
+
+  def with_tmpfile(content,&blk)
+    file = Tempfile.new('temporary-file',Conf.lists_dir)
+    begin
+      file.write(content)
+      file.close
+      yield file.path
+    ensure
+      file.unlink
+    end
+  end
 end
