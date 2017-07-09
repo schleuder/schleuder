@@ -26,7 +26,7 @@ describe Mail::Message do
     mail = Mail.new
     # Trigger the setting of mandatory headers.
     mail.to_s
-    mail = mail.setup('something-bounce@localhost', list)
+    mail = Mail.create_message_to_list(mail.to_s, 'something-bounce@localhost', list).setup
 
     expect(mail.automated_message?).to be(true)
   end
@@ -37,7 +37,7 @@ describe Mail::Message do
     mail.header['Auto-Submitted'] = 'yes'
     # Trigger the setting of mandatory headers.
     mail.to_s
-    mail = mail.setup('something@localhost', list)
+    mail = Mail.create_message_to_list(mail.to_s, 'something@localhost', list).setup
 
     expect(mail.automated_message?).to be(true)
   end
@@ -49,46 +49,9 @@ describe Mail::Message do
     mail.header['X-Cron-Env'] = '<MAILTO=root>'
     # Trigger the setting of mandatory headers.
     mail.to_s
-    mail = mail.setup('something@localhost', list)
+    mail = Mail.create_message_to_list(mail.to_s, 'something@localhost', list).setup
 
     expect(mail.automated_message?).to be(false)
-  end
-
-  it "#setup strips HTML-part from multipart/alternative-message that contains ascii-armored PGP-data" do
-    list = create(:list)
-    mail = Mail.new
-    mail.to = list.email
-    mail.from = 'outside@example.org'
-    content = encrypt_string(list, "blabla")
-    mail.text_part = content
-    mail.html_part = "<p>#{content}</p>"
-    mail.subject = "test"
-
-    message = mail.setup(list.email, list)
-
-    expect(message[:content_type].content_type).to eql("multipart/mixed")
-    expect(message.parts.size).to be(1)
-    expect(message.parts.first[:content_type].content_type).to eql("text/plain")
-    expect(message.dynamic_pseudoheaders).to include("Note: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.")
-  end
-
-  it "#setup does NOT strip HTML-part from multipart/alternative-message that does NOT contain ascii-armored PGP-data" do
-    list = create(:list)
-    mail = Mail.new
-    mail.to = list.email
-    mail.from = 'outside@example.org'
-    content = "blabla"
-    mail.text_part = content
-    mail.html_part = "<p>#{content}</p>"
-    mail.subject = "test"
-
-    message = mail.setup(list.email, list)
-
-    expect(message[:content_type].content_type).to eql("multipart/alternative")
-    expect(message.parts.size).to be(2)
-    expect(message.parts.first[:content_type].content_type).to eql("text/plain")
-    expect(message.parts.last[:content_type].content_type).to eql("text/html")
-    expect(message.dynamic_pseudoheaders).not_to include("Note: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.")
   end
 
   context '#add_subject_prefix!' do
@@ -102,7 +65,7 @@ describe Mail::Message do
       mail.text_part = 'blabla'
       mail.subject = 'test'
 
-      message = mail.setup(list.email, list)
+      message = Mail.create_message_to_list(mail.to_s, list.email, list).setup
       message.add_subject_prefix!
 
       expect(message.subject).to eql('[prefix] test')
@@ -116,7 +79,7 @@ describe Mail::Message do
       mail.to list.email
       mail.text_part = 'blabla'
 
-      message = mail.setup(list.email, list)
+      message = Mail.create_message_to_list(mail.to_s, list.email, list).setup
       message.add_subject_prefix!
 
       expect(message.subject).to eql('[prefix]')
@@ -131,25 +94,11 @@ describe Mail::Message do
       mail.text_part = 'blabla'
       mail.subject = 'Re: [prefix] test'
 
-      message = mail.setup(list.email, list)
+      message = Mail.create_message_to_list(mail.to_s, list.email, list).setup
       message.add_subject_prefix!
 
       expect(message.subject).to eql('Re: [prefix] test')
     end
   end
-
-  it "#setup fixes pgp/mime-messages that were mangled by hotmail" do
-    list = create(:list)
-    # For some reason I have to call list.key once to avoid a "decryption
-    # failed" error from GPG.
-    list.key
-    mail = Mail.read("spec/fixtures/mails/hotmail.eml")
-
-    message = mail.setup(list.email, list)
-
-    expect(message[:content_type].content_type).to eql("text/plain")
-    expect(message.body.to_s).to eql("foo\n")
-  end
-
 end
 
