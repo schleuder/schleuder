@@ -66,6 +66,8 @@ module Schleuder
                 with: /\A[[:graph:]\s]*\z/i,
               }
 
+    default_scope { order(:email) }
+
     def self.configurable_attributes
       @configurable_attributes ||= begin
         all = self.validators.map(&:attributes).flatten.uniq.compact.sort

@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.1.2] / unreleased
 
+### Changed
+
+* Sort lists alphabetically by email per default.
+
 ### Fixed
 
 * Fix dropping mails on certain headers (e.g. spam), as the headers weren't checked properly so far.
