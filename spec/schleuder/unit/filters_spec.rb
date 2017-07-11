@@ -47,6 +47,20 @@ describe Schleuder::Filters do
       expect(mail.parts.last[:content_type].content_type).to eql("text/html")
       expect(mail.dynamic_pseudoheaders).not_to include("Note: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.")
     end
+
+    it "does not choke on nor change a message without Content-Type-header" do
+      mail = Mail.new
+      mail.to = 'schleuder@example.org'
+      mail.from = 'outside@example.org'
+      mail.body = "blabla"
+      mail.subject = "test"
+
+      Schleuder::Filters.strip_html_from_alternative!(nil, mail)
+
+      expect(mail[:content_type]).to be_nil
+      expect(mail.parts.size).to be(0)
+      expect(mail.dynamic_pseudoheaders).not_to include("Note: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.")
+    end
   end
 
 end
