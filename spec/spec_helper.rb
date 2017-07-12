@@ -69,12 +69,14 @@ RSpec.configure do |config|
   end
 
   def start_smtp_daemon
-    if ! File.directory?(smtp_daemon_outputdir)
-      FileUtils.mkdir_p(smtp_daemon_outputdir)
-    else
+    if File.directory?(smtp_daemon_outputdir)
       # Try to kill it, in case it's still around (this occurred on some
       # systems).
       stop_smtp_daemon
+    end
+
+    if ! File.directory?(smtp_daemon_outputdir)
+      FileUtils.mkdir_p(smtp_daemon_outputdir)
     end
     daemon = File.join('spec', 'smtp-daemon.rb')
     pid = Process.spawn(daemon, '2523', smtp_daemon_outputdir)
