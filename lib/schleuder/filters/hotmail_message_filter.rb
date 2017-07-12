@@ -3,6 +3,8 @@ module Schleuder
 
     def self.fix_hotmail_messages!(list, mail)
       if mail.header['X-OriginatorOrg'].to_s.match(/(hotmail|outlook).com/) &&
+          !mail[:content_type].blank? &&
+          mail[:content_type].content_type == 'multipart/mixed' && mail.parts.size > 2 &&
           mail.parts[0][:content_type].content_type == 'text/plain' &&
           mail.parts[0].body.to_s.blank? &&
           mail.parts[1][:content_type].content_type == 'application/pgp-encrypted' &&

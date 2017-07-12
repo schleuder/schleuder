@@ -29,7 +29,7 @@ describe "running filters" do
     end
   end
   context '.fix_hotmail_messages!' do
-    it "accepts an invalid hotmail message" do
+    it "accepts an invalid pgp/mime hotmail message" do
       list = create(:list)
       list.subscribe("admin@example.org", nil, true)
       # so we can easily parse the outgoing mail
@@ -49,6 +49,29 @@ describe "running filters" do
 
       expect(hotmail.to).to eql(["admin@example.org"])
       expect(hotmail.body.to_s).to include("foo\n")
+
+      stop_smtp_daemon
+    end
+    it "accepts a valid plain-text message" do
+      list = create(:list)
+      list.subscribe("admin@example.org", nil, true)
+      # so we can easily parse the outgoing mail
+      list.send_encrypted_only = false
+      list.save
+
+      start_smtp_daemon
+      message_path = 'spec/fixtures/mails/hotmail_no_parts.eml'
+
+      error = run_schleuder(:work, list.email, message_path)
+      mails = Dir.glob("#{smtp_daemon_outputdir}/mail-*")
+
+      expect(error).to be_empty
+      expect(mails.size).to eq 1
+
+      hotmail = Mail.read(mails.first)
+
+      expect(hotmail.to).to eql(["admin@example.org"])
+      expect(hotmail.body.to_s).to include("bla-vla")
 
       stop_smtp_daemon
     end
