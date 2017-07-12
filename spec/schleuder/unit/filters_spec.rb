@@ -9,6 +9,12 @@ describe Schleuder::Filters do
 
       expect(message[:content_type].content_type).to eql("multipart/encrypted")
     end
+    it "works with a text/plain message" do
+      message = Mail.read("spec/fixtures/mails/hotmail_no_parts.eml")
+      Schleuder::Filters.fix_hotmail_messages!(nil, message)
+
+      expect(message[:content_type].content_type).to eql("text/plain")
+    end
   end
 
   context '.strip_html_from_alternative!' do

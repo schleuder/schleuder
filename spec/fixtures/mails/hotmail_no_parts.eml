@@ -1,0 +1,42 @@
+From foobar@outlook.com Wed Jul 12 10:40:53 2017
+Received: from bla.eurprd02.prod.outlook.com
+ ([fe80::dead:beef]) by bar.eurprd02.prod.outlook.com
+ ([fe80::dead:beef%42]) with mapi id 00.00.0000.00; Wed, 12 Jul
+ 2017 00:00:00 +0000
+From: Foo Bla Bar <foobar@outlook.com>
+To: "schleuder@example.org" <schleuder@example.org>
+Subject: aSubject
+Thread-Topic: aSubject
+Thread-Index: jafkjakfjaklfjkljklj
+Date: Wed, 12 Jul 2017 00:00:00 +0000
+Message-ID: <id@bla.eurprd02.prod.outlook.com>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: example.org; dkim=none (message not signed)
+ header.d=none;example.org; dmarc=none action=none
+ header.from=outlook.com;
+x-incomingtopheadermarker: OriginalChecksum:somechecksum;UpperCasedChecksum:anotherchecksum;SizeAsReceived:6666;Count:23
+x-ms-exchange-messagesentrepresentingtype: 1
+x-tmn: [akfjkafjkajf+ajkfhajkfhjhkjfahfjk]
+x-ms-publictraffictype: Email
+x-incomingheadercount: 23
+x-eopattributedmessage: 0
+x-exchange-antispam-report-test: UriScan:;
+spamdiagnosticoutput: 1:99
+spamdiagnosticmetadata: NSPM
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <bla@bar>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jul 2017 00:00:00.0000
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Internet
+X-MS-Exchange-CrossTenant-id: aaaa-bbbb-cccc-dddd-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DEADBEEF
+
+bla-vla lu
+du
+
