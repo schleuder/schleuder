@@ -11,9 +11,6 @@ case "$1" in
 	if dpkg --compare-versions "$2" lt 3.0; then
         mkdir -p $SCHLEUDER_BACKUP_DIR
         mv $SCHLEUDER_DATA_DIR/* $SCHLEUDER_BACKUP_DIR/
-        
-        echo "Data of schleuder v2 moved to '$SCHLEUDER_BACKUP_DIR'".
-        echo "Please see '/usr/share/doc/schleuder/README.Debian' for details on how to migrate to schleuder v3."
 	fi
 	;;
 
