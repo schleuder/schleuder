@@ -1,3 +1,21 @@
+schleuder (3.1.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/copyright:
+    - Bump years to include 2017.
+    - Fix upstream source location.
+  * debian/control: Bump required rake version to >= 12~.
+  * debian/schleuder.preinst:
+    - Check for existing schleuder < 3.0 data first, before doing the backup.
+    (Closes: #867031)
+    - Don't use 'echo' to inform the user about the data migration process,
+    but instead via a proper NEWS file.
+  * debian/NEWS: Add said file with notes on how to migrate schleuder < 3.0
+    data.
+  * debian/patches/0003-bin-fix-require.patch: Refresh for 3.1.2-1. 
+
+ -- Georg Faerber <georg@riseup.net>  Thu, 13 Jul 2017 13:40:47 +0200
+
 schleuder (3.1.1-1) unstable; urgency=medium
 
   * New upstream release.
