@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## unreleased
 
+### Added
+
+* Internal footer: to be appended to each email that is sent to a subscribed address.  Will not be included in messages to non-subscribed addresses.
+
+
 ### Changed
 
 * The API does not include anymore each key's key-data in response to </keys.json>. This avoids performance problems with even medium sized keyrings.

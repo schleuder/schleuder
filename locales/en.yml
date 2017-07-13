@@ -7,6 +7,8 @@ en:
         inclusion: "must be one of: debug, info, warn, error"
       openpgp_header_preference:
         inclusion: "must be one of: sign, encrypt, signencrypt, unprotected, none"
+      internal_footer:
+        invalid: "includes non-printable characters"
       public_footer:
         invalid: "includes non-printable characters"
     invalid_email: "is not a valid email address"

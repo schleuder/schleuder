@@ -112,6 +112,18 @@ module Mail
       end
     end
 
+    def add_internal_footer!
+      if self.list.present? && ! self.list.internal_footer.to_s.strip.empty?
+        footer_part = Mail::Part.new
+        footer_part.body = list.internal_footer.strip
+        if parts.size == 1 && parts.first.mime_type == 'multipart/mixed' && parts.first.parts.size == 1 && parts.first.parts.first.mime_type == 'text/plain'
+          self.parts.first.add_part footer_part
+        else
+          self.add_part footer_part
+        end
+      end
+    end
+
     def was_encrypted?
       Mail::Gpg.encrypted?(original_message)
     end

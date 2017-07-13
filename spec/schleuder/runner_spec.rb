@@ -126,6 +126,23 @@ describe Schleuder::Runner do
 
         teardown_list_and_mailer(list)
       end
+
+      it "includes the internal_footer" do
+        list = create(
+          :list, 
+          send_encrypted_only: false,
+          internal_footer: "-- \nfor our eyes only!"
+        )
+        list.subscribe("admin@example.org", nil, true)
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
+
+        Schleuder::Runner.new().run(mail, list.email)
+        message = Mail::TestMailer.deliveries.first
+
+        expect(message.parts.first.parts.last.body.to_s).to eql(list.internal_footer)
+
+        teardown_list_and_mailer(list)
+      end
     end
 
     it "delivers a signed error message if a subscription's key is expired on a encrypted-only list" do

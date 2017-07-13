@@ -60,6 +60,10 @@ keywords_admin_only:
 keywords_admin_notify: 
 - add-key
 
+# Footer to append to each email that is sent to a subscribed address. Will not
+# be included in messages to non-subscribed addresses.
+internal_footer:
+
 # Footer to append to each email that is sent to non-subscribed addresses. Will
 # not be included in messages to subscribed addresses.
 public_footer:
