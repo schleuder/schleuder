@@ -45,7 +45,7 @@ Installing Schleuder
 
 1. Download [the gem](https://0xacab.org/schleuder/schleuder/raw/master/gems/schleuder-3.1.1.gem) and [the OpenPGP-signature](https://0xacab.org/schleuder/schleuder/raw/master/gems/schleuder-3.1.1.gem.sig) and verify:
    ```
-   gpg --recv-key 0xB3.1.1D5235C74E1907EACFE898F2C91E2E6E1F3
+   gpg --recv-key 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
    gpg --verify schleuder-3.1.1.gem.sig
    ```
 
