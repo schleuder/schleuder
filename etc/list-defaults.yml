@@ -60,7 +60,8 @@ keywords_admin_only:
 keywords_admin_notify: 
 - add-key
 
-# Public footer to append each email that is sent to non-subscribed addresses.
+# Footer to append to each email that is sent to non-subscribed addresses. Will
+# not be included in messages to subscribed addresses.
 public_footer:
 
 # Prefix to be inserted into the subject of every email that is validly signed

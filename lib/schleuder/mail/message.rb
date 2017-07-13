@@ -99,7 +99,7 @@ module Mail
       self.parts.unshift(parts.delete_at(parts.size-1))
     end
 
-    def add_footer!
+    def add_public_footer!
       # Add public_footer unless it's empty?.
       if self.list.present? && ! self.list.public_footer.to_s.strip.empty?
         footer_part = Mail::Part.new
