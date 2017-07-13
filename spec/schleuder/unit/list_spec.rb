@@ -185,7 +185,7 @@ describe Schleuder::List do
     expect(list.errors.messages[:language]).to include("must be one of: en, de")
   end
 
-  it "is invalid if public footer include a non-printable characters" do
+  it "is invalid if public_footer includes a non-printable character" do
     list = build(:list, public_footer: "\a")
 
     expect(list).not_to be_valid
