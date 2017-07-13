@@ -1,4 +1,16 @@
 module Mail
+  # creates a Mail::Message likes schleuder
+  def self.create_message_to_list(msg, recipient, list)
+    mail = Mail.new(msg)
+    mail.list = list
+    mail.recipient = recipient
+    # don't freeze here, as the mail might not be fully
+    # parsed as body is lazy evaluated and might still
+    # be changed later.
+    mail.original_message = mail.dup #.freeze
+    mail
+  end
+
   # TODO: Test if subclassing breaks integration of mail-gpg.
   class Message
     attr_accessor :recipient
@@ -8,9 +20,7 @@ module Mail
     # TODO: This should be in initialize(), but I couldn't understand the
     # strange errors about wrong number of arguments when overriding
     # Message#initialize.
-    def setup(recipient, list)
-      fix_hotmail_messages!
-      strip_html_from_alternative!
+    def setup
       if self.encrypted?
         new = self.decrypt(verify: true)
         ## Work around a bug in mail-gpg: when decrypting pgp/mime the
@@ -27,10 +37,11 @@ module Mail
         new = self
       end
 
-      new.list = list
+      new.list = self.list
+      new.recipient = self.recipient
+
       new.gpg list.gpg_sign_options
       new.original_message = self.dup.freeze
-      new.recipient = recipient
       # Trigger method early to save the information. Later some information
       # might be gone (e.g. request-keywords that delete subscriptions or
       # keys).
@@ -39,30 +50,6 @@ module Mail
         new.add_pseudoheader(str)
       end
       new
-    end
-
-    def strip_html_from_alternative!
-      if self[:content_type].content_type != 'multipart/alternative' || ! self.to_s.include?('BEGIN PGP ')
-        return false
-      end
-
-      Schleuder.logger.debug "Stripping html-part from multipart/alternative-message"
-      self.parts.delete_if do |part|
-        part[:content_type].content_type == 'text/html'
-      end
-      self.content_type = 'multipart/mixed'
-      add_pseudoheader(:note, I18n.t("pseudoheaders.stripped_html_from_multialt"))
-    end
-
-    def fix_hotmail_messages!
-      if header['X-OriginatorOrg'].to_s.match(/(hotmail|outlook).com/) &&
-              parts[0][:content_type].content_type == 'text/plain' &&
-              parts[0].body.to_s.blank? &&
-              parts[1][:content_type].content_type == 'application/pgp-encrypted' &&
-              parts[2][:content_type].content_type == 'application/octet-stream'
-        self.parts.delete_at(0)
-        self.content_type = [:multipart, :encrypted, {protocol: "application/pgp-encrypted", boundary: self.boundary}]
-      end
     end
 
     def clean_copy(with_pseudoheaders=false)

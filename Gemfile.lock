@@ -1,10 +1,10 @@
 PATH
   remote: .
   specs:
-    schleuder (3.1.1)
+    schleuder (3.1.2)
       activerecord (~> 4.1)
       mail-gpg (~> 0.3.0)
-      rake (~> 10)
+      rake (~> 12)
       sinatra (~> 1)
       sinatra-contrib (~> 1)
       sqlite3 (~> 1)
@@ -57,7 +57,7 @@ GEM
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
-    rake (10.5.0)
+    rake (12.0.0)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)

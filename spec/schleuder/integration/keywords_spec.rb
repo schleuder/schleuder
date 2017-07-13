@@ -26,7 +26,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
@@ -69,7 +69,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
@@ -111,7 +111,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
@@ -155,7 +155,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
@@ -191,7 +191,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("test@example.org is not subscribed")
@@ -225,7 +225,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
@@ -262,7 +262,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
@@ -301,7 +301,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
@@ -340,7 +340,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
@@ -379,7 +379,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
@@ -418,7 +418,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
@@ -455,7 +455,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
@@ -491,7 +491,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("bla@example.org is not subscribed")
@@ -524,7 +524,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.first_plaintext_part.body.to_s.lines.size).to eql(3)
@@ -559,9 +559,9 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    notification = raw.setup(list.request_address, list)
+    notification = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     raw = Mail::TestMailer.deliveries[1]
-    response = raw.setup(list.request_address, list)
+    response = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     expected_text = "Subscriptions:\n\nschleuder@example.org\t0x59C71FB38AEE22E091C78259D06350440F759BD3\nuser@example.org"
 
     expect(Mail::TestMailer.deliveries.size).to eql(2)
@@ -599,7 +599,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.first_plaintext_part.body.to_s.lines.size).to eql(3)
@@ -633,7 +633,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.first_plaintext_part.body.to_s.lines.size).to eql(1)
@@ -668,7 +668,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE: imported")
@@ -702,7 +702,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE: imported")
@@ -735,7 +735,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to_s).to include("Invalid input.")
 
@@ -769,7 +769,7 @@ describe "user sends keyword" do
       end
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to_s).to include("Key 98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
 
@@ -803,7 +803,7 @@ describe "user sends keyword" do
       end
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to_s).to include("Fetching something@localhost did not succeed")
 
@@ -837,7 +837,7 @@ describe "user sends keyword" do
       end
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to_s).to include("Key 98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
 
@@ -872,7 +872,7 @@ describe "user sends keyword" do
       end
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to_s).to include("Fetching #{url} did not succeed")
 
@@ -906,7 +906,7 @@ describe "user sends keyword" do
       end
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to_s).to include("Fetching 0x0000000000000000000000000000000000000000 did not succeed")
 
@@ -940,7 +940,7 @@ describe "user sends keyword" do
       end
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to_s).to include("Key 98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
 
@@ -974,7 +974,7 @@ describe "user sends keyword" do
       end
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.first_plaintext_part.body.to_s).to eql("Key 59C71FB38AEE22E091C78259D06350440F759BD3 was fetched (unchanged).")
 
@@ -1010,7 +1010,7 @@ describe "user sends keyword" do
     resent_message = raw.verify
     resent_message_body = resent_message.parts.map { |p| p.body.to_s }.join
     raw = Mail::TestMailer.deliveries.last
-    message = raw.setup(list.email, list)
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("Resent: Unencrypted to someone@example.org")
@@ -1047,9 +1047,9 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries[1]
-    notification = raw.setup(list.email, list)
+    notification = Mail.create_message_to_list(raw.to_s, list.email, list).setup
     raw = Mail::TestMailer.deliveries[2]
-    message = raw.setup(list.email, list)
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
 
     expect(Mail::TestMailer.deliveries.size).to eql(3)
 
@@ -1088,7 +1088,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.email, list)
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).not_to include("Resent: Unencrypted to someone@example.org")
@@ -1126,7 +1126,7 @@ describe "user sends keyword" do
     end
     resent_message = Mail::TestMailer.deliveries.first
     raw = Mail::TestMailer.deliveries.last
-    message = raw.setup(list.email, list)
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
 
     expect(list.keys('bla@foo').size).to eql(2)
     expect(resent_message.to).to eql(['bla@foo'])
@@ -1163,7 +1163,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.email, list)
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
 
     expect(list.keys('bla@foo').size).to eql(1)
     expect(message.first_plaintext_part.to_s).to include("Resending to <bla@foo> failed (0 keys found")
@@ -1197,7 +1197,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.email, list)
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).not_to include("Resent: Unencrypted to someone@example.org")
@@ -1232,7 +1232,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.email, list)
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
 
     expect(message.to_s.gsub("\r", '')).to include("BEGIN PGP SIGNED MESSAGE-----\n\n#{signed_text}-----END PGP SIGNED MESSAGE")
 
@@ -1269,7 +1269,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.email, list)
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
     signature = message.attachments.first.body.to_s
     # list.gpg.verify() results in a "Bad Signature".  The sign-this plugin
     # also uses GPGME::Crypto, apparently that makes a difference.
@@ -1312,7 +1312,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
@@ -1346,7 +1346,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
@@ -1380,7 +1380,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
@@ -1415,7 +1415,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
@@ -1449,7 +1449,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("No match found for")
@@ -1483,7 +1483,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("Your message resulted in no output")
@@ -1518,7 +1518,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("Deleted: C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
@@ -1552,7 +1552,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("No match found for")
@@ -1587,7 +1587,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("Too many matching keys for ")
@@ -1622,7 +1622,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.parts.last.body.to_s.lines.size).to be > 1
@@ -1658,7 +1658,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.first_plaintext_part.body.to_s.lines.size).to eql(1)
@@ -1693,7 +1693,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.email, list)
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
 
     expect(message.parts.length).to eql(2)
     expect(message.parts.last.parts.length).to eql(2)
@@ -1731,7 +1731,7 @@ describe "user sends keyword" do
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = raw.setup(list.request_address, list)
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.first_plaintext_part.body.to_s.lines.size).to eql(1)

@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.license = 'GPL-3.0'
   s.add_runtime_dependency 'mail-gpg', '~> 0.3.0'
   s.add_runtime_dependency 'activerecord', '~> 4.1'
-  s.add_runtime_dependency 'rake', '~> 10'
+  s.add_runtime_dependency 'rake', '~> 12'
   s.add_runtime_dependency 'sqlite3', '~> 1'
   s.add_runtime_dependency 'sinatra', '~> 1'
   s.add_runtime_dependency 'sinatra-contrib', '~> 1'

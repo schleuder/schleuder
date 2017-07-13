@@ -47,6 +47,10 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
+  Mail.defaults do
+    delivery_method :test
+  end
+
   def cleanup_gnupg_home
     ENV["GNUPGHOME"] = nil
     FileUtils.rm_rf Schleuder::Conf.lists_dir
@@ -65,12 +69,14 @@ RSpec.configure do |config|
   end
 
   def start_smtp_daemon
-    if ! File.directory?(smtp_daemon_outputdir)
-      FileUtils.mkdir_p(smtp_daemon_outputdir)
-    else
+    if File.directory?(smtp_daemon_outputdir)
       # Try to kill it, in case it's still around (this occurred on some
       # systems).
       stop_smtp_daemon
+    end
+
+    if ! File.directory?(smtp_daemon_outputdir)
+      FileUtils.mkdir_p(smtp_daemon_outputdir)
     end
     daemon = File.join('spec', 'smtp-daemon.rb')
     pid = Process.spawn(daemon, '2523', smtp_daemon_outputdir)
@@ -95,10 +101,15 @@ RSpec.configure do |config|
     `SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bin/schleuder #{command} 2>&1`
   end
 
-  Mail.defaults do
-    delivery_method :test
+  def process_mail(msg, recipient)
+    output = nil
+    begin
+      output = Schleuder::Runner.new.run(msg, recipient)
+    rescue SystemExit
+    end
+    output
   end
-  
+
   def teardown_list_and_mailer(list)
     FileUtils.rm_rf(list.listdir)
     Mail::TestMailer.deliveries.clear
@@ -112,5 +123,16 @@ RSpec.configure do |config|
       stdout.readlines
     end
     ciphertext.reject { |line| line.match(/^\[GNUPG:\]/) }.join
+  end
+
+  def with_tmpfile(content,&blk)
+    file = Tempfile.new('temporary-file',Conf.lists_dir)
+    begin
+      file.write(content)
+      file.close
+      yield file.path
+    ensure
+      file.unlink
+    end
   end
 end
