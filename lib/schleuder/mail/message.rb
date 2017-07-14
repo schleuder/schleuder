@@ -207,7 +207,7 @@ module Mail
       end
 
       @keywords = []
-      part.body = part.decoded.lines.map.with_index do |line, i|
+      lines = part.decoded.lines.map.with_index do |line, i|
         # Break after some lines to not run all the way through maybe huge emails.
         if i > 1000
           break
@@ -222,7 +222,14 @@ module Mail
         else
           line
         end
-      end.compact.join
+      end
+
+      # Work around problems with re-encoding the body. If we delete the
+      # content-transfer-encoding prior to re-assigning the body, and let Mail
+      # decide itself how to encode, it works. If we don't, some
+      # character-sequences are not properly re-encoded.
+      part.content_transfer_encoding = nil
+      part.body = lines.compact.join
 
       @keywords
     end
