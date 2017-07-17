@@ -1,22 +1,31 @@
-Description: bin/: Use 'require' instead of 'require_relative'
+Description: bin/: Use 'require' or 'require_relative'
  As we're installing into '/usr/lib/ruby/vendor_ruby',
  'require_relative' as used by upstream doesn't work.
+
+ A test which was added in the last upstream release made this change no
+ longer work, thus we're catching a possible 'LoadError' now and require
+ the file via a relative path.
+
  Upstream is aware of this patch and we're working on integrating it.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2017-01-26
+Last-Update: 2017-07-17
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/bin/schleuder
 +++ b/bin/schleuder
-@@ -8,7 +8,7 @@
- 
+@@ -9,8 +9,11 @@
  
  begin
--  require_relative '../lib/schleuder/cli'
+   require_relative '../lib/schleuder/cli'
+-  Schleuder::Cli.start
++rescue LoadError
 +  require 'schleuder/cli'
-   Schleuder::Cli.start
  rescue => exc
    $stderr.puts "Technical Error: #{exc}\n#{exc.backtrace.first}"
+   exit 1
+ end
++
++Schleuder::Cli.start
 --- a/bin/schleuder-api-daemon
 +++ b/bin/schleuder-api-daemon
 @@ -7,7 +7,7 @@
