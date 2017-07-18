@@ -10,7 +10,7 @@ case "$1" in
 	#  Handle existing data if upgrading from schleuder < 3.0
 	if dpkg --compare-versions "$2" lt 3.0; then
         # Check for existing data first
-        if [ -z "$(SCHLEUDER_DATA_DIR)" ]; then
+        if [ "$(ls $SCHLEUDER_DATA_DIR)" ]; then
             mkdir -p $SCHLEUDER_BACKUP_DIR
             mv $SCHLEUDER_DATA_DIR/* $SCHLEUDER_BACKUP_DIR/
         fi
