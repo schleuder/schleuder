@@ -3,14 +3,15 @@ module Schleuder
     def self.subscribe(arguments, list, mail)
       email = arguments.shift
 
-      # Pop the last two in order to be tolerant about spaces in the
-      # fingerprint.
-      deliveryflag = arguments.pop
-      adminflag = arguments.pop
-      # Use the remainders as fingerprint. This enables tolerating spaces.
-      fingerprint = arguments.join
-      if fingerprint.present?
-        fingerprint.sub!(/^0x/, '')
+      if arguments.present?
+        # Collect all arguments that look like fingerprint-material
+        fingerprint = ''
+        while arguments.first.present? && arguments.first.match(/\A(0x)?[a-f0-9]+/i)
+          fingerprint << arguments.shift
+        end
+        # Use possibly remaining args as flags.
+        adminflag = arguments.shift
+        deliveryflag = arguments.shift
       end
 
       sub = list.subscribe(email, fingerprint, adminflag, deliveryflag)
