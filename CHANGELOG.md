@@ -3,6 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## unreleased
+
+### Fixed
+
+* X-SUBSCRIBE now handles the combination of space-separated fingerprint and additional arguments (admin-flag, delivery-enabled-flag) correctly.
+
+
 ## [3.1.2] / 2017-07-13
 
 ### Changed
