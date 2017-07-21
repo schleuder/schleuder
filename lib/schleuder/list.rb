@@ -261,21 +261,24 @@ module Schleuder
       @listdir ||= self.class.listdir(self.email)
     end
 
-    # TODO: get rid of this method in the future
-    def subscribe(email, fingerprint=nil, adminflag=false, deliveryflag=true)
-      # Ensure we have true or false as values for these two attributes.
-      admin            =  (['true', '1'].include?  adminflag.to_s)
-      delivery_enabled = !(['false', '0'].include? deliveryflag.to_s)
-
-      sub = Subscription.new(
+    # A convenience-method to simplify other code.
+    def subscribe(email, fingerprint=nil, adminflag=nil, deliveryflag=nil)
+      args = {
           list_id: self.id,
           email: email,
-          fingerprint: fingerprint,
-          admin: admin,
-          delivery_enabled: delivery_enabled
-        )
-      sub.save
-      sub
+          fingerprint: fingerprint
+      }
+      # ActiveRecord does not treat nil as falsy for boolean columns, so we
+      # have to avoid that in order to not receive an invalid object. The
+      # database will use the column's default-value if no value is being
+      # given. (I'd rather not duplicate the defaults here.)
+      if ! adminflag.nil?
+        args[:admin] = adminflag
+      end
+      if ! deliveryflag.nil?
+        args[:delivery_enabled] = deliveryflag
+      end
+      Subscription.create(args)
     end
 
     def unsubscribe(email, delete_key=false)
