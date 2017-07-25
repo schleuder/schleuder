@@ -146,14 +146,17 @@ class SchleuderApiDaemon < Sinatra::Base
       end
     end
 
-    def key_to_json(key)
-      {
+    def key_to_json(key, include_keydata=false)
+      json = {
         fingerprint: key.fingerprint,
         email: key.email,
-        ascii: key.armored,
         expiry: key.expires,
         trust_issues: key.usability_issue
       }
+      if include_keydata
+        json[:ascii] = key.armored
+      end
+      json
     end
   end
 
