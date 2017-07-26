@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 * X-SUBSCRIBE now handles the combination of space-separated fingerprint and additional arguments (admin-flag, delivery-enabled-flag) correctly.
+* Fixed broken encoding of certain character-sequences in encrypted+signed messages.
 
 
 ## [3.1.2] / 2017-07-13

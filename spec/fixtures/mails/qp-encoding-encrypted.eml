@@ -1,0 +1,47 @@
+Date: Tue, 11 Jul 2017 12:00:40 +0200
+From: test@localhost
+To: schleuder@example.org
+Subject: Input Test QP encoding broken encrypted
+Message-ID: <20170711100040.GF7104@blabla>
+MIME-Version: 1.0
+Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
+	boundary="4f28nU6agdXSinmL"
+Content-Disposition: inline
+
+
+--4f28nU6agdXSinmL
+Content-Type: application/pgp-encrypted
+Content-Disposition: attachment
+
+Version: 1
+
+--4f28nU6agdXSinmL
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="msg.asc"
+
+-----BEGIN PGP MESSAGE-----
+
+hQIMA691X8Gl2MArARAAreFTl/Yz+V0YBDfl54Zz+S3rENPDKXEmNJNzcYoLIEuH
+beoeWMHY9nzD7QkaNaeNL3foK9gr62njvrf6KsQVgnoUE8cQFhk2FJkPoylWGAnT
+2zI/dZLpMit/J3WSG1U02C/lOXN7M1kuvx7O/tGiKRtudyCwGO+qrAp/BCEIwBDz
+sJcEo9HAU4odV1oPFGDDw+y+EfOmTj+afplsSft0hDmI+hWnkjaWKCxhmR5BEWr2
+fBkaAzH4rMls8g22llZrL3Rens4UT/htOMiDXoxBQ4oE3P+sb8WesmpSJwU77y3J
+7DBdwBfI0q4kI3EjOBMvOQPLCYZl5+3LckQRl5QGPaBC+BaeAsXS2dEPRl5Xw1Ae
+ZzxTgusV7V0hDhNG3z3SzmczfUZ7+6OQ7HsOhHAVa3KmuWpaw8Dr5s2n6AhzZNGs
+A8HmWQETa9DxGQTKrcijB5LyIFTo8d5Hc144En9demO0ApBd3Jg5lhkAr+vAL/z0
+OkL35vosRWMncHx2GB6ido7IoMz4zXiKW34ezXJWvH5SwRdjOuy6WMvOzGToxJcn
+fK55f/xoq63N/uhHuVy8BH56AjI5OAfEowZ1jb/pGGRGM36JwrdwInbwSMU/X34r
+6ERESKrDqRvk27u0C10iAMFMfIdQVlfJN+kKXxyKDxOaukbSexnaFBNyi07b7DzS
+wLUBqDDjF8zXjCQNvOlqcBrVht3e0H4YqUFPfXy+fuGYL6FWobjuUDN9ZYbcuDwu
+w6ioBRoFmUwvOzTI9S40+JDR8RcFPbZuYYzBEZnqNJapsy7XrvXQUXlmOB7klm0s
+4m/d5edXlp93KqbO+oJ05Bse88cXvfDIrRKkV+YSWOB9VxAES3SK79QQRYlJlEdn
+zzcmSt8ODewc6WfO93u0gG/2xCftEHpi/iHFlgrzSVuZMa0Vn5AXva819aJ3t9D7
+OYKEp2IARQHSB30W7iIOK/cyS6ymE27137uETNQ7FinES9929E9WCd+3vk/lSZLr
+DnhSuGSNRV36srVsN7SkbbrvfF6iipJDC3Y1GQVmngpu6nU1r0/koqGkeIJr7Sao
+mGIgpVBBZYbhS3LBw6h87gtYEbKirwNLuP+WHY2uQkLIBCv7/ugrATHn503nwwEp
+GNFu+Bhh6FQZhMfgIlSHpV5jsHeMQFqy/xgW5VgnWhqZAEEKW1AA
+=IB9S
+-----END PGP MESSAGE-----
+
+--4f28nU6agdXSinmL--
+

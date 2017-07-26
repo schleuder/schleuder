@@ -1,0 +1,25 @@
+Date: Tue, 11 Jul 2017 12:00:40 +0200
+From: test@localhost
+To: schleuder@example.org
+Subject: Input Test QP encoding broken
+Message-ID: <20170711100040.GF7104@blabla>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 17-07-11 11:59:56, schleuder@nadir.org wrote:
+> From: foo
+> To: schleuder@example.org
+> Cc:=20
+> Date: Tue, 11 Jul 2017 11:59:49 +0200
+> Sig: Good signature from somethingsomething
+> Enc: Encrypted
+
+> foo foo foo
+> foo foo foo
+> foo foo foo
+>=20
+> [1] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D867031
+
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D867031
