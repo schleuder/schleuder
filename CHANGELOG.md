@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## unreleased
 
+### Changed
+
+* The API does not include anymore each key's key-data in response to </keys.json>. This avoids performance problems with even medium sized keyrings.
+
+
 ### Fixed
 
 * X-SUBSCRIBE now handles the combination of space-separated fingerprint and additional arguments (admin-flag, delivery-enabled-flag) correctly.
