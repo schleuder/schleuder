@@ -159,6 +159,12 @@ class SchleuderApiDaemon < Sinatra::Base
       end
       hash
     end
+
+    def set_x_messages(messages)
+      if messages.present?
+        headers 'X-Messages' => Array(messages).join(' // ').gsub(/\n/, ' // ')
+      end
+    end
   end
 
   namespace '/lists' do
@@ -177,9 +183,7 @@ class SchleuderApiDaemon < Sinatra::Base
       elsif ! list.valid?
         client_error(list, 422)
       else
-        if messages.present?
-          headers 'X-Messages' => messages.join(' // ').gsub(/\n/, ' // ')
-        end
+        set_x_messages(messages)
         body json(list)
       end
     end
