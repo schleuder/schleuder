@@ -14,7 +14,7 @@ module Schleuder
         deliveryflag = arguments.shift
       end
 
-      sub = list.subscribe(email, fingerprint, adminflag, deliveryflag)
+      sub, _ = list.subscribe(email, fingerprint, adminflag, deliveryflag)
 
       if sub.persisted?
         I18n.t(

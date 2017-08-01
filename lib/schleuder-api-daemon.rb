@@ -166,21 +166,21 @@ class SchleuderApiDaemon < Sinatra::Base
       end
     end
 
-    def interpret_import_result(import_result)
-      case import_result.considered
-      when 1
-        msgs = Array(import_result.imports).map do |import_status|
-          if import_status.action == 'not imported'
-            "Key #{import_status.fpr} could not be imported!"
-          else
-            nil
-          end
-        end.compact
-        [import_result.imports.first.fpr, msgs]
-      when 0
-        [nil, "The upload did not contain any keys!"]
-      else
-        [nil, "The upload contained more than one key, we could not determine which one to use. Please assign it manually!"]
+    def find_key_material
+      key_material = parsed_body['key_material'].presence
+      # By convention key_material is either ASCII or base64-encoded.
+      if key_material && ! key_material.match('BEGIN PGP')
+        key_material = Base64.decode64(key_material)
+      end
+      key_material
+    end
+
+    def find_attributes_from_body(attribs)
+      Array(attribs).inject({}) do |memo, attrib|
+        if parsed_body.has_key?(attrib)
+          memo[attrib] = parsed_body[attrib]
+        end
+        memo
       end
     end
   end
@@ -274,19 +274,15 @@ class SchleuderApiDaemon < Sinatra::Base
     post '.json' do
       begin
         list = list(requested_list_id)
-        if parsed_body['key_material'].present?
-          import_result = list.import_key(parsed_body['key_material'])
-          fingerprint, messages = interpret_import_result(import_result)
-          set_x_messages(messages)
-        else
-          fingerprint = parsed_body['fingerprint']
-        end
-        sub = list.subscribe(
+        # We don't have to care about nil-values, subscribe() does that for us.
+        sub, msgs = list.subscribe(
             parsed_body['email'],
-            fingerprint,
+            parsed_body['fingerprint'],
             parsed_body['admin'],
-            parsed_body['delivery_enabled']
+            parsed_body['delivery_enabled'],
+            find_key_material
           )
+        set_x_messages(msgs)
         logger.debug "subcription: #{sub.inspect}"
         if sub.valid?
           logger.debug "Subscribed: #{sub.inspect}"
@@ -317,27 +313,15 @@ class SchleuderApiDaemon < Sinatra::Base
     put '/:id.json' do |id|
       sub = subscription(id)
       list = sub.list
-      args = parsed_body.dup
-      key_material = args.delete('key_material')
-      if key_material.present?
-        if ! key_material.match('BEGIN PGP')
-          key_material = Base64.decode64(key_material)
-        end
-        import_result = list.import_key(key_material)
-        fingerprint, messages = interpret_import_result(import_result)
-        set_x_messages(messages)
-        # For an already existing subscription, only update fingerprint if a
-        # new one has been selected from the upload.
-        if fingerprint.present?
-          args["fingerprint"] = fingerprint
-        end
+      args = find_attributes_from_body(%w[email fingerprint admin delivery_enabled])
+      fingerprint, messages = list.import_key_and_find_fingerprint(find_key_material)
+      set_x_messages(messages)
+      # For an already existing subscription, only update fingerprint if a
+      # new one has been selected from the upload.
+      if fingerprint.present?
+        args["fingerprint"] = fingerprint
       end
-      if sub.update(
-        email: args['email'],
-        fingerprint: args['fingerprint'],
-        admin: args['admin'],
-        delivery_enabled: args['delivery_enabled']
-      )
+      if sub.update(args)
         200
       else
         client_error(sub, 422)
