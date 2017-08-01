@@ -265,6 +265,7 @@ class SchleuderApiDaemon < Sinatra::Base
         logger.debug "subcription: #{sub.inspect}"
         if sub.valid?
           logger.debug "Subscribed: #{sub.inspect}"
+          # TODO: why redirect instead of respond with result?
           redirect to("/subscriptions/#{sub.id}.json"), 201
         else
           client_error(sub, 422)
