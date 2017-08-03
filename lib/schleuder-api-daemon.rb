@@ -154,6 +154,7 @@ class SchleuderApiDaemon < Sinatra::Base
         trust_issues: key.usability_issue
       }
       if include_keydata
+        hash[:description] = key.to_s,
         hash[:ascii] = key.armored
       end
       hash
