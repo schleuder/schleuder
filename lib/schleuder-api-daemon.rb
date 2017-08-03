@@ -146,17 +146,17 @@ class SchleuderApiDaemon < Sinatra::Base
       end
     end
 
-    def key_to_json(key, include_keydata=false)
-      json = {
+    def key_to_hash(key, include_keydata=false)
+      hash = {
         fingerprint: key.fingerprint,
         email: key.email,
         expiry: key.expires,
         trust_issues: key.usability_issue
       }
       if include_keydata
-        json[:ascii] = key.armored
+        hash[:ascii] = key.armored
       end
-      json
+      hash
     end
   end
 
@@ -313,7 +313,7 @@ class SchleuderApiDaemon < Sinatra::Base
   namespace '/keys' do
     get '.json' do
       keys = list.keys.sort_by(&:email).map do |key|
-        key_to_json(key)
+        key_to_hash(key)
       end
       json keys
     end
@@ -332,7 +332,7 @@ class SchleuderApiDaemon < Sinatra::Base
 
     get '/:fingerprint.json' do |fingerprint|
       if key = list.key(fingerprint)
-        json key_to_json(key)
+        json key_to_hash(key)
       else
         404
       end
