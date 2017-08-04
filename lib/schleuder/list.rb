@@ -107,6 +107,8 @@ module Schleuder
       gpg.find_keys(identifier, secret_only)
     end
 
+    # TODO: find better name for this method. It does more than the current
+    # name suggests (filtering for capability).
     def distinct_key(identifier)
       keys = keys(identifier).select { |key| key.usable_for?(:encrypt) }
       if keys.size == 1
