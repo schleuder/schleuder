@@ -62,7 +62,6 @@ describe 'subscription via api' do
     parameters = {'list_id' => @list.id, :email => @email, :delivery_enabled => false}
     expect {
       delete "/subscriptions/#{subscription.id}.json"
-      puts last_response.inspect
       expect(last_response.status).to be 200
     }.to change { Subscription.count }.by -1
   end

@@ -14,7 +14,6 @@ describe 'lists via api' do
     }
     expect {
       post '/lists.json', parameters.to_json
-      puts last_response.body
       expect(last_response.status).to be 200
     }.to change { List.count }.by 1
   end
