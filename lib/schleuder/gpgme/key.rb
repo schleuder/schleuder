@@ -18,6 +18,41 @@ module GPGME
       s
     end
 
+    def generated_at
+      primary_subkey.timestamp
+    end
+
+    def expired?
+      expired.present?
+    end
+
+    def oneline
+      @oneline ||= 
+        begin
+          datefmt = '%Y-%m-%d'
+          attribs = [
+            "0x#{fingerprint}",
+            email,
+            generated_at.strftime(datefmt)
+          ]
+          if usability_issue.present?
+            case usability_issue
+            when :expired
+              attribs << "[expired: #{expires.strftime(datefmt)}]"
+            when :revoked
+              # TODO: add revocation date when it's available.
+              attribs << "[revoked]"
+            else
+              attribs << "[#{usability_issue}]"
+            end
+          end
+          if expires? && ! expired?
+            attribs << "[expires: #{expires.strftime(datefmt)}]"
+          end
+          attribs.join(' ')
+        end
+    end
+
     def armored
       "#{self.to_s}\n\n#{export(armor: true).read}"
     end

@@ -856,7 +856,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
-    expect(message.to_s).to include("Key 98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+    expect(message.first_plaintext_part.body.to_s).to eql("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
 
     teardown_list_and_mailer(list)
   end
@@ -924,7 +924,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
-    expect(message.to_s).to include("Key 98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+    expect(message.first_plaintext_part.body.to_s).to eql("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
 
     teardown_list_and_mailer(list)
   end
@@ -1027,7 +1027,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
-    expect(message.to_s).to include("Key 98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+    expect(message.first_plaintext_part.body.to_s).to eql("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
 
     teardown_list_and_mailer(list)
   end
@@ -1061,7 +1061,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
-    expect(message.first_plaintext_part.body.to_s).to eql("Key 59C71FB38AEE22E091C78259D06350440F759BD3 was fetched (unchanged).")
+    expect(message.first_plaintext_part.body.to_s).to eql("This key was fetched (unchanged):\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06\n")
 
     teardown_list_and_mailer(list)
   end

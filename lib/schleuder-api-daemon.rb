@@ -151,6 +151,7 @@ class SchleuderApiDaemon < Sinatra::Base
         fingerprint: key.fingerprint,
         email: key.email,
         expiry: key.expires,
+        oneline: key.oneline,
         trust_issues: key.usability_issue
       }
       if include_keydata

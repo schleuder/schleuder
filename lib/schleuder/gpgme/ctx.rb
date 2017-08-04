@@ -37,6 +37,16 @@ module GPGME
       keys(input, secret_only)
     end
 
+    def find_distinct_key(input=nil, secret_only=nil)
+      _, input = clean_and_classify_input(input)
+      keys = keys(input, secret_only)
+      if keys.size == 1
+        keys.first
+      else
+        nil
+      end
+    end
+
     def clean_and_classify_input(input)
       case input
       when /.*?([^ <>]+@[^ <>]+).*?/
@@ -102,7 +112,7 @@ module GPGME
       else
         lines = translate_output('key_updated', gpgout).reject do |line|
           # Reduce the noise a little.
-          line.match(/.* \(unchanged\)\.$/)
+          line.match(/.* \(unchanged\):$/)
         end
         lines.join("\n")
       end
@@ -140,8 +150,9 @@ module GPGME
     def translate_output(locale_key, gpgoutput)
       import_states = translate_import_data(gpgoutput)
       strings = import_states.map do |fingerprint, states|
-        I18n.t(locale_key, { fingerprint: fingerprint,
-                             states: states.join(', ') })
+        key = find_distinct_key(fingerprint)
+        I18n.t(locale_key, { key_oneline: key.oneline,
+                             states: states.to_sentence })
       end
       strings
     end
