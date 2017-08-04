@@ -349,6 +349,8 @@ describe Schleuder::List do
     it "exports the key with the fingerprint of the list if no argument is given" do
       list = create(:list, email: "schleuder@example.org")
       expected_public_key = File.read("spec/fixtures/schleuder_at_example_public_key.txt")
+      # Get rid of the first, opening line, so we don't compare against optional comments in the output, etc.
+      expected_public_key = expected_public_key.split("\n").slice(1..-1).join("\n")
 
       expect(list.export_key()).to include expected_public_key
     end
@@ -357,6 +359,8 @@ describe Schleuder::List do
   it "exports the key with the given fingerprint" do
     list = create(:list, email: "schleuder@example.org")
     expected_public_key = File.read("spec/fixtures/schleuder_at_example_public_key.txt")
+    # Get rid of the first, opening line, so we don't compare against optional comments in the output, etc.
+    expected_public_key = expected_public_key.split("\n").slice(1..-1).join("\n")
 
     expect(
       list.export_key("59C71FB38AEE22E091C78259D06350440F759BD3")
