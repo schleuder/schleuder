@@ -123,14 +123,10 @@ module Schleuder
     end
 
     def import_key_and_find_fingerprint(key_material)
-      Schleuder.logger.warn "key_material: #{key_material.inspect}"
       return nil if key_material.blank?
       
       import_result = import_key(key_material)
-      Schleuder.logger.info "import_result: #{import_result.inspect}"
-      r = gpg.interpret_import_result(import_result)
-      Schleuder.logger.info "interpret result: #{r.inspect}"
-      r
+      gpg.interpret_import_result(import_result)
     end
 
     def delete_key(fingerprint)
