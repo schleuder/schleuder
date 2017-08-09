@@ -159,6 +159,30 @@ class SchleuderApiDaemon < Sinatra::Base
       end
       hash
     end
+
+    def set_x_messages(messages)
+      if messages.present?
+        headers 'X-Messages' => Array(messages).join(' // ').gsub(/\n/, ' // ')
+      end
+    end
+
+    def find_key_material
+      key_material = parsed_body['key_material'].presence
+      # By convention key_material is either ASCII or base64-encoded.
+      if key_material && ! key_material.match('BEGIN PGP')
+        key_material = Base64.decode64(key_material)
+      end
+      key_material
+    end
+
+    def find_attributes_from_body(attribs)
+      Array(attribs).inject({}) do |memo, attrib|
+        if parsed_body.has_key?(attrib)
+          memo[attrib] = parsed_body[attrib]
+        end
+        memo
+      end
+    end
   end
 
   namespace '/lists' do
@@ -177,9 +201,7 @@ class SchleuderApiDaemon < Sinatra::Base
       elsif ! list.valid?
         client_error(list, 422)
       else
-        if messages.present?
-          headers 'X-Messages' => messages.join(' // ').gsub(/\n/, ' // ')
-        end
+        set_x_messages(messages)
         body json(list)
       end
     end
@@ -252,15 +274,19 @@ class SchleuderApiDaemon < Sinatra::Base
     post '.json' do
       begin
         list = list(requested_list_id)
-        sub = list.subscribe(
+        # We don't have to care about nil-values, subscribe() does that for us.
+        sub, msgs = list.subscribe(
             parsed_body['email'],
             parsed_body['fingerprint'],
             parsed_body['admin'],
-            parsed_body['delivery_enabled']
+            parsed_body['delivery_enabled'],
+            find_key_material
           )
+        set_x_messages(msgs)
         logger.debug "subcription: #{sub.inspect}"
         if sub.valid?
           logger.debug "Subscribed: #{sub.inspect}"
+          # TODO: why redirect instead of respond with result?
           redirect to("/subscriptions/#{sub.id}.json"), 201
         else
           client_error(sub, 422)
@@ -286,7 +312,16 @@ class SchleuderApiDaemon < Sinatra::Base
 
     put '/:id.json' do |id|
       sub = subscription(id)
-      if sub.update(parsed_body)
+      list = sub.list
+      args = find_attributes_from_body(%w[email fingerprint admin delivery_enabled])
+      fingerprint, messages = list.import_key_and_find_fingerprint(find_key_material)
+      set_x_messages(messages)
+      # For an already existing subscription, only update fingerprint if a
+      # new one has been selected from the upload.
+      if fingerprint.present?
+        args["fingerprint"] = fingerprint
+      end
+      if sub.update(args)
         200
       else
         client_error(sub, 422)

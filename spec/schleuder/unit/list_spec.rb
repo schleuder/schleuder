@@ -510,4 +510,67 @@ describe Schleuder::List do
       expect(raw.parts.first.parts.last.body.to_s).to include("-----BEGIN PGP PUBLIC KEY BLOCK-----")
     end
   end
+
+  describe "#subscribe" do
+    it "subscribes and ignores nil-values for admin and delivery_enabled" do
+      list = create(:list)
+      sub, _ = list.subscribe("admin@example.org", nil, nil, nil)
+
+      expect(sub.admin?).to be(false)
+      expect(sub.delivery_enabled?).to be(true)
+    end
+
+    it "subscribes and sets the fingerprint from key material that contains exactly one key" do
+      list = create(:list)
+      key_material = File.read("spec/fixtures/example_key.txt")
+      sub, msgs = list.subscribe("admin@example.org", "", true, true, key_material)
+
+      expect(msgs).to be(nil)
+      expect(sub.fingerprint).to eql("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+      expect(list.subscriptions.size).to be(1)
+      expect(list.subscriptions.first.fingerprint).to eql("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+      expect(list.keys.size).to be(2)
+      expect(list.keys.map(&:fingerprint)).to eql(["59C71FB38AEE22E091C78259D06350440F759BD3", "C4D60F8833789C7CAA44496FD3FFA6613AB10ECE"])
+    end
+
+    it "subscribes and does not set the fingerprint from key material containing multiple keys" do
+      list = create(:list)
+      key_material = File.read("spec/fixtures/example_key.txt")
+      key_material << File.read("spec/fixtures/olduid_key.txt")
+      sub, msgs = list.subscribe("admin@example.org", "", true, true, key_material)
+
+      expect(msgs).to eql("The given key material contained more than one key, could not determine which fingerprint to use. Please set it manually!")
+      expect(sub.fingerprint).to be_blank
+      expect(list.subscriptions.size).to be(1)
+      expect(list.subscriptions.first.fingerprint).to be_blank
+      expect(list.keys.size).to be(3)
+      expect(list.keys.map(&:fingerprint)).to eql(["59C71FB38AEE22E091C78259D06350440F759BD3", "C4D60F8833789C7CAA44496FD3FFA6613AB10ECE", "6EE51D78FD0B33DE65CCF69D2104E20E20889F66"])
+    end
+
+    it "subscribes and does not set the fingerprint from key material containing no keys" do
+      list = create(:list)
+      key_material = "blabla"
+      sub, msgs = list.subscribe("admin@example.org", "", true, true, key_material)
+
+      expect(msgs).to eql("The given key material did not contain any keys!")
+      expect(sub.fingerprint).to be_blank
+      expect(list.subscriptions.size).to be(1)
+      expect(list.subscriptions.first.fingerprint).to be_blank
+      expect(list.keys.size).to be(1)
+      expect(list.keys.map(&:fingerprint)).to eql(["59C71FB38AEE22E091C78259D06350440F759BD3"])
+    end
+
+    it "subscribes and ignores a given fingerprint if key material is given, too" do
+      list = create(:list)
+      key_material = "blabla"
+      sub, msgs = list.subscribe("admin@example.org", "C4D60F8833789C7CAA44496FD3FFA6613AB10ECE", true, true, key_material)
+
+      expect(msgs).to eql("The given key material did not contain any keys!")
+      expect(sub.fingerprint).to be_blank
+      expect(list.subscriptions.size).to be(1)
+      expect(list.subscriptions.first.fingerprint).to be_blank
+      expect(list.keys.size).to be(1)
+      expect(list.keys.map(&:fingerprint)).to eql(["59C71FB38AEE22E091C78259D06350440F759BD3"])
+    end
+  end
 end

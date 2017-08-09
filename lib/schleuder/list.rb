@@ -122,6 +122,17 @@ module Schleuder
       gpg.keyimport(importable)
     end
 
+    def import_key_and_find_fingerprint(key_material)
+      Schleuder.logger.warn "key_material: #{key_material.inspect}"
+      return nil if key_material.blank?
+      
+      import_result = import_key(key_material)
+      Schleuder.logger.info "import_result: #{import_result.inspect}"
+      r = gpg.interpret_import_result(import_result)
+      Schleuder.logger.info "interpret result: #{r.inspect}"
+      r
+    end
+
     def delete_key(fingerprint)
       if key = keys(fingerprint).first
         key.delete!
@@ -264,12 +275,16 @@ module Schleuder
     end
 
     # A convenience-method to simplify other code.
-    def subscribe(email, fingerprint=nil, adminflag=nil, deliveryflag=nil)
+    def subscribe(email, fingerprint=nil, adminflag=nil, deliveryflag=nil, key_material=nil)
+      messages = nil
       args = {
           list_id: self.id,
-          email: email,
-          fingerprint: fingerprint
+          email: email
       }
+      if key_material.present?
+        fingerprint, messages = import_key_and_find_fingerprint(key_material)
+      end
+      args[:fingerprint] = fingerprint
       # ActiveRecord does not treat nil as falsy for boolean columns, so we
       # have to avoid that in order to not receive an invalid object. The
       # database will use the column's default-value if no value is being
@@ -280,7 +295,8 @@ module Schleuder
       if ! deliveryflag.nil?
         args[:delivery_enabled] = deliveryflag
       end
-      Subscription.create(args)
+      subscription = Subscription.create(args)
+      [subscription, messages]
     end
 
     def unsubscribe(email, delete_key=false)

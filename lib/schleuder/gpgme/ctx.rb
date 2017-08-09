@@ -14,6 +14,24 @@ module GPGME
       result
     end
 
+    # TODO: find solution for I18n — could be a different language in API-clients than here!
+    def interpret_import_result(import_result)
+      case import_result.imports.size
+      when 1
+        import_status = import_result.imports.first
+        if import_status.action == 'not imported'
+          [nil, "Key #{import_status.fpr} could not be imported!"]
+        else
+          [import_status.fpr, nil]
+        end
+      when 0
+        [nil, "The given key material did not contain any keys!"]
+      else
+        # TODO: report import-stati of the keys?
+        [nil, "The given key material contained more than one key, could not determine which fingerprint to use. Please set it manually!"]
+      end
+    end
+
     def find_keys(input=nil, secret_only=nil)
       _, input = clean_and_classify_input(input)
       keys(input, secret_only)
