@@ -18,7 +18,7 @@ Build-Depends: debhelper (>= 10~),
                ruby-sqlite3,
                ruby-thor,
                thin
-Standards-Version: 4.0.0
+Standards-Version: 4.0.1
 Vcs-Git: https://anonscm.debian.org/git/pkg-ruby-extras/schleuder.git
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-ruby-extras/schleuder.git
 Homepage: https://schleuder.nadir.org/
