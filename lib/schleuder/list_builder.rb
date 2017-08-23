@@ -48,23 +48,16 @@ module Schleuder
 
       list.save!
 
-      if @adminkey.present?
-        import_result = list.import_key(@adminkey)
-        # Get the fingerprint of the imported key if it was exactly one. If it
-        # was imported or was already present doesn't matter.
-        if import_result.considered == 1
-          admin_fpr = import_result.imports.first.fpr
-        end
-      end
-
-      if @adminemail.present?
-        sub, _ = list.subscribe(@adminemail, admin_fpr, true)
+      if @adminemail.blank?
+        msg = nil
+      else
+        sub, msg = list.subscribe(@adminemail, nil, true, true, @adminkey)
         if sub.errors.present?
-          raise ActiveModelError.new(sub.errors)
+          raise Errors::ActiveModelError.new(sub.errors)
         end
       end
 
-      list
+      [list, msg]
     end
 
     def gpg

@@ -47,9 +47,37 @@ describe Schleuder::ListBuilder do
     adminaddress = 'schleuder2@example.org'
     adminkey = File.read('spec/fixtures/example_key.txt')
     list, _ = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, adminkey).run
+
     subscription_emails = list.subscriptions.map(&:email)
-    keys_emails = list.keys.map(&:uids).flatten.map(&:email)
+    keys_fingerprints = list.keys.map(&:fingerprint)
+
     expect(subscription_emails).to eq [adminaddress]
-    expect(keys_emails).to include(adminaddress)
+    expect(keys_fingerprints).to include("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
   end
+
+  it "subscribes the adminaddress and respects the given adminfingerprint" do
+    listname = "list-#{rand}@example.org"
+    adminaddress = 'schleuder2@example.org'
+    list, _ = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, "59C71FB38AEE22E091C78259D06350440F759BD3").run
+
+    subscription_emails = list.subscriptions.map(&:email)
+    admin_subscription = list.admins.first
+
+    expect(subscription_emails).to eq [adminaddress]
+    expect(admin_subscription.fingerprint).to eql("59C71FB38AEE22E091C78259D06350440F759BD3")
+  end
+
+  it "subscribes the adminaddress and ignores the adminfingerprint if an adminkey was given" do
+    listname = "list-#{rand}@example.org"
+    adminaddress = 'schleuder2@example.org'
+    adminkey = File.read('spec/fixtures/example_key.txt')
+    list, _ = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, "59C71FB38AEE22E091C78259D06350440F759BD3", adminkey).run
+
+    subscription_emails = list.subscriptions.map(&:email)
+    subscription_fingerprints = list.subscriptions.map(&:fingerprint)
+
+    expect(subscription_emails).to eq [adminaddress]
+    expect(subscription_fingerprints).to eq ["C4D60F8833789C7CAA44496FD3FFA6613AB10ECE"]
+  end
+
 end
