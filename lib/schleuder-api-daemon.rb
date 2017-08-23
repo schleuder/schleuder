@@ -195,8 +195,9 @@ class SchleuderApiDaemon < Sinatra::Base
       listname = parsed_body['email']
       fingerprint = parsed_body['fingerprint']
       adminaddress = parsed_body['adminaddress']
+      adminfingerprint = parsed_body['adminfingerprint']
       adminkey = parsed_body['adminkey']
-      list, messages = ListBuilder.new({email: listname, fingerprint: fingerprint}, adminaddress, adminkey).run
+      list, messages = ListBuilder.new({email: listname, fingerprint: fingerprint}, adminaddress, adminfingerprint, adminkey).run
       if list.nil?
         client_error(messages, 422)
       elsif ! list.valid?

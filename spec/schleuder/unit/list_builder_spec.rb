@@ -6,7 +6,7 @@ describe Schleuder::ListBuilder do
     listname = "list-#{rand}@example.org"
     adminaddress = 'schleuder2@example.org'
     adminkey = File.read('spec/fixtures/example_key.txt')
-    list, messages = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, adminkey).run
+    list, messages = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, nil, adminkey).run
     expect(list).to be_an_instance_of Schleuder::List
     expect(list).to be_valid
     expect(messages).to be_blank
@@ -16,7 +16,7 @@ describe Schleuder::ListBuilder do
     listname = "list-#{rand}"
     adminaddress = 'schleuder2@example.org'
     adminkey = File.read('spec/fixtures/example_key.txt')
-    list, messages = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, adminkey).run
+    list, messages = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, nil, adminkey).run
     expect(list).to be_nil
     expect(messages).to be_an_instance_of Hash
     expect(messages.keys).to eq ['email']
@@ -27,7 +27,7 @@ describe Schleuder::ListBuilder do
     listname = "list-#{rand}@example.org"
     adminaddress = 'schleuder2@example.org'
     adminkey = File.read('spec/fixtures/example_key.txt')
-    list, _ = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, adminkey).run
+    list, _ = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, nil, adminkey).run
     expect(File.directory?(list.listdir)).to be true
   end
 
@@ -35,7 +35,7 @@ describe Schleuder::ListBuilder do
     listname = "list-#{rand}@example.org"
     adminaddress = 'schleuder2@example.org'
     adminkey = File.read('spec/fixtures/example_key.txt')
-    list, _ = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, adminkey).run
+    list, _ = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, nil, adminkey).run
     uids = list.key.uids.map(&:email)
     expect(uids).to include(list.email)
     expect(uids).to include(list.request_address)
@@ -46,7 +46,7 @@ describe Schleuder::ListBuilder do
     listname = "list-#{rand}@example.org"
     adminaddress = 'schleuder2@example.org'
     adminkey = File.read('spec/fixtures/example_key.txt')
-    list, _ = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, adminkey).run
+    list, _ = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, nil, adminkey).run
 
     subscription_emails = list.subscriptions.map(&:email)
     keys_fingerprints = list.keys.map(&:fingerprint)

@@ -1,10 +1,11 @@
 module Schleuder
   class ListBuilder
-    def initialize(list_attributes, adminemail=nil, adminkey=nil)
+    def initialize(list_attributes, adminemail=nil, adminfingerprint=nil, adminkey=nil)
       @list_attributes = list_attributes.with_indifferent_access
       @listname = list_attributes[:email]
       @fingerprint = list_attributes[:fingerprint]
       @adminemail = adminemail
+      @adminfingerprint = adminfingerprint
       @adminkey = adminkey
     end
 
@@ -51,7 +52,7 @@ module Schleuder
       if @adminemail.blank?
         msg = nil
       else
-        sub, msg = list.subscribe(@adminemail, nil, true, true, @adminkey)
+        sub, msg = list.subscribe(@adminemail, @adminfingerprint, true, true, @adminkey)
         if sub.errors.present?
           raise Errors::ActiveModelError.new(sub.errors)
         end
