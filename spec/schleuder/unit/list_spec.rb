@@ -371,33 +371,43 @@ describe Schleuder::List do
     it "adds a mesage if a key expires in two weeks or less" do
       list = create(:list)
       key = double("key")
+      generation_time = Time.now - 1.year
+      expiry_time = Time.now + 7.days
       allow_any_instance_of(GPGME::Key).to receive(:subkeys).and_return(key)
       allow(key).to receive(:first).and_return(key)
-      allow(key).to receive(:expires).and_return(Time.now + 7.days)
+      allow(key).to receive(:timestamp).and_return(generation_time)
+      allow(key).to receive(:expires?).and_return(true)
+      allow(key).to receive(:expired?).and_return(false)
+      allow(key).to receive(:expired).and_return(false)
+      allow(key).to receive(:any?).and_return(false)
+      allow(key).to receive(:expires).and_return(expiry_time)
       allow(key).to receive(:fingerprint).and_return("59C71FB38AEE22E091C78259D06350440F759BD3")
 
-      expect(list.check_keys).to eq "Key 59C71FB38AEE22E091C78259D06350440F759BD3 expires in 6 days.\n"
+      datefmt = "%Y-%m-%d"
+      generation_date = generation_time.strftime(datefmt)
+      expiry_date = expiry_time.strftime(datefmt)
+      expect(list.check_keys).to eq "This key expires in 6 days:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org #{generation_date} [expires: #{expiry_date}]\n\n"
     end
 
     it "adds a message if a key is revoked" do
       list = create(:list)
       allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:revoked)
 
-      expect(list.check_keys).to eq "Key 59C71FB38AEE22E091C78259D06350440F759BD3 is revoked.\n"
+      expect(list.check_keys).to eq "This key is revoked:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06 [revoked]\n\n"
     end
 
     it "adds a message if a key is disabled" do
       list = create(:list)
       allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:disabled)
 
-      expect(list.check_keys).to eq "Key 59C71FB38AEE22E091C78259D06350440F759BD3 is disabled.\n"
+      expect(list.check_keys).to eq "This key is disabled:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06 [disabled]\n\n"
     end
 
     it "adds a message if a key is invalid" do
       list = create(:list)
       allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:invalid)
 
-      expect(list.check_keys).to eq "Key 59C71FB38AEE22E091C78259D06350440F759BD3 is invalid.\n"
+      expect(list.check_keys).to eq "This key is invalid:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06 [invalid]\n\n"
     end
   end
 
@@ -467,7 +477,7 @@ describe Schleuder::List do
         output = list.fetch_keys('98769E8A1091F36BD88403ECF71A3F8412D83889')
       end
 
-      expect(output).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+      expect(output).to include("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]")
 
       teardown_list_and_mailer(list)
     end
@@ -481,7 +491,7 @@ describe Schleuder::List do
         output = list.fetch_keys('http://127.0.0.1:9999/keys/example.asc')
       end
 
-      expect(output).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+      expect(output).to include("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]")
 
       teardown_list_and_mailer(list)
     end
@@ -495,7 +505,7 @@ describe Schleuder::List do
         output = list.fetch_keys('admin@example.org')
       end
 
-      expect(output).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+      expect(output).to include("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]")
 
       teardown_list_and_mailer(list)
     end

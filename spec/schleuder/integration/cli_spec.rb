@@ -146,7 +146,7 @@ describe 'cli' do
       mail = Mail::TestMailer.deliveries.first
 
       expect(Mail::TestMailer.deliveries.length).to eq 1
-      expect(mail.first_plaintext_part.body.to_s).to eql("Refreshing all keys from the keyring of list #{list.email} resulted in this:\n\nKey 98769E8A1091F36BD88403ECF71A3F8412D83889 was updated (new signatures).\nKey 6EE51D78FD0B33DE65CCF69D2104E20E20889F66 was updated (new user-IDs, new signatures).")
+      expect(mail.first_plaintext_part.body.to_s).to eql("Refreshing all keys from the keyring of list #{list.email} resulted in this:\n\nThis key was updated (new signatures):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n\nThis key was updated (new user-IDs and new signatures):\n0x6EE51D78FD0B33DE65CCF69D2104E20E20889F66 new@example.org 2017-03-25\n")
 
       teardown_list_and_mailer(list)
     end
@@ -165,7 +165,7 @@ describe 'cli' do
       mail = Mail::TestMailer.deliveries.first
 
       expect(Mail::TestMailer.deliveries.length).to eq 1
-      expect(mail.first_plaintext_part.body.to_s).to eql("Refreshing all keys from the keyring of list #{list1.email} resulted in this:\n\nKey 98769E8A1091F36BD88403ECF71A3F8412D83889 was updated (new signatures).\nKey 6EE51D78FD0B33DE65CCF69D2104E20E20889F66 was updated (new user-IDs, new signatures).")
+      expect(mail.first_plaintext_part.body.to_s).to eql("Refreshing all keys from the keyring of list #{list1.email} resulted in this:\n\nThis key was updated (new signatures):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n\nThis key was updated (new user-IDs and new signatures):\n0x6EE51D78FD0B33DE65CCF69D2104E20E20889F66 new@example.org 2017-03-25\n")
 
       teardown_list_and_mailer(list1)
       teardown_list_and_mailer(list2)

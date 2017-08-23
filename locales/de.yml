@@ -139,15 +139,23 @@ de:
   automated_message_subject: Automatische Nachricht empfangen
   check_keys: Schlüsselprüfung
   check_keys_intro: "Bitte kümmere dich um die folgenden Schlüssel für Liste %{email}."
-  key_expires: Schlüssel %{fingerprint} %{email} läuft in %{days} Tagen ab.
-  key_unusable: Schlüssel %{fingerprint} %{email} ist %{usability_issue}.
+  key_expires: |
+    Dieser Schlüssel läuft in %{days} Tagen ab:
+    %{key_oneline}
+  key_unusable: |
+    Dieser Schlüssel ist %{usability_issue}:
+    %{key_oneline}
   missed_message_due_to_unusable_key: "Du hast eine Email von %{list_email} verpasst weil mit deinem Abo kein (benutzbarer) OpenPGP-Schlüssel verknüpft ist. Bitte kümmere dich darum."
   refresh_keys: Schlüsselaktualisierung
   refresh_keys_intro: "Die Aktualisierung aller Schlüssel des Schlüsselrings für Liste %{email} ergab dies:"
   pin_keys: Schlüsselpinning
   pin_keys_intro: "Die Überprüfung aller Abos der Liste %{email} ergab, dass wir für folgende Abos einen Schlüssel zur Verwendung festgelegt haben:"
-  key_updated: Schlüssel %{fingerprint} wurde aktualisiert (%{states}).
-  key_fetched: Schlüssel %{fingerprint} wurde geholt (%{states}).
+  key_updated: |
+    Dieser Schlüssel wurde aktualisiert (%{states}):
+    %{key_oneline}
+  key_fetched: |
+    Dieser Schlüssel wurde geholt (%{states}):
+    %{key_oneline}
   import_states:
     unchanged: unverändert
     new_key: neuer Schlüssel

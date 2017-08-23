@@ -169,8 +169,7 @@ module Schleuder
       expiring.each do |key,days|
         text << I18n.t('key_expires', {
                           days: days,
-                          fingerprint: key.fingerprint,
-                          email: key.email
+                          key_oneline: key.oneline
                       })
         text << "\n"
       end
@@ -178,8 +177,7 @@ module Schleuder
       unusable.each do |key,usability_issue|
         text << I18n.t('key_unusable', {
                           usability_issue: usability_issue,
-                          fingerprint: key.fingerprint,
-                          email: key.email
+                          key_oneline: key.oneline
                       })
         text << "\n"
       end
