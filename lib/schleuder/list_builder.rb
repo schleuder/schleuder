@@ -58,14 +58,6 @@ module Schleuder
       end
 
       if @adminemail.present?
-        # Try if we can find the admin-key "manually". Maybe it's present
-        # in the keyring aleady.
-        if admin_fpr.blank?
-          key = list.distinct_key(@adminemail)
-          if key
-            admin_fpr = key.fingerprint
-          end
-        end
         sub, _ = list.subscribe(@adminemail, admin_fpr, true)
         if sub.errors.present?
           raise ActiveModelError.new(sub.errors)
