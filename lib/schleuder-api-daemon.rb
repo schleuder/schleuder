@@ -369,7 +369,7 @@ class SchleuderApiDaemon < Sinatra::Base
 
     get '/:fingerprint.json' do |fingerprint|
       if key = list.key(fingerprint)
-        json key_to_hash(key)
+        json key_to_hash(key, true)
       else
         404
       end
