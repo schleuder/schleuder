@@ -73,6 +73,7 @@ describe 'cli' do
       expect(list.subject_prefix_out).to eq '[out]'
       expect(list.max_message_size_kb).to eq 10240
       expect(list.public_footer).to eq "-- \nfooter"
+      expect(list.internal_footer).to be_nil
     end
 
     it "imports the subscriptions" do

@@ -24,6 +24,7 @@ describe Schleuder::List do
   it { is_expected.to respond_to :subject_prefix_in }
   it { is_expected.to respond_to :subject_prefix_out }
   it { is_expected.to respond_to :openpgp_header_preference }
+  it { is_expected.to respond_to :internal_footer }
   it { is_expected.to respond_to :public_footer }
   it { is_expected.to respond_to :headers_to_meta }
   it { is_expected.to respond_to :bounces_drop_on_headers }
@@ -185,6 +186,13 @@ describe Schleuder::List do
     expect(list.errors.messages[:language]).to include("must be one of: en, de")
   end
 
+  it "is invalid if internal_footer includes a non-printable character" do
+    list = build(:list, internal_footer: "\a")
+
+    expect(list).not_to be_valid
+    expect(list.errors.messages[:internal_footer]).to include("includes non-printable characters")
+  end
+
   it "is invalid if public_footer includes a non-printable character" do
     list = build(:list, public_footer: "\a")
 
@@ -197,7 +205,7 @@ describe Schleuder::List do
       expect(Schleuder::List.configurable_attributes).to eq [
        :bounces_drop_all, :bounces_drop_on_headers, :bounces_notify_admins,
        :forward_all_incoming_to_admins, :headers_to_meta, :include_list_headers,
-       :include_openpgp_header, :keep_msgid, :keywords_admin_notify, :keywords_admin_only,
+       :include_openpgp_header, :internal_footer, :keep_msgid, :keywords_admin_notify, :keywords_admin_only,
        :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :openpgp_header_preference,
        :public_footer, :receive_admin_only, :receive_authenticated_only, :receive_encrypted_only,
        :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,

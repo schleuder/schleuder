@@ -60,7 +60,7 @@ module Schleuder
                 # TODO: find out why we break translations and available_locales if we use I18n.available_locales here.
                 in: %w(de en),
               }
-    validates :public_footer,
+    validates :public_footer, :internal_footer,
               allow_blank: true,
               format: {
                 with: /\A[[:graph:]\s]*\z/i,
@@ -343,6 +343,7 @@ module Schleuder
 
     def send_to_subscriptions(mail)
       logger.debug "Sending to subscriptions."
+      mail.add_internal_footer!
       self.subscriptions.each do |subscription|
         begin
           subscription.send_mail(mail)

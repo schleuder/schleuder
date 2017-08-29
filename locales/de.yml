@@ -7,6 +7,8 @@ de:
         inclusion: "muss einem der folgenden Werte entsprechen: debug, info, warn, error"
       openpgp_header_preference:
         inclusion: "muss einem der folgenden Werte entsprechen: sign, encrypt, signencrypt, unprotected, none"
+      internal_footer:
+        invalid: "enthält nicht druckbare Zeichen"
       public_footer:
         invalid: "enthält nicht druckbare Zeichen"
     invalid_email: "ist keine valide E-Mail-Adresse"

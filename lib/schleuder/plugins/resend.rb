@@ -63,7 +63,7 @@ module Schleuder
       # Compose and send email
       new = mail.clean_copy
       new[to_or_cc] = recipients_map.keys
-      new.add_footer!
+      new.add_public_footer!
       new.sender = mail.list.bounce_address
       # `dup` gpg_opts because `deliver` changes their value and we need them
       # below to determine encryption!
