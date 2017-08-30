@@ -40,7 +40,7 @@ module Schleuder
     end
 
     def self.list_keys(arguments, list, mail)
-      args = arguments.presence
+      args = Array(arguments.presence || '')
       args.map do |argument|
         # In this case it shall be allowed to match keys by arbitrary
         # sub-strings, therefore we use `list.gpg` directly to not have the
