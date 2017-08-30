@@ -1864,4 +1864,115 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "x-list-keys without arguments" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list.import_key(File.read('spec/fixtures/example_key.txt'))
+    list.import_key(File.read('spec/fixtures/bla_foo_key.txt'))
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-list-keys"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+
+    expect(message.first_plaintext_part.body.to_s.lines.size).to eql(16)
+    expect(message.first_plaintext_part.body.to_s).to include("59C71FB38AEE22E091C78259D06350440F759BD3")
+    expect(message.first_plaintext_part.body.to_s).to include("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+    expect(message.first_plaintext_part.body.to_s).to include("87E65ED2081AE3D16BE4F0A5EBDBE899251F2412")
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-list-keys with one argument" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list.import_key(File.read('spec/fixtures/example_key.txt'))
+    list.import_key(File.read('spec/fixtures/bla_foo_key.txt'))
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-list-keys schleuder2"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+
+    expect(message.first_plaintext_part.body.to_s.lines.size).to eql(4)
+    expect(message.first_plaintext_part.body.to_s).not_to include("59C71FB38AEE22E091C78259D06350440F759BD3")
+    expect(message.first_plaintext_part.body.to_s).to include("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+    expect(message.first_plaintext_part.body.to_s).not_to include("87E65ED2081AE3D16BE4F0A5EBDBE899251F2412")
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-list-keys with two arguments" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list.import_key(File.read('spec/fixtures/example_key.txt'))
+    list.import_key(File.read('spec/fixtures/bla_foo_key.txt'))
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-listname: #{list.email}\nX-list-keys schleuder2 bla"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+
+    expect(message.first_plaintext_part.body.to_s.lines.size).to eql(10)
+    expect(message.first_plaintext_part.body.to_s).not_to include("59C71FB38AEE22E091C78259D06350440F759BD3")
+    expect(message.first_plaintext_part.body.to_s).to include("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+    expect(message.first_plaintext_part.body.to_s).to include("87E65ED2081AE3D16BE4F0A5EBDBE899251F2412")
+
+    teardown_list_and_mailer(list)
+  end
+
 end
