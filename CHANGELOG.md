@@ -15,6 +15,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * The API does not include anymore each key's key-data in response to </keys.json>. This avoids performance problems with even medium sized keyrings.
 * The short representation of GnuPG keys became more human-friendly. Besides the fingerprint we now show the email-address of the first UID, the generation-date, and optionally the expiration-date.
 * Log the full exception when sending a message fails. (Thanks, Lunar!)
+* When creating a new list, we do not anymore look for a matching key for the admin-address in the list's keyring. We don't want to look up keys for subscriptions by email at all. (This was anyway only useful in the corner case where you prefilled a keyring to use for the new list.)
+
 
 ### Fixed
 

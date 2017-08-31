@@ -1,10 +1,11 @@
 module Schleuder
   class ListBuilder
-    def initialize(list_attributes, adminemail=nil, adminkey=nil)
+    def initialize(list_attributes, adminemail=nil, adminfingerprint=nil, adminkey=nil)
       @list_attributes = list_attributes.with_indifferent_access
       @listname = list_attributes[:email]
       @fingerprint = list_attributes[:fingerprint]
       @adminemail = adminemail
+      @adminfingerprint = adminfingerprint
       @adminkey = adminkey
     end
 
@@ -48,31 +49,16 @@ module Schleuder
 
       list.save!
 
-      if @adminkey.present?
-        import_result = list.import_key(@adminkey)
-        # Get the fingerprint of the imported key if it was exactly one. If it
-        # was imported or was already present doesn't matter.
-        if import_result.considered == 1
-          admin_fpr = import_result.imports.first.fpr
-        end
-      end
-
-      if @adminemail.present?
-        # Try if we can find the admin-key "manually". Maybe it's present
-        # in the keyring aleady.
-        if admin_fpr.blank?
-          key = list.distinct_key(@adminemail)
-          if key
-            admin_fpr = key.fingerprint
-          end
-        end
-        sub, _ = list.subscribe(@adminemail, admin_fpr, true)
+      if @adminemail.blank?
+        msg = nil
+      else
+        sub, msg = list.subscribe(@adminemail, @adminfingerprint, true, true, @adminkey)
         if sub.errors.present?
-          raise ActiveModelError.new(sub.errors)
+          raise Errors::ActiveModelError.new(sub.errors)
         end
       end
 
-      list
+      [list, msg]
     end
 
     def gpg
