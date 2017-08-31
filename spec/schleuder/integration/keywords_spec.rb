@@ -1330,6 +1330,43 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "x-resend with invalid recipient" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.email => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    content_body = "Hello again!\n"
+    invalid_recipient = '`ls`bla'
+    mail.body = "x-listname: #{list.email}\nX-resend: #{invalid_recipient}\n#{content_body}"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+    rescue SystemExit
+    end
+    delivered_emails = Mail::TestMailer.deliveries
+    raw = delivered_emails.first
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
+
+    expect(delivered_emails.size).to eql(1)
+    expect(message.to_s).not_to include("Resent: Unencrypted to someone@example.org")
+    expect(message.to_s).to include("Error: Invalid resend-address: #{invalid_recipient}")
+
+    teardown_list_and_mailer(list)
+  end
+
   it "x-sign-this with inline text" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)

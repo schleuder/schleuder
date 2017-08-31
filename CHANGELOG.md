@@ -23,6 +23,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * X-SUBSCRIBE now handles the combination of space-separated fingerprint and additional arguments (admin-flag, delivery-enabled-flag) correctly.
 * Fixed broken encoding of certain character-sequences in encrypted+signed messages.
 * X-LIST-KEYS again works without arguments.
+* X-RESEND now checks the given arguments to be valid email-addresses, and blocks resending if any one is found invalid.
 
 
 ## [3.1.2] / 2017-07-13
