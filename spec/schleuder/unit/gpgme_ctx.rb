@@ -168,4 +168,26 @@ describe GPGME::Ctx do
     expect(out.class).to eql(NilClass)
     expect(exitcode.class).to eql(Integer)
   end
+
+  context "#keyserver_arg" do
+    it "returns keyserver-args if a keyserver is configured" do
+      list = create(:list)
+
+      keyserver_args = list.gpg.send(:keyserver_arg)
+
+      expect(keyserver_args).to eql("--keyserver #{Conf.keyserver}")
+    end
+
+    it "returns a blank string if the keyserver-option is set to a blank value" do
+      oldval = Conf.instance.config['keyserver']
+      Conf.instance.config['keyserver'] = ''
+      list = create(:list)
+
+      keyserver_args = list.gpg.send(:keyserver_arg)
+
+      expect(keyserver_args).to eql("")
+
+      Conf.instance.config['keyserver'] = oldval
+    end
+  end
 end
