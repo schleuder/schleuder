@@ -97,6 +97,7 @@ de:
       not_resent_no_keys: Resending an <%{email}> fehlgeschlagen (%{num_keys} Schlüssel gefunden und unverschlüsseltes Senden verboten).
       encrypted_to: Verschlüsselt an
       unencrypted_to: Unverschlüsselt an
+      invalid_recipient: "Ungültige Emailadresse für resend: %{address}"
     subscription_management:
       forbidden: "Fehler: Du bist nicht berechtigt, das Abo für %{email} zu löschen."
       is_not_subscribed: Kein Abo für %{email} gefunden.

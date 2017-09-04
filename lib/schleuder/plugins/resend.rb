@@ -25,6 +25,10 @@ module Schleuder
     end
 
     def self.resend_it_cc(arguments, mail, encrypted_only)
+      if ! resend_recipients_valid?(mail, arguments)
+        return false 
+      end
+
       recip_map = map_with_keys(mail, arguments, encrypted_only)
 
       # Only continue if all recipients are still here.
@@ -38,6 +42,10 @@ module Schleuder
     end
 
     def self.resend_it(arguments, mail, encrypted_only)
+      if ! resend_recipients_valid?(mail, arguments)
+        return false 
+      end
+      
       recip_map = map_with_keys(mail, arguments, encrypted_only)
 
       resent_stati = recip_map.map do |email, key|
@@ -149,6 +157,17 @@ module Schleuder
       else
         'resent_cc'
       end
+    end
+
+    def self.resend_recipients_valid?(mail, recipients)
+      all_valid = true
+      Array(recipients).each do |address|
+        if ! address.match(Conf::EMAIL_REGEXP)
+          mail.add_pseudoheader(:error, I18n.t("plugins.resend.invalid_recipient", address: address))
+          all_valid = false
+        end
+      end
+      all_valid
     end
   end
 end

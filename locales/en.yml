@@ -97,6 +97,7 @@ en:
       not_resent_no_keys: Resending to <%{email}> failed (%{num_keys} keys found and unencrypted sending disallowed).
       encrypted_to: Encrypted to
       unencrypted_to: Unencrypted to
+      invalid_recipient: "Invalid email-address for resending: %{address}"
     subscription_management:
       forbidden: "Error: You're not allowed to unsubscribe %{email}."
       is_not_subscribed: "%{email} is not subscribed."
