@@ -20,9 +20,6 @@ end
 
 class SchleuderApiDaemon < Sinatra::Base
   register Sinatra::Namespace
-  use Rack::Auth::Basic, "Schleuder API Daemon" do |username, key|
-    username == 'schleuder' && Conf.api_valid_api_keys.include?(key)
-  end
 
   configure do
     set :server, :thin
@@ -36,6 +33,7 @@ class SchleuderApiDaemon < Sinatra::Base
   end
 
   before do
+    authenticate!
     cast_param_values
   end
 
@@ -68,6 +66,25 @@ class SchleuderApiDaemon < Sinatra::Base
   end
 
   helpers do
+    def valid_credentials?
+      @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+      if @auth.provided? && @auth.basic? && @auth.credentials.present?
+        username, api_key = @auth.credentials
+        username == 'schleuder' && Conf.api_valid_api_keys.include?(api_key)
+      else
+        false
+      end
+    end
+
+    def authenticate!
+      # Be careful to use path_info() — it can be changed by other filters!
+      return if request.path_info == '/status.json'
+      if ! valid_credentials?
+        headers['WWW-Authenticate'] = 'Basic realm="Schleuder API Daemon"'
+        halt 401, "Not authorized\n"
+      end
+    end
+
     def list(id_or_email=nil)
       if id_or_email.blank?
         if params[:list_id].present?
