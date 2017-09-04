@@ -1362,7 +1362,7 @@ describe "user sends keyword" do
 
     expect(delivered_emails.size).to eql(1)
     expect(message.to_s).not_to include("Resent: Unencrypted to someone@example.org")
-    expect(message.to_s).to include("Error: Invalid resend-address: #{invalid_recipient}")
+    expect(message.to_s).to include("Error: Invalid email-address for resending: #{invalid_recipient}")
 
     teardown_list_and_mailer(list)
   end
