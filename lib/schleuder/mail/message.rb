@@ -101,15 +101,11 @@ module Mail
 
     def add_public_footer!
       # Add public_footer unless it's empty?.
-      if self.list.present? && ! self.list.public_footer.to_s.strip.empty?
-        add_footer!(self.list.public_footer.strip)
-      end
+      add_footer!(:public_footer)
     end
 
     def add_internal_footer!
-      if self.list.present? && self.list.internal_footer.to_s.present?
-        add_footer!(self.list.internal_footer.to_s)
-      end
+      add_footer!(:internal_footer)
     end
 
     def was_encrypted?
@@ -415,9 +411,12 @@ module Mail
     private
 
 
-    def add_footer!(body)
+    def add_footer!(footer_attribute)
+      if self.list.blank? || self.list.send(footer_attribute).to_s.empty?
+        return
+      end
       footer_part = Mail::Part.new
-      footer_part.body = body
+      footer_part.body = self.list.send(footer_attribute).to_s
       if wrapped_single_text_part?
         self.parts.first.add_part footer_part
       else
