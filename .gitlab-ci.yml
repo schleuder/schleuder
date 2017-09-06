@@ -1,0 +1,8 @@
+---
+image: ruby:latest
+
+check_travis_builds:
+    script:
+        - apt-get update -qq
+        - apt-get install --no-install-recommends --no-install-suggests -qq -y python-requests
+        - ./utils/ci/check_travis_builds.py
