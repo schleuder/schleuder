@@ -98,7 +98,7 @@ module GPGME
     end
 
     def refresh_key(fingerprint)
-      args = "--keyserver #{Conf.keyserver} --refresh-keys #{fingerprint}"
+      args = "#{keyserver_arg} --refresh-keys #{fingerprint}"
       gpgerr, gpgout, exitcode = self.class.gpgcli(args)
 
       if exitcode > 0
@@ -135,13 +135,13 @@ module GPGME
     def fetch_key_gpg_arguments_for(input)
       case input
       when Conf::FINGERPRINT_REGEXP
-        "--keyserver #{Conf.keyserver} --recv-key #{input}"
+        "#{keyserver_arg} --recv-key #{input}"
       when /^http/
         "--fetch-key #{input}"
       when /@/
         # --recv-key doesn't work with email-addresses, so we use --locate-key
         # restricted to keyservers.
-        "--keyserver #{Conf.keyserver} --auto-key-locate keyserver --locate-key #{input}"
+        "#{keyserver_arg} --auto-key-locate keyserver --locate-key #{input}"
       else
         [nil, I18n.t("fetch_key.invalid_input")]
       end
@@ -246,6 +246,14 @@ module GPGME
       path = File.join(ENV["GNUPGHOME"], "S.#{name}")
       if File.exist?(path)
         File.delete(path)
+      end
+    end
+
+    def keyserver_arg
+      if Conf.keyserver.present?
+        "--keyserver #{Conf.keyserver}"
+      else
+        ""
       end
     end
   end
