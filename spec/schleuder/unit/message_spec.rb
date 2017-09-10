@@ -100,5 +100,29 @@ describe Mail::Message do
       expect(message.subject).to eql('Re: [prefix] test')
     end
   end
+
+  it "adds list#public_footer as last mime-part without changing its value" do
+    footer = "\n\n-- \nblabla\n  blabla\n  "
+    list = create(:list)
+    list.public_footer = footer
+    mail = Mail.new
+    mail.body = 'blabla'
+    mail.list = list
+    mail.add_public_footer!
+
+    expect(mail.parts.last.body.to_s).to eql(footer)
+  end
+
+  it "adds list#internal_footer as last mime-part without changing its value" do
+    footer = "\n\n-- \nblabla\n  blabla\n  "
+    list = create(:list)
+    list.internal_footer = footer
+    mail = Mail.new
+    mail.body = 'blabla'
+    mail.list = list
+    mail.add_internal_footer!
+
+    expect(mail.parts.last.body.to_s).to eql(footer)
+  end
 end
 
