@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.homepage     = "https://schleuder.nadir.org/"
   s.summary      = "Schleuder is a gpg-enabled mailinglist with remailing-capabilities."
   s.description  = "Schleuder is a group's email-gateway: subscribers can exchange encrypted emails among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.\n\nSchleuder takes care of all decryption and (re-)encryption, stripping of headers, and more. Schleuder can also send out its own public key upon request and process administrative commands by email."
-  s.files        = `git ls-files lib locales etc db/schema.rb README.md Rakefile bin/pinentry-clearpassphrase`.split
+  s.files        = `git ls-files lib locales etc db README.md Rakefile bin/pinentry-clearpassphrase`.split
   s.executables =  %w[schleuder schleuder-api-daemon]
   s.platform     = Gem::Platform::RUBY
   s.require_path = 'lib'
