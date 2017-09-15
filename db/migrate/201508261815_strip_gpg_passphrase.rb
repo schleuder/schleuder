@@ -1,6 +1,8 @@
 class StripGpgPassphrase < ActiveRecord::Migration
   def up
-    remove_column :lists, :gpg_passphrase
+    if column_exists?(:lists, :gpg_passphrase)
+      remove_column :lists, :gpg_passphrase
+    end
   end
 
   def down
