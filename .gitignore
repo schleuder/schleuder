@@ -4,3 +4,4 @@ vendor
 db/*.sqlite3
 testmails/*
 .pc/
+coverage/

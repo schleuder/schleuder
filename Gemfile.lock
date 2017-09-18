@@ -27,12 +27,14 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    ansi (1.5.0)
     arel (6.0.4)
     backports (3.6.8)
     builder (3.2.2)
     daemons (1.2.4)
     database_cleaner (1.5.3)
     diff-lcs (1.2.5)
+    docile (1.1.5)
     eventmachine (1.2.3)
     factory_girl (4.8.0)
       activesupport (>= 3.0.0)
@@ -71,6 +73,15 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
+    simplecov (0.15.1)
+      docile (~> 1.1.0)
+      json (>= 1.8, < 3)
+      simplecov-html (~> 0.10.0)
+    simplecov-console (0.4.2)
+      ansi
+      hirb
+      simplecov
+    simplecov-html (0.10.2)
     sinatra (1.4.8)
       rack (~> 1.5)
       rack-protection (~> 1.4)
@@ -101,6 +112,7 @@ DEPENDENCIES
   factory_girl
   hirb
   rspec (~> 3.5.0)
+  simplecov-console
   schleuder!
 
 BUNDLED WITH
