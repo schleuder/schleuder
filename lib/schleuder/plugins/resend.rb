@@ -24,6 +24,9 @@ module Schleuder
       resend_it_cc(arguments, mail, true)
     end
 
+    # helper methods
+    private
+
     def self.resend_it_cc(arguments, mail, encrypted_only)
       if ! resend_recipients_valid?(mail, arguments)
         return false

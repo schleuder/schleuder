@@ -76,6 +76,9 @@ module Schleuder
       end
     end
 
+    # helper methods
+    private
+
     def self.is_armored_key?(material)
       return false unless /^-----BEGIN PGP PUBLIC KEY BLOCK-----$/ =~ material
       return false unless /^-----END PGP PUBLIC KEY BLOCK-----$/ =~ material
