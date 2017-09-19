@@ -26,7 +26,7 @@ module Schleuder
 
     def self.resend_it_cc(arguments, mail, encrypted_only)
       if ! resend_recipients_valid?(mail, arguments)
-        return false 
+        return false
       end
 
       recip_map = map_with_keys(mail, arguments, encrypted_only)
@@ -43,9 +43,9 @@ module Schleuder
 
     def self.resend_it(arguments, mail, encrypted_only)
       if ! resend_recipients_valid?(mail, arguments)
-        return false 
+        return false
       end
-      
+
       recip_map = map_with_keys(mail, arguments, encrypted_only)
 
       resent_stati = recip_map.map do |email, key|
