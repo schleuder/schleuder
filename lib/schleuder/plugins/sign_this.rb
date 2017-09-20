@@ -14,6 +14,9 @@ module Schleuder
       end
     end
 
+    # helper methods
+    private
+
     def self.make_signature_part(attachment, list)
       material = attachment.body.to_s
       return nil if material.strip.blank?

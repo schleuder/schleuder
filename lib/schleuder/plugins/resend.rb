@@ -24,9 +24,32 @@ module Schleuder
       resend_it_cc(arguments, mail, true)
     end
 
+    def self.resend_unencrypted(arguments, list, mail)
+      do_resend_unencrypted(arguments, list, mail, :to)
+    end
+
+    def self.resend_unencrypted_cc(arguments, list, mail)
+      do_resend_unencrypted(arguments, list, mail, :cc)
+    end
+
+    # helper methods
+    private
+
+    def self.do_resend_unencrypted(arguments, list, mail, target)
+      if ! resend_recipients_valid?(mail, arguments)
+        return false
+      end
+
+      recip_map = Hash[Array(arguments).map{|email| [email,''] }]
+
+      if do_resend(mail, recip_map, target, false)
+        mail.add_subject_prefix_out!
+      end
+    end
+
     def self.resend_it_cc(arguments, mail, encrypted_only)
       if ! resend_recipients_valid?(mail, arguments)
-        return false 
+        return false
       end
 
       recip_map = map_with_keys(mail, arguments, encrypted_only)
@@ -43,9 +66,9 @@ module Schleuder
 
     def self.resend_it(arguments, mail, encrypted_only)
       if ! resend_recipients_valid?(mail, arguments)
-        return false 
+        return false
       end
-      
+
       recip_map = map_with_keys(mail, arguments, encrypted_only)
 
       resent_stati = recip_map.map do |email, key|
