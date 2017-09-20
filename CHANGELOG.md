@@ -28,6 +28,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Fixed broken encoding of certain character-sequences in encrypted+signed messages.
 * X-LIST-KEYS again works without arguments.
 * X-RESEND now checks the given arguments to be valid email-addresses, and blocks resending if any one is found invalid.
+* X-RESEND now respects the encoding the mail was sent with. (Thanks, Lunar!)
 
 
 ## [3.1.2] / 2017-07-13

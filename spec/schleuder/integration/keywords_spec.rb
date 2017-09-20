@@ -1145,6 +1145,89 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "x-resend with iso-8859-1 body" do
+    list = create(:list, public_footer: "-- \nblablabla")
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.email => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    content_body = "Hello again! ¡Hola!\n"
+    mail.charset = 'iso-8859-1'
+    mail.body = "x-listname: #{list.email}\nX-resend: someone@example.org\n#{content_body}".encode('iso-8859-1')
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    resent_message = raw.verify
+    raw = Mail::TestMailer.deliveries.last
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.to_s).to include("Resent: Unencrypted to someone@example.org")
+    expect(message.parts[1].body.to_s.force_encoding(message.parts[1].charset)).to eql(content_body.encode(message.parts[1].charset))
+    expect(resent_message.to).to include("someone@example.org")
+    expect(resent_message.to_s).not_to include("Resent: Unencrypted to someone@example.org")
+    expect(resent_message.parts[0].body.to_s).to eql(content_body.encode(resent_message.parts[0].charset))
+    expect(resent_message.parts[1].body.to_s).to eql(list.public_footer.to_s)
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-resend with utf-8 body and umlauts" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.email => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    content_body = "This is a test\nAnd here are some umlauts:ÄäÖöÜüß"
+    mail.charset = 'utf-8'
+    mail.body = "x-listname: #{list.email}\nX-resend: someone@example.org\n#{content_body}".encode('utf-8')
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    resent_message = raw.verify
+    raw = Mail::TestMailer.deliveries.last
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.to_s).to include("Resent: Unencrypted to someone@example.org")
+    expect(message.parts[1].body.to_s.force_encoding(message.parts[1].charset)).to eql(content_body.encode(message.parts[1].charset))
+    expect(resent_message.to).to include("someone@example.org")
+    expect(resent_message.to_s).not_to include("Resent: Unencrypted to someone@example.org")
+    expect(resent_message.parts[0].body.to_s).to eql(content_body.encode(resent_message.parts[0].charset))
+
+    teardown_list_and_mailer(list)
+  end
+
   it "x-resend with admin-notification" do
     list = create(:list, keywords_admin_notify: ['resend'])
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)

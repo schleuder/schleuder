@@ -88,6 +88,7 @@ module Mail
         # We copied the content-headers, so we need to copy the body encoded.
         # Otherwise the content might become unlegible.
         wrapper_part.body = self.body.encoded
+        wrapper_part.charset = self.body.charset || self.class.default_charset
       end
       clean.add_part(wrapper_part)
 
