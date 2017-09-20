@@ -20,8 +20,15 @@ TRAVIS_WEB_URL = 'https://travis-ci.org/schleuder/schleuder3/builds/{id}'
 
 
 def travis_builds_details(state_or_result):
-    # Get all Travis builds
-    travis_builds = get(TRAVIS_API_URL).json()
+    # Try to get all Travis builds
+    try:
+        travis_builds = get(TRAVIS_API_URL).json()
+    # In case this fails, print a helpful message and exit early
+    except ValueError:
+        print('Getting the Travis build state json failed.')
+        print('This might be related to ongoing maintenance.')
+        print('Please see: https://www.traviscistatus.com/')
+        exit(1)
 
     # Loop trough all builds up until we found the one we're interested in
     for build in travis_builds:
