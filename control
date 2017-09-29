@@ -21,7 +21,6 @@ Standards-Version: 4.1.0.0
 Vcs-Git: https://anonscm.debian.org/git/pkg-ruby-extras/schleuder.git
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-ruby-extras/schleuder.git
 Homepage: https://schleuder.nadir.org/
-Testsuite: autopkgtest-pkg-ruby
 XS-Ruby-Versions: all
 
 Package: schleuder
