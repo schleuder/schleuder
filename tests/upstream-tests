@@ -2,4 +2,7 @@
 
 set -e
 
+rm /dev/random
+ln -s /dev/urandom /dev/random
+
 gem2deb-test-runner --autopkgtest --check-dependencies 2>&1
