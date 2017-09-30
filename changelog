@@ -1,3 +1,13 @@
+schleuder (3.1.2-3) unstable; urgency=medium
+
+  * debian/tests/upstream-tests: Drop starting haveged manually, because 
+    this doesn't work anymore, if invoked in a container. Instead, link
+    /dev/random to /dev/urandom.
+  * debian/ruby-tests.rake: Kill gpg-agent before and after running tests.
+    This might help with making schleuder build reproducibly.
+
+ -- Georg Faerber <georg@riseup.net>  Sat, 30 Sep 2017 14:21:38 +0200
+
 schleuder (3.1.2-2) unstable; urgency=medium
 
   * debian/control:
