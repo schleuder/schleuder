@@ -8,6 +8,8 @@ task :setup do
   # Set up database
   `rake -f debian/Rakefile db:create`
   `rake -f debian/Rakefile db:schema:load`
+  # Kill gpg-agent
+  `gpgconf --kill gpg-agent`
 end
 
 task :run_tests do
@@ -21,6 +23,8 @@ task :cleanup do
     # Remove database to make the build reproducible
     `rm db/test.sqlite3 >/dev/null 2>&1 || true`
     `rm /usr/lib/ruby/vendor_ruby/schleuder/db/test.sqlite3 >/dev/null 2>&1 || true`
+    # Kill gpg-agent
+    `gpgconf --kill gpg-agent`
   }
 end
 
