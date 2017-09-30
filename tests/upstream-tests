@@ -2,11 +2,4 @@
 
 set -e
 
-# Because GPG key operations rely heavily on entropy,
-# ensure that haveged is in fact running, before executing
-# the tests. Currently, the init script of haveged prevents
-# the automatic start in containerized environments, so let's
-# start it manually.
-haveged -w 1024
-
 gem2deb-test-runner --autopkgtest --check-dependencies 2>&1
