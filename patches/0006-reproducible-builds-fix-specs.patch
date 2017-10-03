@@ -1,0 +1,89 @@
+Description: reproducible builds: Fix specs
+  This patch fixes various problems to make the build reproducible:
+
+  Use '/tmp/schleuder-test' as the database location, to prevent
+  problems if the build path is read only.
+
+  Drop the (human readable) dates in all specs which deal with importing
+  / getting / refreshing GPG keys, because these are non deterministic
+  and rely on the timezone.
+
+  Wait before and after starting the SKS mock keyserver, so that it's
+  really "up and running" before doing any queries against it.
+
+  This patch will be integrated upstream.
+Author: Georg Faerber <georg@riseup.net>
+Last-Update: 2017-10-03
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/spec/schleuder.yml
++++ b/spec/schleuder.yml
+@@ -1,7 +1,7 @@
+ database:
+   test:
+     adapter: sqlite3
+-    database: db/test.sqlite3
++    database: /tmp/schleuder-test/test.sqlite3
+ lists_dir: /tmp/schleuder-test/
+ listlogs_dir: /tmp/schleuder-test/
+ smtp_settings:
+--- a/spec/schleuder/integration/keywords_spec.rb
++++ b/spec/schleuder/integration/keywords_spec.rb
+@@ -1315,7 +1315,7 @@
+     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+ 
+     expect(message.to).to eql(['schleuder@example.org'])
+-    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
++    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3")
+     expect(message.to_s.scan(/^pub /).size).to eql(1)
+ 
+     teardown_list_and_mailer(list)
+@@ -1349,7 +1349,7 @@
+     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+ 
+     expect(message.to).to eql(['schleuder@example.org'])
+-    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
++    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3")
+     expect(message.to_s.scan(/^pub /).size).to eql(1)
+ 
+     teardown_list_and_mailer(list)
+@@ -1383,7 +1383,7 @@
+     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+ 
+     expect(message.to).to eql(['schleuder@example.org'])
+-    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
++    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3")
+     expect(message.to_s.scan(/^pub /).size).to eql(1)
+ 
+     teardown_list_and_mailer(list)
+@@ -1418,7 +1418,7 @@
+     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+ 
+     expect(message.to).to eql(['schleuder@example.org'])
+-    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
++    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3")
+     expect(message.to_s).to include("-----BEGIN PGP PUBLIC KEY")
+ 
+     teardown_list_and_mailer(list)
+@@ -1699,7 +1699,7 @@
+     expect(message.parts.last.parts.length).to eql(2)
+     expect(message.parts.last.parts.first.body.to_s).to eql(content_body)
+     expect(message.parts.last.parts.last.content_type.to_s).to eql("application/pgp-keys")
+-    expect(message.parts.last.parts.last.body.decoded).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
++    expect(message.parts.last.parts.last.body.decoded).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3")
+     expect(message.parts.last.parts.last.body.decoded).to include("-----BEGIN PGP PUBLIC KEY BLOCK-----")
+     expect(message.parts.last.parts.last.body.decoded).to include("mQINBFhGvz0BEADXbbTWo/PStyTznAo/f1UobY0EiVPNKNERvYua2Pnq8BwOQ5bS")
+ 
+--- a/spec/spec_helper.rb
++++ b/spec/spec_helper.rb
+@@ -61,8 +61,9 @@
+   end
+ 
+   def with_sks_mock
++    sleep 5
+     pid = Process.spawn('spec/sks-mock.rb', [:out, :err] => ["/tmp/sks-mock.log", 'w'])
+-    sleep 1
++    sleep 5
+     yield
+     Process.kill 'TERM', pid
+     Process.wait pid
