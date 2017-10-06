@@ -55,19 +55,49 @@ module Schleuder
           list.logger.warn "Sending plaintext because no key is present!"
         end
       elsif ! self.key.usable?
-        if self.list.send_encrypted_only?
-          notify_of_missed_message(key.usability_issue)
-          return false
+        if continue_despite_key_problem?
+          list.logger.warn "Sending plaintext because assigned key is #{self.key.usability_issue}!"
         else
-          list.logger.warn "Sending plaintext because assigned key is #{key.usability_issue}!"
+          return false
         end
       else
         gpg_opts.merge!(encrypt: true, keys: {self.email => "0x#{self.fingerprint}"})
       end
 
+      deliver(mail, gpg_opts)
+    rescue Mail::Gpg::MissingKeysError
+      if continue_despite_key_problem?
+        list.logger.warn "Sending plaintext because assigned key provoked a MissingKeysError!"
+        deliver(mail, gpg_opts)
+      end
+    end
+
+    def admin?
+      self.admin == true
+    end
+
+    def delete_key
+      list.delete_key(self.fingerprint)
+    end
+
+
+    private
+
+
+    def deliver(mail, gpg_opts)
       list.logger.info "Sending message to #{self.email}"
       mail.gpg gpg_opts
       mail.deliver
+    end
+
+    def continue_despite_key_problem?
+      if self.list.send_encrypted_only?
+        notify_of_missed_message(self.key.usability_issue)
+        return false
+      else
+        list.logger.warn "Sending plaintext because assigned key is #{self.key.usability_issue}!"
+        return true
+      end
     end
 
     def ensure_headers(mail)
@@ -85,14 +115,5 @@ module Schleuder
       mail.gpg self.list.gpg_sign_options
       mail.deliver
     end
-
-    def admin?
-      self.admin == true
-    end
-
-    def delete_key
-      list.delete_key(self.fingerprint)
-    end
-
   end
 end
