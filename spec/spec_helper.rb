@@ -43,6 +43,8 @@ RSpec.configure do |config|
 
   config.after(:each) do |example|
     FileUtils.rm_rf(Dir["spec/gnupg/pubring.gpg~"])
+    `gpgconf --kill dirmngr > /dev/null 2>&1`
+    `gpgconf --kill gpg-agent > /dev/null 2>&1`
   end
 
   config.after(:suite) do
