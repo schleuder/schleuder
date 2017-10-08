@@ -401,21 +401,21 @@ describe Schleuder::List do
       list = create(:list)
       allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:revoked)
 
-      expect(list.check_keys).to eq "This key is revoked:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06 [revoked]\n\n"
+      expect(list.check_keys).to match(/This key is revoked:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org \d{4}-\d{2}-\d{2} \[revoked\]\n\n/)
     end
 
     it "adds a message if a key is disabled" do
       list = create(:list)
       allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:disabled)
 
-      expect(list.check_keys).to eq "This key is disabled:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06 [disabled]\n\n"
+      expect(list.check_keys).to match(/This key is disabled:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org \d{4}-\d{2}-\d{2} \[disabled\]\n\n/)
     end
 
     it "adds a message if a key is invalid" do
       list = create(:list)
       allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:invalid)
 
-      expect(list.check_keys).to eq "This key is invalid:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06 [invalid]\n\n"
+      expect(list.check_keys).to match(/This key is invalid:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org \d{4}-\d{2}-\d{2} \[invalid\]\n\n/)
     end
   end
 
@@ -485,7 +485,7 @@ describe Schleuder::List do
         output = list.fetch_keys('98769E8A1091F36BD88403ECF71A3F8412D83889')
       end
 
-      expect(output).to include("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]")
+      expect(output).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
 
       teardown_list_and_mailer(list)
     end
@@ -499,7 +499,7 @@ describe Schleuder::List do
         output = list.fetch_keys('http://127.0.0.1:9999/keys/example.asc')
       end
 
-      expect(output).to include("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]")
+      expect(output).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
 
       teardown_list_and_mailer(list)
     end
@@ -513,7 +513,7 @@ describe Schleuder::List do
         output = list.fetch_keys('admin@example.org')
       end
 
-      expect(output).to include("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]")
+      expect(output).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
 
       teardown_list_and_mailer(list)
     end
