@@ -1,3 +1,12 @@
+schleuder (3.2.1-1) unstable; urgency=medium
+
+  Schleuder is now able to use the pre-configured sensible keyserver defaults
+  of dirmngr.
+  To make use of this feature, specify a blank value in /etc/schleuder.yml:
+  keyserver:
+
+ -- Georg Faerber <georg@riseup.net>  Mon, 09 Oct 2017 20:22:19 +0200
+
 schleuder (3.1.2-1) unstable; urgency=medium
 
   In case schleuder was upgraded from a version < 3.0, all existing list data
