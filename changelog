@@ -1,18 +1,3 @@
-schleuder (3.1.2-4) unstable; urgency=medium
-
-  * debian/tests/upstream-tests: Add note to explain why we link /dev/random
-    to /dev/urandom.
-  * debian/patches: Add patch to fix reproducible builds problems:
-    - Use '/tmp/schleuder-test' as the database location, to prevent
-      problems if the build path is read only.
-    - Drop the (human readable) dates in all specs which deal with getting or
-      importing or refreshing GPG keys, because these are non deterministic and
-      rely on the timezone.
-    - Wait before and after starting the SKS mock keyserver, so that it's
-      really "up and running" before doing any queries against it.
-
- -- Georg Faerber <georg@riseup.net>  Tue, 03 Oct 2017 13:34:27 +0200
-
 schleuder (3.1.2-3) unstable; urgency=medium
 
   * debian/tests/upstream-tests: Drop starting haveged manually, because 
