@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-* Internal footer: to be appended to each email that is sent to a subscribed address.  Will not be included in messages to non-subscribed addresses. This change requires a change to the database, don't forget to run `schleuder install` after updating the code.
+* Internal footer: to be appended to each email that is sent to a subscribed address. Will not be included in messages to non-subscribed addresses. This change requires a change to the database, don't forget to run `schleuder install` after updating the code.
 * Optionally use an OS-wide defined keyserver by configuring a blank value for the keyserver.
 * Added keywords `X-RESEND-UNENCRYPTED` and `X-RESEND-UNENCRYPTED-CC` to enforce outgoing email(s) in cleartext regardless of whether we would find a key for the recipient or not.
 
