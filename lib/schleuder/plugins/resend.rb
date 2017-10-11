@@ -28,7 +28,7 @@ module Schleuder
       do_resend_unencrypted(arguments, list, mail, :to)
     end
 
-    def self.resend_unencrypted_cc(arguments, list, mail)
+    def self.resend_cc_unencrypted(arguments, list, mail)
       do_resend_unencrypted(arguments, list, mail, :cc)
     end
 
