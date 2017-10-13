@@ -856,7 +856,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
-    expect(message.first_plaintext_part.body.to_s).to eql("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
+    expect(message.first_plaintext_part.body.to_s).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]\n/)
 
     teardown_list_and_mailer(list)
   end
@@ -924,7 +924,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
-    expect(message.first_plaintext_part.body.to_s).to eql("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
+    expect(message.first_plaintext_part.body.to_s).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]\n/)
 
     teardown_list_and_mailer(list)
   end
@@ -1027,7 +1027,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
-    expect(message.first_plaintext_part.body.to_s).to eql("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
+    expect(message.first_plaintext_part.body.to_s).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]\n/)
 
     teardown_list_and_mailer(list)
   end
@@ -1061,7 +1061,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
-    expect(message.first_plaintext_part.body.to_s).to eql("This key was fetched (unchanged):\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06\n")
+    expect(message.first_plaintext_part.body.to_s).to match(/This key was fetched \(unchanged\):\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org \d{4}-\d{2}-\d{2}/)
 
     teardown_list_and_mailer(list)
   end
@@ -1598,7 +1598,7 @@ describe "user sends keyword" do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
+    expect(message.to_s).to match(/pub   4096R\/59C71FB38AEE22E091C78259D06350440F759BD3 \d{4}-\d{2}-\d{2}/)
     expect(message.to_s.scan(/^pub /).size).to eql(1)
 
     teardown_list_and_mailer(list)
@@ -1632,7 +1632,7 @@ describe "user sends keyword" do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
+    expect(message.to_s).to match(/pub   4096R\/59C71FB38AEE22E091C78259D06350440F759BD3 \d{4}-\d{2}-\d{2}/)
     expect(message.to_s.scan(/^pub /).size).to eql(1)
 
     teardown_list_and_mailer(list)
@@ -1666,7 +1666,7 @@ describe "user sends keyword" do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
+    expect(message.to_s).to match(/pub   4096R\/59C71FB38AEE22E091C78259D06350440F759BD3 \d{4}-\d{2}-\d{2}/)
     expect(message.to_s.scan(/^pub /).size).to eql(1)
 
     teardown_list_and_mailer(list)
@@ -1701,7 +1701,7 @@ describe "user sends keyword" do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
+    expect(message.to_s).to match(/pub   4096R\/59C71FB38AEE22E091C78259D06350440F759BD3 \d{4}-\d{2}-\d{2}/)
     expect(message.to_s).to include("-----BEGIN PGP PUBLIC KEY")
 
     teardown_list_and_mailer(list)
@@ -1982,7 +1982,7 @@ describe "user sends keyword" do
     expect(message.parts.last.parts.length).to eql(2)
     expect(message.parts.last.parts.first.body.to_s).to eql(content_body)
     expect(message.parts.last.parts.last.content_type.to_s).to eql("application/pgp-keys")
-    expect(message.parts.last.parts.last.body.decoded).to include("pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3 2016-12-06")
+    expect(message.parts.last.parts.last.body.decoded).to match(/pub   4096R\/59C71FB38AEE22E091C78259D06350440F759BD3 \d{4}-\d{2}-\d{2}/)
     expect(message.parts.last.parts.last.body.decoded).to include("-----BEGIN PGP PUBLIC KEY BLOCK-----")
     expect(message.parts.last.parts.last.body.decoded).to include("mQINBFhGvz0BEADXbbTWo/PStyTznAo/f1UobY0EiVPNKNERvYua2Pnq8BwOQ5bS")
 
