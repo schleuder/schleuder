@@ -16,6 +16,7 @@ require 'schleuder'
 require 'schleuder/cli'
 require 'database_cleaner'
 require 'factory_girl'
+require 'net/http'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -73,8 +74,22 @@ RSpec.configure do |config|
 
   def with_sks_mock
     pid = Process.spawn('spec/sks-mock.rb', [:out, :err] => ["/tmp/sks-mock.log", 'w'])
-    sleep 1
+    uri = URI.parse("http://127.0.0.1:9999/status")
+    attempts = 5
+    begin
+      sleep 1
+      Net::HTTP.get(uri)
+    rescue Errno::ECONNREFUSED => exc
+      attempts -= 1
+      if attempts > 0
+        retry
+      else
+        raise "sks-mock.rb failed to start, cannot continue: #{exc}"
+      end
+    end
+
     yield
+
     Process.kill 'TERM', pid
     Process.wait pid
   end
