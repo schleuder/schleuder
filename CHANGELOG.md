@@ -20,7 +20,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Log the full exception when sending a message fails. (Thanks, Lunar!)
 * When creating a new list, we do not anymore look for a matching key for the admin-address in the list's keyring. We don't want to look up keys for subscriptions by email at all. (This was anyway only useful in the corner case where you prefilled a keyring to use for the new list.)
 * API: Access to `/status.json` is now allowed without authentication.
-
+* Deprecate X-LISTNAME in favour of X-LIST-NAME, for the sake of consistency in spelling keywords (but X-LISTNAME is still supported). (Thanks, maxigas!)
 
 ### Fixed
 

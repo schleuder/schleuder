@@ -25,7 +25,7 @@ module Schleuder
         return error if error
 
         command = keyword.gsub('-', '_')
-        if command == 'listname'
+        if ['list_name', 'listname'].include? (command)
           return nil
         elsif ! @plugin_module.respond_to?(command)
           return I18n.t('plugins.unknown_keyword', keyword: keyword)
@@ -66,7 +66,7 @@ module Schleuder
       def check_listname_keyword
         return nil if @mail.keywords.blank?
 
-        listname_kw = @mail.keywords.assoc('listname')
+        listname_kw = @mail.keywords.assoc('list-name') || @mail.keywords.assoc('listname')
         if listname_kw.blank?
           @mail.reply_to_signer I18n.t(:missing_listname_keyword_error)
           exit
