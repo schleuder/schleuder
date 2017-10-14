@@ -1,8 +1,10 @@
 ENV['SCHLEUDER_ENV'] ||= 'test'
 ENV['SCHLEUDER_CONFIG'] = 'spec/schleuder.yml'
 ENV["SCHLEUDER_LIST_DEFAULTS"] = "etc/list-defaults.yml"
-require 'bundler/setup'
-Bundler.setup
+if ENV['USE_BUNDLER'] != 'false'
+  require 'bundler/setup'
+  Bundler.setup
+end
 # We need to do this before requiring any other code
 # Check env if we want to run code coverage analysis
 if ENV['CHECK_CODE_COVERAGE'] != 'false'
