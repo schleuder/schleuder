@@ -8,11 +8,11 @@ end
 # We need to do this before requiring any other code
 # Check env if we want to run code coverage analysis
 if ENV['CHECK_CODE_COVERAGE'] != 'false'
-    require 'simplecov'
-    require 'simplecov-console'
-    SimpleCov::Formatter::Console.table_options = {max_width: 400}
-    SimpleCov.formatter = SimpleCov::Formatter::Console
-    SimpleCov.start
+  require 'simplecov'
+  require 'simplecov-console'
+  SimpleCov::Formatter::Console.table_options = {max_width: 400}
+  SimpleCov.formatter = SimpleCov::Formatter::Console
+  SimpleCov.start
 end
 require 'schleuder'
 require 'schleuder/cli'
