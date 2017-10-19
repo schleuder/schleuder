@@ -595,4 +595,117 @@ describe Schleuder::List do
       expect(list.keys.map(&:fingerprint)).to eql(["59C71FB38AEE22E091C78259D06350440F759BD3"])
     end
   end
+
+  describe "#send_to_subscriptions" do
+    it "sends the message to all subscribers" do
+      list = create(:list, send_encrypted_only: false)
+      sub, msgs = list.subscribe("admin@example.org", nil, true)
+      sub, msgs = list.subscribe("user1@example.org")
+      sub, msgs = list.subscribe("user2@example.org")
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'something@localhost'
+      mail.subject = 'Something'
+      mail.body = "Some content"
+
+      Schleuder::Runner.new().run(mail, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+
+      expect(messages.size).to be(3)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
+      expect(messages[0].parts.first.parts.last.body.to_s).to eql("Some content")
+      expect(messages[0].subject).to eql("Something")
+      expect(messages[1].parts.first.parts.last.body.to_s).to eql("Some content")
+      expect(messages[1].subject).to eql("Something")
+      expect(messages[2].parts.first.parts.last.body.to_s).to eql("Some content")
+      expect(messages[2].subject).to eql("Something")
+
+      teardown_list_and_mailer(list)
+    end
+
+    it "sends the message to all subscribers, in the clear if one's key is unusable, if send_encrypted_only is false" do
+      list = create(:list, send_encrypted_only: false)
+      sub, msgs = list.subscribe("admin@example.org", nil, true)
+      key_material = File.read("spec/fixtures/expired_key.txt")
+      sub, msgs = list.subscribe("user1@example.org", nil, false, true, key_material)
+      sub, msgs = list.subscribe("user2@example.org")
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'something@localhost'
+      mail.subject = 'Something'
+      mail.body = "Some content"
+
+      Schleuder::Runner.new().run(mail, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+
+      expect(messages.size).to be(3)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
+      expect(messages[0].parts.first.parts.last.body.to_s).to eql("Some content")
+      expect(messages[0].subject).to eql("Something")
+      expect(messages[1].parts.first.parts.last.body.to_s).to eql("Some content")
+      expect(messages[1].subject).to eql("Something")
+      expect(messages[2].parts.first.parts.last.body.to_s).to eql("Some content")
+      expect(messages[2].subject).to eql("Something")
+
+      teardown_list_and_mailer(list)
+    end
+
+    it "sends the message only to subscribers with available keys if send_encrypted_only is true, and a notification to the other subscribers" do
+      list = create(:list, send_encrypted_only: true)
+      sub, msgs = list.subscribe("admin@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      sub, msgs = list.subscribe("user1@example.org")
+      sub, msgs = list.subscribe("user2@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3')
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'something@localhost'
+      mail.subject = 'Something'
+      mail.body = "Some content"
+
+      Schleuder::Runner.new().run(mail, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+
+      expect(messages.size).to be(3)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
+      expect(messages[0].parts.last.body.to_s).to include("-----BEGIN PGP MESSAGE-----")
+      expect(messages[0].subject).to eql("Something")
+      expect(messages[1].parts.first.body.to_s).to include("You missed an email")
+      expect(messages[1].subject).to eql("Notice")
+      expect(messages[2].parts.last.body.to_s).to include("-----BEGIN PGP MESSAGE-----")
+      expect(messages[2].subject).to eql("Something")
+
+      teardown_list_and_mailer(list)
+    end
+
+    it "sends the message only to subscribers with usable keys if send_encrypted_only is true, and a notification to the other subscribers" do
+      list = create(:list, send_encrypted_only: true)
+      key_material = File.read("spec/fixtures/partially_expired_key.txt")
+      sub, msgs = list.subscribe("admin@example.org", nil, true, true, key_material)
+      key_material = File.read("spec/fixtures/expired_key.txt")
+      sub, msgs = list.subscribe("user1@example.org", nil, false, true, key_material)
+      sub, msgs = list.subscribe("user2@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3')
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'something@localhost'
+      mail.subject = 'Something'
+      mail.body = "Some content"
+
+      Schleuder::Runner.new().run(mail, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+
+      expect(messages.size).to be(3)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
+      expect(messages[0].parts.first.body.to_s).to include("You missed an email")
+      expect(messages[0].subject).to eql("Notice")
+      expect(messages[1].parts.first.body.to_s).to include("You missed an email")
+      expect(messages[1].subject).to eql("Notice")
+      expect(messages[2].parts.last.body.to_s).to include("-----BEGIN PGP MESSAGE-----")
+      expect(messages[2].subject).to eql("Something")
+
+      teardown_list_and_mailer(list)
+    end
+  end
 end
