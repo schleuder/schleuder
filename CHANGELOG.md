@@ -3,6 +3,14 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.1] / 2017-10-23
+
+### Changed
+
+* Explicitly depend on the latest version of ruby-gpgme to force existing
+  setups to update.
+
+
 ## [3.2.0] / 2017-10-23
 
 ### Added
