@@ -16,6 +16,9 @@ log_level: warn
 #keyserver: hkps://hkps.pool.sks-keyservers.net
 # If you have gnupg 2.1 and TOR running locally, use a onion-keyserver:
 #keyserver: hkp://jirk5u4osbsr34t5.onion
+# If you have an OS-wide defined keyserver, specify a blank value to have that
+# one used:
+#keyserver: 
 # The default works for all supported versions of gnupg:
 keyserver: pool.sks-keyservers.net
 

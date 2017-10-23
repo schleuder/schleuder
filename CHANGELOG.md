@@ -3,6 +3,34 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.0] / 2017-10-23
+
+### Added
+
+* Internal footer: to be appended to each email that is sent to a subscribed address. Will not be included in messages to non-subscribed addresses. This change requires a change to the database, don't forget to run `schleuder install` after updating the code.
+* Optionally use an OS-wide defined keyserver by configuring a blank value for the keyserver.
+* Added keywords `X-RESEND-UNENCRYPTED` and `X-RESEND-CC-UNENCRYPTED` to enforce outgoing email(s) in cleartext regardless of whether we would find a key for the recipient or not.
+
+
+### Changed
+
+* Public footer: Whitespace is not anymore stripped from the value of public_footer.
+* The API does not include anymore each key's key-data in response to `/keys.json`. This avoids performance problems with even medium sized keyrings.
+* The short representation of GnuPG keys became more human-friendly. Besides the fingerprint we now show the email-address of the first UID, the generation-date, and optionally the expiration-date.
+* Log the full exception when sending a message fails. (Thanks, Lunar!)
+* When creating a new list, we do not anymore look for a matching key for the admin-address in the list's keyring. We don't want to look up keys for subscriptions by email at all. (This was anyway only useful in the corner case where you prefilled a keyring to use for the new list.)
+* API: Access to `/status.json` is now allowed without authentication.
+* Deprecate X-LISTNAME in favour of X-LIST-NAME, for the sake of consistency in spelling keywords (but X-LISTNAME is still supported). (Thanks, maxigas!)
+
+### Fixed
+
+* X-SUBSCRIBE now handles the combination of space-separated fingerprint and additional arguments (admin-flag, delivery-enabled-flag) correctly.
+* Fixed broken encoding of certain character-sequences in encrypted+signed messages.
+* X-LIST-KEYS again works without arguments.
+* X-RESEND now checks the given arguments to be valid email-addresses, and blocks resending if any one is found invalid.
+* X-RESEND now respects the encoding the mail was sent with. (Thanks, Lunar!)
+
+
 ## [3.1.2] / 2017-07-13
 
 ### Changed

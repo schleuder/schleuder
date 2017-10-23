@@ -1,9 +1,13 @@
 database:
   test:
     adapter: sqlite3
-    database: db/test.sqlite3
-lists_dir: /tmp/schleuder-test/
-listlogs_dir: /tmp/schleuder-test/
+    database: <%= ENV["SCHLEUDER_DB_PATH"] || 'db/test.sqlite3' %>
+lists_dir: <%= ENV["SCHLEUDER_TMP_DIR"] || '/tmp/schleuder-test/' %>
+listlogs_dir: <%= ENV["SCHLEUDER_TMP_DIR"] || '/tmp/schleuder-test/' %>
 smtp_settings:
   port: 2523
 keyserver: hkp://127.0.0.1:9999
+api:
+  tls_cert_file: 'spec/schleuder-certificate.pem'
+  tls_key_file:  'spec/schleuder-private-key.pem'
+  valid_api_keys: 'test_api_key'

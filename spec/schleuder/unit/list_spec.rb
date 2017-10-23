@@ -24,6 +24,7 @@ describe Schleuder::List do
   it { is_expected.to respond_to :subject_prefix_in }
   it { is_expected.to respond_to :subject_prefix_out }
   it { is_expected.to respond_to :openpgp_header_preference }
+  it { is_expected.to respond_to :internal_footer }
   it { is_expected.to respond_to :public_footer }
   it { is_expected.to respond_to :headers_to_meta }
   it { is_expected.to respond_to :bounces_drop_on_headers }
@@ -185,7 +186,14 @@ describe Schleuder::List do
     expect(list.errors.messages[:language]).to include("must be one of: en, de")
   end
 
-  it "is invalid if public footer include a non-printable characters" do
+  it "is invalid if internal_footer includes a non-printable character" do
+    list = build(:list, internal_footer: "\a")
+
+    expect(list).not_to be_valid
+    expect(list.errors.messages[:internal_footer]).to include("includes non-printable characters")
+  end
+
+  it "is invalid if public_footer includes a non-printable character" do
     list = build(:list, public_footer: "\a")
 
     expect(list).not_to be_valid
@@ -197,7 +205,7 @@ describe Schleuder::List do
       expect(Schleuder::List.configurable_attributes).to eq [
        :bounces_drop_all, :bounces_drop_on_headers, :bounces_notify_admins,
        :forward_all_incoming_to_admins, :headers_to_meta, :include_list_headers,
-       :include_openpgp_header, :keep_msgid, :keywords_admin_notify, :keywords_admin_only,
+       :include_openpgp_header, :internal_footer, :keep_msgid, :keywords_admin_notify, :keywords_admin_only,
        :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :openpgp_header_preference,
        :public_footer, :receive_admin_only, :receive_authenticated_only, :receive_encrypted_only,
        :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,
@@ -349,6 +357,8 @@ describe Schleuder::List do
     it "exports the key with the fingerprint of the list if no argument is given" do
       list = create(:list, email: "schleuder@example.org")
       expected_public_key = File.read("spec/fixtures/schleuder_at_example_public_key.txt")
+      # Get rid of the first, opening line, so we don't compare against optional comments in the output, etc.
+      expected_public_key = expected_public_key.split("\n").slice(1..-1).join("\n")
 
       expect(list.export_key()).to include expected_public_key
     end
@@ -357,6 +367,8 @@ describe Schleuder::List do
   it "exports the key with the given fingerprint" do
     list = create(:list, email: "schleuder@example.org")
     expected_public_key = File.read("spec/fixtures/schleuder_at_example_public_key.txt")
+    # Get rid of the first, opening line, so we don't compare against optional comments in the output, etc.
+    expected_public_key = expected_public_key.split("\n").slice(1..-1).join("\n")
 
     expect(
       list.export_key("59C71FB38AEE22E091C78259D06350440F759BD3")
@@ -367,33 +379,43 @@ describe Schleuder::List do
     it "adds a mesage if a key expires in two weeks or less" do
       list = create(:list)
       key = double("key")
+      generation_time = Time.now - 1.year
+      expiry_time = Time.now + 7.days
       allow_any_instance_of(GPGME::Key).to receive(:subkeys).and_return(key)
       allow(key).to receive(:first).and_return(key)
-      allow(key).to receive(:expires).and_return(Time.now + 7.days)
+      allow(key).to receive(:timestamp).and_return(generation_time)
+      allow(key).to receive(:expires?).and_return(true)
+      allow(key).to receive(:expired?).and_return(false)
+      allow(key).to receive(:expired).and_return(false)
+      allow(key).to receive(:any?).and_return(false)
+      allow(key).to receive(:expires).and_return(expiry_time)
       allow(key).to receive(:fingerprint).and_return("59C71FB38AEE22E091C78259D06350440F759BD3")
 
-      expect(list.check_keys).to eq "Key 59C71FB38AEE22E091C78259D06350440F759BD3 expires in 6 days.\n"
+      datefmt = "%Y-%m-%d"
+      generation_date = generation_time.strftime(datefmt)
+      expiry_date = expiry_time.strftime(datefmt)
+      expect(list.check_keys).to eq "This key expires in 6 days:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org #{generation_date} [expires: #{expiry_date}]\n\n"
     end
 
     it "adds a message if a key is revoked" do
       list = create(:list)
       allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:revoked)
 
-      expect(list.check_keys).to eq "Key 59C71FB38AEE22E091C78259D06350440F759BD3 is revoked.\n"
+      expect(list.check_keys).to match(/This key is revoked:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org \d{4}-\d{2}-\d{2} \[revoked\]\n\n/)
     end
 
     it "adds a message if a key is disabled" do
       list = create(:list)
       allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:disabled)
 
-      expect(list.check_keys).to eq "Key 59C71FB38AEE22E091C78259D06350440F759BD3 is disabled.\n"
+      expect(list.check_keys).to match(/This key is disabled:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org \d{4}-\d{2}-\d{2} \[disabled\]\n\n/)
     end
 
     it "adds a message if a key is invalid" do
       list = create(:list)
       allow_any_instance_of(GPGME::Key).to receive(:trust).and_return(:invalid)
 
-      expect(list.check_keys).to eq "Key 59C71FB38AEE22E091C78259D06350440F759BD3 is invalid.\n"
+      expect(list.check_keys).to match(/This key is invalid:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org \d{4}-\d{2}-\d{2} \[invalid\]\n\n/)
     end
   end
 
@@ -463,7 +485,7 @@ describe Schleuder::List do
         output = list.fetch_keys('98769E8A1091F36BD88403ECF71A3F8412D83889')
       end
 
-      expect(output).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+      expect(output).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
 
       teardown_list_and_mailer(list)
     end
@@ -477,7 +499,7 @@ describe Schleuder::List do
         output = list.fetch_keys('http://127.0.0.1:9999/keys/example.asc')
       end
 
-      expect(output).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+      expect(output).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
 
       teardown_list_and_mailer(list)
     end
@@ -491,7 +513,7 @@ describe Schleuder::List do
         output = list.fetch_keys('admin@example.org')
       end
 
-      expect(output).to include("98769E8A1091F36BD88403ECF71A3F8412D83889 was fetched (new key)")
+      expect(output).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
 
       teardown_list_and_mailer(list)
     end
@@ -508,6 +530,182 @@ describe Schleuder::List do
       expect(raw.parts.first.parts.first.body.to_s).to eql("Find the key for this address attached.")
       expect(raw.parts.first.parts.last.body.to_s).to include("4096R/59C71FB38AEE22E091C78259D06350440F759BD3")
       expect(raw.parts.first.parts.last.body.to_s).to include("-----BEGIN PGP PUBLIC KEY BLOCK-----")
+    end
+  end
+
+  describe "#subscribe" do
+    it "subscribes and ignores nil-values for admin and delivery_enabled" do
+      list = create(:list)
+      sub, _ = list.subscribe("admin@example.org", nil, nil, nil)
+
+      expect(sub.admin?).to be(false)
+      expect(sub.delivery_enabled?).to be(true)
+    end
+
+    it "subscribes and sets the fingerprint from key material that contains exactly one key" do
+      list = create(:list)
+      key_material = File.read("spec/fixtures/example_key.txt")
+      sub, msgs = list.subscribe("admin@example.org", "", true, true, key_material)
+
+      expect(msgs).to be(nil)
+      expect(sub.fingerprint).to eql("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+      expect(list.subscriptions.size).to be(1)
+      expect(list.subscriptions.first.fingerprint).to eql("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+      expect(list.keys.size).to be(2)
+      expect(list.keys.map(&:fingerprint)).to eql(["59C71FB38AEE22E091C78259D06350440F759BD3", "C4D60F8833789C7CAA44496FD3FFA6613AB10ECE"])
+    end
+
+    it "subscribes and does not set the fingerprint from key material containing multiple keys" do
+      list = create(:list)
+      key_material = File.read("spec/fixtures/example_key.txt")
+      key_material << File.read("spec/fixtures/olduid_key.txt")
+      sub, msgs = list.subscribe("admin@example.org", "", true, true, key_material)
+
+      expect(msgs).to eql("The given key material contained more than one key, could not determine which fingerprint to use. Please set it manually!")
+      expect(sub.fingerprint).to be_blank
+      expect(list.subscriptions.size).to be(1)
+      expect(list.subscriptions.first.fingerprint).to be_blank
+      expect(list.keys.size).to be(3)
+      expect(list.keys.map(&:fingerprint)).to eql(["59C71FB38AEE22E091C78259D06350440F759BD3", "C4D60F8833789C7CAA44496FD3FFA6613AB10ECE", "6EE51D78FD0B33DE65CCF69D2104E20E20889F66"])
+    end
+
+    it "subscribes and does not set the fingerprint from key material containing no keys" do
+      list = create(:list)
+      key_material = "blabla"
+      sub, msgs = list.subscribe("admin@example.org", "", true, true, key_material)
+
+      expect(msgs).to eql("The given key material did not contain any keys!")
+      expect(sub.fingerprint).to be_blank
+      expect(list.subscriptions.size).to be(1)
+      expect(list.subscriptions.first.fingerprint).to be_blank
+      expect(list.keys.size).to be(1)
+      expect(list.keys.map(&:fingerprint)).to eql(["59C71FB38AEE22E091C78259D06350440F759BD3"])
+    end
+
+    it "subscribes and ignores a given fingerprint if key material is given, too" do
+      list = create(:list)
+      key_material = "blabla"
+      sub, msgs = list.subscribe("admin@example.org", "C4D60F8833789C7CAA44496FD3FFA6613AB10ECE", true, true, key_material)
+
+      expect(msgs).to eql("The given key material did not contain any keys!")
+      expect(sub.fingerprint).to be_blank
+      expect(list.subscriptions.size).to be(1)
+      expect(list.subscriptions.first.fingerprint).to be_blank
+      expect(list.keys.size).to be(1)
+      expect(list.keys.map(&:fingerprint)).to eql(["59C71FB38AEE22E091C78259D06350440F759BD3"])
+    end
+  end
+
+  describe "#send_to_subscriptions" do
+    it "sends the message to all subscribers" do
+      list = create(:list, send_encrypted_only: false)
+      sub, msgs = list.subscribe("admin@example.org", nil, true)
+      sub, msgs = list.subscribe("user1@example.org")
+      sub, msgs = list.subscribe("user2@example.org")
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'something@localhost'
+      mail.subject = 'Something'
+      mail.body = "Some content"
+
+      Schleuder::Runner.new().run(mail, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+
+      expect(messages.size).to be(3)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
+      expect(messages[0].parts.first.parts.last.body.to_s).to eql("Some content")
+      expect(messages[0].subject).to eql("Something")
+      expect(messages[1].parts.first.parts.last.body.to_s).to eql("Some content")
+      expect(messages[1].subject).to eql("Something")
+      expect(messages[2].parts.first.parts.last.body.to_s).to eql("Some content")
+      expect(messages[2].subject).to eql("Something")
+
+      teardown_list_and_mailer(list)
+    end
+
+    it "sends the message to all subscribers, in the clear if one's key is unusable, if send_encrypted_only is false" do
+      list = create(:list, send_encrypted_only: false)
+      sub, msgs = list.subscribe("admin@example.org", nil, true)
+      key_material = File.read("spec/fixtures/expired_key.txt")
+      sub, msgs = list.subscribe("user1@example.org", nil, false, true, key_material)
+      sub, msgs = list.subscribe("user2@example.org")
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'something@localhost'
+      mail.subject = 'Something'
+      mail.body = "Some content"
+
+      Schleuder::Runner.new().run(mail, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+
+      expect(messages.size).to be(3)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
+      expect(messages[0].parts.first.parts.last.body.to_s).to eql("Some content")
+      expect(messages[0].subject).to eql("Something")
+      expect(messages[1].parts.first.parts.last.body.to_s).to eql("Some content")
+      expect(messages[1].subject).to eql("Something")
+      expect(messages[2].parts.first.parts.last.body.to_s).to eql("Some content")
+      expect(messages[2].subject).to eql("Something")
+
+      teardown_list_and_mailer(list)
+    end
+
+    it "sends the message only to subscribers with available keys if send_encrypted_only is true, and a notification to the other subscribers" do
+      list = create(:list, send_encrypted_only: true)
+      sub, msgs = list.subscribe("admin@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      sub, msgs = list.subscribe("user1@example.org")
+      sub, msgs = list.subscribe("user2@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3')
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'something@localhost'
+      mail.subject = 'Something'
+      mail.body = "Some content"
+
+      Schleuder::Runner.new().run(mail, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+
+      expect(messages.size).to be(3)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
+      expect(messages[0].parts.last.body.to_s).to include("-----BEGIN PGP MESSAGE-----")
+      expect(messages[0].subject).to eql("Something")
+      expect(messages[1].parts.first.body.to_s).to include("You missed an email")
+      expect(messages[1].subject).to eql("Notice")
+      expect(messages[2].parts.last.body.to_s).to include("-----BEGIN PGP MESSAGE-----")
+      expect(messages[2].subject).to eql("Something")
+
+      teardown_list_and_mailer(list)
+    end
+
+    it "sends the message only to subscribers with usable keys if send_encrypted_only is true, and a notification to the other subscribers" do
+      list = create(:list, send_encrypted_only: true)
+      key_material = File.read("spec/fixtures/partially_expired_key.txt")
+      sub, msgs = list.subscribe("admin@example.org", nil, true, true, key_material)
+      key_material = File.read("spec/fixtures/expired_key.txt")
+      sub, msgs = list.subscribe("user1@example.org", nil, false, true, key_material)
+      sub, msgs = list.subscribe("user2@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3')
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'something@localhost'
+      mail.subject = 'Something'
+      mail.body = "Some content"
+
+      Schleuder::Runner.new().run(mail, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+
+      expect(messages.size).to be(3)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
+      expect(messages[0].parts.first.body.to_s).to include("You missed an email")
+      expect(messages[0].subject).to eql("Notice")
+      expect(messages[1].parts.first.body.to_s).to include("You missed an email")
+      expect(messages[1].subject).to eql("Notice")
+      expect(messages[2].parts.last.body.to_s).to include("-----BEGIN PGP MESSAGE-----")
+      expect(messages[2].subject).to eql("Something")
+
+      teardown_list_and_mailer(list)
     end
   end
 end

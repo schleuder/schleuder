@@ -1,12 +1,24 @@
 ENV['SCHLEUDER_ENV'] ||= 'test'
 ENV['SCHLEUDER_CONFIG'] = 'spec/schleuder.yml'
 ENV["SCHLEUDER_LIST_DEFAULTS"] = "etc/list-defaults.yml"
-require 'bundler/setup'
-Bundler.setup
+if ENV['USE_BUNDLER'] != 'false'
+  require 'bundler/setup'
+  Bundler.setup
+end
+# We need to do this before requiring any other code
+# Check env if we want to run code coverage analysis
+if ENV['CHECK_CODE_COVERAGE'] != 'false'
+  require 'simplecov'
+  require 'simplecov-console'
+  SimpleCov::Formatter::Console.table_options = {max_width: 400}
+  SimpleCov.formatter = SimpleCov::Formatter::Console
+  SimpleCov.start
+end
 require 'schleuder'
 require 'schleuder/cli'
 require 'database_cleaner'
 require 'factory_girl'
+require 'net/http'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -34,6 +46,8 @@ RSpec.configure do |config|
 
   config.after(:each) do |example|
     FileUtils.rm_rf(Dir["spec/gnupg/pubring.gpg~"])
+    `gpgconf --kill dirmngr > /dev/null 2>&1`
+    `gpgconf --kill gpg-agent > /dev/null 2>&1`
   end
 
   config.after(:suite) do
@@ -62,8 +76,22 @@ RSpec.configure do |config|
 
   def with_sks_mock
     pid = Process.spawn('spec/sks-mock.rb', [:out, :err] => ["/tmp/sks-mock.log", 'w'])
-    sleep 1
+    uri = URI.parse("http://127.0.0.1:9999/status")
+    attempts = 5
+    begin
+      sleep 1
+      Net::HTTP.get(uri)
+    rescue Errno::ECONNREFUSED => exc
+      attempts -= 1
+      if attempts > 0
+        retry
+      else
+        raise "sks-mock.rb failed to start, cannot continue: #{exc}"
+      end
+    end
+
     yield
+
     Process.kill 'TERM', pid
     Process.wait pid
   end

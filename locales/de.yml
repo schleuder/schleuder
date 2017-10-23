@@ -7,6 +7,8 @@ de:
         inclusion: "muss einem der folgenden Werte entsprechen: debug, info, warn, error"
       openpgp_header_preference:
         inclusion: "muss einem der folgenden Werte entsprechen: sign, encrypt, signencrypt, unprotected, none"
+      internal_footer:
+        invalid: "enthält nicht druckbare Zeichen"
       public_footer:
         invalid: "enthält nicht druckbare Zeichen"
     invalid_email: "ist keine valide E-Mail-Adresse"
@@ -95,6 +97,7 @@ de:
       not_resent_no_keys: Resending an <%{email}> fehlgeschlagen (%{num_keys} Schlüssel gefunden und unverschlüsseltes Senden verboten).
       encrypted_to: Verschlüsselt an
       unencrypted_to: Unverschlüsselt an
+      invalid_recipient: "Ungültige Emailadresse für resend: %{address}"
     subscription_management:
       forbidden: "Fehler: Du bist nicht berechtigt, das Abo für %{email} zu löschen."
       is_not_subscribed: Kein Abo für %{email} gefunden.
@@ -127,8 +130,8 @@ de:
   no_output_result: Deine Email ergab keinen Ausgabe-Text.
   owner_forward_prefix: Die folgende Email ging für die Listen-Besitzer/innen ein.
   no_keywords_error: Deine Email enthielt keine Schlüsselwörter, daher gab es nichts zu tun.
-  missing_listname_keyword_error: Deine Email enthielt nicht das notwendige X-LISTNAME-Schlüsselwort, daher wurde sie zurückgewiesen.
-  wrong_listname_keyword_error: Deine Email enthielt ein falsches X-LISTNAME-Schlüsselwort. Der Wert dieses Schlüsselworts muss der Emailadresse dieser Liste gleichen.
+  missing_listname_keyword_error: Deine Email enthielt nicht das notwendige X-LIST-NAME-Schlüsselwort, daher wurde sie zurückgewiesen.
+  wrong_listname_keyword_error: Deine Email enthielt ein falsches X-LIST-NAME-Schlüsselwort. Der Wert dieses Schlüsselworts muss der Emailadresse dieser Liste gleichen.
   bounces_drop_all: Die angehängte Email hätte zurückgewiesen (bounced) werden sollen, wurde aber stillschweigend fallen gelassen, weil die Konfiguration dieser Liste definiert, dass für diese Liste nie Email zurückgewiesen werden soll.
   bounces_drop_on_headers: "Die angehängte Email hätte zurückgewiesen (bounce) werden sollen, wurde aber stillschweigend fallen gelassen, weil diese Kopfzeile gefunden wurde: %{key}: %{value}"
   bounces_notify_admins: "Die angehängte Email wurde mit folgender Nachricht zurückgewiesen:"
@@ -139,15 +142,23 @@ de:
   automated_message_subject: Automatische Nachricht empfangen
   check_keys: Schlüsselprüfung
   check_keys_intro: "Bitte kümmere dich um die folgenden Schlüssel für Liste %{email}."
-  key_expires: Schlüssel %{fingerprint} %{email} läuft in %{days} Tagen ab.
-  key_unusable: Schlüssel %{fingerprint} %{email} ist %{usability_issue}.
+  key_expires: |
+    Dieser Schlüssel läuft in %{days} Tagen ab:
+    %{key_oneline}
+  key_unusable: |
+    Dieser Schlüssel ist %{usability_issue}:
+    %{key_oneline}
   missed_message_due_to_unusable_key: "Du hast eine Email von %{list_email} verpasst weil mit deinem Abo kein (benutzbarer) OpenPGP-Schlüssel verknüpft ist. Bitte kümmere dich darum."
   refresh_keys: Schlüsselaktualisierung
   refresh_keys_intro: "Die Aktualisierung aller Schlüssel des Schlüsselrings für Liste %{email} ergab dies:"
   pin_keys: Schlüsselpinning
   pin_keys_intro: "Die Überprüfung aller Abos der Liste %{email} ergab, dass wir für folgende Abos einen Schlüssel zur Verwendung festgelegt haben:"
-  key_updated: Schlüssel %{fingerprint} wurde aktualisiert (%{states}).
-  key_fetched: Schlüssel %{fingerprint} wurde geholt (%{states}).
+  key_updated: |
+    Dieser Schlüssel wurde aktualisiert (%{states}):
+    %{key_oneline}
+  key_fetched: |
+    Dieser Schlüssel wurde geholt (%{states}):
+    %{key_oneline}
   import_states:
     unchanged: unverändert
     new_key: neuer Schlüssel

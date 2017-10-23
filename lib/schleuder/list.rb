@@ -60,7 +60,7 @@ module Schleuder
                 # TODO: find out why we break translations and available_locales if we use I18n.available_locales here.
                 in: %w(de en),
               }
-    validates :public_footer,
+    validates :public_footer, :internal_footer,
               allow_blank: true,
               format: {
                 with: /\A[[:graph:]\s]*\z/i,
@@ -107,6 +107,8 @@ module Schleuder
       gpg.find_keys(identifier, secret_only)
     end
 
+    # TODO: find better name for this method. It does more than the current
+    # name suggests (filtering for capability).
     def distinct_key(identifier)
       keys = keys(identifier).select { |key| key.usable_for?(:encrypt) }
       if keys.size == 1
@@ -118,6 +120,13 @@ module Schleuder
 
     def import_key(importable)
       gpg.keyimport(importable)
+    end
+
+    def import_key_and_find_fingerprint(key_material)
+      return nil if key_material.blank?
+      
+      import_result = import_key(key_material)
+      gpg.interpret_import_result(import_result)
     end
 
     def delete_key(fingerprint)
@@ -160,8 +169,7 @@ module Schleuder
       expiring.each do |key,days|
         text << I18n.t('key_expires', {
                           days: days,
-                          fingerprint: key.fingerprint,
-                          email: key.email
+                          key_oneline: key.oneline
                       })
         text << "\n"
       end
@@ -169,8 +177,7 @@ module Schleuder
       unusable.each do |key,usability_issue|
         text << I18n.t('key_unusable', {
                           usability_issue: usability_issue,
-                          fingerprint: key.fingerprint,
-                          email: key.email
+                          key_oneline: key.oneline
                       })
         text << "\n"
       end
@@ -261,21 +268,29 @@ module Schleuder
       @listdir ||= self.class.listdir(self.email)
     end
 
-    # TODO: get rid of this method in the future
-    def subscribe(email, fingerprint=nil, adminflag=false, deliveryflag=true)
-      # Ensure we have true or false as values for these two attributes.
-      admin            =  (['true', '1'].include?  adminflag.to_s)
-      delivery_enabled = !(['false', '0'].include? deliveryflag.to_s)
-
-      sub = Subscription.new(
+    # A convenience-method to simplify other code.
+    def subscribe(email, fingerprint=nil, adminflag=nil, deliveryflag=nil, key_material=nil)
+      messages = nil
+      args = {
           list_id: self.id,
-          email: email,
-          fingerprint: fingerprint,
-          admin: admin,
-          delivery_enabled: delivery_enabled
-        )
-      sub.save
-      sub
+          email: email
+      }
+      if key_material.present?
+        fingerprint, messages = import_key_and_find_fingerprint(key_material)
+      end
+      args[:fingerprint] = fingerprint
+      # ActiveRecord does not treat nil as falsy for boolean columns, so we
+      # have to avoid that in order to not receive an invalid object. The
+      # database will use the column's default-value if no value is being
+      # given. (I'd rather not duplicate the defaults here.)
+      if ! adminflag.nil?
+        args[:admin] = adminflag
+      end
+      if ! deliveryflag.nil?
+        args[:delivery_enabled] = deliveryflag
+      end
+      subscription = Subscription.create(args)
+      [subscription, messages]
     end
 
     def unsubscribe(email, delete_key=false)
@@ -328,6 +343,7 @@ module Schleuder
 
     def send_to_subscriptions(mail)
       logger.debug "Sending to subscriptions."
+      mail.add_internal_footer!
       self.subscriptions.each do |subscription|
         begin
           subscription.send_mail(mail)
@@ -335,6 +351,7 @@ module Schleuder
           msg = I18n.t('errors.delivery_error',
                        { email: subscription.email, error: exc.to_s })
           logger.error msg
+          logger.error exc
         end
       end
     end

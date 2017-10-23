@@ -88,6 +88,7 @@ module Mail
         # We copied the content-headers, so we need to copy the body encoded.
         # Otherwise the content might become unlegible.
         wrapper_part.body = self.body.encoded
+        wrapper_part.charset = self.body.charset || self.class.default_charset
       end
       clean.add_part(wrapper_part)
 
@@ -99,17 +100,13 @@ module Mail
       self.parts.unshift(parts.delete_at(parts.size-1))
     end
 
-    def add_footer!
+    def add_public_footer!
       # Add public_footer unless it's empty?.
-      if self.list.present? && ! self.list.public_footer.to_s.strip.empty?
-        footer_part = Mail::Part.new
-        footer_part.body = list.public_footer.strip
-        if parts.size == 1 && parts.first.mime_type == 'multipart/mixed' && parts.first.parts.size == 1 && parts.first.parts.first.mime_type == 'text/plain'
-          self.parts.first.add_part footer_part
-        else
-          self.add_part footer_part
-        end
-      end
+      add_footer!(:public_footer)
+    end
+
+    def add_internal_footer!
+      add_footer!(:internal_footer)
     end
 
     def was_encrypted?
@@ -207,7 +204,7 @@ module Mail
       end
 
       @keywords = []
-      part.body = part.decoded.lines.map.with_index do |line, i|
+      lines = part.decoded.lines.map.with_index do |line, i|
         # Break after some lines to not run all the way through maybe huge emails.
         if i > 1000
           break
@@ -222,7 +219,14 @@ module Mail
         else
           line
         end
-      end.compact.join
+      end
+
+      # Work around problems with re-encoding the body. If we delete the
+      # content-transfer-encoding prior to re-assigning the body, and let Mail
+      # decide itself how to encode, it works. If we don't, some
+      # character-sequences are not properly re-encoded.
+      part.content_transfer_encoding = nil
+      part.body = lines.compact.join
 
       @keywords
     end
@@ -407,6 +411,26 @@ module Mail
 
     private
 
+
+    def add_footer!(footer_attribute)
+      if self.list.blank? || self.list.send(footer_attribute).to_s.empty?
+        return
+      end
+      footer_part = Mail::Part.new
+      footer_part.body = self.list.send(footer_attribute).to_s
+      if wrapped_single_text_part?
+        self.parts.first.add_part footer_part
+      else
+        self.add_part footer_part
+      end
+    end
+
+    def wrapped_single_text_part?
+      parts.size == 1 && 
+        parts.first.mime_type == 'multipart/mixed' && 
+        parts.first.parts.size == 1 && 
+        parts.first.parts.first.mime_type == 'text/plain'
+    end
 
     def _add_subject_prefix(suffix)
       attrib = "subject_prefix"

@@ -7,6 +7,7 @@ FactoryGirl.define do
     subject_prefix_in nil
     subject_prefix_out nil
     openpgp_header_preference "signencrypt"
+    internal_footer nil
     public_footer nil
     headers_to_meta ["from", "to", "cc", "date"]
     bounces_drop_on_headers "x-spam-flag" => true

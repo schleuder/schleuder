@@ -126,6 +126,42 @@ describe Schleuder::Runner do
 
         teardown_list_and_mailer(list)
       end
+
+      it "includes the internal_footer" do
+        list = create(
+          :list, 
+          send_encrypted_only: false,
+          internal_footer: "-- \nfor our eyes only!"
+        )
+        list.subscribe("admin@example.org", nil, true)
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
+
+        Schleuder::Runner.new().run(mail, list.email)
+        message = Mail::TestMailer.deliveries.first
+
+        expect(message.parts.first.parts.last.body.to_s).to eql(list.internal_footer)
+
+        teardown_list_and_mailer(list)
+      end
+      
+      it "does not include the public_footer" do
+        public_footer = "-- \nsomething public blabla"
+        list = create(
+          :list, 
+          send_encrypted_only: false,
+          internal_footer: "-- \nfor our eyes only!",
+          public_footer: public_footer
+        )
+        list.subscribe("admin@example.org", nil, true)
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
+
+        Schleuder::Runner.new().run(mail, list.email)
+        message = Mail::TestMailer.deliveries.first
+
+        expect(message.parts.first.to_s).not_to include(list.public_footer)
+
+        teardown_list_and_mailer(list)
+      end
     end
 
     it "delivers a signed error message if a subscription's key is expired on a encrypted-only list" do
@@ -205,6 +241,53 @@ describe Schleuder::Runner do
       teardown_list_and_mailer(list)
     end
 
+    context "Quoted-Printable encoding" do
+      it "is handled properly in cleartext emails" do
+        list = create(:list, send_encrypted_only: false)
+        list.subscribe("admin@example.org", nil, true)
+        mail = File.read('spec/fixtures/mails/qp-encoding-clear.eml')
 
+        Schleuder::Runner.new().run(mail, list.email)
+        message = Mail::TestMailer.deliveries.first
+        content_part = message.parts.first
+
+        expect(content_part.parts.last.content_transfer_encoding).to eql('quoted-printable')
+        expect(content_part.parts.last.body.encoded).to include('=3D86')
+        expect(content_part.parts.last.body.encoded).not_to include('=86')
+
+        teardown_list_and_mailer(list)
+      end
+
+      it "is handled properly in encrypted+signed emails" do
+        list = create(:list, send_encrypted_only: false)
+        list.subscribe("admin@example.org", "59C71FB38AEE22E091C78259D06350440F759BD3", true)
+        mail = File.read('spec/fixtures/mails/qp-encoding-encrypted+signed.eml')
+
+        Schleuder::Runner.new().run(mail, list.email)
+        raw = Mail::TestMailer.deliveries.first
+        message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
+        content_part = message.parts.last.first_plaintext_part
+
+        expect(content_part.decoded).to include('bug=86')
+
+        teardown_list_and_mailer(list)
+      end
+
+      it "is handled properly in encrypted emails" do
+        list = create(:list, send_encrypted_only: false)
+        list.subscribe("admin@example.org", nil, true)
+        mail = File.read('spec/fixtures/mails/qp-encoding-encrypted.eml')
+
+        Schleuder::Runner.new().run(mail, list.email)
+        message = Mail::TestMailer.deliveries.first
+        content_part = message.parts.first
+
+        expect(content_part.parts.last.content_transfer_encoding).to eql('quoted-printable')
+        expect(content_part.parts.last.body.encoded).to include('=3D86')
+        expect(content_part.parts.last.body.encoded).not_to include('=86')
+
+        teardown_list_and_mailer(list)
+      end
+    end
   end
 end

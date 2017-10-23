@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.homepage     = "https://schleuder.nadir.org/"
   s.summary      = "Schleuder is a gpg-enabled mailinglist with remailing-capabilities."
   s.description  = "Schleuder is a group's email-gateway: subscribers can exchange encrypted emails among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.\n\nSchleuder takes care of all decryption and (re-)encryption, stripping of headers, and more. Schleuder can also send out its own public key upon request and process administrative commands by email."
-  s.files        = `git ls-files lib locales etc db/schema.rb README.md Rakefile bin/pinentry-clearpassphrase`.split
+  s.files        = `git ls-files lib locales etc db README.md Rakefile bin/pinentry-clearpassphrase`.split
   s.executables =  %w[schleuder schleuder-api-daemon]
   s.platform     = Gem::Platform::RUBY
   s.require_path = 'lib'
@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.license = 'GPL-3.0'
   s.add_runtime_dependency 'mail-gpg', '~> 0.3.0'
   s.add_runtime_dependency 'activerecord', '~> 4.1'
-  s.add_runtime_dependency 'rake', '~> 12'
+  s.add_runtime_dependency 'rake', '>= 10.5.0'
   s.add_runtime_dependency 'sqlite3', '~> 1'
   s.add_runtime_dependency 'sinatra', '~> 1'
   s.add_runtime_dependency 'sinatra-contrib', '~> 1'
@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'hirb'
   s.add_development_dependency 'factory_girl'
   s.add_development_dependency 'database_cleaner'
+  s.add_development_dependency 'simplecov-console'
   s.post_install_message = "
 
     Please consider additionally installing schleuder-cli (allows to

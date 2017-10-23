@@ -14,9 +14,37 @@ module GPGME
       result
     end
 
+    # TODO: find solution for I18n — could be a different language in API-clients than here!
+    def interpret_import_result(import_result)
+      case import_result.imports.size
+      when 1
+        import_status = import_result.imports.first
+        if import_status.action == 'not imported'
+          [nil, "Key #{import_status.fpr} could not be imported!"]
+        else
+          [import_status.fpr, nil]
+        end
+      when 0
+        [nil, "The given key material did not contain any keys!"]
+      else
+        # TODO: report import-stati of the keys?
+        [nil, "The given key material contained more than one key, could not determine which fingerprint to use. Please set it manually!"]
+      end
+    end
+
     def find_keys(input=nil, secret_only=nil)
       _, input = clean_and_classify_input(input)
       keys(input, secret_only)
+    end
+
+    def find_distinct_key(input=nil, secret_only=nil)
+      _, input = clean_and_classify_input(input)
+      keys = keys(input, secret_only)
+      if keys.size == 1
+        keys.first
+      else
+        nil
+      end
     end
 
     def clean_and_classify_input(input)
@@ -70,7 +98,7 @@ module GPGME
     end
 
     def refresh_key(fingerprint)
-      args = "--keyserver #{Conf.keyserver} --refresh-keys #{fingerprint}"
+      args = "#{keyserver_arg} --refresh-keys #{fingerprint}"
       gpgerr, gpgout, exitcode = self.class.gpgcli(args)
 
       if exitcode > 0
@@ -84,7 +112,7 @@ module GPGME
       else
         lines = translate_output('key_updated', gpgout).reject do |line|
           # Reduce the noise a little.
-          line.match(/.* \(unchanged\)\.$/)
+          line.match(/.* \(unchanged\):$/)
         end
         lines.join("\n")
       end
@@ -107,13 +135,13 @@ module GPGME
     def fetch_key_gpg_arguments_for(input)
       case input
       when Conf::FINGERPRINT_REGEXP
-        "--keyserver #{Conf.keyserver} --recv-key #{input}"
+        "#{keyserver_arg} --recv-key #{input}"
       when /^http/
         "--fetch-key #{input}"
       when /@/
         # --recv-key doesn't work with email-addresses, so we use --locate-key
         # restricted to keyservers.
-        "--keyserver #{Conf.keyserver} --auto-key-locate keyserver --locate-key #{input}"
+        "#{keyserver_arg} --auto-key-locate keyserver --locate-key #{input}"
       else
         [nil, I18n.t("fetch_key.invalid_input")]
       end
@@ -122,8 +150,9 @@ module GPGME
     def translate_output(locale_key, gpgoutput)
       import_states = translate_import_data(gpgoutput)
       strings = import_states.map do |fingerprint, states|
-        I18n.t(locale_key, { fingerprint: fingerprint,
-                             states: states.join(', ') })
+        key = find_distinct_key(fingerprint)
+        I18n.t(locale_key, { key_oneline: key.oneline,
+                             states: states.to_sentence })
       end
       strings
     end
@@ -217,6 +246,14 @@ module GPGME
       path = File.join(ENV["GNUPGHOME"], "S.#{name}")
       if File.exist?(path)
         File.delete(path)
+      end
+    end
+
+    def keyserver_arg
+      if Conf.keyserver.present?
+        "--keyserver #{Conf.keyserver}"
+      else
+        ""
       end
     end
   end

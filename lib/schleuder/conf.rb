@@ -1,3 +1,5 @@
+require 'erb'
+
 module Schleuder
   class Conf
     include Singleton
@@ -120,7 +122,7 @@ module Schleuder
     def load_config_file(filename)
       file = Pathname.new(filename)
       if file.readable?
-        YAML.load(file.read)
+        YAML.load(ERB.new(file.read).result)
       else
         {}
       end

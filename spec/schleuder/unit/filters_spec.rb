@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe Schleuder::Filters do
 
-  context '.fix_hostmail_messages!' do
+  context '.fix_hotmail_messages!' do
     it "fixes pgp/mime-messages that were mangled by hotmail" do
       message = Mail.read("spec/fixtures/mails/hotmail.eml")
       Schleuder::Filters.fix_hotmail_messages!(nil, message)
