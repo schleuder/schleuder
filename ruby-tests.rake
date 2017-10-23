@@ -1,10 +1,14 @@
 require 'gem2deb/rake/spectask'
+require 'securerandom'
 
 task :setup do
   ENV['SCHLEUDER_ENV'] = 'test'
   ENV['SCHLEUDER_CONFIG'] = 'spec/schleuder.yml'
-  # Remove database to ensure clean environment
-  `rm db/test.sqlite3 >/dev/null 2>&1 || true`
+
+  tmp_dir = File.join('/tmp/', "schleuder-#{SecureRandom.hex}")
+  ENV["SCHLEUDER_DB_PATH"] = File.join(tmp_dir, 'test.sqlite3')
+  ENV["SCHLEUDER_TMP_DIR"] = tmp_dir
+
   # Set up database
   `rake -f debian/Rakefile db:create`
   `rake -f debian/Rakefile db:schema:load`
@@ -20,11 +24,10 @@ end
 
 task :cleanup do
   at_exit {
-    # Remove database to make the build reproducible
-    `rm db/test.sqlite3 >/dev/null 2>&1 || true`
-    `rm /usr/lib/ruby/vendor_ruby/schleuder/db/test.sqlite3 >/dev/null 2>&1 || true`
     # Kill gpg-agent
     `gpgconf --kill gpg-agent`
+    # Remove lists dir to make the build reproducible
+    `rm #{ENV["SCHLEUDER_TMP_DIR"]} >/dev/null 2>&1 || true`
   }
 end
 
