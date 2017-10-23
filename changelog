@@ -1,3 +1,37 @@
+schleuder (3.2.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/control:
+    - Drop unnecessary dependency on init-system-helpers, as this is an
+      essential package.
+    - Explicitly depend on ruby-gpgme >= 2.0.13~: Up until 2.0.12, ruby-gpgme
+      suffered from a bug which lead to false constructed key capabilities. In
+      2013, the bug was found and a patch was written, but it took three more
+      years for the patch to be included in a release.
+    - Relax required rake version. This helps with backporting schleuder to
+      stretch, and ensures a minimal delta between buster and stretch.
+  * debian/NEWS: Add note about how to rely on the Debian keyserver defaults.
+  * debian/patches:
+    - Add patch to rely on the Debian keyserver defaults in the schleuder
+      config. (Closes: #852710)
+    - Drop patch to disable bundler, integrated upstream.
+    - Refresh for release 3.2.1-1.
+  * debian/ruby-tests.rake:
+    - Disable bundler and test coverage check.
+    - Don't kill gpg-agent before and after running the tests, integrated
+      upstream.
+    - Use random path for database and lists directory to prevent known
+      tmpfile attacks.
+  * debian/tests:
+    - Explain why we aren't using haveged anymore, and instead, why we link
+      /dev/random to /dev/urandom. Please, don't do this in production!
+    - Accordingly, drop obsolete dependency on haveged.
+    - Checking the status of the API is now possible without authentication.
+      Therefore, update the expected response if querying the API status
+      during autopkgtest.
+
+ -- Georg Faerber <georg@riseup.net>  Fri, 27 Oct 2017 18:42:56 +0200
+
 schleuder (3.1.2-3) unstable; urgency=medium
 
   * debian/tests/upstream-tests: Drop starting haveged manually, because 
