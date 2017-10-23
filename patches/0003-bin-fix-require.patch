@@ -8,7 +8,7 @@ Description: bin/: Use 'require' or 'require_relative'
 
  Upstream is aware of this patch and we're working on integrating it.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2017-07-17
+Last-Update: 2017-10-27
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/bin/schleuder
@@ -28,12 +28,11 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +Schleuder::Cli.start
 --- a/bin/schleuder-api-daemon
 +++ b/bin/schleuder-api-daemon
-@@ -7,7 +7,7 @@
- require 'sinatra/json'
- require 'sinatra/namespace'
- require 'thin'
--require_relative '../lib/schleuder.rb'
-+require 'schleuder'
+@@ -1,4 +1,4 @@
+ #!/usr/bin/env ruby
  
- 
- %w[tls_cert_file tls_key_file].each do |config_key|
+-require_relative '../lib/schleuder-api-daemon'
+-SchleuderApiDaemon.run!
+\ No newline at end of file
++require 'schleuder-api-daemon'
++SchleuderApiDaemon.run!

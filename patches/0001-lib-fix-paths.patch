@@ -6,15 +6,17 @@ Description: lib/: Fix paths
  Additionally, add '/usr/share/schleuder/locales/*.yml' to the locales
  load path. 
 
+ Use 'require' instead of 'require_relative'.
+
  Upstream is aware of this patch and we're working on integrating it
  upstream.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2017-06-25
+Last-Update: 2017-10-27
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/lib/schleuder/conf.rb
 +++ b/lib/schleuder/conf.rb
-@@ -7,7 +7,7 @@
+@@ -9,7 +9,7 @@
  
      DEFAULTS = {
        'lists_dir' => '/var/lib/schleuder/lists',
@@ -44,3 +46,14 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  I18n.enforce_available_locales = true
  I18n.default_locale = :en
  
+--- a/lib/schleuder-api-daemon.rb
++++ b/lib/schleuder-api-daemon.rb
+@@ -7,7 +7,7 @@
+ require 'sinatra/json'
+ require 'sinatra/namespace'
+ require 'thin'
+-require_relative '../lib/schleuder.rb'
++require 'schleuder'
+ 
+ 
+ %w[tls_cert_file tls_key_file].each do |config_key|
