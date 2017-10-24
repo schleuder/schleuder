@@ -2024,7 +2024,7 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
-  it "x-get-version with depreciated x-listname keyword" do
+  it "x-get-version with deprecated x-listname keyword" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     ENV['GNUPGHOME'] = list.listdir
