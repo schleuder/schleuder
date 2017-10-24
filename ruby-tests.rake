@@ -12,8 +12,6 @@ task :setup do
   # Set up database
   `rake -f debian/Rakefile db:create`
   `rake -f debian/Rakefile db:schema:load`
-  # Kill gpg-agent
-  `gpgconf --kill gpg-agent`
 end
 
 task :run_tests do
@@ -24,8 +22,6 @@ end
 
 task :cleanup do
   at_exit {
-    # Kill gpg-agent
-    `gpgconf --kill gpg-agent`
     # Remove lists dir to make the build reproducible
     `rm #{ENV["SCHLEUDER_TMP_DIR"]} >/dev/null 2>&1 || true`
   }
