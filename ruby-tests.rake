@@ -9,6 +9,9 @@ task :setup do
   ENV["SCHLEUDER_DB_PATH"] = File.join(tmp_dir, 'test.sqlite3')
   ENV["SCHLEUDER_TMP_DIR"] = tmp_dir
 
+  ENV['USE_BUNDLER'] = 'false'
+  ENV['CHECK_CODE_COVERAGE'] = 'false'
+
   # Set up database
   `rake -f debian/Rakefile db:create`
   `rake -f debian/Rakefile db:schema:load`
