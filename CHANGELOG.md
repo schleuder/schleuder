@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-* Explicitly depend on the latest version of ruby-gpgme to force existing setups to update. This fixes the problem where unusable keys were not identified as such. (Previous versions of ruby-gpgme failed to properly provide the capabilities of a key.)
+* Explicitly depend on the latest version of ruby-gpgme (2.0.13) to force existing setups to update. This fixes the problem where unusable keys were not identified as such. (Previous versions of ruby-gpgme failed to properly provide the capabilities of a key.)
 
 
 ## [3.2.0] / 2017-10-23
