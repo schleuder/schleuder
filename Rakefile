@@ -45,7 +45,7 @@ desc "Build new version: git-tag and gem-file"
 task :new_version => [
     :check_version,
     :edit_readme, :edit_changelog,
-    :git_add_version, :update_gemfile_lock,
+    :git_add_version,
     :git_commit,
     :gem, :tarball, :git_amend_gems,
     :git_tag
@@ -60,12 +60,6 @@ end
 desc "Edit README"
 task :edit_readme do
   edit_and_add_file('README')
-end
-
-desc "Make sure the Gemfile.lock is up to date and added to the index"
-task :update_gemfile_lock do
-  `bundle install`
-  `git add Gemfile.lock`
 end
 
 desc 'git-tag HEAD as new version'
