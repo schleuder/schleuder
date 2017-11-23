@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   #s.cert_chain  = ['gem-public_cert.pem']
   s.license = 'GPL-3.0'
   s.add_runtime_dependency 'gpgme', '~> 2.0', '>= 2.0.13' # Explicitly include to force a version.
+  s.add_runtime_dependency 'mail', '~> 2.6.0'
   s.add_runtime_dependency 'mail-gpg', '~> 0.3.0'
   s.add_runtime_dependency 'activerecord', '~> 4.1'
   s.add_runtime_dependency 'rake', '>= 10.5.0'
