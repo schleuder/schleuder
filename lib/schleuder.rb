@@ -55,6 +55,7 @@ require 'schleuder/runner'
 require 'schleuder/list'
 require 'schleuder/list_builder'
 require 'schleuder/subscription'
+require 'schleuder/throttle'
 
 # Setup
 ENV["SCHLEUDER_CONFIG"] ||= '/etc/schleuder/schleuder.yml'
@@ -78,5 +79,7 @@ I18n.enforce_available_locales = true
 I18n.default_locale = :en
 
 File.umask(0027)
+
+RUN_STATE_DIR = '/var/run/schleuder'
 
 include Schleuder

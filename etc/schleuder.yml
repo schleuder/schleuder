@@ -29,6 +29,11 @@ keyserver: pool.sks-keyservers.net
 # Is also used as an envelope sender of admin notifications.
 superadmin: root@localhost
 
+# How many Schleuder-processes to be run in parallel. If the MTA tries to
+# deliver more messages, it will receive an error code 127, which means 'try
+# again later'.
+throttle_max_processes: 30
+
 # For these options see documentation for ActionMailer::smtp_settings, e.g. <http://api.rubyonrails.org/classes/ActionMailer/Base.html>.
 smtp_settings:
   address: localhost

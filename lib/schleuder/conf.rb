@@ -14,6 +14,7 @@ module Schleuder
       'log_level' => 'warn',
       'superadmin' => 'root@localhost',
       'keyserver' => 'hkp://pool.sks-keyservers.net',
+      'throttle_max_processes' => 30,
       'smtp_settings' => {
         'address' => 'localhost',
         'port' => 25,
@@ -111,6 +112,15 @@ module Schleuder
 
     def self.keyserver
       instance.config['keyserver']
+    end
+
+    def self.throttle_max_processes
+      if instance.config['throttle_max_processes'].to_i > 0
+        instance.config['throttle_max_processes'].to_i
+      else
+        Schleuder.logger.warn "The configured value for throttle_max_processes is invalid. Please specify a number."
+        DEFAULTS['throttle_max_processes']
+      end
     end
 
     private

@@ -1,6 +1,10 @@
 module Schleuder
   class Runner
     def run(msg, recipient)
+      # TODO: to check this here is quite late. We already loaded all the libs, connected to the database, etc. Maybe check earlier?
+      error = check_throttle
+      return error if error
+
       error = setup_list(recipient)
       return error if error
 
@@ -47,6 +51,8 @@ module Schleuder
       logger.debug "Creating clean copy of message"
       copy = @mail.clean_copy(true)
       list.send_to_subscriptions(copy)
+
+      Throttle.unregister
       nil
     end
 
@@ -119,6 +125,28 @@ module Schleuder
       # This cannot be put in List, as Mail wouldn't know it then.
       logger.debug "Setting GNUPGHOME to #{@list.listdir}"
       ENV['GNUPGHOME'] = @list.listdir
+      nil
+    end
+
+    def check_throttle
+      error = ensure_run_state_dir
+      return error if error.present?
+
+      if ! Throttle.register
+        # Tell the MTA to try again later
+        exit 127
+      end
+      nil
+    end
+
+    def ensure_run_state_dir
+      if ! File.exist?(RUN_STATE_DIR)
+        return RuntimeError.new("Required directory #{RUN_STATE_DIR} does not exist, run `schleuder install` to fix this.")
+      else
+        if ! File.writable?(RUN_STATE_DIR)
+          return RuntimeError.new("#{RUN_STATE_DIR} is not writable, please fix this.")
+        end
+      end
       nil
     end
   end
