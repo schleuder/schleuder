@@ -289,5 +289,32 @@ describe Schleuder::Runner do
         teardown_list_and_mailer(list)
       end
     end
+    context 'protected headers' do
+      it 'passes mails with protected headers and weird multipart' do
+        list = create(:list)
+        list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+        ENV['GNUPGHOME'] = list.listdir
+        mail = Mail.new
+        mail.to = list.request_address
+        mail.from = list.admins.first.email
+        gpg_opts = {
+          encrypt: true,
+          keys: {list.request_address => list.fingerprint},
+          sign: true,
+          sign_as: list.admins.first.fingerprint
+        }
+        mail.gpg(gpg_opts)
+        mail.body = File.read('spec/fixtures/mails/protected_headers.txt')
+        mail.deliver
+
+        protected_headers = Mail::TestMailer.deliveries.first
+        Mail::TestMailer.deliveries.clear
+
+        output = process_mail(protected_headers.to_s, list.email)
+        expect(output).to be nil
+
+        teardown_list_and_mailer(list)
+      end
+    end
   end
 end
