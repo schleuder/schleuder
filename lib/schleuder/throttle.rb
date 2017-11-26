@@ -24,7 +24,7 @@ module Schleuder
     end
 
     def self.pid_file
-      File.join(RUN_STATE_DIR, Process.pid)
+      File.join(RUN_STATE_DIR, Process.pid.to_s)
     end
 
     def self.pid_files
