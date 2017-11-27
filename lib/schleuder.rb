@@ -62,6 +62,8 @@ ENV["SCHLEUDER_CONFIG"] ||= '/etc/schleuder/schleuder.yml'
 ENV["SCHLEUDER_LIST_DEFAULTS"] ||= '/etc/schleuder/list-defaults.yml'
 ENV["SCHLEUDER_ENV"] ||= 'production'
 ENV["SCHLEUDER_ROOT"] = rootdir.to_s
+ENV['SCHLEUDER_RUN_STATE_DIR'] ||= '/var/run/schleuder'
+
 
 GPGME::Ctx.set_gpg_path_from_env
 GPGME::Ctx.check_gpg_version
@@ -79,7 +81,5 @@ I18n.enforce_available_locales = true
 I18n.default_locale = :en
 
 File.umask(0027)
-
-RUN_STATE_DIR = '/var/run/schleuder'
 
 include Schleuder

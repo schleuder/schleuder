@@ -140,11 +140,11 @@ module Schleuder
     end
 
     def ensure_run_state_dir
-      if ! File.exist?(RUN_STATE_DIR)
-        return RuntimeError.new("Required directory #{RUN_STATE_DIR} does not exist, run `schleuder install` to fix this.")
+      if ! File.exist?(ENV['SCHLEUDER_RUN_STATE_DIR'])
+        return RuntimeError.new("Required directory #{ENV['SCHLEUDER_RUN_STATE_DIR']} does not exist, run `schleuder install` to fix this.")
       else
-        if ! File.writable?(RUN_STATE_DIR)
-          return RuntimeError.new("#{RUN_STATE_DIR} is not writable, please fix this.")
+        if ! File.writable?(ENV['SCHLEUDER_RUN_STATE_DIR'])
+          return RuntimeError.new("#{ENV['SCHLEUDER_RUN_STATE_DIR']} is not writable, please fix this.")
         end
       end
       nil

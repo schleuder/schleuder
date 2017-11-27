@@ -20,6 +20,11 @@ require 'database_cleaner'
 require 'factory_girl'
 require 'net/http'
 
+ENV["SCHLEUDER_RUN_STATE_DIR"] = "spec/run"
+if ! Dir.exist?(ENV['SCHLEUDER_RUN_STATE_DIR'])
+  Dir.mkdir(ENV['SCHLEUDER_RUN_STATE_DIR'])
+end
+
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
@@ -122,11 +127,11 @@ RSpec.configure do |config|
   end
 
   def run_schleuder(command, email, message_path)
-    `SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bin/schleuder #{command} #{email} < #{message_path} 2>&1`
+    `SCHLEUDER_RUN_STATE_DIR=spec/run SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bin/schleuder #{command} #{email} < #{message_path} 2>&1`
   end
 
   def run_cli(command)
-    `SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bin/schleuder #{command} 2>&1`
+    `SCHLEUDER_RUN_STATE_DIR=spec/run SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bin/schleuder #{command} 2>&1`
   end
 
   def process_mail(msg, recipient)

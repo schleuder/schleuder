@@ -24,11 +24,11 @@ module Schleuder
     end
 
     def self.pid_file
-      File.join(RUN_STATE_DIR, Process.pid.to_s)
+      File.join(ENV['SCHLEUDER_RUN_STATE_DIR'], Process.pid.to_s)
     end
 
     def self.pid_files
-      Dir.glob(File.join(RUN_STATE_DIR, '*'))
+      Dir.glob(File.join(ENV['SCHLEUDER_RUN_STATE_DIR'], '*'))
     end
 
   end
