@@ -88,7 +88,6 @@ module Mail
         # We copied the content-headers, so we need to copy the body encoded.
         # Otherwise the content might become unlegible.
         wrapper_part.body = self.body.encoded
-        wrapper_part.charset = self.body.charset || self.class.default_charset
       end
       clean.add_part(wrapper_part)
 
@@ -226,7 +225,8 @@ module Mail
       # decide itself how to encode, it works. If we don't, some
       # character-sequences are not properly re-encoded.
       part.content_transfer_encoding = nil
-      part.body = lines.compact.join
+      # Make the converted strings (now UTF-8) match the mime-part's headers.
+      part.body = lines.compact.join.encode(part.charset)
 
       @keywords
     end
