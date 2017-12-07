@@ -3,6 +3,17 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## unreleased
+
+### Changed
+
+* Temporarily depend on the ruby-library "mail" version 2.6. 2.7.0 seems to be a rough release (broke 8bit-characters, changed newline-styles) that needs to be ironed out before we can use it.
+
+### Fixed
+
+* Fix handling of emails with large first mime parts. We removed the code that limited the parsing of keywords to the first 1000 lines, as that broke the handling of certain large emails.
+
+
 ## [3.2.1] / 2017-10-24
 
 ### Changed
