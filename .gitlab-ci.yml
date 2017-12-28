@@ -1,17 +1,44 @@
----
-image: ruby:latest
+cache:
+  key: "$CI_PROJECT_PATH-$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+  paths:
+    - vendor/apt
+    - vendor/ruby
+  untracked: true
 
-check_travis_builds:
+before_script:
+  - mkdir -p vendor/apt
+  - apt-get update -qq
+  - apt-get install -o dir::cache::archives="vendor/apt" -qq -y --no-install-recommends --no-install-suggests gnupg2 libgpgme11-dev libsqlite3-dev eatmydata
+  - eatmydata gem install bundler --no-ri --no-rdoc
+  - eatmydata bundle install --jobs $(nproc) --path vendor
+  - rm /dev/random && ln -s /dev/urandom /dev/random
+  - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:create db:schema:load
+  
+ruby:2.1:
+  image: ruby:2.1
   script:
-    - apt-get update -qq
-    - apt-get install --no-install-recommends --no-install-suggests -qq -y python-requests
-    - ./utils/ci/check_travis_builds.py
+    - eatmydata bundle exec rspec
+ruby:2.2:
+  image: ruby:2.2
+  script:
+    - eatmydata bundle exec rspec
+ruby:2.3:
+  image: ruby:2.3
+  script:
+    - eatmydata bundle exec rspec
+ruby:2.4:
+  image: ruby:2.4
+  script:
+    - eatmydata bundle exec rspec
+ruby:2.5:
+  image: ruby:2.5
+  script:
+    - eatmydata bundle exec rspec
+
 bundler:audit:
   script:
     - gem install bundler-audit
-    - gem install bundler --no-ri --no-rdoc
-    - bundle install
+    - bundle install --jobs $(nproc) --path vendor
     - bundle-audit update
     - bundle-audit check
   allow_failure: true
-
