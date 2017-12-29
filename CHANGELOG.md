@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Fix handling of emails with large first mime parts. We removed the code that limited the parsing of keywords to the first 1000 lines, as that broke the handling of certain large emails.
 * Fix output of Keys with a broken character set. This mainly affected schleuder-api.
+* Exit install-script if setting up the database failed.
 
 ## [3.2.1] / 2017-10-24
 
