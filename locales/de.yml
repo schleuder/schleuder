@@ -13,10 +13,10 @@ de:
         invalid: "enthält nicht druckbare Zeichen"
     invalid_email: "ist keine valide E-Mail-Adresse"
     invalid_fingerprint: "ist kein valider OpenPGP-Fingerabdruck"
-    fingerprint_blank: 'Fingerabdruck der Liste ist nicht gesetzt, kann nicht arbeiten!'
+    list_fingerprint_missing: 'Fingerabdruck der Liste ist nicht gesetzt, kann nicht arbeiten!'
     list_key_missing: 'Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten!'
     list_secret_key_missing: 'Geheimer Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten!'
-    admins_missing: 'List hat keine Admins konfiguriert, kann nicht arbeiten!'
+    list_admins_missing: 'List hat keine Admins konfiguriert, kann nicht arbeiten!'
     fatalerror: |
       Es ist ein schwerwiegender Fehler aufgetreten. Administratoren wurden benachrichtigt.
       Bitte versuche es später noch ein Mal.
