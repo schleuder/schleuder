@@ -13,10 +13,10 @@ en:
         invalid: "includes non-printable characters"
     invalid_email: "is not a valid email address"
     invalid_fingerprint: "is not a valid OpenPGP-fingerprint"
-    list_fingerprint_missing: "List has no fingerprint configured, cannot run!"
-    list_key_missing: "List-key is missing in keyring, cannot run!"
-    list_secret_key_missing: 'Secret key of list is missing in keyring, cannot run!'
-    list_admins_missing: "List has no admins configured, cannot run!"
+    list_fingerprint_missing: "List has no fingerprint configured, cannot run! (In `%{listdir}`.)"
+    list_key_missing: "List-key is missing in keyring, cannot run! (In `%{listdir}`.)"
+    list_secret_key_missing: "Secret key of list is missing in keyring, cannot run! (In `%{listdir}`.)"
+    list_admins_missing: "List has no admins configured, cannot run! (In `%{listdir}`.)"
     fatalerror: |
       A fatal error happened. Administrators have been notified.
       Please try again later.
