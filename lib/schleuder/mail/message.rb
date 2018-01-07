@@ -162,7 +162,7 @@ module Mail
         case thing
         when Mail::Part
           thing
-        when String
+        when String, StandardError
           Mail::Part.new do
             body thing.to_s
           end
