@@ -76,9 +76,14 @@ module Schleuder
       list.present? && list.logger || Schleuder.logger
     end
 
-    def log_and_return(error)
+    def log_and_return(error, reveal_error=false)
       Schleuder.logger.error(error)
-      error
+      if reveal_error
+        error
+      else
+        # Return an unrevealing error, the sender and all bystanders don't need to know these details.
+        Errors::FatalError.new
+      end
     end
 
     def setup_list(recipient)
@@ -86,7 +91,7 @@ module Schleuder
 
       logger.info "Loading list '#{recipient}'"
       if ! @list = List.by_recipient(recipient)
-        return log_and_return(Errors::ListNotFound.new(recipient))
+        return log_and_return(Errors::ListNotFound.new(recipient), true)
       end
 
       # Check neccessary permissions of crucial files.
