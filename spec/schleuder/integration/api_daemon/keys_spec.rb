@@ -93,4 +93,42 @@ describe 'keys via api' do
       }.to change{ @list.keys.length }.by(-1)
     end
   end
+
+  context 'a key with broken utf8 in uid' do
+    context 'already imported' do
+      before(:each) do
+        @list.import_key(File.read("spec/fixtures/broken_utf8_uid_key.txt"))
+      end
+      after(:each) do
+        @list.delete_key('0x1242F6E13D8EBE4A')
+      end
+      it 'does list this key' do
+        authorize!
+        get "/keys.json?list_id=#{@list.id}"
+        expect(last_response.status).to be 200
+        expect(JSON.parse(last_response.body).length).to be 2
+      end
+      it 'does get key' do
+        authorize!
+        get "/keys/0x1242F6E13D8EBE4A.json?list_id=#{@list.id}"
+        expect(last_response.status).to be 200
+        expect(JSON.parse(last_response.body)['fingerprint']).to eq("3102B29989BEE703AE5ED62E1242F6E13D8EBE4A")
+      end
+      it 'does delete key' do
+        authorize!
+        expect {
+          delete "/keys/0x1242F6E13D8EBE4A.json?list_id=#{@list.id}"
+          expect(last_response.status).to be 200
+        }.to change{ @list.keys.length }.by(-1)
+      end
+    end
+    it 'does add key' do
+      authorize!
+      parameters = {'list_id' => @list.id, 'keymaterial' => File.read('spec/fixtures/broken_utf8_uid_key.txt') }
+      expect {
+        post '/keys.json', parameters.to_json
+        expect(last_response.status).to be 200
+      }.to change{ @list.keys.length }.by(1)
+    end
+  end
 end

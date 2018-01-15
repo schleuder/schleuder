@@ -26,6 +26,7 @@ require 'schleuder/gpgme/import_status.rb'
 require 'schleuder/gpgme/key.rb'
 require 'schleuder/gpgme/sub_key.rb'
 require 'schleuder/gpgme/ctx.rb'
+require 'schleuder/gpgme/user_id.rb'
 
 # The Code[tm]
 require 'schleuder/errors/base'
