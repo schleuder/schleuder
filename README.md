@@ -11,12 +11,14 @@ For more details see <https://schleuder.nadir.org/docs/>.
 Requirements
 ------------
 * ruby  >=2.1
-* gnupg >=2.0
+* gnupg 2.0.x, or >=2.1.16
 * gpgme
 * sqlite3
 * openssl
 
-On systems that base on Debian 9 ("stretch"), install these via
+*🛈 A note regarding Ubuntu: All released Ubuntu versions (including 17.10) don't meet the requirements with their packaged versions of gnupg! To run Schleuder on Ubuntu you currently have to install a more recent version of gnupg manually. A sufficient version of gnupg is included in "bionic-proposed", which might make 18.04 a usable Ubuntu release.*
+
+On systems that base on Debian 9 ("stretch"), install the dependencies via
 
     apt-get install ruby-dev gnupg2 libgpgme-dev libsqlite3-dev libssl-dev build-essential
 
