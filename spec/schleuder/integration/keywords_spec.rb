@@ -2057,7 +2057,7 @@ describe "user sends keyword" do
 
     teardown_list_and_mailer(list)
   end
-  
+
   it "x-list-keys without arguments" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
@@ -2169,4 +2169,107 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  context "with broken utf8 in key" do
+    it "x-list-keys works" do
+      list = create(:list)
+      list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      list.import_key(File.read('spec/fixtures/example_key.txt'))
+      list.import_key(File.read("spec/fixtures/broken_utf8_uid_key.txt"))
+      ENV['GNUPGHOME'] = list.listdir
+      mail = Mail.new
+      mail.to = list.request_address
+      mail.from = list.admins.first.email
+      gpg_opts = {
+        encrypt: true,
+        keys: {list.request_address => list.fingerprint},
+        sign: true,
+        sign_as: list.admins.first.fingerprint
+      }
+      mail.gpg(gpg_opts)
+      mail.body = "x-list-name: #{list.email}\nX-list-keys"
+      mail.deliver
+
+      encrypted_mail = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+
+      begin
+        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+      rescue SystemExit
+      end
+      raw = Mail::TestMailer.deliveries.first
+      message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+
+      expect(message.first_plaintext_part.body.to_s.lines.size).to eql(16)
+      expect(message.first_plaintext_part.body.to_s).to include("59C71FB38AEE22E091C78259D06350440F759BD3")
+      expect(message.first_plaintext_part.body.to_s).to include("3102B29989BEE703AE5ED62E1242F6E13D8EBE4A")
+
+      teardown_list_and_mailer(list)
+    end
+    it "x-add-key with inline key-material" do
+      list = create(:list)
+      list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      ENV['GNUPGHOME'] = list.listdir
+      mail = Mail.new
+      mail.to = list.request_address
+      mail.from = list.admins.first.email
+      gpg_opts = {
+        encrypt: true,
+        keys: {list.request_address => list.fingerprint},
+        sign: true,
+        sign_as: list.admins.first.fingerprint
+      }
+      mail.gpg(gpg_opts)
+      keymaterial = File.read("spec/fixtures/broken_utf8_uid_key.txt")
+      mail.body = "x-list-name: #{list.email}\nX-ADD-KEY:\n#{keymaterial}"
+      mail.deliver
+
+      encrypted_mail = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+
+      begin
+        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+      rescue SystemExit
+      end
+      raw = Mail::TestMailer.deliveries.first
+      message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+
+      expect(message.to).to eql(['schleuder@example.org'])
+      expect(message.to_s).to include("3102B29989BEE703AE5ED62E1242F6E13D8EBE4A: imported")
+
+      teardown_list_and_mailer(list)
+    end
+    it "x-get-key with valid argument" do
+      list = create(:list)
+      list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      list.import_key(File.read("spec/fixtures/broken_utf8_uid_key.txt"))
+      ENV['GNUPGHOME'] = list.listdir
+      mail = Mail.new
+      mail.to = list.request_address
+      mail.from = list.admins.first.email
+      gpg_opts = {
+        encrypt: true,
+        keys: {list.request_address => list.fingerprint},
+        sign: true,
+        sign_as: list.admins.first.fingerprint
+      }
+      mail.gpg(gpg_opts)
+      mail.body = "x-list-name: #{list.email}\nX-GET-KEY: 0x3102B29989BEE703AE5ED62E1242F6E13D8EBE4A"
+      mail.deliver
+
+      encrypted_mail = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+
+      begin
+        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+      rescue SystemExit
+      end
+      raw = Mail::TestMailer.deliveries.first
+      message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+
+      expect(message.to_s).to match(/pub   1024D\/3102B29989BEE703AE5ED62E1242F6E13D8EBE4A \d{4}-\d{2}-\d{2}/)
+      expect(message.to_s).to include("-----BEGIN PGP PUBLIC KEY")
+
+      teardown_list_and_mailer(list)
+    end
+  end
 end
