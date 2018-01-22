@@ -108,9 +108,9 @@ module Schleuder
       end
 
       if ActiveRecord::SchemaMigration.table_exists?
-        say `cd #{root_dir} && rake db:migrate`
+        say shellexec("cd #{root_dir} && rake db:migrate")
       else
-        say `cd #{root_dir} && rake db:schema:load`
+        say shellexec("cd #{root_dir} && rake db:schema:load")
         if Conf.database['adapter'].match(/sqlite/)
           say "NOTE: The database was prepared using sqlite. If you prefer to use a different DBMS please edit the 'database'-section in /etc/schleuder/schleuder.yml, create the database, install the corresponding ruby-library (e.g. `gem install mysql`) and run this current command again"
         end
@@ -301,8 +301,18 @@ Please notify the users and admins of this list of these changes.
           return nil
         end
       end
+
+      def shellexec(cmd)
+        result = `#{cmd}`
+        if $?.exitstatus > 0
+          exit $?.exitstatus
+        end
+        result
+      end
     end
+
     private
+
     def work_on_lists(subj, list=nil)
       selected_lists = if list.nil?
         List.all

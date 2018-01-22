@@ -251,4 +251,21 @@ describe 'cli' do
       teardown_list_and_mailer(list)
     end
   end
+
+  context '#install' do
+    it 'exits if a shell-process failed' do
+      dbfile = Conf.database["database"]
+      tmp_filename = "#{dbfile}.tmp"
+      File.rename(dbfile, tmp_filename)
+      FileUtils.touch dbfile
+      begin
+        Cli.new.install
+      rescue SystemExit => exc
+      end
+
+      expect(exc).to be_present
+      expect(exc.status).to eql(1)
+      File.rename(tmp_filename, dbfile)
+    end
+  end
 end
