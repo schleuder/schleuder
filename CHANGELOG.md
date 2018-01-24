@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Temporarily depend on the ruby-library "mail" version 2.6. 2.7.0 seems to be a rough release (broke 8bit-characters, changed newline-styles) that needs to be ironed out before we can use it.
 * Changed wording of error-message in case of a missing or incorrect "X-LIST-NAME"-keyword. (Thanks, anarcat!)
 * Keys are now shuffled before refreshing them. This randomizes the way how we are querying keyservers for updated keys to avoid fingerprinting of a list's keyring.
+* Be more robust when dirmngr fails while refreshing keys, especially when upating over an onion service. Fixes #309.
 
 
 ### Fixed
