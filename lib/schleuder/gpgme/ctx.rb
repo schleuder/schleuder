@@ -89,7 +89,8 @@ module GPGME
     end
 
     def refresh_keys(keys)
-      output = keys.map do |key|
+      # reorder keys so the update pattern is random
+      output = keys.shuffle.map do |key|
         # Sleep a short while to make traffic analysis less easy.
         sleep rand(1.0..5.0)
         refresh_key(key.fingerprint).presence
