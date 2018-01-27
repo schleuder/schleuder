@@ -51,6 +51,11 @@ bundler:audit:
 
 build_docker_image:
   stage: docker
+  # Only build packages for https://0xacab.org/schleuder/schleuder, not
+  # for forks
+  only:
+    - master@schleuder/schleuder
+    - tags@schleuder/schleuder
   tags:
     - docker-in-docker
   before_script:
