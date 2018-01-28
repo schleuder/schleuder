@@ -43,6 +43,8 @@ headers_to_meta:
 - to
 - cc
 - date
+- sig
+- enc
 
 # Preserve the Message-IDs (In-Reply-To, References) from the incoming email.
 # This setting can lead to information leakage, as replies are connectable
