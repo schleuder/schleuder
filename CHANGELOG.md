@@ -8,6 +8,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 * Temporarily depend on the ruby-library "mail" version 2.6. 2.7.0 seems to be a rough release (broke 8bit-characters, changed newline-styles) that needs to be ironed out before we can use it.
+* Changed wording of error-message in case of a missing or incorrect "X-LIST-NAME"-keyword. (Thanks, anarcat!)
+
 
 
 ### Fixed

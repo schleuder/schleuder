@@ -1300,7 +1300,7 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).not_to include("Resent: Unencrypted to someone@example.org")
-    expect(message.to_s).to include("Your message didn't contain the mandatory X-LIST-NAME-keyword, thus it was rejected.")
+    expect(message.to_s).to include(%[Your message did not contain the required "X-LIST-NAME" keyword and was rejected.])
 
     teardown_list_and_mailer(list)
   end
@@ -1448,7 +1448,7 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).not_to include("Resent: Unencrypted to someone@example.org")
-    expect(message.to_s).to include("Your message contained a wrong X-LIST-NAME-keyword. The value of that keyword must match the email address of this list.")
+    expect(message.to_s).to include(%[Your message contained an incorrect "X-LIST-NAME" keyword. The keyword argument must match the email address of this list.])
 
     teardown_list_and_mailer(list)
   end
