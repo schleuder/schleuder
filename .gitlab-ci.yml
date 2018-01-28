@@ -4,11 +4,9 @@ stages:
   - docker
 
 cache:
-  key: "$CI_PROJECT_PATH-$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+  key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_NAME"
   paths:
-    - vendor/apt
-    - vendor/ruby
-  untracked: true
+    - vendor
 
 before_script:
   # Export APT env vars to cache packages archives and lists based on the current working directory
