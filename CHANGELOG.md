@@ -9,11 +9,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Temporarily depend on the ruby-library "mail" version 2.6. 2.7.0 seems to be a rough release (broke 8bit-characters, changed newline-styles) that needs to be ironed out before we can use it.
 
+
 ### Fixed
 
 * Fix handling of emails with large first mime parts. We removed the code that limited the parsing of keywords to the first 1000 lines, as that broke the handling of certain large emails.
 * Fix output of Keys with a broken character set. This mainly affected schleuder-api.
 * Exit install-script if setting up the database failed.
+* Reveal less errors to public, and improve messages to admins. Previously errors about list-config etc. would have been included in bounces to the sender of the incoming email. Now only the admins get to know the details (which now also include the list the error happend with). Email-bounces only tell about a fatal error — except if the list could not be found, that information is still sent to the sender of the incoming email.
+
 
 ## [3.2.1] / 2017-10-24
 

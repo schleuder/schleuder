@@ -39,6 +39,7 @@ module Schleuder
     rescue => exc
       begin
         Schleuder.logger.fatal(exc.message_with_backtrace, message)
+        # Don't use FatalError here to reduce dependency on other code.
         say I18n.t('errors.fatalerror')
       rescue => e
         # Give users a clue what to do in case everything blows up.
