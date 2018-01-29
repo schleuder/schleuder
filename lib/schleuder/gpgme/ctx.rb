@@ -94,6 +94,10 @@ module GPGME
         sleep rand(1.0..5.0)
         refresh_key(key.fingerprint).presence
       end
+      # TODO: drop version check once we killed gpg 2.0 support.
+      if GPGME::Ctx.sufficient_gpg_version?('2.1')
+        `gpgconf --kill dirmngr`
+      end
       output.compact.join("\n")
     end
 

@@ -143,6 +143,8 @@ describe 'cli' do
 
       with_sks_mock do
         Cli.new.refresh_keys
+        dirmngr_pid = `pgrep -a dirmngr | grep #{list.listdir}`.split(' ',2).first
+        expect(dirmngr_pid).to be_nil
       end
       mail = Mail::TestMailer.deliveries.first
 
