@@ -53,6 +53,8 @@ ruby:2.5:
 
 bundler:audit:
   image: ruby:2.5
+  only:
+    - schedules
   # Overwrite 'before_script', so the global one isn't used, as the global one is not needed here
   before_script: []
   script:
