@@ -130,8 +130,8 @@ en:
   no_output_result: Your message resulted in no output.
   owner_forward_prefix: The following message was received for the list-owners.
   no_keywords_error: Your message didn't contain any keywords, thus there was nothing to do.
-  missing_listname_keyword_error: Your message didn't contain the mandatory X-LIST-NAME-keyword, thus it was rejected.
-  wrong_listname_keyword_error: Your message contained a wrong X-LIST-NAME-keyword. The value of that keyword must match the email address of this list.
+  missing_listname_keyword_error: Your message did not contain the required "X-LIST-NAME" keyword and was rejected.
+  wrong_listname_keyword_error: Your message contained an incorrect "X-LIST-NAME" keyword. The keyword argument must match the email address of this list.
   bounces_drop_all: The attached message should have been bounced but was dropped without further notice because the list's configuration defines that no message should ever be bounced.
   bounces_drop_on_headers: "The attached message should have been bounced but was dropped without further notice because it matched this header-line: %{key}: %{value}"
   bounces_notify_admins: "The attached message was bounced with the following notice:"

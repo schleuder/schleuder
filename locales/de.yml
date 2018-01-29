@@ -130,8 +130,8 @@ de:
   no_output_result: Deine Email ergab keinen Ausgabe-Text.
   owner_forward_prefix: Die folgende Email ging für die Listen-Besitzer/innen ein.
   no_keywords_error: Deine Email enthielt keine Schlüsselwörter, daher gab es nichts zu tun.
-  missing_listname_keyword_error: Deine Email enthielt nicht das notwendige X-LIST-NAME-Schlüsselwort, daher wurde sie zurückgewiesen.
-  wrong_listname_keyword_error: Deine Email enthielt ein falsches X-LIST-NAME-Schlüsselwort. Der Wert dieses Schlüsselworts muss der Emailadresse dieser Liste gleichen.
+  missing_listname_keyword_error: Deine Email enthielt nicht das notwendige Schlüsselwort "X-LIST-NAME", daher wurde sie zurückgewiesen.
+  wrong_listname_keyword_error: Deine Email enthielt ein falsches "X-LIST-NAME"-Schlüsselwort. Der Wert dieses Schlüsselworts muss der Emailadresse dieser Liste gleichen.
   bounces_drop_all: Die angehängte Email hätte zurückgewiesen (bounced) werden sollen, wurde aber stillschweigend fallen gelassen, weil die Konfiguration dieser Liste definiert, dass für diese Liste nie Email zurückgewiesen werden soll.
   bounces_drop_on_headers: "Die angehängte Email hätte zurückgewiesen (bounce) werden sollen, wurde aber stillschweigend fallen gelassen, weil diese Kopfzeile gefunden wurde: %{key}: %{value}"
   bounces_notify_admins: "Die angehängte Email wurde mit folgender Nachricht zurückgewiesen:"
