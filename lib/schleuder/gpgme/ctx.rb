@@ -89,7 +89,8 @@ module GPGME
     end
 
     def refresh_keys(keys)
-      output = keys.map do |key|
+      # reorder keys so the update pattern is random
+      output = keys.shuffle.map do |key|
         # Sleep a short while to make traffic analysis less easy.
         sleep rand(1.0..5.0)
         refresh_key(key.fingerprint).presence
@@ -109,10 +110,19 @@ module GPGME
         # Return filtered error messages. Include gpgkeys-messages from stdout
         # (gpg 2.0 does that), which could e.g. report a failure to connect to
         # the keyserver.
-        [
+        res = [
           refresh_key_filter_messages(gpgerr),
           refresh_key_filter_messages(gpgout).grep(/^gpgkeys: /)
-        ].flatten.compact.join("\n")
+        ].flatten.compact
+        # if there was an error that we don't filter out,
+        # we better kill dirmngr, so it hopefully won't suffer
+        # from the same error during the next run.
+        # See #309 for background
+        # TODO: drop version check once we killed gpg 2.0 support.
+        if !res.empty? && GPGME::Ctx.sufficient_gpg_version?('2.1')
+          `gpgconf --kill dirmngr`
+        end
+        res.join("\n")
       else
         lines = translate_output('key_updated', gpgout).reject do |line|
           # Reduce the noise a little.
