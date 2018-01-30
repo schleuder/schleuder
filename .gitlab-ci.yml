@@ -56,11 +56,10 @@ bundler:audit:
   only:
     - schedules
   script:
-    - gem install bundler-audit
+    - gem install bundler-audit --no-ri --no-rdoc
     - bundle install --jobs $(nproc) --path vendor
     - bundle-audit update
     - bundle-audit check
-  allow_failure: true
 
 build_docker_image:
   stage: docker
