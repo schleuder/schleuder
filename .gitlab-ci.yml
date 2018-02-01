@@ -8,61 +8,58 @@ cache:
   paths:
     - vendor
 
-before_script:
-  # Export APT env vars to cache packages archives and lists based on the current working directory
-  - export APT_DIR=$CI_PROJECT_DIR/vendor/apt && export APT_CACHE_ARCHIVES=$APT_DIR/archives && export APT_STATE_LISTS=$APT_DIR/lists
-  # Configure APT: Only install necessary packages, set cache location
-  - printf
-    "apt::install-recommends 0;\n
-    apt::install-suggests 0;\n
-    dir::cache::archives ${APT_CACHE_ARCHIVES};\n
-    dir::state::lists ${APT_STATE_LISTS};\n"
-    >> /etc/apt/apt.conf.d/99custom
-  # If the APT cache dir doesn't exist, create the necessary dirs and update the package lists
-  # Don't do this on subsequent runs, if the cache was already populated, to save ressources and therefore time
-  - if [ ! -d ${APT_DIR} ]; then 
-    mkdir -p {${APT_CACHE_ARCHIVES},${APT_STATE_LISTS}}/partial &&
-    apt-get update -qq;
-    fi
-  - apt-get install -qq -y gnupg2 libgpgme11-dev libsqlite3-dev eatmydata
-  - eatmydata gem install bundler --no-ri --no-rdoc
-  - eatmydata bundle install --jobs $(nproc) --path vendor
-  - rm /dev/random && ln -s /dev/urandom /dev/random
-  - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:create db:schema:load
+# Jobs that start with a period are disabled
+# This is just a template, to be used further below in the individual ruby rspec job definitions
+.test_ruby: &test_ruby
+  before_script:
+    # Export APT env vars to cache packages archives and lists based on the current working directory
+    - export APT_DIR=$CI_PROJECT_DIR/vendor/apt && export APT_CACHE_ARCHIVES=$APT_DIR/archives && export APT_STATE_LISTS=$APT_DIR/lists
+    # Configure APT: Only install necessary packages, set cache location
+    - printf
+      "apt::install-recommends 0;\n
+      apt::install-suggests 0;\n
+      dir::cache::archives ${APT_CACHE_ARCHIVES};\n
+      dir::state::lists ${APT_STATE_LISTS};\n"
+      >> /etc/apt/apt.conf.d/99custom
+    # If the APT cache dir doesn't exist, create the necessary dirs and update the package lists
+    # Don't do this on subsequent runs, if the cache was already populated, to save ressources and therefore time
+    - if [ ! -d ${APT_DIR} ]; then
+      mkdir -p {${APT_CACHE_ARCHIVES},${APT_STATE_LISTS}}/partial &&
+      apt-get update -qq;
+      fi
+    - apt-get install -qq -y gnupg2 libgpgme11-dev libsqlite3-dev eatmydata
+    - eatmydata gem install bundler --no-ri --no-rdoc
+    - eatmydata bundle install --jobs $(nproc) --path vendor
+    - rm /dev/random && ln -s /dev/urandom /dev/random
+    - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:create db:schema:load
+  script:
+    - eatmydata bundle exec rspec
 
 ruby:2.1:
   image: ruby:2.1
-  script:
-    - eatmydata bundle exec rspec
+  <<: *test_ruby
 ruby:2.2:
   image: ruby:2.2
-  script:
-    - eatmydata bundle exec rspec
+  <<: *test_ruby
 ruby:2.3:
   image: ruby:2.3
-  script:
-    - eatmydata bundle exec rspec
+  <<: *test_ruby
 ruby:2.4:
   image: ruby:2.4
-  script:
-    - eatmydata bundle exec rspec
+  <<: *test_ruby
 ruby:2.5:
   image: ruby:2.5
-  script:
-    - eatmydata bundle exec rspec
+  <<: *test_ruby
 
 bundler:audit:
   image: ruby:2.5
   only:
     - schedules
-  # Overwrite 'before_script', so the global one isn't used, as the global one is not needed here
-  before_script: []
   script:
-    - gem install bundler-audit
+    - gem install bundler-audit --no-ri --no-rdoc
     - bundle install --jobs $(nproc) --path vendor
     - bundle-audit update
     - bundle-audit check
-  allow_failure: true
 
 build_docker_image:
   stage: docker
@@ -73,15 +70,10 @@ build_docker_image:
     - tags@schleuder/schleuder
   tags:
     - docker-in-docker
-  before_script:
-    - docker info
   image: docker:latest
   services:
     - docker:dind
   variables:
-    # When using dind, it's wise to use the overlayfs driver for
-    # improved performance.
-    DOCKER_DRIVER: overlay2
     IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
   script:
     - docker build -t $IMAGE_TAG .
