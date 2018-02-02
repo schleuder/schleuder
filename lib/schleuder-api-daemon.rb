@@ -63,6 +63,14 @@ class SchleuderApiDaemon < Sinatra::Base
     'Not found'
   end
 
+  error 401 do
+    'Not authenticated'
+  end
+
+  error 403 do
+    'Not authorized'
+  end
+
   def self.run!
     super do |server|
       server.ssl = true

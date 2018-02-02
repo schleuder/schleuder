@@ -7,6 +7,7 @@ require 'schleuder/cli/subcommand_fix'
 require 'schleuder/cli/cli_helper'
 require 'schleuder/cli/schleuder_cert_manager'
 require 'schleuder/cli/cert'
+require 'schleuder/cli/api_superadmins'
 
 module Schleuder
   class Cli < Thor
@@ -16,6 +17,11 @@ module Schleuder
              'cert',
              'cert ...',
              'Generate TLS-certificate and show fingerprint')
+
+    register(ApiSuperadmins,
+             'api_superadmins',
+             'api_superadmins ...',
+             'List, add, and remove API-superadmins')
 
     map '-v' => :version
     map '--version' => :version
