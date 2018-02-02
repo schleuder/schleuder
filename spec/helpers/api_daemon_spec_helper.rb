@@ -12,6 +12,11 @@ end
 
 RSpec.configure { |c| c.include RSpecMixin } # For RSpec 2.x and 3.x
 
-def authorize!
-  basic_authorize 'schleuder', 'test_api_key'
+def authorize_as_api_superadmin!
+  account = create(:account, email: 'api-superadmin@localhost', api_superadmin: true)
+  authorize! account.email, account.set_new_password!
+end
+
+def authorize!(email, password)
+  basic_authorize email, password
 end

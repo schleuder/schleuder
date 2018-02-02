@@ -1,6 +1,9 @@
 module Schleuder
   class Subscription < ActiveRecord::Base
     belongs_to :list
+    belongs_to :account
+    # This association is wanted in Account but ActiveRecord wants its details defined here.
+    belongs_to :admin_list, -> { where subscriptions: { admin: true } }, class_name: "List", foreign_key: :list_id
 
     validates :list_id, inclusion: {
                           in: -> (id) { List.pluck(:id) },

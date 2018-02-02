@@ -3,10 +3,12 @@ class SchleuderApiDaemon < Sinatra::Base
 
   namespace '/lists' do
     get '.json' do
-      json List.all, include: :subscriptions
+      json current_account.scoped(List), include: :subscriptions
     end
 
     post '.json' do
+			authorize(List, :create)
+
       listname = parsed_body['email']
       fingerprint = parsed_body['fingerprint']
       adminaddress = parsed_body['adminaddress']
@@ -28,6 +30,9 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     post '/send_list_key_to_subscriptions.json' do
+      require_list_id_param
+      list = load_list(params[:list_id])
+      authorize(list, :send_list_key)
       json(result: list.send_list_key_to_subscriptions)
     end
 
@@ -36,11 +41,14 @@ class SchleuderApiDaemon < Sinatra::Base
     end
     
     get '/:id.json' do |id|
-      json list(id)
+      list = load_list(id)
+      authorize(list, :read)
+      json(list)
     end
 
     put '/:id.json' do |id|
-      list = list(id)
+      list = load_list(id)
+      authorize(list, :update)
       if list.update(parsed_body)
         204
       else
@@ -49,7 +57,8 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     patch '/:id.json' do |id|
-      list = list(id)
+      list = load_list(id)
+      authorize(list, :update)
       if list.update(parsed_body)
         204
       else
@@ -58,7 +67,8 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     delete '/:id.json' do |id|
-      list = list(id)
+      list = load_list(id)
+      authorize(list, :delete)
       if list.destroy
         200
       else
