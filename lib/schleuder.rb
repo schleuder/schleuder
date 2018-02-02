@@ -55,6 +55,7 @@ require 'schleuder/runner'
 require 'schleuder/list'
 require 'schleuder/list_builder'
 require 'schleuder/subscription'
+require 'schleuder/account'
 
 # Setup
 ENV['SCHLEUDER_CONFIG'] ||= '/etc/schleuder/schleuder.yml'
