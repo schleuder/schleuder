@@ -1,5 +1,15 @@
 module GPGME
   class Key
+    # Return the list this keys belongs to.
+    def list
+      list_dir = ENV['GNUPGHOME']
+      path_segments = list_dir.split('/')
+      listname = path_segments.pop
+      hostname = path_segments.pop
+      email = "#{listname}@#{hostname}"
+      List.where(email: email).first
+    end
+
     # Overwrite to specify the full fingerprint instead of the short key-ID.
     def to_s
       primary_subkey = subkeys[0]

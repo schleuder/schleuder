@@ -1,17 +1,22 @@
 class SchleuderApiDaemon < Sinatra::Base
   register Sinatra::Namespace
 
-  namespace '/keys' do
-    get '.json' do
+  namespace "/keys" do
+    get ".json" do
+      require_list_id_param
+      list = load_list(params[:list_id])
+      authorize(list, :list_keys)
       keys = list.keys.sort_by(&:email).map do |key|
         key_to_hash(key)
       end
       json keys
     end
 
-    post '.json' do
-      input = parsed_body['keymaterial']
-      if ! input.match('BEGIN PGP')
+    post ".json" do
+      list = load_list(requested_list_id)
+      authorize(list, :add_keys)
+      input = parsed_body["keymaterial"]
+      if !input.match("BEGIN PGP")
         input = Base64.decode64(input)
       end
       @list = list(requested_list_id)
@@ -19,7 +24,7 @@ class SchleuderApiDaemon < Sinatra::Base
       keys = []
       messages = []
       import_result.imports.each do |import_status|
-        if import_status.action == 'error'
+        if import_status.action == "error"
           messages << "The key with the fingerprint #{import_status.fingerprint} could not be imported for unknown reasons"
         else
           key = @list.gpg.find_distinct_key(import_status.fingerprint)
@@ -35,27 +40,30 @@ class SchleuderApiDaemon < Sinatra::Base
       # complaining about "expected attributes to be able to convert to Hash",
       # which for some reason is raised without it (or some other, similar
       # attribute).
-      json({type: 'keys', keys: keys})
+      json({type: "keys", keys: keys})
     end
 
-    get '/check_keys.json' do
+    get "/check_keys.json" do
+      require_list_id_param
+      list = load_list(params[:list_id])
+      authorize(list, :check_keys)
       json result: list.check_keys
     end
 
-    get '/:fingerprint.json' do |fingerprint|
-      if key = list.key(fingerprint)
-        json key_to_hash(key, true)
-      else
-        404
-      end
+    get "/:fingerprint.json" do |fingerprint|
+      require_list_id_param
+      list = load_list(params[:list_id])
+      key = list.key(fingerprint) || halt(404)
+      authorize(key, :read)
+      json key_to_hash(key, true)
     end
 
-    delete '/:fingerprint.json' do |fingerprint|
-      if list.delete_key(fingerprint)
-        200
-      else
-        404
-      end
+    delete "/:fingerprint.json" do |fingerprint|
+      require_list_id_param
+      list = load_list(params[:list_id])
+      key = list.key(fingerprint) || halt(404)
+      authorize(key, :delete)
+      key.delete!
     end
   end
 end
