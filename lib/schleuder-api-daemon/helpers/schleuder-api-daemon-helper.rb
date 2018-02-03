@@ -1,9 +1,14 @@
 module SchleuderApiDaemonHelper
     def valid_credentials?
       @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-      if @auth.provided? && @auth.basic? && @auth.credentials.present?
-        username, api_key = @auth.credentials
-        username == 'schleuder' && Conf.api_valid_api_keys.include?(api_key)
+      if ! @auth.provided? || ! @auth.basic? || @auth.credentials.blank?
+        return false
+      end
+      email, password = @auth.credentials
+      account = Account.find_by(:email, email)
+      if account.try(:authenticate, password)
+        @current_account = account
+        true
       else
         false
       end
@@ -16,6 +21,10 @@ module SchleuderApiDaemonHelper
         headers['WWW-Authenticate'] = 'Basic realm="Schleuder API Daemon"'
         halt 401, "Not authorized\n"
       end
+    end
+
+    def current_account
+      @current_account
     end
 
     def list(id_or_email=nil)
