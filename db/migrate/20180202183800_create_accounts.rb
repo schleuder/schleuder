@@ -1,11 +1,11 @@
 class CreateAccounts < ActiveRecord::Migration
   def up
     create_table :accounts do |t|
-      t.string :email, unique: true, null: false
+      t.string :email, null: false
       t.string :password
     end
 
-    add_index :accounts, :email
+    add_index :accounts, :email, unique: true
   end
 
   def down
