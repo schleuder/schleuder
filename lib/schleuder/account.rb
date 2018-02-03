@@ -5,5 +5,7 @@ module Schleuder
     has_many :subscriptions, foreign_key: "email", primary_key: "email"
     has_many :lists, through: :subscriptions
     has_many :admin_lists, through: :subscriptions
+
+    before_save { email.downcase! }
   end
 end
