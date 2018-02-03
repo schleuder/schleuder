@@ -1,5 +1,12 @@
 module Schleuder
   class Account < ActiveRecord::Base
+    PASSWORD_CHARS = [
+      ("a".."z").to_a,
+      ("A".."Z").to_a,
+      (0..9).to_a,
+      %w[! @ # $ % ^ & * ( ) _ - + = { [ } ] : ; < , > . ? /]
+    ].flatten
+
     has_secure_password
 
     has_many :subscriptions, foreign_key: "email", primary_key: "email"
@@ -7,5 +14,10 @@ module Schleuder
     has_many :admin_lists, through: :subscriptions
 
     before_save { email.downcase! }
+
+
+    def generate_password(length=10)
+      PASSWORD_CHARS.shuffle.take(length).join
+    end
   end
 end
