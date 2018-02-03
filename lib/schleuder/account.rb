@@ -13,6 +13,9 @@ module Schleuder
     has_many :lists, through: :subscriptions
     has_many :admin_lists, through: :subscriptions
 
+    validates :email, presence: true, email: true, uniqueness: true, allow_nil: false
+    validates :password, presence: true, allow_nil: false
+
     before_save { email.downcase! }
 
 
