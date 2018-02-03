@@ -57,4 +57,33 @@ describe Schleuder::Account do
     expect(account.authenticate('foo')).to be(false)
     expect(account.authenticate(new_password)).to be_an(Account)
   end
+
+  it "does not store the password in cleartext" do
+    a = create(:account, password: "blabla")
+
+    account = Account.find(a.id)
+
+    expect(account.password).to be(nil)
+    expect(account.password_digest).not_to include("blabla")
+  end
+
+  it "saves email-addresses always in lower-case" do
+    account = create(:account, email: "ME@EXAMPLE.ORG")
+
+    expect(account.email).to eql("me@example.org")
+  end
+
+  it "generates random passwords" do
+    account = create(:account)
+    pw1 = account.send("generate_password")
+    pw2 = account.send("generate_password")
+    pw3 = account.send("generate_password")
+
+    expect(pw1.size).to eql(10)
+    expect(pw2.size).to eql(10)
+    expect(pw3.size).to eql(10)
+    expect(pw1).not_to eql(pw2)
+    expect(pw2).not_to eql(pw3)
+    expect(pw3).not_to eql(pw1)
+  end
 end
