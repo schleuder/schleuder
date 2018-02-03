@@ -23,6 +23,7 @@ require 'database_cleaner'
 require 'factory_bot'
 require 'net/http'
 require 'fileutils'
+require 'securerandom'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
