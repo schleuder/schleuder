@@ -104,7 +104,7 @@ Testing
 We use rspec to test our code. To setup the test environment run:
 
 
-    SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bundle exec rake db:create db:schema:load
+    SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bundle exec rake db:init
 
 To execute the test suite run:
 
