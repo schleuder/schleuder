@@ -15,7 +15,7 @@ ActiveRecord::Schema.define(version: 20180202183800) do
 
   create_table "accounts", force: :cascade do |t|
     t.string "email",    null: false
-    t.string "password"
+    t.string "password", null: false
   end
 
   add_index "accounts", ["email"], name: "index_accounts_on_email", unique: true
