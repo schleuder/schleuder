@@ -18,6 +18,15 @@ module Schleuder
 
     before_save { email.downcase! }
 
+    def set_new_password!
+      new_password = generate_password
+      self.update!(password: new_password)
+      new_password
+    end
+
+
+    private
+
 
     def generate_password(length=10)
       PASSWORD_CHARS.shuffle.take(length).join
