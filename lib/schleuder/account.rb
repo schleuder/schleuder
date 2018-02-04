@@ -18,10 +18,22 @@ module Schleuder
 
     before_save { email.downcase! }
 
+    def admin_list_subscriptions
+      Subscription.where(list_id: admin_lists.pluck(:id))
+    end
+
     def set_new_password!
       new_password = generate_password
       self.update!(password: new_password)
       new_password
+    end
+
+    def is_subscribed_to_list?(list)
+      lists.where(email: list.email).exists?
+    end
+
+    def is_admin_of_list?(list)
+      admin_lists.where(email: list.email).exists?
     end
 
 

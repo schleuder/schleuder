@@ -8,6 +8,7 @@ module SchleuderApiDaemonHelper
       account = Account.find_by(email: email)
       if account.try(:authenticate, password)
         @current_account = account
+        @authorizer = Authorizer.new(account)
         true
       else
         false
@@ -23,26 +24,45 @@ module SchleuderApiDaemonHelper
       end
     end
 
+    def authorize(thing, action)
+      authorizer.authorize(thing, action) || halt(403)
+    end
+
+    def authorizer
+      @authorizer
+    end
+
     def current_account
       @current_account
     end
 
-    def list(id_or_email=nil)
-      if id_or_email.blank?
-        if params[:list_id].present?
-          id_or_email = params[:list_id]
-        else
-          client_error 'Parameter list_id is required'
-        end
-      end
-      if is_an_integer?(id_or_email)
-        list = List.where(id: id_or_email).first
+    def make_query_args(identifier)
+      if is_an_integer?(identifier)
+        {id: identifier.to_i}
       else
-        # list_id is actually an email address
-        list = List.where(email: id_or_email).first
+        {email: identifier.to_s}
       end
-      list || halt(404)
     end
+
+    def require_list_id_param(msg='Need "list_id" query-parameter')
+      params[:list_id].presence || client_error(msg)
+    end
+
+    def load_list(identifier)
+      query_args = make_query_args(identifier)
+      List.where(query_args).first || halt(404)
+    end
+
+		def load_subscription(identifier)
+      query_args = make_query_args(identifier)
+      if is_an_integer?(identifier)
+        query_base = Subscription
+      else require_list_id_param("Parameter list_id is required when using email as identifier for subscriptions.")
+        list = load_list(params[:list_id])
+        query_base = list.subscriptions
+      end
+      query_base.where(query_args).first || halt(404)
+		end
 
     def subscription(id_or_email)
       if is_an_integer?(id_or_email)
