@@ -5,7 +5,7 @@ module SchleuderApiDaemonHelper
         return false
       end
       email, password = @auth.credentials
-      account = Account.find_by(:email, email)
+      account = Account.find_by(email: email)
       if account.try(:authenticate, password)
         @current_account = account
         true
