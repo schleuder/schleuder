@@ -93,25 +93,25 @@ class SchleuderApiDaemon < Sinatra::Base
           client_error "Parameter list_id is required"
         end
       end
-      if id_or_email.to_i == 0
+      if is_an_integer?(id_or_email)
+        list = List.where(id: id_or_email).first
+      else
         # list_id is actually an email address
         list = List.where(email: id_or_email).first
-      else
-        list = List.where(id: id_or_email).first
       end
       list || halt(404)
     end
 
     def subscription(id_or_email)
-      if id_or_email.to_i == 0
+      if is_an_integer?(id_or_email)
+        sub = Subscription.where(id: id_or_email.to_i).first
+      else
         # Email
         if params[:list_id].blank?
           client_error "Parameter list_id is required when using email as identifier for subscriptions."
         else
           sub = list.subscriptions.where(email: id_or_email).first
         end
-      else
-        sub = Subscription.where(id: id_or_email.to_i).first
       end
       sub || halt(404)
     end
@@ -157,7 +157,7 @@ class SchleuderApiDaemon < Sinatra::Base
             when 'true' then true
             when 'false' then false
             when '0' then 0
-            when value.to_i > 0 then value.to_i
+            when is_an_integer?(value) then value.to_i
             else value
             end
       end
@@ -202,6 +202,10 @@ class SchleuderApiDaemon < Sinatra::Base
         end
         memo
       end
+    end
+
+    def is_an_integer?(input)
+      input.to_s.match(/^[0-9]+$/).present?
     end
   end
 
@@ -279,7 +283,7 @@ class SchleuderApiDaemon < Sinatra::Base
       end
 
       logger.debug "Subscription filter: #{filter.inspect}"
-      if filter['list_id'] && filter['list_id'].to_i == 0
+      if filter['list_id'] && ! is_an_integer?(filter['list_id'])
         # Value is an email-address
         if list = List.where(email: filter['list_id']).first
           filter['list_id'] = list.id

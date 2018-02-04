@@ -20,6 +20,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Exit install-script if setting up the database failed.
 * Reveal less errors to public, and improve messages to admins. Previously errors about list-config etc. would have been included in bounces to the sender of the incoming email. Now only the admins get to know the details (which now also include the list the error happend with). Email-bounces only tell about a fatal error — except if the list could not be found, that information is still sent to the sender of the incoming email.
 * Make sure dirmngr is killed for a list after refreshing a list's keyring. Avoids servers getting memory exhausted. Fixes #289
+* Fixed the API-daemon's interpretation of listnames that start with a number (previously the listname "1list" caused errors because it was taken as the integer 1).
 
 
 ## [3.2.1] / 2017-10-24
