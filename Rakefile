@@ -4,6 +4,8 @@ require_relative "lib/#{project}.rb"
 @version = Schleuder::VERSION
 @tagname = "#{project}-#{@version}"
 @gpguid = 'schleuder@nadir.org'
+@filename_gem = "#{@tagname}.gem"
+@filename_tarball = "#{@tagname}.tar.gz"
 
 load "active_record/railties/databases.rake"
 
@@ -33,12 +35,6 @@ def edit_and_add_file(filename)
   end
 end
 
-def move_sign_and_add(file)
-  `mv -iv #{file} gems/`
-  `cd gems && gpg -u #{@gpguid} -b #{file}`
-  `git add gems/#{file}*`
-end
-
 task :console do
   exec "irb -r #{File.dirname(__FILE__)}/lib/schleuder.rb"
 end
@@ -52,7 +48,10 @@ task :new_version => [
     :edit_readme, :edit_changelog,
     :git_add_version,
     :git_commit,
-    :gem, :tarball, :git_amend_gems,
+    :build_gem,
+    :sign_gem,
+    :build_tarball,
+    :sign_tarball,
     :git_tag
   ] do
 end
@@ -82,34 +81,35 @@ task :git_commit do
   `git commit -m "Version #{@version} (README, gems, ...)"`
 end
 
-desc "git-amend gem, tarball and signatures to previous commit"
-task :git_amend_gems do
-  `git add gems && git commit --amend -C HEAD`
+desc 'Build, sign and commit a gem-file.'
+task :build_gem do
+  `gem build #{project}.gemspec`
 end
 
-desc 'Build, sign and commit a gem-file.'
-task :gem do
-  gemfile = "#{@tagname}.gem"
-  `gem build #{project}.gemspec`
-  move_sign_and_add(gemfile)
+desc 'OpenPGP-sign gem and tarball'
+task :sign_tarball do
+  `gpg -u #{@gpguid} -b #{@filename_gem}`
+end
+
+desc 'OpenPGP-sign gem'
+task :sign_gem do
+  `gpg -u #{@gpguid} -b #{@filename_tarball}`
 end
 
 desc 'Publish gem-file to rubygems.org'
 task :publish_gem do
-  puts "Really push #{@tagname}.gem to rubygems.org? [yN]"
+  puts "Really push #{@filename_gem} to rubygems.org? [yN]"
   if gets.match(/^y/i)
     puts "Pushing..."
-    `gem push #{@tagname}.gem`
+    `gem push #{@filename_gem}`
   else
     puts "Not pushed."
   end
 end
 
 desc 'Build and sign a tarball'
-task :tarball do
-  tarball = "#{@tagname}.tar.gz"
-  `git archive --format tar.gz --prefix "#{@tagname}/" -o #{tarball} master`
-  move_sign_and_add(tarball)
+task :build_tarball do
+  `git archive --format tar.gz --prefix "#{@tagname}/" -o #{@filename_tarball} master`
 end
 
 desc 'Describe manual release-tasks'
