@@ -78,5 +78,7 @@ build_docker_image:
     IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
   script:
     - docker build -t $IMAGE_TAG .
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    # Disable bash history to prevent the $CI_JOB_TOKEN to be recorded and saved
+    - unset HISTFILE
+    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
     - docker push $IMAGE_TAG
