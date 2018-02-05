@@ -31,7 +31,7 @@ cache:
     - eatmydata gem install bundler --no-ri --no-rdoc
     - eatmydata bundle install --jobs $(nproc) --path vendor
     - rm /dev/random && ln -s /dev/urandom /dev/random
-    - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:create db:schema:load
+    - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:init
   script:
     - eatmydata bundle exec rspec
 
