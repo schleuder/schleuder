@@ -4,7 +4,6 @@ stages:
   - docker
 
 cache:
-  key: "$CI_PROJECT_PATH_SLUG-$CI_JOB_NAME"
   paths:
     - vendor
 
@@ -23,11 +22,7 @@ cache:
       >> /etc/apt/apt.conf.d/99custom
     # Ensure the custom APT directory does exist
     - mkdir -p {${APT_ARCHIVES_DIR},${APT_LISTS_DIR}}/partial
-    # Check the mtime of the files in the APT lists dir, to update the APT package cache only if it's empty,
-    # or the last run was (more than) 14 days ago
-    - if [ -z "$(find ${APT_LISTS_DIR} -maxdepth 1 -type f -mtime -14)" ]; then
-      apt-get update -qq;
-      fi
+    - apt-get update -qq
     - apt-get install -qq -y gnupg2 libgpgme11-dev libsqlite3-dev eatmydata
     - eatmydata gem install bundler --no-ri --no-rdoc
     - eatmydata bundle install --jobs $(nproc) --path vendor
