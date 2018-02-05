@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email        = "schleuder@nadir.org"
   s.homepage     = "https://schleuder.nadir.org/"
   s.summary      = "Schleuder is a gpg-enabled mailinglist with remailing-capabilities."
-  s.description  = "Schleuder is a group's email-gateway: subscribers can exchange encrypted emails among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.\n\n(Please note: For some platforms there's a better way of installing Schleuder than `gem install` (which doesn't verify downloads). See <https://schleuder.nadir.org/docs/#installation> for details.)"
+  s.description  = "Schleuder is a group's email-gateway: subscribers can exchange encrypted emails among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.\n\n(Please note: For some platforms there's a better way of installing Schleuder than `gem install`. See <https://schleuder.nadir.org/docs/#installation> for details.)"
   s.files        = `git ls-files lib locales etc db README.md Rakefile bin/pinentry-clearpassphrase`.split
   s.executables =  %w[schleuder schleuder-api-daemon]
   s.platform     = Gem::Platform::RUBY
