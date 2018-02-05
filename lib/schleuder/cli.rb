@@ -304,7 +304,7 @@ Please notify the users and admins of this list of these changes.
       end
 
       def shellexec(cmd)
-        result = `#{cmd}`
+        result = `#{cmd} 2>&1`
         if $?.exitstatus > 0
           exit $?.exitstatus
         end
