@@ -96,6 +96,12 @@ task :sign_gem do
   `gpg -u #{@gpguid} -b #{@filename_tarball}`
 end
 
+desc 'Upload download-files (gem, tarball, signatures) to schleuder.nadir.org.'
+task :upload_files do
+  # Use rsync to ensure correct file permissions on the server (scp overwrites umask, ACL, etc.).
+  puts `rsync -v -t --chmod=ugo=rwX #{@tagname}* schleuder.nadir.org:/var/www/download/ 2>&1`
+end
+
 desc 'Publish gem-file to rubygems.org'
 task :publish_gem do
   puts "Really push #{@filename_gem} to rubygems.org? [yN]"
