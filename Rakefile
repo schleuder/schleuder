@@ -120,10 +120,7 @@ end
 
 desc 'Describe manual release-tasks'
 task :website do
-  puts "Please update the website:
-  * Update changelog.
-  * Publish release-announcement.
-"
+  puts "Please remember to publish the release-notes on the website and on schleuder-announce."
 end
 
 desc 'Check if version-tag already exists'
