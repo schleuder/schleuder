@@ -3,7 +3,8 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## unreleased
+
+## [3.2.2] / 2018-02-06
 
 ### Changed
 
