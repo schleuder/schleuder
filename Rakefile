@@ -88,12 +88,12 @@ end
 
 desc 'OpenPGP-sign gem and tarball'
 task :sign_tarball do
-  `gpg -u #{@gpguid} -b #{@filename_gem}`
+  `gpg -u #{@gpguid} -b #{@filename_tarball}`
 end
 
 desc 'OpenPGP-sign gem'
 task :sign_gem do
-  `gpg -u #{@gpguid} -b #{@filename_tarball}`
+  `gpg -u #{@gpguid} -b #{@filename_gem}`
 end
 
 desc 'Upload download-files (gem, tarball, signatures) to schleuder.nadir.org.'
