@@ -78,7 +78,7 @@ end
 
 desc "Commit changes as new version"
 task :git_commit do
-  `git commit -m "Version #{@version} (README, gems, ...)"`
+  `git commit -m "Version #{@version}"`
 end
 
 desc 'Build, sign and commit a gem-file.'
