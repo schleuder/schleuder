@@ -1,3 +1,56 @@
+schleuder (3.2.2-1) unstable; urgency=medium
+
+  * New upstream release.
+  * debian/changelog: Remove trailing whitespaces.
+  * debian/compat: Bump debhelper compat level to 11.
+  * debian/control:
+    - Bump Standards-Version to 4.1.3, no changes needed.
+    - Use salsa.debian.org in Vcs-Browser and Vcs-Git fields, as
+      anonscm.debian.org is deprecated and accordingly, all repositories were
+      moved.
+    - Bump required debhelper version to 11~.
+    - Add the propcs package as a build dependency, as some specs use
+      'pgrep'.
+  * debian/copyright: Bump years to include 2018 and use HTTPS in link to
+    copyright format specification.
+  * debian/patches:
+    - Refresh for release 3.2.2-1.
+    - Add patch to remove the spec which tests and expects the install to
+      fail, if a shell-process fails, as it fails itself, currently. The
+      discussion with upstream how to solve this in a sane way is ongoing.
+    - Add patch to increase attempts to start the SKS mock keyserver which is
+      used for running the specs, and the time to sleep between each attempt.
+      Sometimes, the SKS mock keyserver didn't start within the given time,
+      leading to failed specs. This will be fixed upstream and included in the
+      next release.
+    - Add patch to disable Tor and to enforce the use of the so called
+      "standard resolver" for DNS resolution in dirmngr. It seems, dirmngr
+      still sometimes has problems to connect to a keyserver if invoked in a
+      chroot, leading to failed specs. This patch only affects the dirmngr
+      configuration related to running the specs.
+  * debian/Rakefile: Add new alias for database setup as used by upstream.
+  * debian/{rules,s-a-d.service}: In debhelper compat level 11, the systemd
+    sequence for dh was removed, and the dh_systemd_{enable,start,stop}
+    helpers as well. Accordingly, drop the obsolete helpers and make use of
+    the new dh_installsystemd helper.
+    Moreover, if specifying '--name' for dh_installsystemd, debhelper now
+    expects the systemd service file to be installed to be named as
+    $package-name.$service-name.service. Accordingly, rename the service file
+    of the API daemon.
+  * debian/schleuder.postinst: Fix permissions of files and directories. A
+    user reported upstream, that the files inside '/etc/schleuder' had the
+    executable bit set.
+    At the same time it was reported in bugs #889060 and #889488, that doing
+    recursive chmod or chmod might lead to root escalation on systems with
+    'fs.protected_hardlinks=0'.
+    This change fixes both problems via using 'find'. Additionally, the
+    permissions are made more strict, to ensure that the direcotories and
+    files are only accessible by the schleuder user. Before, the schleuder
+    group was allowed access, too.
+  * debian/watch: Update for new upstream release download location.
+
+ -- Georg Faerber <georg@riseup.net>  Tue, 13 Feb 2018 03:24:52 +0100
+
 schleuder (3.2.1-1) unstable; urgency=medium
 
   * New upstream release.
