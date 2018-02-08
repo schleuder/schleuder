@@ -1,0 +1,34 @@
+Description: specs: Remove install test                                               
+ Remove the spec which tests and expects the install to fail, if a
+ shell-process fails, as it fails itself, currently.
+
+ Upstream is aware of this patch and we're working on integrating it
+ upstream.
+Author: Georg Faerber <georg@riseup.net>
+Last-Update: 2018-02-12
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/spec/schleuder/integration/cli_spec.rb
++++ b/spec/schleuder/integration/cli_spec.rb
+@@ -259,21 +259,4 @@
+       teardown_list_and_mailer(list)
+     end
+   end
+-
+-  context '#install' do
+-    it 'exits if a shell-process failed' do
+-      dbfile = Conf.database["database"]
+-      tmp_filename = "#{dbfile}.tmp"
+-      File.rename(dbfile, tmp_filename)
+-      FileUtils.touch dbfile
+-      begin
+-        Cli.new.install
+-      rescue SystemExit => exc
+-      end
+-
+-      expect(exc).to be_present
+-      expect(exc.status).to eql(1)
+-      File.rename(tmp_filename, dbfile)
+-    end
+-  end
+ end
