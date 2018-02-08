@@ -3,3 +3,4 @@
 0001-lib-fix-paths.patch
 0003-bin-fix-require.patch
 0002-etc-fix-paths.patch
+0006-bump-attempts-to-start-sks-mock.patch
