@@ -289,5 +289,71 @@ describe Schleuder::Runner do
         teardown_list_and_mailer(list)
       end
     end
+
+    it 'does not choke on emails with large first mime-part' do
+      list = create(:list)
+      list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      ENV['GNUPGHOME'] = list.listdir
+      mail = Mail.new
+      mail.to = list.request_address
+      mail.from = list.admins.first.email
+      gpg_opts = {
+        encrypt: true,
+        keys: {list.request_address => list.fingerprint},
+        sign: true,
+        sign_as: list.admins.first.fingerprint
+      }
+      mail.gpg(gpg_opts)
+      mail.body = File.read('spec/fixtures/mails/big_first_mime_part.txt')
+      mail.deliver
+
+      message = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+
+      output = process_mail(message.to_s, list.email)
+      expect(output).to be nil
+
+      teardown_list_and_mailer(list)
+    end
+
   end
+  context 'after keyword parsing' do
+    it 'falls back to default charset per RFC if none is set' do
+      list = create(:list, send_encrypted_only: false)
+      list.subscribe("admin@example.org", "59C71FB38AEE22E091C78259D06350440F759BD3", true)
+
+      # manualy build a specific mail structure that comes without a charset
+      mail = Mail.new
+      mail.from = "admin@example.org"
+      mail.to = list.request_address
+      ENV['GNUPGHOME'] = list.listdir
+      cipher_data = GPGME::Data.new
+      GPGME::Ctx.new({armor: true}) do |ctx|
+        ctx.add_signer(*GPGME::Key.find(:secret, "59C71FB38AEE22E091C78259D06350440F759BD3", :sign))
+        ctx.encrypt_sign(
+          GPGME::Key.find(:public,list.fingerprint, :encrypt),
+          GPGME::Data.new("Content-Type: text/plain\n\nNur ein test\n"),
+          cipher_data, 0
+        )
+        cipher_data.seek(0)
+      end
+
+      mail.content_type "multipart/encrypted; boundary=\"#{mail.boundary}\"; protocol=\"application/pgp-encrypted\""
+      ver_part = Mail::Part.new do
+        body "Version: 1"
+        content_type "application/pgp-encrypted"
+      end
+      mail.add_part ver_part
+      enc_part = Mail::Part.new do
+        body cipher_data.to_s
+        content_type "application/octet-stream"
+      end
+      mail.add_part enc_part
+      output = process_mail(mail.to_s, list.email)
+      expect(output).to be nil
+
+      teardown_list_and_mailer(list)
+    end
+  end
+
 end

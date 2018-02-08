@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email        = "schleuder@nadir.org"
   s.homepage     = "https://schleuder.nadir.org/"
   s.summary      = "Schleuder is a gpg-enabled mailinglist with remailing-capabilities."
-  s.description  = "Schleuder is a group's email-gateway: subscribers can exchange encrypted emails among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.\n\nSchleuder takes care of all decryption and (re-)encryption, stripping of headers, and more. Schleuder can also send out its own public key upon request and process administrative commands by email."
+  s.description  = "Schleuder is a group's email-gateway: subscribers can exchange encrypted emails among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.\n\n(Please note: For some platforms there's a better way of installing Schleuder than `gem install`. See <https://schleuder.nadir.org/docs/#installation> for details.)"
   s.files        = `git ls-files lib locales etc db README.md Rakefile bin/pinentry-clearpassphrase`.split
   s.executables =  %w[schleuder schleuder-api-daemon]
   s.platform     = Gem::Platform::RUBY
@@ -21,8 +21,11 @@ Gem::Specification.new do |s|
   #s.cert_chain  = ['gem-public_cert.pem']
   s.license = 'GPL-3.0'
   s.add_runtime_dependency 'gpgme', '~> 2.0', '>= 2.0.13' # Explicitly include to force a version.
+  s.add_runtime_dependency 'mail', '~> 2.6.0'
   s.add_runtime_dependency 'mail-gpg', '~> 0.3.0'
   s.add_runtime_dependency 'activerecord', '~> 4.1'
+  # TODO: Drop this once we cease to support ruby 2.1, see #310
+  s.add_runtime_dependency 'rack-test', '~> 0.7.0'
   s.add_runtime_dependency 'rake', '>= 10.5.0'
   s.add_runtime_dependency 'sqlite3', '~> 1'
   s.add_runtime_dependency 'sinatra', '~> 1'

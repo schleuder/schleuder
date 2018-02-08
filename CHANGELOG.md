@@ -3,12 +3,32 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.2.1] / 2017-10-23
+
+## [3.2.2] / 2018-02-06
 
 ### Changed
 
-* Explicitly depend on the latest version of ruby-gpgme to force existing
-  setups to update.
+* Temporarily depend on the ruby-library "mail" version 2.6. 2.7.0 seems to be a rough release (broke 8bit-characters, changed newline-styles) that needs to be ironed out before we can use it.
+* Changed wording of error-message in case of a missing or incorrect "X-LIST-NAME"-keyword. (Thanks, anarcat!)
+* Keys are now shuffled before refreshing them. This randomizes the way how we are querying keyservers for updated keys to avoid fingerprinting of a list's keyring.
+* Be more robust when dirmngr fails while refreshing keys, especially when updating over an onion service. Fixes #309.
+
+
+### Fixed
+
+* Fix handling of emails with large first mime parts. We removed the code that limited the parsing of keywords to the first 1000 lines, as that broke the handling of certain large emails.
+* Fix output of Keys with a broken character set. This mainly affected schleuder-api.
+* Exit install-script if setting up the database failed.
+* Reveal less errors to public, and improve messages to admins. Previously errors about list-config etc. would have been included in bounces to the sender of the incoming email. Now only the admins get to know the details (which now also include the list the error happend with). Email-bounces only tell about a fatal error — except if the list could not be found, that information is still sent to the sender of the incoming email.
+* Make sure dirmngr is killed for a list after refreshing a list's keyring. Avoids servers getting memory exhausted. Fixes #289
+* Fixed the API-daemon's interpretation of listnames that start with a number (previously the listname "1list" caused errors because it was taken as the integer 1).
+
+
+## [3.2.1] / 2017-10-24
+
+### Changed
+
+* Explicitly depend on the latest version of ruby-gpgme (2.0.13) to force existing setups to update. This fixes the problem where unusable keys were not identified as such. (Previous versions of ruby-gpgme failed to properly provide the capabilities of a key.)
 
 
 ## [3.2.0] / 2017-10-23

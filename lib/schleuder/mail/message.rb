@@ -88,7 +88,6 @@ module Mail
         # We copied the content-headers, so we need to copy the body encoded.
         # Otherwise the content might become unlegible.
         wrapper_part.body = self.body.encoded
-        wrapper_part.charset = self.body.charset || self.class.default_charset
       end
       clean.add_part(wrapper_part)
 
@@ -162,7 +161,7 @@ module Mail
         case thing
         when Mail::Part
           thing
-        when String
+        when String, StandardError
           Mail::Part.new do
             body thing.to_s
           end
@@ -204,11 +203,7 @@ module Mail
       end
 
       @keywords = []
-      lines = part.decoded.lines.map.with_index do |line, i|
-        # Break after some lines to not run all the way through maybe huge emails.
-        if i > 1000
-          break
-        end
+      lines = part.decoded.lines.map do |line|
         # TODO: Find multiline arguments (add-key). Currently add-key has to
         # read the whole body and hope for the best.
         if line.match(/^x-([^:\s]*)[:\s]*(.*)/i)
@@ -226,7 +221,11 @@ module Mail
       # decide itself how to encode, it works. If we don't, some
       # character-sequences are not properly re-encoded.
       part.content_transfer_encoding = nil
-      part.body = lines.compact.join
+      # Make the converted strings (now UTF-8) match what mime-part's headers say,
+      # fall back to US-ASCII if none is set.
+      # https://tools.ietf.org/html/rfc2046#section-4.1.2
+      # -> Default charset is US-ASCII
+      part.body = lines.compact.join.encode(part.charset||'US-ASCII')
 
       @keywords
     end

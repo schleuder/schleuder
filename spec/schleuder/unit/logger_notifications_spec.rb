@@ -52,19 +52,6 @@ describe Schleuder::LoggerNotifications do
     expect(message.parts.first.parts.last.body.to_s).to eql("anotherthing")
   end
 
-  it "notifies admins of multiple text-messages" do
-    list = create(:list, send_encrypted_only: false)
-    list.subscribe("schleuder@example.org", nil, true)
-    list.logger.notify_admin(["Something", "anotherthing"], nil, I18n.t('notice'))
-
-    message = Mail::TestMailer.deliveries.first
-
-    expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.subject).to eql(I18n.t('notice'))
-    expect(message.parts.first.parts.first.body.to_s).to eql("Something")
-    expect(message.parts.first.parts.last.body.to_s).to eql("anotherthing")
-  end
-
   it "notifies admins of multiple text-messages and the original message" do
     list = create(:list, send_encrypted_only: false)
     list.subscribe("schleuder@example.org", nil, true)

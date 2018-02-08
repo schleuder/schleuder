@@ -5,3 +5,8 @@ db/*.sqlite3
 testmails/*
 .pc/
 coverage/
+/*.gem
+/*.gem.sig
+/*.tar.gz
+/*.tar.gz.sig
+

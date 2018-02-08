@@ -143,11 +143,16 @@ describe 'cli' do
 
       with_sks_mock do
         Cli.new.refresh_keys
+        dirmngr_pid = `pgrep -a dirmngr | grep #{list.listdir}`.split(' ',2).first
+        expect(dirmngr_pid).to be_nil
       end
       mail = Mail::TestMailer.deliveries.first
 
       expect(Mail::TestMailer.deliveries.length).to eq 1
-      expect(mail.first_plaintext_part.body.to_s).to match(/Refreshing all keys from the keyring of list #{list.email} resulted in this:\n\nThis key was updated \(new signatures\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]\n\nThis key was updated \(new user-IDs and new signatures\):\n0x6EE51D78FD0B33DE65CCF69D2104E20E20889F66 new@example.org \d{4}-\d{2}-\d{2}\n/)
+      b = mail.first_plaintext_part.body.to_s
+      expect(b).to match(/Refreshing all keys from the keyring of list #{list.email} resulted in this:\n\n/)
+      expect(b).to match(/\nThis key was updated \(new signatures\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]\n/)
+      expect(b).to match(/\nThis key was updated \(new user-IDs and new signatures\):\n0x6EE51D78FD0B33DE65CCF69D2104E20E20889F66 new@example.org \d{4}-\d{2}-\d{2}\n/)
 
       teardown_list_and_mailer(list)
     end
@@ -166,7 +171,10 @@ describe 'cli' do
       mail = Mail::TestMailer.deliveries.first
 
       expect(Mail::TestMailer.deliveries.length).to eq 1
-      expect(mail.first_plaintext_part.body.to_s).to match(/Refreshing all keys from the keyring of list #{list1.email} resulted in this:\n\nThis key was updated \(new signatures\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]\n\nThis key was updated \(new user-IDs and new signatures\):\n0x6EE51D78FD0B33DE65CCF69D2104E20E20889F66 new@example.org \d{4}-\d{2}-\d{2}\n/)
+      b = mail.first_plaintext_part.body.to_s
+      expect(b).to match(/Refreshing all keys from the keyring of list #{list1.email} resulted in this:\n\n/)
+      expect(b).to match(/\nThis key was updated \(new signatures\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]\n/)
+      expect(b).to match(/\nThis key was updated \(new user-IDs and new signatures\):\n0x6EE51D78FD0B33DE65CCF69D2104E20E20889F66 new@example.org \d{4}-\d{2}-\d{2}\n/)
 
       teardown_list_and_mailer(list1)
       teardown_list_and_mailer(list2)
@@ -249,6 +257,23 @@ describe 'cli' do
       expect(Mail::TestMailer.deliveries.empty?).to eq true
 
       teardown_list_and_mailer(list)
+    end
+  end
+
+  context '#install' do
+    it 'exits if a shell-process failed' do
+      dbfile = Conf.database["database"]
+      tmp_filename = "#{dbfile}.tmp"
+      File.rename(dbfile, tmp_filename)
+      FileUtils.touch dbfile
+      begin
+        Cli.new.install
+      rescue SystemExit => exc
+      end
+
+      expect(exc).to be_present
+      expect(exc.status).to eql(1)
+      File.rename(tmp_filename, dbfile)
     end
   end
 end

@@ -12,13 +12,16 @@ if ENV['CHECK_CODE_COVERAGE'] != 'false'
   require 'simplecov-console'
   SimpleCov::Formatter::Console.table_options = {max_width: 400}
   SimpleCov.formatter = SimpleCov::Formatter::Console
-  SimpleCov.start
+  SimpleCov.start do
+    add_filter %r{^/vendor/}
+  end
 end
 require 'schleuder'
 require 'schleuder/cli'
 require 'database_cleaner'
 require 'factory_girl'
 require 'net/http'
+require 'fileutils'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

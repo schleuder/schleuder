@@ -6,7 +6,7 @@ module Schleuder
       end
 
       def to_s
-        message + t('errors.signoff')
+        super + t('errors.signoff')
       end
 
       def set_default_locale
