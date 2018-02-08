@@ -11,7 +11,7 @@ Description: lib/: Fix paths
  Upstream is aware of this patch and we're working on integrating it
  upstream.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2017-10-27
+Last-Update: 2018-02-08
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/lib/schleuder/conf.rb
@@ -27,7 +27,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        'superadmin' => 'root@localhost',
 --- a/lib/schleuder/cli.rb
 +++ b/lib/schleuder/cli.rb
-@@ -76,7 +76,7 @@
+@@ -77,7 +77,7 @@
      desc 'install', "Set-up or update Schleuder environment (create folders, copy files, fill the database)."
      def install
        config_dir = Pathname.new(ENV['SCHLEUDER_CONFIG']).dirname
@@ -38,7 +38,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        if Dir.glob("#{Conf.lists_dir}/*/*/members.conf").size > 0
 --- a/lib/schleuder.rb
 +++ b/lib/schleuder.rb
-@@ -74,6 +74,7 @@
+@@ -75,6 +75,7 @@
  end
  
  I18n.load_path += Dir["#{rootdir}/locales/*.yml"]
