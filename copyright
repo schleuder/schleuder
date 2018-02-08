@@ -1,13 +1,13 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: schleuder
 Source: https://0xacab.org/schleuder/schleuder
 
 Files: *
-Copyright: 2014-2017 schleuder dev team <schleuder@nadir.org> 
+Copyright: 2014-2018 schleuder dev team <schleuder@nadir.org> 
 License: GPL-3.0
 
 Files: debian/*
-Copyright: 2016-2017 Georg Faerber <georg@riseup.net>
+Copyright: 2016-2018 Georg Faerber <georg@riseup.net>
 License: GPL-3.0
 Comment: the Debian packaging is licensed under the same terms as the
  original package.
