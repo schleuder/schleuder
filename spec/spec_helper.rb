@@ -80,9 +80,12 @@ RSpec.configure do |config|
   def with_sks_mock
     pid = Process.spawn('spec/sks-mock.rb', [:out, :err] => ["/tmp/sks-mock.log", 'w'])
     uri = URI.parse("http://127.0.0.1:9999/status")
-    attempts = 5
+    attempts = 25
+    # Use the following env var to increase the time to sleep between
+    # each attempt, for example if building the Debian package 
+    ENV['SKS_MOCK_SLEEP'] ||= '1'
     begin
-      sleep 1
+      sleep ENV['SKS_MOCK_SLEEP'].to_i
       Net::HTTP.get(uri)
     rescue Errno::ECONNREFUSED => exc
       attempts -= 1
