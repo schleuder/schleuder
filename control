@@ -3,7 +3,7 @@ Section: mail
 Priority: optional
 Maintainer: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>
 Uploaders: Georg Faerber <georg@riseup.net>
-Build-Depends: debhelper (>= 10~),
+Build-Depends: debhelper (>= 11~),
                dirmngr,
                gem2deb,
                rake (>= 10.5.0~),
