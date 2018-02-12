@@ -1,3 +1,4 @@
+0008-dirmngr-no-tor-standard-resolver.patch
 0007-specs-remove-install-test.patch
 0004-use-default-debian-keyserver.patch
 0005-man-fix-log-path.patch
