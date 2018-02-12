@@ -17,3 +17,8 @@ end
 
 # ActiveRecord requires this task to be present
 Rake::Task.define_task("db:environment")
+
+namespace :db do
+  # A shortcut.
+  task init: ['db:create', 'db:schema:load']
+end
