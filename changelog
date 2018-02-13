@@ -44,7 +44,7 @@ schleuder (3.2.2-1) unstable; urgency=medium
     recursive chmod or chown might lead to root escalation on systems with
     'fs.protected_hardlinks=0'.
     This change fixes both problems via using 'find'. Additionally, the
-    permissions are made more strict, to ensure that the direcotories and
+    permissions are made more strict, to ensure that the directories and
     files are only accessible by the schleuder user. Before, the schleuder
     group was allowed access, too.
   * debian/watch: Update for new upstream release download location.
