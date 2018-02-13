@@ -1,0 +1,26 @@
+image: debian:sid
+
+build:
+  script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update
+    - apt-get -y upgrade
+    - apt-get -y dist-upgrade
+    - export BUILD_DEPENDS=`perl -ne 'next if /^#/; $p=(s/^Build-Depends:\s*/ / or (/^ / and $p)); s/,|\n|\([^)]+\)//mg; print if $p' < debian/control`
+    - apt-get install -y --no-install-recommends
+        build-essential dpkg-dev fakeroot git-buildpackage lintian pristine-tar $BUILD_DEPENDS
+    - apt-get -y autoremove --purge
+    - apt-get clean
+    - rm -rf /var/lib/apt/lists/*
+    - dpkg-checkbuilddeps
+    - echo "make master branch current for gbp"
+    - git checkout -B "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
+    - gbp buildpackage -us -uc --lintian-opts -iIE --pedantic
+    - mkdir results
+    - cp ../*.deb results/
+    - cp ../*.dsc results/
+    - cp ../*.changes results/
+  artifacts:
+    paths:
+    - results
+    expire_in: 3 days
