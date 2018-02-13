@@ -41,7 +41,7 @@ schleuder (3.2.2-1) unstable; urgency=medium
     user reported upstream, that the files inside '/etc/schleuder' had the
     executable bit set.
     At the same time it was reported in bugs #889060 and #889488, that doing
-    recursive chmod or chmod might lead to root escalation on systems with
+    recursive chmod or chown might lead to root escalation on systems with
     'fs.protected_hardlinks=0'.
     This change fixes both problems via using 'find'. Additionally, the
     permissions are made more strict, to ensure that the direcotories and
