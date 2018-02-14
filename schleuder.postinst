@@ -21,7 +21,7 @@ case "$1" in
         # systems with fs.protected_hardlinks=0. See bugs #889060 and
         # #889488 for details.
         find /etc/schleuder /var/lib/schleuder /var/log/schleuder -exec chown schleuder:schleuder {} \;
-		find /etc/schleuder /var/lib/schleuder /var/log/schleuder -type d -exec chmod 0700 {} \;
+        find /etc/schleuder /var/lib/schleuder /var/log/schleuder -type d -exec chmod 0700 {} \;
         find /etc/schleuder /var/lib/schleuder /var/log/schleuder -type f -exec chmod 0600 {} \;
 
         if [ -d /var/backup/schleuder ]; then
