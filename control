@@ -45,7 +45,8 @@ Depends: adduser,
          thin,
          ${misc:Depends},
          ${shlibs:Depends}
-Recommends: haveged, schleuder-cli
+Recommends: haveged,
+            schleuder-cli
 Description: GPG-enabled mailing list manager with resending-capabilities
  Schleuder is a GPG-enabled mailing list manager with resending-capabilities.
  Subscribers can communicate encrypted (and pseudonymously) among themselves,
