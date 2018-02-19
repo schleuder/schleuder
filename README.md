@@ -112,6 +112,10 @@ To execute the test suite run:
 
     bundle exec rspec
 
+Please note: Some of the specs use 'pgrep'. On systems that base on Debian 9 ("stretch") install it via 
+
+    apt-get install procps
+
 We are working on extendig the test coverage.
 
 Contributing
