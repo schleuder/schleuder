@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.authors      = 'schleuder dev team'
   s.email        = "schleuder@nadir.org"
   s.homepage     = "https://schleuder.nadir.org/"
-  s.summary      = "Schleuder is a gpg-enabled mailinglist with remailing-capabilities."
+  s.summary      = "Schleuder is a gpg-enabled mailing list manager with remailing-capabilities."
   s.description  = "Schleuder is a group's email-gateway: subscribers can exchange encrypted emails among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.\n\n(Please note: For some platforms there's a better way of installing Schleuder than `gem install`. See <https://schleuder.nadir.org/docs/#installation> for details.)"
   s.files        = `git ls-files lib locales etc db README.md Rakefile bin/pinentry-clearpassphrase`.split
   s.executables =  %w[schleuder schleuder-api-daemon]
@@ -20,6 +20,15 @@ Gem::Specification.new do |s|
   #s.signing_key = "#{ENV['HOME']}/.gem/schleuder-gem-private_key.pem"
   #s.cert_chain  = ['gem-public_cert.pem']
   s.license = 'GPL-3.0'
+  s.metadata = {
+    "homepage_uri"      => "https://schleuder.nadir.org/",
+    "documentation_uri" => "https://schleuder.nadir.org/docs/",
+    "changelog_uri"     => "https://0xacab.org/schleuder/schleuder/blob/master/CHANGELOG.md",
+    "source_code_uri"   => "https://0xacab.org/schleuder/schleuder/",
+    "bug_tracker_uri"   => "https://0xacab.org/schleuder/schleuder/issues",
+    "mailing_list_uri"  => "https://lists.nadir.org/mailman/listinfo/schleuder-announce/",
+  }
+  s.required_ruby_version = ">= 2.1.0"
   s.add_runtime_dependency 'gpgme', '~> 2.0', '>= 2.0.13' # Explicitly include to force a version.
   s.add_runtime_dependency 'mail', '~> 2.6.0'
   s.add_runtime_dependency 'mail-gpg', '~> 0.3.0'
