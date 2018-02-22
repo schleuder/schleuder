@@ -1,6 +1,19 @@
 module Schleuder
   module Filters
     class Runner
+      def self.load_filter_files(type)
+        Schleuder.logger.debug "Loading #{type} filters"
+        if File.directory?(d = "#{Schleuder::Conf.filters_dir}/#{type}")
+          Dir["#{d}/*.rb"].collect do |file|
+            require file
+            File.basename(file,'.rb')
+          end
+        else
+          Schleuder.logger.debug "No #{type} filters available in #{d}"
+          []
+        end
+      end
+
       # To define priority sort this.
       # The method `setup` parses, decrypts etc.
       # the mail sent to the list. So before
@@ -13,7 +26,7 @@ module Schleuder
         send_key
         fix_exchange_messages!
         strip_html_from_alternative!
-      ]
+      ] + load_filter_files('pre')
       # message size must be checked after
       # decryption as gpg heavily compresses
       # messages.
@@ -26,7 +39,7 @@ module Schleuder
         receive_signed_only
         receive_encrypted_only
         receive_from_subscribed_emailaddresses_only
-      ]
+      ] + load_filter_files('post')
 
       attr_reader :list
 

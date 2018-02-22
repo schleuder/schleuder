@@ -10,7 +10,9 @@ module Schleuder
     DEFAULTS = {
       'lists_dir' => '/var/lib/schleuder/lists',
       'listlogs_dir' => '/var/lib/schleuder/lists',
+      # TODO: move plugins dir also into /var/lib/schleuder
       'plugins_dir' => '/etc/schleuder/plugins',
+      'filters_dir' => '/var/lib/schleuder/filters',
       'log_level' => 'warn',
       'superadmin' => 'root@localhost',
       'keyserver' => 'hkp://pool.sks-keyservers.net',
@@ -56,6 +58,10 @@ module Schleuder
 
     def self.plugins_dir
       instance.config['plugins_dir']
+    end
+
+    def self.filters_dir
+      instance.config['filters_dir']
     end
 
     def self.database

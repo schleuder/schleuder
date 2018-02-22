@@ -19,6 +19,28 @@ describe Schleuder::Filters::Runner do
 
   it { is_expected.to respond_to :run }
 
+  context 'plugins' do
+    before(:each){ @orig_filtersdir = Schleuder::Conf.filters_dir }
+    after(:each){ Schleuder::Conf.instance.config['filters_dir'] = @orig_filtersdir }
+    it 'loads additional filters' do
+      Schleuder::Conf.instance.config['filters_dir'] = File.join(Dir.pwd,'spec/fixtures/filters')
+      filters = Schleuder::Filters::Runner.load_filter_files('pre')
+      expect(filters.length).to eql(1)
+      expect(filters.first) == 'pre_filter'
+      filters = Schleuder::Filters::Runner.load_filter_files('post')
+      expect(filters.length).to eql(1)
+      expect(filters.first).to eql('post_filter')
+    end
+    it 'loads additional filters only from existing dirs' do
+      Schleuder::Conf.instance.config['filters_dir'] = File.join(Dir.pwd,'spec/fixtures/filters_without_post')
+      filters = Schleuder::Filters::Runner.load_filter_files('pre')
+      expect(filters.length).to eql(1)
+      expect(filters.first).to eql('pre_filter')
+      filters = Schleuder::Filters::Runner.load_filter_files('post')
+      expect(filters.length).to eql(0)
+    end
+  end
+
   context '#run' do
     it 'runs the filters' do
       mail = Mail.new
