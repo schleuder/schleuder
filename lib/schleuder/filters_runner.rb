@@ -1,40 +1,14 @@
 module Schleuder
   module Filters
     class Runner
-      # To define priority sort this.
-      # The method `setup` parses, decrypts etc.
-      # the mail sent to the list. So before
-      # calling setup we do all the things
-      # that won't require e.g. validation of
-      # the sender.
-      PRE_SETUP_FILTERS = %w[
-        forward_bounce_to_admins
-        forward_all_incoming_to_admins
-        send_key
-        fix_exchange_messages!
-        strip_html_from_alternative!
-      ]
-      # message size must be checked after
-      # decryption as gpg heavily compresses
-      # messages.
-      POST_SETUP_FILTERS = %w[
-        request
-        max_message_size
-        forward_to_owner
-        receive_admin_only
-        receive_authenticated_only
-        receive_signed_only
-        receive_encrypted_only
-        receive_from_subscribed_emailaddresses_only
-      ]
+      attr_reader :list, :filter_type
 
-      attr_reader :list
-
-      def initialize(list)
+      def initialize(list, filter_type)
         @list = list
+        @filter_type = filter_type
       end
 
-      def run(mail, filters)
+      def run(mail)
         filters.map do |cmd|
           list.logger.debug "Calling filter #{cmd}"
           response = Filters.send(cmd, list, mail)
@@ -48,8 +22,12 @@ module Schleuder
         end
         nil
       end
-      private
 
+      def filters
+        @filters ||= load_filters
+      end
+
+      private
       def stop?(response)
         response.kind_of?(StandardError)
       end
@@ -77,6 +55,38 @@ module Schleuder
         if list.bounces_notify_admins?
           list.logger.notify_admin reason, original_message, I18n.t('notice')
         end
+      end
+
+      def load_filters
+        list.logger.debug "Loading #{filter_type}_decryption filters"
+        sorted_filters.map do |filter_name|
+          require all_filter_files[filter_name]
+          filter_name.split('_',2).last
+        end
+      end
+
+      def sorted_filters
+        @sorted_filters ||= all_filter_files.keys.sort do |a,b|
+          a.split('_',2).first.to_i <=> b.split('_',2).first.to_i
+        end
+      end
+
+      def all_filter_files
+        @all_filter_files ||= begin
+          files_in_filter_dirs = Dir[*filter_dirs]
+          files_in_filter_dirs.inject({}) do |res,file|
+            filter_name = File.basename(file,'.rb')
+            res[filter_name] = file
+            res
+          end
+        end
+      end
+
+      def filter_dirs
+        @filter_dirs ||= [File.join(File.dirname(__FILE__),"filters"),
+                          Schleuder::Conf.filters_dir].map do |d|
+                            File.join(d,"#{filter_type}_decryption/[0-9]*_*.rb")
+                          end
       end
     end
   end

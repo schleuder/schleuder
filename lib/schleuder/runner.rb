@@ -7,7 +7,7 @@ module Schleuder
       logger.info "Parsing incoming email."
       @mail = Mail.create_message_to_list(msg, recipient, list)
 
-      error = run_filters(Filters::Runner::PRE_SETUP_FILTERS)
+      error = run_filters('pre')
       return error if error
 
       begin
@@ -18,7 +18,7 @@ module Schleuder
         return Errors::DecryptionFailed.new(list)
       end
 
-      error = run_filters(Filters::Runner::POST_SETUP_FILTERS)
+      error = run_filters('post')
       return error if error
 
       if ! @mail.was_validly_signed?
@@ -56,8 +56,8 @@ module Schleuder
       @list
     end
 
-    def run_filters(filters)
-      error = filters_runner.run(@mail, filters)
+    def run_filters(filter_type)
+      error = filters_runner(filter_type).run(@mail)
       if error
         if list.bounces_notify_admins?
           text = "#{I18n.t('.bounces_notify_admins')}\n\n#{error}"
@@ -68,8 +68,19 @@ module Schleuder
       end
     end
 
-    def filters_runner
-      @filters_runner ||= Filters::Runner.new(list)
+    def filters_runner(filter_type)
+      if filter_type == 'pre'
+        filters_runner_pre_decryption
+      else
+        filters_runner_post_decryption
+      end
+    end
+
+    def filters_runner_pre_decryption
+      @filters_runner_pre_decryption ||= Filters::Runner.new(list,'pre')
+    end
+    def filters_runner_post_decryption
+      @filters_runner_post_decryption ||= Filters::Runner.new(list,'post')
     end
 
     def logger

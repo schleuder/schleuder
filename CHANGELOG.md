@@ -29,9 +29,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Error messages are converted into human readable text now, instead of giving their class-name. (#338)
 * Require mail-gpg >= 0.3.3, which fixes a bug that let some equal-signs disappear under specific circumstances. (#287)
 
+
 ### Known issues
 
 * With the current used mail library version schleuder uses, there are certain malformed emails that can't be parsed. See #334 for background. This will be fixed in future releases of the mail library.
+
+### Added
+
+* Enable to load external filters, similar to how we allow external plugins. (#282)
 
 ### Changed
 

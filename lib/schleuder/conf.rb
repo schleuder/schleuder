@@ -11,6 +11,7 @@ module Schleuder
       'lists_dir' => '/var/lib/schleuder/lists',
       'listlogs_dir' => '/var/lib/schleuder/lists',
       'plugins_dir' => '/etc/schleuder/plugins',
+      'filters_dir' => '/etc/schleuder/filters',
       'log_level' => 'warn',
       'superadmin' => 'root@localhost',
       'keyserver' => 'hkp://pool.sks-keyservers.net',
@@ -56,6 +57,10 @@ module Schleuder
 
     def self.plugins_dir
       instance.config['plugins_dir']
+    end
+
+    def self.filters_dir
+      instance.config['filters_dir']
     end
 
     def self.database

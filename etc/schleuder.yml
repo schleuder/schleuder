@@ -7,6 +7,17 @@ listlogs_dir: /var/lib/schleuder/lists
 # Schleuder reads plugins also from this directory.
 plugins_dir: /etc/schleuder/plugins
 
+# Schleuder reads filters also from this directory path,
+# in the specific pre_decryption or post_decryption subdirectory.
+# Filter files must follow the following convention for the
+# filename: \d+_a_name.rb
+# Where \d+ is any number, that defines the place in the
+# list of filters and a_name must match the method name
+# of the filter.
+# The built-in filters are using round numbers for their
+# positioning within the list. Increased by ten.
+filters_dir: /etc/schleuder/filters
+
 # How verbose should Schleuder log to syslog? (list-specific messages are written to the list's log-file).
 log_level: warn
 

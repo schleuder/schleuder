@@ -1,23 +1,27 @@
 require "spec_helper"
 
+# make sure we have the filters loaded, as they will be loaded lazily within the code
+Dir[File.join(File.dirname(__FILE__),'../../../lib/schleuder/filters/*/*.rb')].each do |file|
+  require file
+end
 describe Schleuder::Filters do
 
-  context '.fix_exchange_messages!' do
+  context '.fix_exchange_messages' do
     it "fixes pgp/mime-messages that were mangled by Exchange" do
       message = Mail.read("spec/fixtures/mails/exchange.eml")
-      Schleuder::Filters.fix_exchange_messages!(nil, message)
+      Schleuder::Filters.fix_exchange_messages(nil, message)
 
       expect(message[:content_type].content_type).to eql("multipart/encrypted")
     end
     it "works with a text/plain message" do
       message = Mail.read("spec/fixtures/mails/exchange_no_parts.eml")
-      Schleuder::Filters.fix_exchange_messages!(nil, message)
+      Schleuder::Filters.fix_exchange_messages(nil, message)
 
       expect(message[:content_type].content_type).to eql("text/plain")
     end
   end
 
-  context '.strip_html_from_alternative!' do
+  context '.strip_html_from_alternative' do
     it "strips HTML-part from multipart/alternative-message that contains ascii-armored PGP-data" do
       list = create(:list)
       mail = Mail.new
@@ -28,7 +32,7 @@ describe Schleuder::Filters do
       mail.html_part = "<p>#{content}</p>"
       mail.subject = "test"
 
-      Schleuder::Filters.strip_html_from_alternative!(list, mail)
+      Schleuder::Filters.strip_html_from_alternative(list, mail)
 
       expect(mail[:content_type].content_type).to eql("multipart/mixed")
       expect(mail.parts.size).to be(1)
@@ -45,7 +49,7 @@ describe Schleuder::Filters do
       mail.html_part = "<p>#{content}</p>"
       mail.subject = "test"
 
-      Schleuder::Filters.strip_html_from_alternative!(nil, mail)
+      Schleuder::Filters.strip_html_from_alternative(nil, mail)
 
       expect(mail[:content_type].content_type).to eql("multipart/alternative")
       expect(mail.parts.size).to be(2)
@@ -61,7 +65,7 @@ describe Schleuder::Filters do
       mail.body = "blabla"
       mail.subject = "test"
 
-      Schleuder::Filters.strip_html_from_alternative!(nil, mail)
+      Schleuder::Filters.strip_html_from_alternative(nil, mail)
 
       expect(mail[:content_type]).to be_nil
       expect(mail.parts.size).to be(0)
