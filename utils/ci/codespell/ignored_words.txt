@@ -1,0 +1,5 @@
+# Words to be ignored by codespell.
+# Put one word per line.
+
+# That's actually \nto, which codespell is not able to parse correctly
+nto
