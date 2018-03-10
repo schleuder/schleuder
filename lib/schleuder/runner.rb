@@ -94,7 +94,7 @@ module Schleuder
         return log_and_return(Errors::ListNotFound.new(recipient), true)
       end
 
-      # Check neccessary permissions of crucial files.
+      # Check necessary permissions of crucial files.
       if ! File.exist?(@list.listdir)
         return log_and_return(Errors::ListdirProblem.new(@list.listdir, :not_existing))
       elsif ! File.directory?(@list.listdir)

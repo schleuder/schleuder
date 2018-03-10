@@ -322,7 +322,7 @@ describe Schleuder::Runner do
       list = create(:list, send_encrypted_only: false)
       list.subscribe("admin@example.org", "59C71FB38AEE22E091C78259D06350440F759BD3", true)
 
-      # manualy build a specific mail structure that comes without a charset
+      # manually build a specific mail structure that comes without a charset
       mail = Mail.new
       mail.from = "admin@example.org"
       mail.to = list.request_address

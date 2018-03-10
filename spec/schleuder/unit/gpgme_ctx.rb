@@ -206,7 +206,7 @@ describe GPGME::Ctx do
       expect(res).to match(/This key was updated \(new user-IDs and new signatures\):\n0x6EE51D78FD0B33DE65CCF69D2104E20E20889F66 new@example.org \d{4}-\d{2}-\d{2}/)
       if GPGME::Ctx.sufficient_gpg_version?('2.1')
         dirmngr_pid = `pgrep -a dirmngr | grep #{list.listdir}`.split(' ',2).first
-        # no error occured
+        # no error occurred
         expect(dirmngr_pid).not_to be_nil
       end
     end
