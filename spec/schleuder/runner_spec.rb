@@ -31,6 +31,24 @@ describe Schleuder::Runner do
         teardown_list_and_mailer(list)
       end
 
+      it "contains the specified pseudoheaders in the correct order" do
+        list = create(:list, send_encrypted_only: false, headers_to_meta: ["from", "sig"])
+        list.subscribe("admin@example.org", nil, true)
+        mail = File.read("spec/fixtures/mails/plain/thunderbird.eml")
+
+        Schleuder::Runner.new().run(mail, list.email)
+        message = Mail::TestMailer.deliveries.first
+        content_part = message.parts.first
+        pseudoheaders = "From: Nina Siessegger <schleuder@example.org>\nSig: Unsigned"
+
+        expect(content_part.parts.first.body).to include(pseudoheaders)
+        expect(content_part.parts.first.body).not_to include('To:')
+        expect(content_part.parts.first.body).not_to include('Enc:')
+        expect(content_part.parts.first.body).not_to include('Date:')
+
+        teardown_list_and_mailer(list)
+      end
+
       it "doesn't have unwanted headerlines from the original message" do
         list = create(:list, send_encrypted_only: false)
         list.subscribe("admin@example.org", nil, true)
