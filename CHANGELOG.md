@@ -12,6 +12,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Do not anymore fail on emails containing any PGP boundaries as part of their plain text. As a sideeffect we will not anymore validate an email a second time. Hence, a message part containing an additional signature within an encrypted (and possibly signed) email won't be validated and removed. (#261)
 * Exit with code 1 if a CLI-subcommand was not found (#339).
 
+### Known issues
+
+* With the current used mail library version schleuder uses, there are certain malformed emails that can't be parsed. See #334 for background. This will be fixed in future releases of the mail library.
 
 ### Changed
 
