@@ -11,7 +11,7 @@ module Schleuder
         forward_bounce_to_admins
         forward_all_incoming_to_admins
         send_key
-        fix_hotmail_messages!
+        fix_exchange_messages!
         strip_html_from_alternative!
       ]
       # message size must be checked after
