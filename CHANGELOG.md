@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * `X-SUBSCRIBE` now in all cases correctly sets the values for admin and delivery_enabled, if they are given as third and fourth argument, respectively.
 * To identify broken Microsoft Exchange messages, check if the headers include 'X-MS-Exchange' instead of specific domain names. Before this, we've missed mails sent by Exchange installations not operated by Microsoft or mails with a different "originating organisation domain" than Hotmail or Outlook. (#333)
+* Do not anymore fail on emails containing any PGP boundaries as part of their plain text. As a sideeffect we will not anymore validate an email a second time. Hence, a message part containing an additional signature within an encrypted (and possibly signed) email won't be validated and removed. (#261)
 
 
 ### Changed

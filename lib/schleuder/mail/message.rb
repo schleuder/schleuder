@@ -23,12 +23,9 @@ module Mail
     def setup
       if self.encrypted?
         new = self.decrypt(verify: true)
-        ## Work around a bug in mail-gpg: when decrypting pgp/mime the
-        ## Date-header is not copied.
-        #new.date ||= self.date
         # Test if there's a signed multipart inside the ciphertext
         # ("encapsulated" format of pgp/mime).
-        if new.signed?
+        if encapsulated_signed?(new)
           new = new.verify
         end
       elsif self.signed?
@@ -410,6 +407,13 @@ module Mail
 
     private
 
+    # mail.signed? throws an error if it finds
+    # pgp boundaries, so we must use the Mail::Gpg
+    # methods.
+    def encapsulated_signed?(mail)
+      (mail.verify_result.nil? || mail.verify_result.signatures.empty?) && \
+        (Mail::Gpg.signed_mime?(mail) || Mail::Gpg.signed_inline?(mail))
+    end
 
     def add_footer!(footer_attribute)
       if self.list.blank? || self.list.send(footer_attribute).to_s.empty?

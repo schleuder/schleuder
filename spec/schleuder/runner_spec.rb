@@ -143,11 +143,11 @@ describe Schleuder::Runner do
 
         teardown_list_and_mailer(list)
       end
-      
+
       it "does not include the public_footer" do
         public_footer = "-- \nsomething public blabla"
         list = create(
-          :list, 
+          :list,
           send_encrypted_only: false,
           internal_footer: "-- \nfor our eyes only!",
           public_footer: public_footer
@@ -290,7 +290,7 @@ describe Schleuder::Runner do
       end
     end
 
-    it 'does not choke on emails with large first mime-part' do
+    it 'does not throw an error on emails with large first mime-part' do
       list = create(:list)
       list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
       ENV['GNUPGHOME'] = list.listdir
@@ -316,6 +316,85 @@ describe Schleuder::Runner do
       teardown_list_and_mailer(list)
     end
 
+    it 'does not throw an error on emails that contain other gpg keywords' do
+      list = create(:list)
+      list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      ENV['GNUPGHOME'] = list.listdir
+      mail = Mail.new
+      mail.to = list.request_address
+      mail.from = list.admins.first.email
+      gpg_opts = {
+        encrypt: true,
+        keys: {list.request_address => list.fingerprint},
+        sign: true,
+        sign_as: list.admins.first.fingerprint
+      }
+      mail.gpg(gpg_opts)
+      mail.body = File.read('spec/fixtures/mails/mail_with_pgp_boundaries_in_body.txt')
+      mail.deliver
+
+      message = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+
+      output = process_mail(message.to_s, list.email)
+      expect(output).to be nil
+
+      teardown_list_and_mailer(list)
+    end
+    it 'does not throw an error on emails with an attached pgp key as application/octet-stream' do
+      list = create(:list)
+      list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      ENV['GNUPGHOME'] = list.listdir
+      mail = Mail.new
+      mail.to = list.request_address
+      mail.from = list.admins.first.email
+      gpg_opts = {
+        encrypt: true,
+        keys: {list.request_address => list.fingerprint},
+        sign: true,
+        sign_as: list.admins.first.fingerprint
+      }
+      mail.gpg(gpg_opts)
+      mail.body = 'See attachment'
+      mail.attachments['251F2412.asc'] = {
+        :content_type => '"application/octet-stream"; name="251F2412.asc"',
+        :content_transfer_encoding => '7bit',
+        :content => File.read('spec/fixtures/bla_foo_key.txt')
+      }
+      mail.deliver
+
+      message = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+
+      output = process_mail(message.to_s, list.email)
+      expect(output).to be nil
+
+      teardown_list_and_mailer(list)
+    end
+    it 'does not throw an error on encrypted but unsigned emails that contain a forwarded encrypted email' do
+      list = create(:list)
+      list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      ENV['GNUPGHOME'] = list.listdir
+      mail = Mail.new
+      mail.to = list.request_address
+      mail.from = list.admins.first.email
+      gpg_opts = {
+        encrypt: true,
+        keys: {list.request_address => list.fingerprint},
+        sign: false,
+      }
+      mail.gpg(gpg_opts)
+      mail.body = "Hi\n\nI'll forward you this email, have a look at it!\n\n#{File.read('spec/fixtures/mails/encrypted-mime/thunderbird.eml')}"
+      mail.deliver
+
+      message = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+
+      output = process_mail(message.to_s, list.email)
+      expect(output).to be nil
+
+      teardown_list_and_mailer(list)
+    end
   end
   context 'after keyword parsing' do
     it 'falls back to default charset per RFC if none is set' do
