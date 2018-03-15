@@ -376,7 +376,7 @@ describe Schleuder::List do
   end
 
   describe "#check_keys" do
-    it "adds a mesage if a key expires in two weeks or less" do
+    it "adds a message if a key expires in two weeks or less" do
       list = create(:list)
       key = double("key")
       generation_time = Time.now - 1.year

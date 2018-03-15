@@ -77,7 +77,7 @@ function watch_maildir {
         # --format '%w%f' also not required, we're handling all the files hat we can find anyway
         inotifywait -r -e move -qq "$SCHLOCKER_MAILDIR"
 
-        # if a watched event occured, send the signal
+        # if a watched event occurred, send the signal
         # done *after* we spot a new file
         # we can spare the short delay imposed
         # in return we are sure we actually have some directories to work on

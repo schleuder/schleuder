@@ -27,7 +27,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Fix handling of emails with large first mime parts. We removed the code that limited the parsing of keywords to the first 1000 lines, as that broke the handling of certain large emails.
 * Fix output of Keys with a broken character set. This mainly affected schleuder-api.
 * Exit install-script if setting up the database failed.
-* Reveal less errors to public, and improve messages to admins. Previously errors about list-config etc. would have been included in bounces to the sender of the incoming email. Now only the admins get to know the details (which now also include the list the error happend with). Email-bounces only tell about a fatal error — except if the list could not be found, that information is still sent to the sender of the incoming email.
+* Reveal less errors to public, and improve messages to admins. Previously errors about list-config etc. would have been included in bounces to the sender of the incoming email. Now only the admins get to know the details (which now also include the list the error happened with). Email-bounces only tell about a fatal error — except if the list could not be found, that information is still sent to the sender of the incoming email.
 * Make sure dirmngr is killed for a list after refreshing a list's keyring. Avoids servers getting memory exhausted. Fixes #289
 * Fixed the API-daemon's interpretation of listnames that start with a number (previously the listname "1list" caused errors because it was taken as the integer 1).
 
@@ -227,7 +227,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Avoid possible future errors by ignoring every unknown output of gpg (like GnuPG's doc/DETAILS recommends). (Thanks, dkg!)
 * Friendlier error message if delivery to subscription fails.
 * Set list-email as primary address after adding UIDs. Previously it was a little random, for reasons only known to GnuPG.
-* Only use temporary files where neccessary, and with more secure paths.
+* Only use temporary files where necessary, and with more secure paths.
 * Tighten requirements for valid email-addresses a little: The domain-part may now only contain alpha-numeric characters, plus these: `._-`
 * Required version of schleuder-cli: 0.0.2.
 

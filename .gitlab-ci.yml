@@ -1,5 +1,6 @@
 ---
 stages:
+  - static
   - test
   - docker
 
@@ -8,8 +9,8 @@ cache:
     - vendor
 
 # Jobs that start with a period are disabled
-# This is just a template, to be used further below in the individual ruby rspec job definitions
-.test_ruby: &test_ruby
+# This is just a template, to be used further below in the individual job definitions
+.setup_apt: &setup_apt
   before_script:
     # Export APT env vars to cache packages archives and lists based on the current working directory
     - export APT_DIR=$CI_PROJECT_DIR/vendor/apt && export APT_ARCHIVES_DIR=$APT_DIR/archives && export APT_LISTS_DIR=$APT_DIR/lists
@@ -23,13 +24,31 @@ cache:
     # Ensure the custom APT directory does exist
     - mkdir -p {${APT_ARCHIVES_DIR},${APT_LISTS_DIR}}/partial
     - apt-get update -qq
-    - apt-get install -qq -y gnupg2 libgpgme11-dev libsqlite3-dev eatmydata
+    # To keep things DRY, use an env var to handle packages to be installed via APT
+    - apt-get install -qq -y $APT_INSTALL_PACKAGES
+
+.test_ruby: &test_ruby
+  variables:
+    APT_INSTALL_PACKAGES: gnupg2 libgpgme11-dev libsqlite3-dev eatmydata
+  <<: *setup_apt
+  script:
     - eatmydata gem install bundler --no-ri --no-rdoc
     - eatmydata bundle install --jobs $(nproc) --path vendor
     - rm /dev/random && ln -s /dev/urandom /dev/random
     - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:init
-  script:
     - eatmydata bundle exec rspec
+
+codespell:
+  image: debian:unstable
+  variables:
+    APT_INSTALL_PACKAGES: codespell
+  <<: *setup_apt
+  script:
+    # Run codespell to check for spelling errors, using a config with ignored words, skipping files 
+    # (German translations, v2 list configs and code of installed dependencies) leading to false positives,
+    # ignoring warnings about binary files and, finally, checking file names as well.
+    - codespell -I utils/ci/codespell/ignored_words.txt -S de.yml,list.conf,vendor -q 2 -f
+  stage: static
 
 ruby:2.1:
   image: ruby:2.1
