@@ -28,8 +28,8 @@ describe "running filters" do
       teardown_list_and_mailer(list)
     end
   end
-  context '.fix_hotmail_messages!' do
-    it "accepts an invalid pgp/mime hotmail message" do
+  context '.fix_exchange_messages!' do
+    it "accepts an invalid pgp/mime Exchange message" do
       list = create(:list)
       list.subscribe("admin@example.org", nil, true)
       # so we can easily parse the outgoing mail
@@ -37,7 +37,7 @@ describe "running filters" do
       list.save
 
       start_smtp_daemon
-      message_path = 'spec/fixtures/mails/hotmail.eml'
+      message_path = 'spec/fixtures/mails/exchange.eml'
 
       error = run_schleuder(:work, list.email, message_path)
       mails = Dir.glob("#{smtp_daemon_outputdir}/mail-*")
@@ -45,10 +45,10 @@ describe "running filters" do
       expect(error).to be_empty
       expect(mails.size).to eq 1
 
-      hotmail = Mail.read(mails.first)
+      exchange = Mail.read(mails.first)
 
-      expect(hotmail.to).to eql(["admin@example.org"])
-      expect(hotmail.body.to_s).to include("foo\n")
+      expect(exchange.to).to eql(["admin@example.org"])
+      expect(exchange.body.to_s).to include("foo\n")
 
       stop_smtp_daemon
     end
@@ -60,7 +60,7 @@ describe "running filters" do
       list.save
 
       start_smtp_daemon
-      message_path = 'spec/fixtures/mails/hotmail_no_parts.eml'
+      message_path = 'spec/fixtures/mails/exchange_no_parts.eml'
 
       error = run_schleuder(:work, list.email, message_path)
       mails = Dir.glob("#{smtp_daemon_outputdir}/mail-*")
@@ -68,10 +68,10 @@ describe "running filters" do
       expect(error).to be_empty
       expect(mails.size).to eq 1
 
-      hotmail = Mail.read(mails.first)
+      exchange = Mail.read(mails.first)
 
-      expect(hotmail.to).to eql(["admin@example.org"])
-      expect(hotmail.body.to_s).to include("bla-vla")
+      expect(exchange.to).to eql(["admin@example.org"])
+      expect(exchange.body.to_s).to include("bla-vla")
 
       stop_smtp_daemon
     end

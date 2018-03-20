@@ -2,16 +2,16 @@ require "spec_helper"
 
 describe Schleuder::Filters do
 
-  context '.fix_hotmail_messages!' do
-    it "fixes pgp/mime-messages that were mangled by hotmail" do
-      message = Mail.read("spec/fixtures/mails/hotmail.eml")
-      Schleuder::Filters.fix_hotmail_messages!(nil, message)
+  context '.fix_exchange_messages!' do
+    it "fixes pgp/mime-messages that were mangled by Exchange" do
+      message = Mail.read("spec/fixtures/mails/exchange.eml")
+      Schleuder::Filters.fix_exchange_messages!(nil, message)
 
       expect(message[:content_type].content_type).to eql("multipart/encrypted")
     end
     it "works with a text/plain message" do
-      message = Mail.read("spec/fixtures/mails/hotmail_no_parts.eml")
-      Schleuder::Filters.fix_hotmail_messages!(nil, message)
+      message = Mail.read("spec/fixtures/mails/exchange_no_parts.eml")
+      Schleuder::Filters.fix_exchange_messages!(nil, message)
 
       expect(message[:content_type].content_type).to eql("text/plain")
     end
