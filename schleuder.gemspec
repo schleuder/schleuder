@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'thin', '~> 1'
   s.add_development_dependency 'rspec', '~> 3.5.0'
   s.add_development_dependency 'hirb'
-  s.add_development_dependency 'factory_girl'
+  s.add_development_dependency 'factory_bot'
   s.add_development_dependency 'database_cleaner'
   s.add_development_dependency 'simplecov-console'
   s.post_install_message = "

@@ -19,7 +19,7 @@ end
 require 'schleuder'
 require 'schleuder/cli'
 require 'database_cleaner'
-require 'factory_girl'
+require 'factory_bot'
 require 'net/http'
 require 'fileutils'
 
@@ -30,9 +30,9 @@ RSpec.configure do |config|
 
   config.order = :random
 
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
   config.before(:suite) do
-    FactoryGirl.find_definitions
+    FactoryBot.find_definitions
   end
 
   config.before(:suite) do
