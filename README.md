@@ -18,7 +18,7 @@ Requirements
 
 *If you use Debian stretch or CentOS 7, please have a look at the [installation docs](https://schleuder.nadir.org/docs/#installation). We do provide packages for those platforms, which simplify the installation a lot.*
 
-*🛈 A note regarding Ubuntu: All released Ubuntu versions (including 17.10) don't meet the requirements with their packaged versions of gnupg! To run Schleuder on Ubuntu you currently have to install a more recent version of gnupg manually. A sufficient version of gnupg is included in "bionic-proposed", which might make 18.04 a usable Ubuntu release.*
+*🛈 A note regarding Ubuntu: All Ubuntu versions up to and including 17.10 don't meet the requirements with their packaged versions of gnupg! To run Schleuder on Ubuntu you currently have to install a more recent version of gnupg manually. Only Ubuntu 18.04 ("bionic") provides modern enough versions of Schleuder's requirements.*
 
 On systems that base on Debian 9 ("stretch"), install the dependencies via
 
