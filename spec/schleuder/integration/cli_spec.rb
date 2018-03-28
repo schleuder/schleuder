@@ -276,4 +276,12 @@ describe 'cli' do
       File.rename(tmp_filename, dbfile)
     end
   end
+
+  context '#commands' do
+    it 'exits with a status code of 1 in case the command is not implemented' do
+      run_cli('not-implemented')
+
+      expect($?.exitstatus).to eq(1)
+    end
+  end
 end
