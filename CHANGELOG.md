@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Fix finding keywords in request-messages that were sent from Thunderbird/Enigmail with enabled "protected subject".
 * Fix leaking the "protected subject" sent from Thunderbird/Enigmail.
 * Error messages are converted into human readable text now, instead of giving their class-name. (#338)
+* Require mail-gpg >= 0.3.3, which fixes a bug that let some equal-signs disappear under specific circumstances. (#287)
 
 ### Known issues
 
