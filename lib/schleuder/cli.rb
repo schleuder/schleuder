@@ -330,5 +330,10 @@ Please notify the users and admins of this list of these changes.
       end
     end
 
+    # Make this class exit with code 1 in case of an error. See <https://github.com/erikhuda/thor/issues/244>.
+    def self.exit_on_failure?
+      true
+    end
+
   end
 end
