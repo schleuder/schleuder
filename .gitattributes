@@ -1,2 +1,3 @@
 .gitlab-ci.yml export-ignore
 utils/ export-ignore
+.gitlab/ export-ignore
