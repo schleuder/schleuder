@@ -313,7 +313,7 @@ module Mail
       if list.include_list_headers
         self['List-Id'] = "<#{list.email.gsub('@', '.')}>"
         self['List-Owner'] = "<mailto:#{list.owner_address}> (Use list's public key)"
-        self['List-Help'] = '<https://schleuder.nadir.org/>'
+        self['List-Help'] = '<https://schleuder.org/>'
 
         postmsg = if list.receive_admin_only
                     "NO (Admins only)"

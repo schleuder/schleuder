@@ -89,7 +89,7 @@ describe Schleuder::Runner do
 
         expect(message.header["List-Id"].to_s).to eq "<superlist.example.org>"
         expect(message.header["List-Owner"].to_s).to eq "<mailto:superlist-owner@example.org> (Use list's public key)"
-        expect(message.header["List-Help"].to_s).to eq "<https://schleuder.nadir.org/>"
+        expect(message.header["List-Help"].to_s).to eq "<https://schleuder.org/>"
 
         teardown_list_and_mailer(list)
       end

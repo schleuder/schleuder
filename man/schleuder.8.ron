@@ -64,7 +64,7 @@ Schleuder features some special functionality. For more detailed information rea
 
 Each Schleuder-list replies with its public key to any email sent to
 <listname-sendkey@hostname>. E.g. to receive the key for the contact address
-of the Schleuder project write an email to<br><schleuder-sendkey@nadir.org>.
+of the Schleuder project write an email to<br><team-sendkey@schleuder.org>.
 
 ### Email commands
 
@@ -127,10 +127,10 @@ Known bugs are listed on the Schleuder bugtracker at
 `gnupg`(7).
 
  * Website of `schleuder`:
-   <https://schleuder.nadir.org/>
+   <https://schleuder.org/>
 
  * More extensive documentation for `schleuder`:
-   <https://schleuder.nadir.org/docs/>
+   <https://schleuder.org/docs/>
 
  * `schleuder-cli`, the command line interface for list-management:
    <https://0xacab.org/schleuder/schleuder-cli/>

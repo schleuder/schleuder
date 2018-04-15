@@ -6,7 +6,7 @@ Schleuder is a gpg-enabled mailing list manager with resending-capabilities. Sub
 Version 3 of schleuder is a complete rewrite, which aims to be more robust, flexible, and internationalized. It
 also provides an API for the optional web interface called [schleuder-web](https://0xacab.org/schleuder/schleuder-web).
 
-For more details see <https://schleuder.nadir.org/docs/>.
+For more details see <https://schleuder.org/docs/>.
 
 Requirements
 ------------
@@ -16,7 +16,7 @@ Requirements
 * sqlite3
 * openssl
 
-*If you use Debian stretch or CentOS 7, please have a look at the [installation docs](https://schleuder.nadir.org/docs/#installation). We do provide packages for those platforms, which simplify the installation a lot.*
+*If you use Debian stretch or CentOS 7, please have a look at the [installation docs](https://schleuder.org/docs/#installation). We do provide packages for those platforms, which simplify the installation a lot.*
 
 *🛈 A note regarding Ubuntu: All Ubuntu versions up to and including 17.10 don't meet the requirements with their packaged versions of gnupg! To run Schleuder on Ubuntu you currently have to install a more recent version of gnupg manually. Only Ubuntu 18.04 ("bionic") provides modern enough versions of Schleuder's requirements.*
 
@@ -47,7 +47,7 @@ Additionally these **rubygems** are required (will be installed automatically un
 Installing Schleuder
 ------------
 
-1. Download [the gem](https://schleuder.nadir.org/download/schleuder-3.2.2.gem) and [the OpenPGP-signature](https://schleuder.nadir.org/download/schleuder-3.2.2.gem.sig) and verify:
+1. Download [the gem](https://schleuder.org/download/schleuder-3.2.2.gem) and [the OpenPGP-signature](https://schleuder.org/download/schleuder-3.2.2.gem.sig) and verify:
    ```
    gpg --recv-key 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
    gpg --verify schleuder-3.2.2.gem.sig
@@ -65,7 +65,7 @@ Installing Schleuder
   This creates necessary directories, copies example configs, etc. If you see errors about missing write permissions please follow the advice given.
 
 
-For further information on setup and configuration please read <https://schleuder.nadir.org/docs/#setup>.
+For further information on setup and configuration please read <https://schleuder.org/docs/#setup>.
 
 
 Command line usage
@@ -92,7 +92,7 @@ manage lists from the command line.
 Optionally consider installing
 [schleuder-web](https://0xacab.org/schleuder/schleuder-web), the web
 interface for schleuder. It enables list-admins to manage their lists through
-the web instead of using [request-keywords](https://schleuder.nadir.org/docs/#subscription-and-key-management).
+the web instead of using [request-keywords](https://schleuder.org/docs/#subscription-and-key-management).
 
 
 
@@ -139,4 +139,4 @@ GNU GPL 3.0. Please see [LICENSE.txt](LICENSE.txt).
 Alternative Download
 --------------------
 
-Alternatively to the gem-files you can download the latest release as [a tarball](https://schleuder.nadir.org/download/schleuder-3.2.2.tar.gz) and [its OpenPGP-signature](https://schleuder.nadir.org/download/schleuder-3.2.2.tar.gz.sig).
+Alternatively to the gem-files you can download the latest release as [a tarball](https://schleuder.org/download/schleuder-3.2.2.tar.gz) and [its OpenPGP-signature](https://schleuder.org/download/schleuder-3.2.2.tar.gz.sig).
