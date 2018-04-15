@@ -38,6 +38,21 @@ cache:
     - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:init
     - eatmydata bundle exec rspec
 
+changelog:
+  image: debian:unstable
+  variables:
+    APT_INSTALL_PACKAGES: git
+  <<: *setup_apt
+  script:
+    # Compare the master and current branch using their common ancestors
+    # to check if the changelog was edited
+    - if git diff --exit-code --quiet master...HEAD -- CHANGELOG.md; then
+        echo "No CHANGELOG edit found, please verify manually";
+        exit 1;
+      fi
+  stage: static
+  allow_failure: true
+
 codespell:
   image: debian:unstable
   variables:
