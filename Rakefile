@@ -3,7 +3,7 @@ require_relative "lib/#{project}.rb"
 
 @version = Schleuder::VERSION
 @tagname = "#{project}-#{@version}"
-@gpguid = 'schleuder@nadir.org'
+@gpguid = 'team@schleuder.org'
 @filename_gem = "#{@tagname}.gem"
 @filename_tarball = "#{@tagname}.tar.gz"
 
@@ -96,10 +96,10 @@ task :sign_gem do
   `gpg -u #{@gpguid} -b #{@filename_gem}`
 end
 
-desc 'Upload download-files (gem, tarball, signatures) to schleuder.nadir.org.'
+desc 'Upload download-files (gem, tarball, signatures) to schleuder.org.'
 task :upload_files do
   # Use rsync to ensure correct file permissions on the server (scp overwrites umask, ACL, etc.).
-  puts `rsync -v -t --chmod=ugo=rwX #{@tagname}* schleuder.nadir.org:/var/www/download/ 2>&1`
+  puts `rsync -v -t --chmod=ugo=rwX #{@tagname}* schleuder.org:/var/www/download/ 2>&1`
 end
 
 desc 'Publish gem-file to rubygems.org'

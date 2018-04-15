@@ -16,7 +16,7 @@ Maintainers, including the development team, are also subject to the anti-harass
 
 If anyone engages in abusive, harassing, or otherwise unacceptable behavior, including maintainers, we will take appropriate action, up to and including warning the offender, deletion of comments, removal from the project’s codebase and communication systems.
 
-If you are being harassed, notice that someone else is being harassed, or have any other concerns, please [contact the development team](https://schleuder.nadir.org/contact.html) immediately.
+If you are being harassed, notice that someone else is being harassed, or have any other concerns, please [contact the development team](https://schleuder.org/contact.html) immediately.
 
 We expect everyone to follow these rules anywhere in the Schleuder project’s codebases, issue trackers, IRC channel, group chat, mailing lists, meetups, and any other events.
 
