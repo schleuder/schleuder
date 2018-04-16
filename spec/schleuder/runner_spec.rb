@@ -395,6 +395,28 @@ describe Schleuder::Runner do
 
       teardown_list_and_mailer(list)
     end
+
+    it 'does not throw an error on emails with broken utf-8' do
+      list = create(:list, send_encrypted_only: false)
+      list.subscribe("admin@example.org", nil, true)
+      mail = File.read('spec/fixtures/mails/broken_utf8_charset.eml')
+
+      # From mail 2.7.0 this is handled correctly
+      # See #334 for background
+      if Gem::Version.new(Mail::VERSION.version) < Gem::Version.new('2.7.0')
+        expect{
+          Schleuder::Runner.new().run(mail, list.email)
+        }.to raise_error(ArgumentError)
+      else
+        Schleuder::Runner.new().run(mail, list.email)
+        message = Mail::TestMailer.deliveries.first
+
+        output = process_mail(message.to_s, list.email)
+        expect(output).to be nil
+      end
+
+      teardown_list_and_mailer(list)
+    end
   end
   context 'after keyword parsing' do
     it 'falls back to default charset per RFC if none is set' do
