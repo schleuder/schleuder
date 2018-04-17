@@ -41,9 +41,11 @@ cache:
 changelog:
   image: debian:unstable
   variables:
-    APT_INSTALL_PACKAGES: git
+    APT_INSTALL_PACKAGES: ca-certificates git
   <<: *setup_apt
   script:
+    # Ensure we work with the latest master
+    - git fetch origin master:master
     # Compare the master and current branch using their common ancestors
     # to check if the changelog was edited
     - if git diff --exit-code --quiet master...HEAD -- CHANGELOG.md; then
