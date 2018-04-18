@@ -52,8 +52,6 @@ de:
     list_not_found: "Fehler: Keine Liste zu dieser Adresse gefunden: '%{email}'."
     no_linebreaks: "Darf keine Zeilenumbrüche enthalten"
     invalid_characters: "enthält ungültige Zeichen"
-    invalid_listname: "Fehler: '%{email}' ist kein gültige Listen-Adresse."
-    list_exists: Es existiert bereits eine Liste mit der Adresse '%{email}'.
     listdir_problem:
       message: "Problem mit dem Listen-Verzeichnis: '%{dir}' %{problem}."
       not_existing: existiert nicht
@@ -65,12 +63,10 @@ de:
     key_generation_failed: Das Erzeugen des OpenPGP-Schlüsselpaares für %{listname} ist aus unbekannten Gründen fehlgeschlagen. Bitte prüfe das Listen-Verzeichnis ('%{listdir}') und die Log-Dateien.
     key_adduid_failed: "Das Hinzufügen einer User-ID zum OpenPGP-Schlüssel ist mit folgender Meldung fehlgeschlagen:\n%{errmsg}"
     too_many_keys: "Fehler: In %{listdir} existieren mehrere OpenPGP-Schlüssel für %{listname}. Bitte lösche alle bis auf einen."
-    unknown_list_option: "Unbekannte Option in %{config_file}: '%{option}'."
     loading_list_settings_failed: "%{config_file} konnte nicht eingelesen werden, bitte Formatierung auf gültiges YAML prüfen."
     message_too_big: "Deine Email war zu groß. Erlaubt sind für diese Liste %{allowed_size}KB."
     must_be_boolean: "muss true oder false sein"
     must_be_greater_than_zero: "muss größer als null sein"
-    file_not_found: "Die Datei existiert nicht: '%{file}'."
     not_pgp_mime: "Deine Email war nicht im pgp/mime-Format verschlüsselt."
     delivery_error: "Beim Versenden einer Email an %{email} ist der folgende Fehler aufgetreten: %{error}"
     no_match_for: "Keine Treffer für %{input}"
