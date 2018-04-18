@@ -19,6 +19,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 * Use schleuder.org as website and team@schleuder.org as contact email.
+* Check environment variable if code coverage check should be executed. (#342)
 
 
 ## [3.2.2] / 2018-02-06
