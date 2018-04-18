@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Exit with code 1 if a CLI-subcommand was not found (#339).
 * Fix finding keywords in request-messages that were sent from Thunderbird/Enigmail with enabled "protected subject".
 * Fix leaking the "protected subject" sent from Thunderbird/Enigmail.
+* Error messages are converted into human readable text now, instead of giving their class-name. (#338)
 
 ### Known issues
 
