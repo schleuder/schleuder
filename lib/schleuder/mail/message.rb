@@ -16,6 +16,7 @@ module Mail
     attr_accessor :recipient
     attr_accessor :original_message
     attr_accessor :list
+    attr_accessor :protected_subject
 
     # TODO: This should be in initialize(), but I couldn't understand the
     # strange errors about wrong number of arguments when overriding
@@ -46,6 +47,20 @@ module Mail
       self.dynamic_pseudoheaders.each do |str|
         new.add_pseudoheader(str)
       end
+
+      # Store previously protected subject for later access.
+      # mail-gpg pulls headers from the decrypted mime parts "up" into the main
+      # headers, which reveals protected subjects.
+      if self.subject != new.subject
+        new.protected_subject = self.subject.dup
+
+        # Delete the protected headers which might leak information.
+        if new.parts.first.content_type == "text/rfc822-headers; protected-headers=v1"
+          new.parts.shift
+        end
+      end
+
+
       new
     end
 
@@ -54,7 +69,7 @@ module Mail
       clean.list = self.list
       clean.gpg self.list.gpg_sign_options
       clean.from = list.email
-      clean.subject = self.subject
+      clean.subject = self.protected_subject || self.subject
 
       clean.add_msgids(list, self)
       clean.add_list_headers(list)
@@ -63,6 +78,13 @@ module Mail
       if with_pseudoheaders
         new_part = Mail::Part.new
         new_part.body = self.pseudoheaders(list)
+        clean.add_part new_part
+      end
+
+      if self.protected_subject.present?
+        new_part = Mail::Part.new
+        new_part.content_type = "text/rfc822-headers; protected-headers=v1"
+        new_part.body = "Subject: #{self.subject}\n"
         clean.add_part new_part
       end
 
