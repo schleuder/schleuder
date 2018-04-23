@@ -62,11 +62,13 @@ module Schleuder
           list.logger.notify_admin(msg, nil, I18n.t('check_keys'))
         end
       end
+      permission_notice
     end
 
     desc 'refresh_keys [list1@example.com]', "Refresh all keys of all list from the keyservers sequentially (one by one or on the passed list). (This is supposed to be run from cron weekly.)"
     def refresh_keys(list=nil)
       work_on_lists(:refresh_keys,list)
+      permission_notice
     end
 
     desc 'pin_keys [list1@example.com]', "Find keys for subscriptions without a pinned key and try to pin a certain key (one by one or based on the passed list)."
@@ -122,6 +124,7 @@ module Schleuder
       end
 
       say "Schleuder has been set up. You can now create a new list using `schleuder-cli`.\nWe hope you enjoy!"
+      permission_notice
     rescue => exc
       fatal exc.message
     end
@@ -257,6 +260,7 @@ Please notify the users and admins of this list of these changes.
       if messages.present?
         say messages.gsub(' // ', "\n")
       end
+      permission_notice
     rescue => exc
       fatal "#{exc}\n#{exc.backtrace.first}"
     end
@@ -333,6 +337,21 @@ Please notify the users and admins of this list of these changes.
     # Make this class exit with code 1 in case of an error. See <https://github.com/erikhuda/thor/issues/244>.
     def self.exit_on_failure?
       true
+    end
+
+    def permission_notice
+      if Process.euid == 0
+        dirs = [Conf.lists_dir, Conf.listlogs_dir]
+        if Conf.database['adapter'] == 'sqlite3'
+          dirs << Conf.database['database']
+        end
+        dirs_sentence = dirs.uniq.map { |dir| enquote(dir) }.to_sentence
+        say "Warning: this process was run as root -- please make sure the all files in #{dirs_sentence} have correct file system permissions for the user that is running both, schleuder from the MTA and `schleuder-api-daemon`."
+      end
+    end
+
+    def enquote(string)
+      "\`#{string}\`"
     end
 
   end

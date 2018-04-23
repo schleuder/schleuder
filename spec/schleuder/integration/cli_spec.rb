@@ -132,6 +132,19 @@ describe 'cli' do
       expect(admin_emails.sort).to eq( ['schleuder2@example.org',
                                         'schleuder2-nokey@example.org' ].sort)
     end
+
+    it "warns about file system permissions if it was run as root" do
+      expect(Process).to receive(:euid).and_return(0)
+      v2list_path = 'spec/fixtures/v2list'
+
+      orig_stdout = $stdout
+      $stdout = StringIO.new
+      Cli.new.migrate_v2_list(v2list_path)
+      output = $stdout.string
+      $stdout = orig_stdout
+
+      expect(output).to include("Warning: this process was run as root")
+    end
   end
 
   context '#refresh_keys' do
@@ -199,7 +212,21 @@ describe 'cli' do
 
       teardown_list_and_mailer(list)
     end
+
+    it "warns about file system permissions if it was run as root" do
+      expect(Process).to receive(:euid).and_return(0)
+      list = create(:list)
+
+      orig_stdout = $stdout
+      $stdout = StringIO.new
+      Cli.new.refresh_keys(list.email)
+      output = $stdout.string
+      $stdout = orig_stdout
+
+      expect(output).to include("Warning: this process was run as root")
+    end
   end
+
   context '#pin_keys' do
     it 'pins fingerprints on not yet set keys' do
       list = create(:list)
@@ -275,6 +302,18 @@ describe 'cli' do
       expect(exc.status).to eql(1)
       File.rename(tmp_filename, dbfile)
     end
+
+    it "warns about file system permissions if it was run as root" do
+      expect(Process).to receive(:euid).and_return(0)
+
+      orig_stdout = $stdout
+      $stdout = StringIO.new
+      Cli.new.install
+      output = $stdout.string
+      $stdout = orig_stdout
+
+      expect(output).to include("Warning: this process was run as root")
+    end
   end
 
   context '#commands' do
@@ -282,6 +321,20 @@ describe 'cli' do
       run_cli('not-implemented')
 
       expect($?.exitstatus).to eq(1)
+    end
+  end
+
+  context '#check_keys' do
+    it "warns about file system permissions if it was run as root" do
+      expect(Process).to receive(:euid).and_return(0)
+
+      orig_stdout = $stdout
+      $stdout = StringIO.new
+      Cli.new.check_keys
+      output = $stdout.string
+      $stdout = orig_stdout
+
+      expect(output).to include("Warning: this process was run as root")
     end
   end
 end

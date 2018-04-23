@@ -25,6 +25,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Use schleuder.org as website and team@schleuder.org as contact email.
 * Check environment variable if code coverage check should be executed. (#342)
 * Transform GPG fingerprints to upper case before saving to database. (#327)
+* CLI-commands that (potentially) change data now remind the system admin to check file system permission if the command was run with root privileges. (#326)
 
 
 ## [3.2.2] / 2018-02-06
