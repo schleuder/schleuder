@@ -169,4 +169,8 @@ RSpec.configure do |config|
       file.unlink
     end
   end
+
+  def t(*args)
+    I18n.t(*args)
+  end
 end
