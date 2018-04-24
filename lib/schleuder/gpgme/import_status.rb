@@ -4,15 +4,21 @@ module GPGME
 
     # Unfortunately in initialize() @status and @result are not yet initialized.
     def set_action
-      @action ||= if self.status > 0
-                    'imported'
-                  elsif self.result == 0
-                    'unchanged'
-                  else
+      @action ||= if self.result > 0
                     # An error happened.
                     # TODO: Give details by going through the list of errors in
                     # "gpg-errors.h" and find out which is present here.
                     'error'
+                  else
+                    # TODO: refactor with Ctx#translate_import_data
+                    case self.status
+                    when 0
+                      'unchanged'
+                    when IMPORT_NEW
+                      'imported'
+                    else
+                      'updated'
+                    end
                   end
       self
     end
