@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## unreleased
 
+### Changed
+
+* The output of the keywords 'X-ADD-KEY' and 'X-DELETE-KEY' now also show the "oneline"-format to represent keys (which includes fingerprint, primary email-address, date of generation and possible expiry). (#295)
+* In the response to 'X-ADD-KEY', differentiate between 'newly imported' and 'updated' keys.
+
 
 ## [3.2.3] / 2018-05-14
 

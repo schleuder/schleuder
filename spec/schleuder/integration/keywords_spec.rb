@@ -813,7 +813,7 @@ describe "user sends keyword" do
   end
 
   it "x-add-key with inline key-material" do
-    list = create(:list)
+    list = create(:list, keywords_admin_notify: [])
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
@@ -841,13 +841,13 @@ describe "user sends keyword" do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE: imported")
+    expect(message.first_plaintext_part.body.to_s).to match(/^This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org \d{4}-\d{2}-\d{2}\n$/)
 
     teardown_list_and_mailer(list)
   end
 
   it "x-add-key with attached key-material" do
-    list = create(:list)
+    list = create(:list, keywords_admin_notify: [])
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
@@ -875,7 +875,77 @@ describe "user sends keyword" do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE: imported")
+    expect(message.first_plaintext_part.body.to_s).to match(/^This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org \d{4}-\d{2}-\d{2}\n$/)
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-add-key to update a key" do
+    list = create(:list, keywords_admin_notify: [])
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list.import_key(File.read("spec/fixtures/expired_key.txt"))
+    list_keys_num = list.keys.size
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-list-name: #{list.email}\nX-ADD-KEY:"
+    mail.add_file("spec/fixtures/expired_key_extended.txt")
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+
+    expect(list.keys.size).to eql(list_keys_num)
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.first_plaintext_part.body.to_s).to match(/^This key was updated:\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]\n$/)
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-add-key with garbage as key-material" do
+    list = create(:list, keywords_admin_notify: [])
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-list-name: #{list.email}\nX-ADD-KEY:\nlakdsjflaksjdflakjsdflkajsdf"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.first_plaintext_part.body.to_s).to eql("In the message you sent us, no keys could be found. :(")
 
     teardown_list_and_mailer(list)
   end
@@ -1889,7 +1959,7 @@ describe "user sends keyword" do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("Deleted: C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+    expect(message.first_plaintext_part.body.to_s).to match(/^This key was deleted:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org \d{4}-\d{2}-\d{2}\n$/)
 
     teardown_list_and_mailer(list)
   end
@@ -1924,7 +1994,7 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("No match found for")
-    expect(message.to_s).not_to include("Deleted")
+    expect(message.to_s).not_to include("This key was deleted:")
 
     teardown_list_and_mailer(list)
   end
@@ -2290,7 +2360,7 @@ describe "user sends keyword" do
       teardown_list_and_mailer(list)
     end
     it "x-add-key with inline key-material" do
-      list = create(:list)
+      list = create(:list, keywords_admin_notify: [])
       list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
       ENV['GNUPGHOME'] = list.listdir
       mail = Mail.new
@@ -2318,7 +2388,7 @@ describe "user sends keyword" do
       message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
       expect(message.to).to eql(['schleuder@example.org'])
-      expect(message.to_s).to include("3102B29989BEE703AE5ED62E1242F6E13D8EBE4A: imported")
+      expect(message.first_plaintext_part.body.to_s).to match(/This key was newly added:\n0x3102B29989BEE703AE5ED62E1242F6E13D8EBE4A info@buendnis-gegen-rechts.ch \d{4}-\d{2}-\d{2}\n/)
 
       teardown_list_and_mailer(list)
     end

@@ -83,11 +83,20 @@ de:
     key_management:
       deleted: "Gelöscht: %{key_string}"
       not_deletable: "Darf nicht gelöscht werden: %{key_string}"
-      import_result: "Import-Ergebnis:\n"
+      no_imports: In deiner Email konnten keine Schlüssel gefunden werden. :(
       key_import_status:
-        imported: importiert
-        updated: aktualisiert
-        unchanged: unverändert
+        imported: |
+          Dieser Schlüssel wurde neu hinzugefügt:
+          %{key_oneline}
+        updated: |
+          Dieser Schlüssel wurde aktualisiert:
+          %{key_oneline}
+        unchanged: |
+          Dieser Schlüssel wurde nicht verändert:
+          %{key_oneline}
+        error: |
+          Der Schlüssel mit diesem Fingerabdruck konnte aus unbekanntem Grund nicht hinzugefügt werden:
+          %{fingerprint} 
       matching_keys_intro: Alle Schlüssel aus dem Schlüsselring der Liste, die '%{input}' enthalten, sind an diese Email angehängt.
     resend:
       not_resent_no_keys: Resending an <%{email}> fehlgeschlagen (%{num_keys} Schlüssel gefunden und unverschlüsseltes Senden verboten).

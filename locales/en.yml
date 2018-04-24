@@ -81,13 +81,26 @@ en:
     keyword_admin_notify_lists: "%{signer} used the keyword '%{keyword}' with the values '%{arguments}' in a message sent to the list."
     keyword_admin_notify_lists_without_arguments: "%{signer} used the keyword '%{keyword}' in a message sent to the list."
     key_management:
-      deleted: "Deleted: %{key_string}"
-      not_deletable: "May not be deleted: %{key_string}"
-      import_result: "Import result:\n"
+      deleted: |
+        This key was deleted:
+        %{key_string}
+      not_deletable: |
+        This key may not be deleted:
+        %{key_string}
+      no_imports: In the message you sent us, no keys could be found. :(
       key_import_status:
-        imported: imported
-        updated: updated
-        unchanged: unchanged
+        imported: |
+          This key was newly added:
+          %{key_oneline}
+        updated: |
+          This key was updated:
+          %{key_oneline}
+        unchanged: |
+          This key was not changed:
+          %{key_oneline}
+        error: |
+          The key with this fingerprint could not be added due to an unknown error:
+          %{fingerprint} 
       matching_keys_intro: All keys from the list's keyring matching '%{input}' are attached to this message.
     resend:
       not_resent_no_keys: Resending to <%{email}> failed (%{num_keys} keys found and unencrypted sending disallowed).
