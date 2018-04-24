@@ -12,7 +12,7 @@ module GPGME
                     # An error happened.
                     # TODO: Give details by going through the list of errors in
                     # "gpg-errors.h" and find out which is present here.
-                    'not imported'
+                    'error'
                   end
       self
     end

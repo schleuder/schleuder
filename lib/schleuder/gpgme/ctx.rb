@@ -19,7 +19,7 @@ module GPGME
       case import_result.imports.size
       when 1
         import_status = import_result.imports.first
-        if import_status.action == 'not imported'
+        if import_status.action == 'error'
           [nil, "Key #{import_status.fpr} could not be imported!"]
         else
           [import_status.fpr, nil]
