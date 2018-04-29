@@ -19,12 +19,6 @@ describe Schleuder::Subscription do
   it { is_expected.to respond_to :admin }
   it { is_expected.to respond_to :delivery_enabled }
 
-  it "transforms the fingerprint to upper case" do
-    subscription = Schleuder::Subscription.new(email: "example@example.org", fingerprint: "c4d60f8833789c7caa44496fd3ffa6613ab10ece")
-
-    expect(subscription.fingerprint).to eq("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
-  end
-
   it "is invalid when list_id is blank" do
     subscription = build(:subscription, list_id: "")
 
@@ -51,13 +45,6 @@ describe Schleuder::Subscription do
 
     expect(subscription).not_to be_valid
     expect(subscription.errors.messages[:email]).to include("is not a valid email address")
-  end
-
-  it "normalizes the fingerprint" do
-    fingerprint = "0x 99 991 1000 10"
-    subscription = build(:subscription, fingerprint: fingerprint)
-
-    expect(subscription.fingerprint).to eq "99991100010"
   end
 
   it "is valid when fingerprint is empty" do
@@ -108,6 +95,21 @@ describe Schleuder::Subscription do
     expect(subscription2).to be_valid
     expect(subscription3).not_to be_valid
     expect(subscription3.errors[:email]).to eql(["is already subscribed"])
+  end
+
+  describe "#fingerprint" do
+    it "transforms the fingerprint to upper case" do
+      subscription = Schleuder::Subscription.new(email: "example@example.org", fingerprint: "c4d60f8833789c7caa44496fd3ffa6613ab10ece")
+
+      expect(subscription.fingerprint).to eq("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+    end
+  end
+
+  it "removes whitespaces and 0x from the fingerprint" do
+    fingerprint = "0x 99 991 1000 10"
+    subscription = build(:subscription, fingerprint: fingerprint)
+
+    expect(subscription.fingerprint).to eq "99991100010"
   end
 end
 

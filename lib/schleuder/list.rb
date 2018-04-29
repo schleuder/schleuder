@@ -124,7 +124,7 @@ module Schleuder
 
     def import_key_and_find_fingerprint(key_material)
       return nil if key_material.blank?
-      
+
       import_result = import_key(key_material)
       gpg.interpret_import_result(import_result)
     end
@@ -251,9 +251,8 @@ module Schleuder
     end
 
     def fingerprint=(arg)
-      # Strip whitespace from incoming arg.
       if arg
-        write_attribute(:fingerprint, arg.gsub(/\s*/, '').chomp.upcase)
+        write_attribute(:fingerprint, arg.gsub(/\s*/, '').gsub(/^0x/, '').chomp.upcase)
       end
     end
 
