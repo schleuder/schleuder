@@ -52,6 +52,7 @@ task :new_version => [
     :sign_gem,
     :build_tarball,
     :sign_tarball,
+    :ensure_permissions,
     :git_tag
   ] do
 end
@@ -96,10 +97,14 @@ task :sign_gem do
   `gpg -u #{@gpguid} -b #{@filename_gem}`
 end
 
+desc 'Ensure download-files have correct permissions'
+task :ensure_permissions do
+  File.chmod(0644, *Dir.glob("#{@tagname}*"))
+end
+
 desc 'Upload download-files (gem, tarball, signatures) to schleuder.org.'
 task :upload_files do
-  # Use rsync to ensure correct file permissions on the server (scp overwrites umask, ACL, etc.).
-  puts `rsync -v -t --chmod=ugo=rwX #{@tagname}* schleuder.org:/var/www/download/ 2>&1`
+  puts `echo "put -p #{@tagname}* www/download/" | sftp schleuder.org@ftp.schleuder.org 2>&1`
 end
 
 desc 'Publish gem-file to rubygems.org'
