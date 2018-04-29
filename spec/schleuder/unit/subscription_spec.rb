@@ -19,6 +19,12 @@ describe Schleuder::Subscription do
   it { is_expected.to respond_to :admin }
   it { is_expected.to respond_to :delivery_enabled }
 
+  it "transforms the fingerprint to upper case" do
+    subscription = Schleuder::Subscription.new(email: "example@example.org", fingerprint: "c4d60f8833789c7caa44496fd3ffa6613ab10ece")
+
+    expect(subscription.fingerprint).to eq("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+  end
+
   it "is invalid when list_id is blank" do
     subscription = build(:subscription, list_id: "")
 

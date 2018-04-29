@@ -16,6 +16,12 @@ describe Schleuder::List do
     expect(list).to be_valid
   end
 
+  it "transforms the fingerprint to upper case" do
+    list = Schleuder::List.new(email: "example@example.org", fingerprint: "c4d60f8833789c7caa44496fd3ffa6613ab10ece")
+
+    expect(list.fingerprint).to eq("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+  end
+
   it { is_expected.to respond_to :subscriptions }
   it { is_expected.to respond_to :email }
   it { is_expected.to respond_to :fingerprint }
