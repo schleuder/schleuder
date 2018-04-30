@@ -75,12 +75,12 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("test@example.org has been subscribed")
-    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint.downcase}/)
+    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint}/)
     expect(message.to_s).to include("Admin? true")
     expect(message.to_s).to include("Email-delivery enabled? false")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql(list.fingerprint.downcase)
+    expect(subscription.fingerprint).to eql(list.fingerprint)
     expect(subscription.admin).to eql(true)
     expect(subscription.delivery_enabled).to eql(false)
 
@@ -117,12 +117,12 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("test@example.org has been subscribed")
-    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint.downcase}/)
+    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint}/)
     expect(message.to_s).to include("Admin? true")
     expect(message.to_s).to include("Email-delivery enabled? true")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql(list.fingerprint.downcase)
+    expect(subscription.fingerprint).to eql(list.fingerprint)
     expect(subscription.admin).to eql(true)
     expect(subscription.delivery_enabled).to eql(true)
 
@@ -160,12 +160,12 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("test@example.org has been subscribed")
-    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint.downcase}/)
+    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint}/)
     expect(message.to_s).to include("Admin? false")
     expect(message.to_s).to include("Email-delivery enabled? true")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql(list.fingerprint.downcase)
+    expect(subscription.fingerprint).to eql(list.fingerprint)
     expect(subscription.admin).to eql(false)
     expect(subscription.delivery_enabled).to eql(true)
 
@@ -202,12 +202,12 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("test@example.org has been subscribed")
-    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint.downcase}/)
+    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint}/)
     expect(message.to_s).to include("Admin? true")
     expect(message.to_s).to include("Email-delivery enabled? false")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql(list.fingerprint.downcase)
+    expect(subscription.fingerprint).to eql(list.fingerprint)
     expect(subscription.admin).to eql(true)
     expect(subscription.delivery_enabled).to eql(false)
 
@@ -244,12 +244,12 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("test@example.org has been subscribed")
-    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint.downcase}/)
+    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint}/)
     expect(message.to_s).to include("Admin? false")
     expect(message.to_s).to include("Email-delivery enabled? false")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql(list.fingerprint.downcase)
+    expect(subscription.fingerprint).to eql(list.fingerprint)
     expect(subscription.admin).to eql(false)
     expect(subscription.delivery_enabled).to eql(false)
 
@@ -286,12 +286,12 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("test@example.org has been subscribed")
-    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint.downcase}/)
+    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint}/)
     expect(message.to_s).to include("Admin? false")
     expect(message.to_s).to include("Email-delivery enabled? true")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql(list.fingerprint.downcase)
+    expect(subscription.fingerprint).to eql(list.fingerprint)
     expect(subscription.admin).to eql(false)
     expect(subscription.delivery_enabled).to eql(true)
 
@@ -436,10 +436,10 @@ describe "user sends keyword" do
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("Fingerprint for schleuder@example.org set to c4d60f8833789c7caa44496fd3ffa6613ab10ece")
+    expect(message.to_s).to include("Fingerprint for schleuder@example.org set to C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql('c4d60f8833789c7caa44496fd3ffa6613ab10ece')
+    expect(subscription.fingerprint).to eql('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
 
     teardown_list_and_mailer(list)
   end
@@ -475,10 +475,10 @@ describe "user sends keyword" do
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("Fingerprint for schleuder@example.org set to c4d60f8833789c7caa44496fd3ffa6613ab10ece")
+    expect(message.to_s).to include("Fingerprint for schleuder@example.org set to C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql('c4d60f8833789c7caa44496fd3ffa6613ab10ece')
+    expect(subscription.fingerprint).to eql('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
 
     teardown_list_and_mailer(list)
   end
@@ -514,10 +514,10 @@ describe "user sends keyword" do
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("Fingerprint for schleuder@example.org set to c4d60f8833789c7caa44496fd3ffa6613ab10ece")
+    expect(message.to_s).to include("Fingerprint for schleuder@example.org set to C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql('c4d60f8833789c7caa44496fd3ffa6613ab10ece')
+    expect(subscription.fingerprint).to eql('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
 
     teardown_list_and_mailer(list)
   end
@@ -553,10 +553,10 @@ describe "user sends keyword" do
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("Fingerprint for test@example.org set to c4d60f8833789c7caa44496fd3ffa6613ab10ece")
+    expect(message.to_s).to include("Fingerprint for test@example.org set to C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql('c4d60f8833789c7caa44496fd3ffa6613ab10ece')
+    expect(subscription.fingerprint).to eql('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
 
     teardown_list_and_mailer(list)
   end
