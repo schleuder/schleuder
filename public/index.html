@@ -1,0 +1,112 @@
+<!doctype html5>
+<html>
+  <head>
+    <title>SchWeb</title>
+    <script src='schweb.js'></script>
+    <script src='handlebars.js'></script>
+    <style>
+      .page, .hidden {
+        display: none;
+      }
+      .page.visible {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1><a href='#'>SchWeb</a></h1>
+
+    <script id="tmpl-page-header" type='text/x-handlebars-template'>
+      <h2><a href="#lists/{{ list.id }}">{{ list.email }}</a></h2>
+      {{> list-menu }}
+      <h3>{{> @partial-block }}</h3>
+    </script>
+
+    <div id='list-menu-container'>
+      <script id='tmpl-list-menu' type='text/x-handlebars-template'>
+        <ul class='list-menu'>
+          <li><a href='#subscriptions/{{ list.id }}'>Subscriptions</a></li>
+          <li><a href='#keys/{{ list.id }}'>Keys</a></li>
+          <li><a href='#lists/{{ list.id }}'>Options</a></li>
+        </ul>
+      </script>
+    </div>
+
+    <div class='lists'>
+      <script id="tmpl-lists" type="text/x-handlebars-template">
+        <div class="page visible">
+          <h2>Lists</h2>
+          <ul>
+            {{#each lists}}
+              <li><a href="#subscriptions/{{ this.id }}">{{ this.email }}</a></li>
+            {{/each}}
+          </ul>
+        <div>
+      </script>
+    </div>
+
+    <div class='list-options'>
+      <script id="tmpl-list-options" type="text/x-handlebars-template">
+        <div class='page visible'>
+          {{#> page-header }}List options{{/ page-header }}
+          <dl>
+          <dt>List's key</dt>
+          <dd><a href="#keys/{{ list.id }}|{{ list.fingerprint }}">{{ list.fingerprint }}</a></dd>
+          <dt>keywords admin only</dt>
+          <dd>{{ list.keywords_admin_only }}</dd>
+        </div>
+      </script>
+    </div>
+
+    <div class='list-subscriptions'>
+      <script id="tmpl-list-subscriptions" type="text/x-handlebars-template">
+        <div class='page visible'>
+          {{#> page-header }}Subscriptions{{/ page-header }}
+          <ul>
+            {{#each subscriptions}}
+              <li>{{ email }}
+                {{#if fingerprint}}
+                  (<a href='#keys/{{ ../list.id }}|{{ fingerprint }}'>key</a>)
+                {{else}}
+                  (⨯ no key)
+                {{/if}}
+                {{#unless delivery_enabled}}
+                  (⨯ no emails)
+                {{/unless}}
+                {{#if admin}}
+                  (admin)
+                {{/if}}
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+      </script>
+    </div>
+
+    <div class='keys'>
+      <script id="tmpl-keys" type="text/x-handlebars-template">
+        <div class='page visible'>
+          {{#> page-header }}Keys{{/ page-header }}
+          <ul>
+            {{#each keys}}
+              <li><a href='#keys/{{ ../list.id }}|{{ this.fingerprint }}'>{{ this.oneline }}</a></li>
+            {{/each}}
+          </ul>
+        </div>
+      </script>
+    </div>
+
+    <div class='key'>
+      <script id="tmpl-key" type="text/x-handlebars-template">
+        <div class='page visible'>
+          {{#> page-header }}
+            Key {{ key.oneline }}
+          {{/ page-header }}
+          <pre>{{ key.description }}</pre>
+          <pre>{{ key.ascii }}</pre>
+        </div>
+      </script>
+    </div>
+
+  </body>
+</html>

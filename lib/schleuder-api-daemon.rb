@@ -31,11 +31,19 @@ class SchleuderApiDaemon < Sinatra::Base
     else
       set :logging, Logger::WARN
     end
+    # For serving schweb.js
+    set :static, true
+    set :public_folder, :public
   end
 
   before do
     authenticate!
     cast_param_values
+    # Required if schweb.js is served by a different host/port.
+    headers \
+      "Access-Control-Allow-Origin" => request.env['HTTP_ORIGIN'],
+      "Access-Control-Allow-Credentials" => "true"
+
   end
 
   after do
@@ -56,6 +64,19 @@ class SchleuderApiDaemon < Sinatra::Base
 
   error 404 do
     'Not found'
+  end
+
+  # Required if schweb.js is served by a different host/port.
+  options '/*' do
+    headers \
+      "Access-Control-Allow-Methods" => 'GET, POST, OPTIONS',
+      "Access-Control-Allow-Headers" => 'Authorization'
+    200
+  end
+
+  # Serve schweb.js at the root-level.
+  get '/' do
+    send_file "public/index.html"
   end
 
   get '/status.json' do
@@ -80,6 +101,8 @@ class SchleuderApiDaemon < Sinatra::Base
     def authenticate!
       # Be careful to use path_info() — it can be changed by other filters!
       return if request.path_info == '/status.json'
+      # Required if schweb.js is served by a different host/port.
+      return if request.request_method == 'OPTIONS'
       if ! valid_credentials?
         headers['WWW-Authenticate'] = 'Basic realm="Schleuder API Daemon"'
         halt 401, "Not authorized\n"
