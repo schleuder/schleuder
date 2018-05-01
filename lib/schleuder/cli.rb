@@ -346,7 +346,7 @@ Please notify the users and admins of this list of these changes.
           dirs << Conf.database['database']
         end
         dirs_sentence = dirs.uniq.map { |dir| enquote(dir) }.to_sentence
-        say "Warning: this process was run as root -- please make sure the all files in #{dirs_sentence} have correct file system permissions for the user that is running both, schleuder from the MTA and `schleuder-api-daemon`."
+        say "Warning: this process was run as root -- please make sure that all files in #{dirs_sentence} have correct file system permissions for the user that is running both, schleuder from the MTA and `schleuder-api-daemon`."
       end
     end
 
