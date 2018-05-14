@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## unreleased
 
+
+## [3.2.3] / 2018-05-14
+
 ### Fixed
 
 * `X-SUBSCRIBE` now in all cases correctly sets the values for admin and delivery_enabled, if they are given as third and fourth argument, respectively.
