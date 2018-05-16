@@ -59,6 +59,7 @@ changelog:
   except:
     refs:
       - master
+      - tags
 
 codespell:
   image: debian:unstable
