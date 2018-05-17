@@ -815,6 +815,7 @@ describe "user sends keyword" do
   it "x-add-key with inline key-material" do
     list = create(:list, keywords_admin_notify: [])
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -840,6 +841,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num + 1)
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.first_plaintext_part.body.to_s).to match(/^This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org \d{4}-\d{2}-\d{2}\n$/)
 
@@ -849,6 +851,7 @@ describe "user sends keyword" do
   it "x-add-key with attached key-material" do
     list = create(:list, keywords_admin_notify: [])
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -874,6 +877,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num + 1)
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.first_plaintext_part.body.to_s).to match(/^This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org \d{4}-\d{2}-\d{2}\n$/)
 
@@ -920,6 +924,7 @@ describe "user sends keyword" do
   it "x-add-key with garbage as key-material" do
     list = create(:list, keywords_admin_notify: [])
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -944,6 +949,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num)
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.first_plaintext_part.body.to_s).to eql("In the message you sent us, no keys could be found. :(")
 
@@ -953,6 +959,7 @@ describe "user sends keyword" do
   it "x-fetch-key with invalid input" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -977,6 +984,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num)
     expect(message.to_s).to include("Invalid input.")
 
     teardown_list_and_mailer(list)
@@ -985,6 +993,7 @@ describe "user sends keyword" do
   it "x-fetch-key with email address" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -1011,6 +1020,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num + 1)
     expect(message.first_plaintext_part.body.to_s).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]\n/)
 
     teardown_list_and_mailer(list)
@@ -1019,6 +1029,7 @@ describe "user sends keyword" do
   it "x-fetch-key with unknown email-address" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -1045,6 +1056,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num)
     expect(message.to_s).to include("Fetching something@localhost did not succeed")
 
     teardown_list_and_mailer(list)
@@ -1053,6 +1065,7 @@ describe "user sends keyword" do
   it "x-fetch-key with URL" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -1079,6 +1092,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num + 1)
     expect(message.first_plaintext_part.body.to_s).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]\n/)
 
     teardown_list_and_mailer(list)
@@ -1087,6 +1101,7 @@ describe "user sends keyword" do
   it "x-fetch-key with invalid URL" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -1114,6 +1129,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num)
     expect(message.to_s).to include("Fetching #{url} did not succeed")
 
     teardown_list_and_mailer(list)
@@ -1122,6 +1138,7 @@ describe "user sends keyword" do
   it "x-fetch-key with unknown fingerprint" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -1148,6 +1165,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num)
     expect(message.to_s).to include("Fetching 0x0000000000000000000000000000000000000000 did not succeed")
 
     teardown_list_and_mailer(list)
@@ -1156,6 +1174,7 @@ describe "user sends keyword" do
   it "x-fetch-key with fingerprint" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -1182,6 +1201,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num + 1)
     expect(message.first_plaintext_part.body.to_s).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]\n/)
 
     teardown_list_and_mailer(list)
@@ -1190,6 +1210,7 @@ describe "user sends keyword" do
   it "x-fetch-key with fingerprint of unchanged key" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -1216,6 +1237,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num)
     expect(message.first_plaintext_part.body.to_s).to match(/This key was fetched \(unchanged\):\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org \d{4}-\d{2}-\d{2}/)
 
     teardown_list_and_mailer(list)
@@ -1934,6 +1956,7 @@ describe "user sends keyword" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     list.import_key(File.read('spec/fixtures/example_key.txt'))
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -1958,6 +1981,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num - 1)
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.first_plaintext_part.body.to_s).to match(/^This key was deleted:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org \d{4}-\d{2}-\d{2}\n$/)
 
@@ -1968,6 +1992,7 @@ describe "user sends keyword" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     list.import_key(File.read('spec/fixtures/example_key.txt'))
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -1992,6 +2017,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num)
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("No match found for")
     expect(message.to_s).not_to include("This key was deleted:")
@@ -2003,6 +2029,7 @@ describe "user sends keyword" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     list.import_key(File.read('spec/fixtures/example_key.txt'))
+    list_keys_num = list.keys.size
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -2027,6 +2054,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(list.keys.size).to eql(list_keys_num)
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("Too many matching keys for ")
     expect(message.to_s).not_to include("Deleted")
@@ -2362,6 +2390,7 @@ describe "user sends keyword" do
     it "x-add-key with inline key-material" do
       list = create(:list, keywords_admin_notify: [])
       list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      list_keys_num = list.keys.size
       ENV['GNUPGHOME'] = list.listdir
       mail = Mail.new
       mail.to = list.request_address
@@ -2387,6 +2416,7 @@ describe "user sends keyword" do
       raw = Mail::TestMailer.deliveries.first
       message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+      expect(list.keys.size).to eql(list_keys_num + 1)
       expect(message.to).to eql(['schleuder@example.org'])
       expect(message.first_plaintext_part.body.to_s).to match(/This key was newly added:\n0x3102B29989BEE703AE5ED62E1242F6E13D8EBE4A info@buendnis-gegen-rechts.ch \d{4}-\d{2}-\d{2}\n/)
 
