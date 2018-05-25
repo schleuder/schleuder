@@ -97,7 +97,7 @@ include_list_headers: true
 # Include OpenPGP-Header into emails?
 include_openpgp_header: true
 
-# Prefered way to receive emails to note in OpenPGP-Header
+# Preferred way to receive emails to note in OpenPGP-Header
 # ('sign'|'encrypt'|'signencrypt'|'unprotected'|'none')
 openpgp_header_preference: signencrypt
 

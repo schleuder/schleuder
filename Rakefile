@@ -3,7 +3,7 @@ require_relative "lib/#{project}.rb"
 
 @version = Schleuder::VERSION
 @tagname = "#{project}-#{@version}"
-@gpguid = 'schleuder@nadir.org'
+@gpguid = 'team@schleuder.org'
 @filename_gem = "#{@tagname}.gem"
 @filename_tarball = "#{@tagname}.tar.gz"
 
@@ -52,6 +52,7 @@ task :new_version => [
     :sign_gem,
     :build_tarball,
     :sign_tarball,
+    :ensure_permissions,
     :git_tag
   ] do
 end
@@ -78,7 +79,7 @@ end
 
 desc "Commit changes as new version"
 task :git_commit do
-  `git commit -m "Version #{@version} (README, gems, ...)"`
+  `git commit -m "Version #{@version}"`
 end
 
 desc 'Build, sign and commit a gem-file.'
@@ -88,12 +89,22 @@ end
 
 desc 'OpenPGP-sign gem and tarball'
 task :sign_tarball do
-  `gpg -u #{@gpguid} -b #{@filename_gem}`
+  `gpg -u #{@gpguid} -b #{@filename_tarball}`
 end
 
 desc 'OpenPGP-sign gem'
 task :sign_gem do
-  `gpg -u #{@gpguid} -b #{@filename_tarball}`
+  `gpg -u #{@gpguid} -b #{@filename_gem}`
+end
+
+desc 'Ensure download-files have correct permissions'
+task :ensure_permissions do
+  File.chmod(0644, *Dir.glob("#{@tagname}*"))
+end
+
+desc 'Upload download-files (gem, tarball, signatures) to schleuder.org.'
+task :upload_files do
+  puts `echo "put -p #{@tagname}* www/download/" | sftp schleuder.org@ftp.schleuder.org 2>&1`
 end
 
 desc 'Publish gem-file to rubygems.org'
@@ -114,10 +125,7 @@ end
 
 desc 'Describe manual release-tasks'
 task :website do
-  puts "Please update the website:
-  * Update changelog.
-  * Publish release-announcement.
-"
+  puts "Please remember to publish the release-notes on the website and on schleuder-announce."
 end
 
 desc 'Check if version-tag already exists'

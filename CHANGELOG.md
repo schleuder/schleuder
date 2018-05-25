@@ -3,6 +3,33 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## unreleased
+
+
+## [3.2.3] / 2018-05-14
+
+### Fixed
+
+* `X-SUBSCRIBE` now in all cases correctly sets the values for admin and delivery_enabled, if they are given as third and fourth argument, respectively.
+* To identify broken Microsoft Exchange messages, check if the headers include 'X-MS-Exchange' instead of specific domain names. Before this, we've missed mails sent by Exchange installations not operated by Microsoft or mails with a different "originating organisation domain" than Hotmail or Outlook. (#333)
+* Do not anymore fail on emails containing any PGP boundaries as part of their plain text. As a sideeffect we will not anymore validate an email a second time. Hence, a message part containing an additional signature within an encrypted (and possibly signed) email won't be validated and removed. (#261)
+* Exit with code 1 if a CLI-subcommand was not found (#339).
+* Fix finding keywords in request-messages that were sent from Thunderbird/Enigmail with enabled "protected subject".
+* Fix leaking the "protected subject" sent from Thunderbird/Enigmail.
+* Error messages are converted into human readable text now, instead of giving their class-name. (#338)
+* Require mail-gpg >= 0.3.3, which fixes a bug that let some equal-signs disappear under specific circumstances. (#287)
+
+### Known issues
+
+* With the current used mail library version schleuder uses, there are certain malformed emails that can't be parsed. See #334 for background. This will be fixed in future releases of the mail library.
+
+### Changed
+
+* Use schleuder.org as website and team@schleuder.org as contact email.
+* Check environment variable if code coverage check should be executed. (#342)
+* Transform GPG fingerprints to upper case before saving to database. (#327)
+* CLI-commands that (potentially) change data now remind the system admin to check file system permission if the command was run with root privileges. (#326)
+
 
 ## [3.2.2] / 2018-02-06
 
@@ -19,7 +46,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Fix handling of emails with large first mime parts. We removed the code that limited the parsing of keywords to the first 1000 lines, as that broke the handling of certain large emails.
 * Fix output of Keys with a broken character set. This mainly affected schleuder-api.
 * Exit install-script if setting up the database failed.
-* Reveal less errors to public, and improve messages to admins. Previously errors about list-config etc. would have been included in bounces to the sender of the incoming email. Now only the admins get to know the details (which now also include the list the error happend with). Email-bounces only tell about a fatal error — except if the list could not be found, that information is still sent to the sender of the incoming email.
+* Reveal less errors to public, and improve messages to admins. Previously errors about list-config etc. would have been included in bounces to the sender of the incoming email. Now only the admins get to know the details (which now also include the list the error happened with). Email-bounces only tell about a fatal error — except if the list could not be found, that information is still sent to the sender of the incoming email.
 * Make sure dirmngr is killed for a list after refreshing a list's keyring. Avoids servers getting memory exhausted. Fixes #289
 * Fixed the API-daemon's interpretation of listnames that start with a number (previously the listname "1list" caused errors because it was taken as the integer 1).
 
@@ -219,7 +246,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Avoid possible future errors by ignoring every unknown output of gpg (like GnuPG's doc/DETAILS recommends). (Thanks, dkg!)
 * Friendlier error message if delivery to subscription fails.
 * Set list-email as primary address after adding UIDs. Previously it was a little random, for reasons only known to GnuPG.
-* Only use temporary files where neccessary, and with more secure paths.
+* Only use temporary files where necessary, and with more secure paths.
 * Tighten requirements for valid email-addresses a little: The domain-part may now only contain alpha-numeric characters, plus these: `._-`
 * Required version of schleuder-cli: 0.0.2.
 

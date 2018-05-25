@@ -23,10 +23,11 @@ module Schleuder
     end
 
     def fingerprint=(arg)
-      # Allow input to contain whitespace and '0x'-prefix, but don't store it
-      # into the DB.
-      value = arg.to_s.gsub(/\s*/, '').gsub(/^0x/, '').chomp
-      write_attribute(:fingerprint, value)
+      # Always assign the given value, because it must be possible to overwrite
+      # the previous fingerprint with an empty value. That value should better
+      # be nil instead of a blank string, but currently schleuder-cli (v0.1.0) expects
+      # only strings.
+      write_attribute(:fingerprint, arg.to_s.gsub(/\s*/, '').gsub(/^0x/, '').chomp.upcase)
     end
 
     def key

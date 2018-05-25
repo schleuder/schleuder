@@ -1,12 +1,9 @@
 module Schleuder
   module Errors
     class MessageUnsigned < Base
-      def initialize(list)
+      def initialize
         set_default_locale
-      end
-
-      def message
-        t('errors.message_unsigned')
+        super t('errors.message_unsigned')
       end
     end
   end

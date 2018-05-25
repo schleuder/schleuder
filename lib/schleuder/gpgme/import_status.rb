@@ -2,7 +2,7 @@ module GPGME
   class ImportStatus
     attr_reader :action
 
-    # Unfortunately in initialize() @status and @result are not yet intialized.
+    # Unfortunately in initialize() @status and @result are not yet initialized.
     def set_action
       @action ||= if self.status > 0
                     'imported'

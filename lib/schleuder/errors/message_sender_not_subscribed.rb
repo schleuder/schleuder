@@ -1,12 +1,9 @@
 module Schleuder
   module Errors
     class MessageSenderNotSubscribed < Base
-      def initialize(list)
+      def initialize
         set_default_locale
-      end
-
-      def message
-        t('errors.message_sender_not_subscribed')
+        super t('errors.message_sender_not_subscribed')
       end
     end
   end

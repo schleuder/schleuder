@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :subscription do
     list
     sequence(:email) {|n| "subscription#{n}@example.org" }

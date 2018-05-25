@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :list do
     sequence(:email) {|n| "list#{n}@example.org" }
     fingerprint "59C71FB38AEE22E091C78259D06350440F759BD3"

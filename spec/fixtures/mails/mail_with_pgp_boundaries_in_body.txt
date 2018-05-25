@@ -1,0 +1,17 @@
+To: list@example.org
+From: test@example.org
+Subject: Test
+Message-ID: <8db04406-e2ab-fd06-d4c5-c19b5765c52b@example.com>
+Date: Tue, 27 Dec 2016 17:18:57 +0100
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+Test
+
+-----BEGIN PGP MESSAGE-----
+
+Only to show what is between here...
+
+-----END PGP MESSAGE-----
+
+

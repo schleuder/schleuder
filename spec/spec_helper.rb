@@ -7,7 +7,7 @@ if ENV['USE_BUNDLER'] != 'false'
 end
 # We need to do this before requiring any other code
 # Check env if we want to run code coverage analysis
-if ENV['CHECK_CODE_COVERAGE'] != 'false'
+if ENV['CHECK_CODE_COVERAGE'] == 'true'
   require 'simplecov'
   require 'simplecov-console'
   SimpleCov::Formatter::Console.table_options = {max_width: 400}
@@ -19,7 +19,7 @@ end
 require 'schleuder'
 require 'schleuder/cli'
 require 'database_cleaner'
-require 'factory_girl'
+require 'factory_bot'
 require 'net/http'
 require 'fileutils'
 
@@ -30,9 +30,9 @@ RSpec.configure do |config|
 
   config.order = :random
 
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
   config.before(:suite) do
-    FactoryGirl.find_definitions
+    FactoryBot.find_definitions
   end
 
   config.before(:suite) do
@@ -80,9 +80,12 @@ RSpec.configure do |config|
   def with_sks_mock
     pid = Process.spawn('spec/sks-mock.rb', [:out, :err] => ["/tmp/sks-mock.log", 'w'])
     uri = URI.parse("http://127.0.0.1:9999/status")
-    attempts = 5
+    attempts = 25
+    # Use the following env var to increase the time to sleep between
+    # each attempt, for example if building the Debian package 
+    ENV['SKS_MOCK_SLEEP'] ||= '1'
     begin
-      sleep 1
+      sleep ENV['SKS_MOCK_SLEEP'].to_i
       Net::HTTP.get(uri)
     rescue Errno::ECONNREFUSED => exc
       attempts -= 1
@@ -165,5 +168,9 @@ RSpec.configure do |config|
     ensure
       file.unlink
     end
+  end
+
+  def t(*args)
+    I18n.t(*args)
   end
 end

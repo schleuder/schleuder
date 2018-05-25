@@ -1,12 +1,9 @@
 module Schleuder
   module Errors
     class MessageUnencrypted < Base
-      def initialize(list)
+      def initialize
         set_default_locale
-      end
-
-      def message
-        t('errors.message_unencrypted')
+        super t('errors.message_unencrypted')
       end
     end
   end

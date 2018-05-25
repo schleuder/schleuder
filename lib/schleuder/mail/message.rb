@@ -16,6 +16,7 @@ module Mail
     attr_accessor :recipient
     attr_accessor :original_message
     attr_accessor :list
+    attr_accessor :protected_subject
 
     # TODO: This should be in initialize(), but I couldn't understand the
     # strange errors about wrong number of arguments when overriding
@@ -23,12 +24,9 @@ module Mail
     def setup
       if self.encrypted?
         new = self.decrypt(verify: true)
-        ## Work around a bug in mail-gpg: when decrypting pgp/mime the
-        ## Date-header is not copied.
-        #new.date ||= self.date
         # Test if there's a signed multipart inside the ciphertext
         # ("encapsulated" format of pgp/mime).
-        if new.signed?
+        if encapsulated_signed?(new)
           new = new.verify
         end
       elsif self.signed?
@@ -49,6 +47,20 @@ module Mail
       self.dynamic_pseudoheaders.each do |str|
         new.add_pseudoheader(str)
       end
+
+      # Store previously protected subject for later access.
+      # mail-gpg pulls headers from the decrypted mime parts "up" into the main
+      # headers, which reveals protected subjects.
+      if self.subject != new.subject
+        new.protected_subject = self.subject.dup
+
+        # Delete the protected headers which might leak information.
+        if new.parts.first.content_type == "text/rfc822-headers; protected-headers=v1"
+          new.parts.shift
+        end
+      end
+
+
       new
     end
 
@@ -57,7 +69,7 @@ module Mail
       clean.list = self.list
       clean.gpg self.list.gpg_sign_options
       clean.from = list.email
-      clean.subject = self.subject
+      clean.subject = self.protected_subject || self.subject
 
       clean.add_msgids(list, self)
       clean.add_list_headers(list)
@@ -66,6 +78,13 @@ module Mail
       if with_pseudoheaders
         new_part = Mail::Part.new
         new_part.body = self.pseudoheaders(list)
+        clean.add_part new_part
+      end
+
+      if self.protected_subject.present?
+        new_part = Mail::Part.new
+        new_part.content_type = "text/rfc822-headers; protected-headers=v1"
+        new_part.body = "Subject: #{self.subject}\n"
         clean.add_part new_part
       end
 
@@ -316,7 +335,7 @@ module Mail
       if list.include_list_headers
         self['List-Id'] = "<#{list.email.gsub('@', '.')}>"
         self['List-Owner'] = "<mailto:#{list.owner_address}> (Use list's public key)"
-        self['List-Help'] = '<https://schleuder.nadir.org/>'
+        self['List-Help'] = '<https://schleuder.org/>'
 
         postmsg = if list.receive_admin_only
                     "NO (Admins only)"
@@ -410,6 +429,13 @@ module Mail
 
     private
 
+    # mail.signed? throws an error if it finds
+    # pgp boundaries, so we must use the Mail::Gpg
+    # methods.
+    def encapsulated_signed?(mail)
+      (mail.verify_result.nil? || mail.verify_result.signatures.empty?) && \
+        (Mail::Gpg.signed_mime?(mail) || Mail::Gpg.signed_inline?(mail))
+    end
 
     def add_footer!(footer_attribute)
       if self.list.blank? || self.list.send(footer_attribute).to_s.empty?

@@ -75,12 +75,12 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("test@example.org has been subscribed")
-    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint.downcase}/)
+    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint}/)
     expect(message.to_s).to include("Admin? true")
     expect(message.to_s).to include("Email-delivery enabled? false")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql(list.fingerprint.downcase)
+    expect(subscription.fingerprint).to eql(list.fingerprint)
     expect(subscription.admin).to eql(true)
     expect(subscription.delivery_enabled).to eql(false)
 
@@ -117,12 +117,12 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("test@example.org has been subscribed")
-    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint.downcase}/)
+    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint}/)
     expect(message.to_s).to include("Admin? true")
     expect(message.to_s).to include("Email-delivery enabled? true")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql(list.fingerprint.downcase)
+    expect(subscription.fingerprint).to eql(list.fingerprint)
     expect(subscription.admin).to eql(true)
     expect(subscription.delivery_enabled).to eql(true)
 
@@ -160,12 +160,12 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("test@example.org has been subscribed")
-    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint.downcase}/)
+    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint}/)
     expect(message.to_s).to include("Admin? false")
     expect(message.to_s).to include("Email-delivery enabled? true")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql(list.fingerprint.downcase)
+    expect(subscription.fingerprint).to eql(list.fingerprint)
     expect(subscription.admin).to eql(false)
     expect(subscription.delivery_enabled).to eql(true)
 
@@ -202,14 +202,98 @@ describe "user sends keyword" do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("test@example.org has been subscribed")
-    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint.downcase}/)
+    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint}/)
     expect(message.to_s).to include("Admin? true")
     expect(message.to_s).to include("Email-delivery enabled? false")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql(list.fingerprint.downcase)
+    expect(subscription.fingerprint).to eql(list.fingerprint)
     expect(subscription.admin).to eql(true)
     expect(subscription.delivery_enabled).to eql(false)
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-subscribe with attributes (first one 'false') and spaces-separated fingerprint" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint.dup.insert(4, ' ')} false false"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+    subscription = list.subscriptions.where(email: 'test@example.org').first
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.to_s).to include("test@example.org has been subscribed")
+    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint}/)
+    expect(message.to_s).to include("Admin? false")
+    expect(message.to_s).to include("Email-delivery enabled? false")
+
+    expect(subscription).to be_present
+    expect(subscription.fingerprint).to eql(list.fingerprint)
+    expect(subscription.admin).to eql(false)
+    expect(subscription.delivery_enabled).to eql(false)
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-subscribe with attributes (last one 'true') and spaces-separated fingerprint" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint.dup.insert(4, ' ')} false true"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+    subscription = list.subscriptions.where(email: 'test@example.org').first
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.to_s).to include("test@example.org has been subscribed")
+    expect(message.to_s).to match(/Fingerprint:\s+#{list.fingerprint}/)
+    expect(message.to_s).to include("Admin? false")
+    expect(message.to_s).to include("Email-delivery enabled? true")
+
+    expect(subscription).to be_present
+    expect(subscription.fingerprint).to eql(list.fingerprint)
+    expect(subscription.admin).to eql(false)
+    expect(subscription.delivery_enabled).to eql(true)
 
     teardown_list_and_mailer(list)
   end
@@ -352,10 +436,10 @@ describe "user sends keyword" do
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("Fingerprint for schleuder@example.org set to c4d60f8833789c7caa44496fd3ffa6613ab10ece")
+    expect(message.to_s).to include("Fingerprint for schleuder@example.org set to C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql('c4d60f8833789c7caa44496fd3ffa6613ab10ece')
+    expect(subscription.fingerprint).to eql('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
 
     teardown_list_and_mailer(list)
   end
@@ -391,10 +475,10 @@ describe "user sends keyword" do
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("Fingerprint for schleuder@example.org set to c4d60f8833789c7caa44496fd3ffa6613ab10ece")
+    expect(message.to_s).to include("Fingerprint for schleuder@example.org set to C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql('c4d60f8833789c7caa44496fd3ffa6613ab10ece')
+    expect(subscription.fingerprint).to eql('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
 
     teardown_list_and_mailer(list)
   end
@@ -430,10 +514,10 @@ describe "user sends keyword" do
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("Fingerprint for schleuder@example.org set to c4d60f8833789c7caa44496fd3ffa6613ab10ece")
+    expect(message.to_s).to include("Fingerprint for schleuder@example.org set to C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql('c4d60f8833789c7caa44496fd3ffa6613ab10ece')
+    expect(subscription.fingerprint).to eql('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
 
     teardown_list_and_mailer(list)
   end
@@ -469,10 +553,10 @@ describe "user sends keyword" do
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("Fingerprint for test@example.org set to c4d60f8833789c7caa44496fd3ffa6613ab10ece")
+    expect(message.to_s).to include("Fingerprint for test@example.org set to C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
 
     expect(subscription).to be_present
-    expect(subscription.fingerprint).to eql('c4d60f8833789c7caa44496fd3ffa6613ab10ece')
+    expect(subscription.fingerprint).to eql('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
 
     teardown_list_and_mailer(list)
   end
@@ -1518,7 +1602,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
 
-    expect(message.to_s.gsub("\r", '')).to include("BEGIN PGP SIGNED MESSAGE-----\n\n#{signed_text}-----END PGP SIGNED MESSAGE")
+    expect(message.to_s.gsub("\r", '')).to match(/BEGIN PGP SIGNED MESSAGE-----\nHash: SHA256\n\n#{signed_text}-----BEGIN PGP SIGNATURE/)
 
     teardown_list_and_mailer(list)
   end

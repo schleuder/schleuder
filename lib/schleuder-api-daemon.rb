@@ -3,11 +3,12 @@
 # Make sinatra use production as default-environment
 ENV['RACK_ENV'] ||= 'production'
 
+$LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
 require 'sinatra/base'
 require 'sinatra/json'
 require 'sinatra/namespace'
 require 'thin'
-require_relative '../lib/schleuder.rb'
+require 'schleuder'
 
 
 %w[tls_cert_file tls_key_file].each do |config_key|

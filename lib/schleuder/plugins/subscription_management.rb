@@ -6,7 +6,7 @@ module Schleuder
       if arguments.present?
         # Collect all arguments that look like fingerprint-material
         fingerprint = ''
-        while arguments.first.present? && arguments.first.match(/\A(0x)?[a-f0-9]+/i)
+        while arguments.first.present? && arguments.first.match(/^(0x)?[a-f0-9]+$/i)
           fingerprint << arguments.shift
         end
         # Use possibly remaining args as flags.

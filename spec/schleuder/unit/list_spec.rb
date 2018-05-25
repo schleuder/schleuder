@@ -68,13 +68,6 @@ describe Schleuder::List do
     expect(list.errors.messages[:email]).to include("is not a valid email address")
   end
 
-  it "normalizes the fingerprint" do
-    fingerprint = " 99 991 1000 10"
-    list = build(:list, fingerprint: fingerprint)
-
-    expect(list.fingerprint).to eq "99991100010"
-  end
-
   it "is invalid when fingerprint is blank" do
     list = build(:list, fingerprint: "")
 
@@ -216,6 +209,21 @@ describe Schleuder::List do
     it "does not contain the attributes email and fingerprint" do
       expect(Schleuder::List.configurable_attributes).to_not include(:email)
       expect(Schleuder::List.configurable_attributes).to_not include(:fingerprint)
+    end
+  end
+
+  describe "#fingerprint" do
+    it "transforms the fingerprint to upper case" do
+      list = Schleuder::List.new(email: "example@example.org", fingerprint: "c4d60f8833789c7caa44496fd3ffa6613ab10ece")
+
+      expect(list.fingerprint).to eq("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE")
+    end
+
+    it "removes whitespaces and 0x from the fingerprint" do
+      fingerprint = "0x 99 991 1000 10"
+      list = build(:list, fingerprint: fingerprint)
+
+      expect(list.fingerprint).to eq "99991100010"
     end
   end
 
@@ -376,7 +384,7 @@ describe Schleuder::List do
   end
 
   describe "#check_keys" do
-    it "adds a mesage if a key expires in two weeks or less" do
+    it "adds a message if a key expires in two weeks or less" do
       list = create(:list)
       key = double("key")
       generation_time = Time.now - 1.year

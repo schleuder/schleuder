@@ -8,7 +8,8 @@ trap("INT") { exit 1 }
 
 
 begin
-  require_relative '../lib/schleuder/cli'
+  $LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
+  require 'schleuder/cli'
   Schleuder::Cli.start
 rescue => exc
   $stderr.puts "Technical Error: #{exc}\n#{exc.backtrace.first}"

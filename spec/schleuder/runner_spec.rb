@@ -89,7 +89,7 @@ describe Schleuder::Runner do
 
         expect(message.header["List-Id"].to_s).to eq "<superlist.example.org>"
         expect(message.header["List-Owner"].to_s).to eq "<mailto:superlist-owner@example.org> (Use list's public key)"
-        expect(message.header["List-Help"].to_s).to eq "<https://schleuder.nadir.org/>"
+        expect(message.header["List-Help"].to_s).to eq "<https://schleuder.org/>"
 
         teardown_list_and_mailer(list)
       end
@@ -143,11 +143,11 @@ describe Schleuder::Runner do
 
         teardown_list_and_mailer(list)
       end
-      
+
       it "does not include the public_footer" do
         public_footer = "-- \nsomething public blabla"
         list = create(
-          :list, 
+          :list,
           send_encrypted_only: false,
           internal_footer: "-- \nfor our eyes only!",
           public_footer: public_footer
@@ -290,7 +290,7 @@ describe Schleuder::Runner do
       end
     end
 
-    it 'does not choke on emails with large first mime-part' do
+    it 'does not throw an error on emails with large first mime-part' do
       list = create(:list)
       list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
       ENV['GNUPGHOME'] = list.listdir
@@ -316,13 +316,114 @@ describe Schleuder::Runner do
       teardown_list_and_mailer(list)
     end
 
+    it 'does not throw an error on emails that contain other gpg keywords' do
+      list = create(:list)
+      list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      ENV['GNUPGHOME'] = list.listdir
+      mail = Mail.new
+      mail.to = list.request_address
+      mail.from = list.admins.first.email
+      gpg_opts = {
+        encrypt: true,
+        keys: {list.request_address => list.fingerprint},
+        sign: true,
+        sign_as: list.admins.first.fingerprint
+      }
+      mail.gpg(gpg_opts)
+      mail.body = File.read('spec/fixtures/mails/mail_with_pgp_boundaries_in_body.txt')
+      mail.deliver
+
+      message = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+
+      output = process_mail(message.to_s, list.email)
+      expect(output).to be nil
+
+      teardown_list_and_mailer(list)
+    end
+    it 'does not throw an error on emails with an attached pgp key as application/octet-stream' do
+      list = create(:list)
+      list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      ENV['GNUPGHOME'] = list.listdir
+      mail = Mail.new
+      mail.to = list.request_address
+      mail.from = list.admins.first.email
+      gpg_opts = {
+        encrypt: true,
+        keys: {list.request_address => list.fingerprint},
+        sign: true,
+        sign_as: list.admins.first.fingerprint
+      }
+      mail.gpg(gpg_opts)
+      mail.body = 'See attachment'
+      mail.attachments['251F2412.asc'] = {
+        :content_type => '"application/octet-stream"; name="251F2412.asc"',
+        :content_transfer_encoding => '7bit',
+        :content => File.read('spec/fixtures/bla_foo_key.txt')
+      }
+      mail.deliver
+
+      message = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+
+      output = process_mail(message.to_s, list.email)
+      expect(output).to be nil
+
+      teardown_list_and_mailer(list)
+    end
+    it 'does not throw an error on encrypted but unsigned emails that contain a forwarded encrypted email' do
+      list = create(:list)
+      list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      ENV['GNUPGHOME'] = list.listdir
+      mail = Mail.new
+      mail.to = list.request_address
+      mail.from = list.admins.first.email
+      gpg_opts = {
+        encrypt: true,
+        keys: {list.request_address => list.fingerprint},
+        sign: false,
+      }
+      mail.gpg(gpg_opts)
+      mail.body = "Hi\n\nI'll forward you this email, have a look at it!\n\n#{File.read('spec/fixtures/mails/encrypted-mime/thunderbird.eml')}"
+      mail.deliver
+
+      message = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+
+      output = process_mail(message.to_s, list.email)
+      expect(output).to be nil
+
+      teardown_list_and_mailer(list)
+    end
+
+    it 'does not throw an error on emails with broken utf-8' do
+      list = create(:list, send_encrypted_only: false)
+      list.subscribe("admin@example.org", nil, true)
+      mail = File.read('spec/fixtures/mails/broken_utf8_charset.eml')
+
+      # From mail 2.7.0 this is handled correctly
+      # See #334 for background
+      if Gem::Version.new(Mail::VERSION.version) < Gem::Version.new('2.7.0')
+        expect{
+          Schleuder::Runner.new().run(mail, list.email)
+        }.to raise_error(ArgumentError)
+      else
+        Schleuder::Runner.new().run(mail, list.email)
+        message = Mail::TestMailer.deliveries.first
+
+        output = process_mail(message.to_s, list.email)
+        expect(output).to be nil
+      end
+
+      teardown_list_and_mailer(list)
+    end
   end
   context 'after keyword parsing' do
     it 'falls back to default charset per RFC if none is set' do
       list = create(:list, send_encrypted_only: false)
       list.subscribe("admin@example.org", "59C71FB38AEE22E091C78259D06350440F759BD3", true)
 
-      # manualy build a specific mail structure that comes without a charset
+      # manually build a specific mail structure that comes without a charset
       mail = Mail.new
       mail.from = "admin@example.org"
       mail.to = list.request_address
