@@ -22,7 +22,7 @@ Build-Depends: debhelper (>= 11~),
 Standards-Version: 4.1.4
 Vcs-Git: https://salsa.debian.org/ruby-team/schleuder.git
 Vcs-Browser: https://salsa.debian.org/ruby-team/schleuder
-Homepage: https://schleuder.nadir.org/
+Homepage: https://schleuder.org/
 XS-Ruby-Versions: all
 
 Package: schleuder
