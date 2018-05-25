@@ -3,7 +3,7 @@ Upstream-Name: schleuder
 Source: https://0xacab.org/schleuder/schleuder
 
 Files: *
-Copyright: 2014-2018 schleuder dev team <schleuder@nadir.org>
+Copyright: 2014-2018 schleuder dev team <team@schleuder.org>
 License: GPL-3.0
 
 Files: debian/*
