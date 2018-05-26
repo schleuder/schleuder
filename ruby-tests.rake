@@ -12,6 +12,8 @@ task :setup do
   ENV['USE_BUNDLER'] = 'false'
   ENV['CHECK_CODE_COVERAGE'] = 'false'
 
+  ENV['SKS_MOCK_SLEEP'] = '5'
+
   # Set up database
   `rake -f debian/Rakefile db:create`
   `rake -f debian/Rakefile db:schema:load`
