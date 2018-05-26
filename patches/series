@@ -1,3 +1,4 @@
+0003-specs-fix-expected-hash-function.patch
 0009-drop-rack-test-dependency.patch
 0008-dirmngr-no-tor-standard-resolver.patch
 0007-specs-remove-install-test.patch
