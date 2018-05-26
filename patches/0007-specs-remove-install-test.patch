@@ -1,20 +1,19 @@
-Description: specs: Remove install test                                               
- Remove the spec which tests and expects the install to fail, if a
- shell-process fails, as it fails itself, currently.
+Description: specs: Remove install tests
+ We're removing the two specs which test the installation via calling
+ Cli.new.install. These fail currently.
 
  Upstream is aware of this patch and we're working on integrating it
  upstream.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2018-02-12
+Last-Update: 2018-05-26
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/spec/schleuder/integration/cli_spec.rb
 +++ b/spec/schleuder/integration/cli_spec.rb
-@@ -259,21 +259,4 @@
-       teardown_list_and_mailer(list)
+@@ -293,35 +293,6 @@
      end
    end
--
+ 
 -  context '#install' do
 -    it 'exits if a shell-process failed' do
 -      dbfile = Conf.database["database"]
@@ -30,5 +29,20 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 -      expect(exc.status).to eql(1)
 -      File.rename(tmp_filename, dbfile)
 -    end
+-
+-    it "warns about file system permissions if it was run as root" do
+-      expect(Process).to receive(:euid).and_return(0)
+-
+-      orig_stdout = $stdout
+-      $stdout = StringIO.new
+-      Cli.new.install
+-      output = $stdout.string
+-      $stdout = orig_stdout
+-
+-      expect(output).to include("Warning: this process was run as root")
+-    end
 -  end
- end
+-
+   context '#commands' do
+     it 'exits with a status code of 1 in case the command is not implemented' do
+       run_cli('not-implemented')

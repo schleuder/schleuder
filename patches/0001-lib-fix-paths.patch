@@ -11,7 +11,7 @@ Description: lib/: Fix paths
  Upstream is aware of this patch and we're working on integrating it
  upstream.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2018-02-08
+Last-Update: 2018-05-26
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/lib/schleuder/conf.rb
@@ -27,7 +27,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        'superadmin' => 'root@localhost',
 --- a/lib/schleuder/cli.rb
 +++ b/lib/schleuder/cli.rb
-@@ -77,7 +77,7 @@
+@@ -79,7 +79,7 @@
      desc 'install', "Set-up or update Schleuder environment (create folders, copy files, fill the database)."
      def install
        config_dir = Pathname.new(ENV['SCHLEUDER_CONFIG']).dirname
@@ -46,14 +46,3 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  I18n.enforce_available_locales = true
  I18n.default_locale = :en
  
---- a/lib/schleuder-api-daemon.rb
-+++ b/lib/schleuder-api-daemon.rb
-@@ -7,7 +7,7 @@
- require 'sinatra/json'
- require 'sinatra/namespace'
- require 'thin'
--require_relative '../lib/schleuder.rb'
-+require 'schleuder'
- 
- 
- %w[tls_cert_file tls_key_file].each do |config_key|

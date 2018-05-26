@@ -10,12 +10,12 @@ Description: dirmngr: Don't use tor, use standard resolver (specs only)
  This will be integrated upstream. Additionally, this will be
  reported to upstream of GnuPG.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2018-02-13
+Last-Update: 2018-05-26
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/spec/schleuder/integration/cli_spec.rb
 +++ b/spec/schleuder/integration/cli_spec.rb
-@@ -141,6 +141,9 @@
+@@ -154,6 +154,9 @@
        list.import_key(File.read("spec/fixtures/expired_key.txt"))
        list.import_key(File.read("spec/fixtures/olduid_key.txt"))
  
@@ -25,7 +25,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        with_sks_mock do
          Cli.new.refresh_keys
          dirmngr_pid = `pgrep -a dirmngr | grep #{list.listdir}`.split(' ',2).first
-@@ -165,6 +168,9 @@
+@@ -178,6 +181,9 @@
          list.import_key(File.read("spec/fixtures/olduid_key.txt"))
        end
  
@@ -37,7 +37,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        end
 --- a/spec/schleuder/integration/keywords_spec.rb
 +++ b/spec/schleuder/integration/keywords_spec.rb
-@@ -848,6 +848,9 @@
+@@ -932,6 +932,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
@@ -47,7 +47,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      with_sks_mock do
        begin
          Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-@@ -882,6 +885,9 @@
+@@ -966,6 +969,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
@@ -57,7 +57,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      with_sks_mock do
        begin
          Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-@@ -916,6 +922,9 @@
+@@ -1000,6 +1006,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
@@ -67,7 +67,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      with_sks_mock do
        begin
          Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-@@ -951,6 +960,9 @@
+@@ -1035,6 +1044,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
@@ -77,7 +77,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      with_sks_mock do
        begin
          Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-@@ -985,6 +997,9 @@
+@@ -1069,6 +1081,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
@@ -87,7 +87,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      with_sks_mock do
        begin
          Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-@@ -1019,6 +1034,9 @@
+@@ -1103,6 +1118,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
@@ -97,7 +97,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      with_sks_mock do
        begin
          Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-@@ -1053,6 +1071,9 @@
+@@ -1137,6 +1155,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
@@ -121,7 +121,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
          res = list.gpg.refresh_keys(list.keys)
 --- a/spec/schleuder/unit/list_spec.rb
 +++ b/spec/schleuder/unit/list_spec.rb
-@@ -481,6 +481,9 @@
+@@ -489,6 +489,9 @@
        list.subscribe("admin@example.org", nil, true)
        output = ''
  
@@ -131,7 +131,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        with_sks_mock do
          output = list.fetch_keys('98769E8A1091F36BD88403ECF71A3F8412D83889')
        end
-@@ -495,6 +498,9 @@
+@@ -503,6 +506,9 @@
        list.subscribe("admin@example.org", nil, true)
        output = ''
  
@@ -141,7 +141,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        with_sks_mock do
          output = list.fetch_keys('http://127.0.0.1:9999/keys/example.asc')
        end
-@@ -509,6 +515,9 @@
+@@ -517,6 +523,9 @@
        list.subscribe("admin@example.org", nil, true)
        output = ''
  
