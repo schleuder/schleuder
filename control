@@ -31,7 +31,7 @@ XB-Ruby-Versions: ${ruby:Versions}
 Depends: adduser,
          cron | cron-daemon,
          dirmngr,
-         default-mta | postfix | mail-transport-agent,
+         postfix,
          lsb-base,
          rake (>= 10.5.0~),
          ruby | ruby-interpreter,
