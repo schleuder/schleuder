@@ -4,6 +4,5 @@
 0004-use-default-debian-keyserver.patch
 0005-man-fix-log-path.patch
 0001-lib-fix-paths.patch
-0003-bin-fix-require.patch
 0002-etc-fix-paths.patch
 0006-bump-attempts-to-start-sks-mock.patch
