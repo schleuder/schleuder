@@ -1694,7 +1694,7 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
 
-    expect(message.to_s.gsub("\r", '')).to match(/BEGIN PGP SIGNED MESSAGE-----\nHash: SHA256\n\n#{signed_text}-----BEGIN PGP SIGNATURE/)
+    expect(message.to_s.gsub("\r", '')).to match(/BEGIN PGP SIGNED MESSAGE-----\nHash: SHA(256|512)\n\n#{signed_text}-----BEGIN PGP SIGNATURE/)
 
     teardown_list_and_mailer(list)
   end
