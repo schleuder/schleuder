@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## unreleased
 
+### Fixed
+
+* Handle X-SET-FINGERPRINT without an argument and reply with a helpful error-message.
+
+
 ### Changed
 
 * The output of the keywords 'X-ADD-KEY' and 'X-DELETE-KEY' now also show the "oneline"-format to represent keys (which includes fingerprint, primary email-address, date of generation and possible expiry). (#295)
