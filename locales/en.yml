@@ -112,6 +112,18 @@ en:
         X-DELETE-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 a-subscription@hostname
 
         The matching keys will be deleted only if the argument matches them distinctly.
+      fetch_key_requires_arguments: |
+        Error: You did not send any arguments for the keyword 'FETCH-KEY'.
+
+        One is required, more are optional. Each argument can be an URL to fetch via HTTP, or a string to look up at the OpenPGP-keyservers.
+        E.g., to fetch a key by fingerprint from the keyserver:
+        X-FETCH-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        Or, to fetch two keys by email-address from the keyserver:
+        X-FETCH-KEY: a-subscription@hostname anotherone@example.org
+
+        Or, to fetch a key keys by URL:
+        X-FETCH-KEY: https://example.org/keys/mykey.asc
     resend:
       not_resent_no_keys: Resending to <%{email}> failed (%{num_keys} keys found and unencrypted sending disallowed).
       encrypted_to: Encrypted to

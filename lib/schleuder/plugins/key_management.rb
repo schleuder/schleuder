@@ -90,6 +90,12 @@ module Schleuder
     end
 
     def self.fetch_key(arguments, list, mail)
+      if arguments.blank?
+        return I18n.t(
+          "plugins.key_management.fetch_key_requires_arguments"
+        )
+      end
+
       arguments.map do |argument|
         list.fetch_keys(argument)
       end

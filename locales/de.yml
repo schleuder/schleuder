@@ -108,6 +108,18 @@ de:
         X-DELETE-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 a-subscription@hostname
 
         Die Schlüssel werden nur gelöscht, wenn sie der einzige Treffer für den jeweiligen Wert sind.
+      fetch_key_requires_arguments: |
+        Fehler: Du hast zu dem Schlüsselwort 'FETCH-KEY' keinen Wert angegeben.
+
+        Ein Wert ist nötig, weitere sind optional. Jeder Wert kann eine URL sein, die via HTTP geladen wird, oder ein Text, mit dem auf den OpenPGP-Schlüsselserver gesucht wird.
+        Bspw., um einen Schlüssel per fingerprint vom Schlüsselserver zu holen:
+        X-FETCH-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        Oder, um zwei Schlüssel per Email-Adresse vom Schlüsselserver zu holen:
+        X-FETCH-KEY: a-subscription@hostname anotherone@example.org
+
+        Oder, um einen Schlüssel per HTTP von einem Server zu laden:
+        X-FETCH-KEY: https://example.org/keys/mykey.asc
     resend:
       not_resent_no_keys: Resending an <%{email}> fehlgeschlagen (%{num_keys} Schlüssel gefunden und unverschlüsseltes Senden verboten).
       encrypted_to: Verschlüsselt an
