@@ -1,6 +1,12 @@
 module Schleuder
   module RequestPlugins
     def self.subscribe(arguments, list, mail)
+      if arguments.blank?
+        return I18n.t(
+          "plugins.subscription_management.subscribe_requires_arguments"
+        )
+      end
+
       email = arguments.shift
 
       if arguments.present?

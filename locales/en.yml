@@ -138,6 +138,22 @@ en:
 
         or (as an admin):
         X-SET-FINGERPRINT: subscription2@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+      subscribe_requires_arguments: |
+        Error: You did not send any arguments for the keyword 'SUBSCRIBE'.
+
+        At least one argument is required, three more are optional. E.g.:
+        X-SUBSCRIBE: new-subscription@hostname
+
+        Or, defining the key to use for the new subscription:
+        X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        Or, defining the key to use, and setting this subscription to be an admin:
+        X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 true
+
+        Or, defining the key to use, setting this subscription as admin, and disabling the delivery of list-emails to this subscription:
+        X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 true false
+
+        If you omit the optional arguments, the subscription has no key assigned, is not an admin, and has the delivery of list-emails enabled.
     signatures_attached: Find the signatures attached.
     list_management:
       no_logfile: No logfile could be found for %{listname}. (This might be caused by a high log-level and the absence of errors.)
