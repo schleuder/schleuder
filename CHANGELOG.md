@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-* Handle X-SET-FINGERPRINT without an argument and reply with a helpful error-message.
+* Handle missing arguments for several keywords and reply with a helpful error-message.
 
 
 ### Changed
