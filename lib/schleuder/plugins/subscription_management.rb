@@ -98,6 +98,12 @@ module Schleuder
     end
 
     def self.set_fingerprint(arguments, list, mail)
+      if arguments.blank?
+        return I18n.t(
+          "plugins.subscription_management.set_fingerprint_requires_arguments"
+        )
+      end
+
       if arguments.first.match(/@/)
         if arguments.first == mail.signer.email || list.from_admin?(mail)
           email = arguments.shift

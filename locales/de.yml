@@ -126,6 +126,14 @@ de:
       setting_fingerprint_failed: |
         Fingerabdruck für %{email} konnte nicht auf %{fingerprint} gesetzt werden:
         %{errors}.
+      set_fingerprint_requires_arguments: |
+        Du hast zu dem Schlüsselwort 'SET-FINGERPRINT' keinen Wert angegeben.
+
+        Benötigt werden ein oder zwei Werte, bspw.:
+        X-SET-FINGERPRINT: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        oder (als admin):
+        X-SET-FINGERPRINT: subscription2@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
     signatures_attached: Die Signaturen hängen an.
     list_management:
       no_logfile: Keine Log-Datei für %{listname} gefunden. (Das kann an einem hohem Log-Level und der Abwesenheit von Fehlern liegen.)
