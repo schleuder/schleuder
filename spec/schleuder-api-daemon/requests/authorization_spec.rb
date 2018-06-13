@@ -1,4 +1,4 @@
-require_relative 'api_daemon_spec_helper'
+require 'helpers/api_daemon_spec_helper'
 
 describe 'authorization via api' do
   it 'allows un-authorized access to /status.json' do
@@ -16,5 +16,4 @@ describe 'authorization via api' do
     get '/status.json'
     expect(last_response).to be_ok
   end
-
 end

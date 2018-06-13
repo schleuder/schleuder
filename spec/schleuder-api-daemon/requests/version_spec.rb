@@ -1,4 +1,4 @@
-require_relative 'api_daemon_spec_helper'
+require 'helpers/api_daemon_spec_helper'
 
 describe 'version' do
   it 'returns the current schleuder version' do

@@ -1,4 +1,4 @@
-require_relative 'api_daemon_spec_helper'
+require 'helpers/api_daemon_spec_helper'
 
 describe 'status' do
   it 'returns status code 200' do
