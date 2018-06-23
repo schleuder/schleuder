@@ -79,9 +79,9 @@ describe Schleuder::Account do
     pw2 = account.send("generate_password")
     pw3 = account.send("generate_password")
 
-    expect(pw1.size).to eql(10)
-    expect(pw2.size).to eql(10)
-    expect(pw3.size).to eql(10)
+    expect(pw1.size).to be_between(Account::PASSWORD_LENGTH_RANGE.first, Account::PASSWORD_LENGTH_RANGE.last)
+    expect(pw2.size).to be_between(Account::PASSWORD_LENGTH_RANGE.first, Account::PASSWORD_LENGTH_RANGE.last)
+    expect(pw3.size).to be_between(Account::PASSWORD_LENGTH_RANGE.first, Account::PASSWORD_LENGTH_RANGE.last)
     expect(pw1).not_to eql(pw2)
     expect(pw2).not_to eql(pw3)
     expect(pw3).not_to eql(pw1)

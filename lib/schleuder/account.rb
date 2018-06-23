@@ -6,6 +6,7 @@ module Schleuder
       (0..9).to_a,
       %w[! @ # $ % ^ & * ( ) _ - + = { [ } ] : ; < , > . ? /]
     ].flatten
+    PASSWORD_LENGTH_RANGE = 10..12
 
     has_secure_password
 
@@ -40,7 +41,8 @@ module Schleuder
     private
 
 
-    def generate_password(length=10)
+    def generate_password
+      length = rand(PASSWORD_LENGTH_RANGE)
       PASSWORD_CHARS.shuffle.take(length).join
     end
   end
