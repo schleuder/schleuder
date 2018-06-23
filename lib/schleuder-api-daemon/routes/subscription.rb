@@ -20,7 +20,7 @@ class SchleuderApiDaemon < Sinatra::Base
       end
 
       authorize(Subscription, :list)
-      subscriptions = authorizer.scoped(Subscription).where(filter)
+      subscriptions = current_account.scoped(Subscription).where(filter)
       json subscriptions
     end
 

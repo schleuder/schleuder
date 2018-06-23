@@ -8,7 +8,6 @@ module SchleuderApiDaemonHelper
       account = Account.find_by(email: email)
       if account.try(:authenticate, password)
         @current_account = account
-        @authorizer = Authorizer.new(account)
         true
       else
         false
@@ -25,11 +24,7 @@ module SchleuderApiDaemonHelper
     end
 
     def authorize(thing, action)
-      authorizer.authorize(thing, action) || halt(403)
-    end
-
-    def authorizer
-      @authorizer
+      current_account.authorize(thing, action) || halt(403)
     end
 
     def current_account

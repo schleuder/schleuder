@@ -37,9 +37,21 @@ module Schleuder
       admin_lists.where(email: list.email).exists?
     end
 
+    def authorize(thing, action)
+      authorizer.authorize(thing, action)
+    end
+
+    def scoped(thing)
+      authorizer.scoped(thing)
+    end
+
 
     private
 
+
+    def authorizer
+      @authorizer ||= Authorizer.new(self)
+    end
 
     def generate_password
       length = rand(PASSWORD_LENGTH_RANGE)

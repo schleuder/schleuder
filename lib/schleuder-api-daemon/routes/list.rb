@@ -3,7 +3,7 @@ class SchleuderApiDaemon < Sinatra::Base
 
   namespace '/lists' do
     get '.json' do
-      json authorizer.lists, include: :subscriptions
+      json current_account.scoped(List), include: :subscriptions
     end
 
     post '.json' do
