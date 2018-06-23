@@ -10,8 +10,15 @@ module RSpecMixin
   def app() SchleuderApiDaemon end
 end
 
-RSpec.configure { |c| c.include RSpecMixin } # For RSpec 2.x and 3.x
+RSpec.configure do |config|
+  config.include RSpecMixin # For RSpec 2.x and 3.x
+
+  config.before(:each) do
+    @account = create(:account, email: 'api-superadmin@localhost', api_superadmin: true)
+    @account_password = @account.set_new_password!
+  end
+end
 
 def authorize!
-  basic_authorize 'schleuder', 'test_api_key'
+  basic_authorize @account.email, @account_password
 end
