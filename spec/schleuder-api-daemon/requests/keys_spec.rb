@@ -24,9 +24,9 @@ describe 'keys via api' do
       expect(last_response.status).to be 401
     end
     it 'does check keys with authorization' do
-      @list.import_key(File.read('spec/fixtures/revoked_key.txt'))
-      @list.import_key(File.read('spec/fixtures/signonly_key.txt'))
-      @list.import_key(File.read('spec/fixtures/expired_key.txt'))
+      @list.import_key(File.read("spec/fixtures/revoked_key.txt"))
+      @list.import_key(File.read("spec/fixtures/signonly_key.txt"))
+      @list.import_key(File.read("spec/fixtures/expired_key.txt"))
       authorize!
       get "/keys/check_keys.json?list_id=#{@list.id}"
       expect(last_response.status).to be 200
