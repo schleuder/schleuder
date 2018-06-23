@@ -57,10 +57,11 @@ require 'schleuder/list_builder'
 require 'schleuder/subscription'
 require 'schleuder/account'
 
-require 'schleuder/policies/base_policy'
-require 'schleuder/policies/subscription_policy'
-require 'schleuder/policies/list_policy'
-require 'schleuder/policies/authorizer'
+require 'schleuder/authorizer_policies/base_policy'
+require 'schleuder/authorizer_policies/subscription_policy'
+require 'schleuder/authorizer_policies/list_policy'
+require 'schleuder/authorizer_policies/key_policy'
+require 'schleuder/authorizer'
 
 # Setup
 ENV['SCHLEUDER_CONFIG'] ||= '/etc/schleuder/schleuder.yml'
