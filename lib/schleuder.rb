@@ -46,9 +46,6 @@ Dir["#{libdir}/schleuder/plugins/*.rb"].each do |file|
   require file
 end
 require 'schleuder/filters_runner'
-Dir["#{libdir}/schleuder/filters/*.rb"].each do |file|
-  require file
-end
 Dir["#{libdir}/schleuder/validators/*.rb"].each do |file|
   require file
 end

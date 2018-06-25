@@ -1,7 +1,7 @@
 module Schleuder
   module Filters
 
-    def self.strip_html_from_alternative!(list, mail)
+    def self.strip_html_from_alternative(list, mail)
       if mail[:content_type].blank? ||
             mail[:content_type].content_type != 'multipart/alternative' ||
             ! mail.to_s.include?('BEGIN PGP ')

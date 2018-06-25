@@ -9,4 +9,5 @@ coverage/
 /*.gem.sig
 /*.tar.gz
 /*.tar.gz.sig
-
+Gemfile.lock
+spec/list-defaults.yml
