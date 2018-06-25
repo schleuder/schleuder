@@ -10,7 +10,7 @@ module Schleuder
     DEFAULTS = {
       'lists_dir' => '/var/lib/schleuder/lists',
       'listlogs_dir' => '/var/lib/schleuder/lists',
-      'plugins_dir' => '/etc/schleuder/plugins',
+      'plugins_dir' => '/usr/local/lib/schleuder/plugins',
       'log_level' => 'warn',
       'superadmin' => 'root@localhost',
       'keyserver' => 'hkp://pool.sks-keyservers.net',

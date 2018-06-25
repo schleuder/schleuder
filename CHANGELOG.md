@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * The output of the keywords 'X-ADD-KEY' and 'X-DELETE-KEY' now also show the "oneline"-format to represent keys (which includes fingerprint, primary email-address, date of generation and possible expiry). (#295)
 * In the response to 'X-ADD-KEY', differentiate between 'newly imported' and 'updated' keys.
+* External plugins got also moved to to /usr/local/lib as where external filter lives. DEPRECATION NOTICE: Please migrate your external plugins from /etc/schleuder/plugins to /usr/local/lib/schleuder/plugins
 
 
 ## [3.2.3] / 2018-05-14

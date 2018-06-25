@@ -84,6 +84,13 @@ module Schleuder
         Dir["#{Schleuder::Conf.plugins_dir}/*.rb"].each do |file|
           require file
         end
+        # TODO: remove once 4.0.0 got released
+        if Gem::Version.new(Schleuder::VERSION) <= Gem::Version.new('4.0')
+          Dir['/etc/schleuder/plugins/*.rb'].each do |file|
+            Schleuder.logger.warn "DEPRECATED loading of plugin #{file} - Schleuder 4 will drop loading plugins from /etc/schleuder/plugins - Please migrate them to /usr/local/lib/schleuder/plugins"
+            require file
+          end
+        end
       end
 
     end
