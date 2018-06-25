@@ -11,7 +11,7 @@ module Schleuder
       'lists_dir' => '/var/lib/schleuder/lists',
       'listlogs_dir' => '/var/lib/schleuder/lists',
       'plugins_dir' => '/etc/schleuder/plugins',
-      'filters_dir' => '/etc/schleuder/filters',
+      'filters_dir' => '/usr/local/lib/schleuder/filters',
       'log_level' => 'warn',
       'superadmin' => 'root@localhost',
       'keyserver' => 'hkp://pool.sks-keyservers.net',
