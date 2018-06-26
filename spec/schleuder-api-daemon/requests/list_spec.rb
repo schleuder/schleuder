@@ -1,10 +1,6 @@
-require_relative 'api_daemon_spec_helper'
+require 'helpers/api_daemon_spec_helper'
 
 describe 'lists via api' do
-
-  before :each do
-  end
-
   it 'creates a list' do
     authorize!
     list = create(:list)
