@@ -222,15 +222,19 @@ module Mail
       end
 
       @keywords = []
+      look_for_keywords = true
       lines = part.decoded.lines.map do |line|
         # TODO: Find multiline arguments (add-key). Currently add-key has to
         # read the whole body and hope for the best.
-        if line.match(/^x-([^:\s]*)[:\s]*(.*)/i)
-          command = $1.strip.downcase
-          arguments = $2.to_s.strip.downcase.split(/[,; ]{1,}/)
+        if look_for_keywords && (m = line.match(/^x-([^:\s]*)[:\s]*(.*)/i))
+          command = m[1].strip.downcase
+          arguments = m[2].to_s.strip.downcase.split(/[,; ]{1,}/)
           @keywords << [command, arguments]
           nil
         else
+          if look_for_keywords && line.match(/\S+/i)
+            look_for_keywords = false
+          end
           line
         end
       end

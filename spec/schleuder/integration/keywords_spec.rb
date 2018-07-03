@@ -1390,6 +1390,61 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "does not parse keywords once the mail body started" do
+    list = create(:list, public_footer: "-- \nblablabla")
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.email => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    content_body = <<EOS
+Hello again!
+
+Did you know that you can resend emails using the following keyword:
+
+x-resend: foo@example.com
+
+Don't forget to prefix it with
+
+x-list-name: yourlist@example.com
+
+Otherwise it won't be sent out. What a nice trick!
+
+Best
+EOS
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n#{content_body}"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+    rescue SystemExit
+    end
+    expect(Mail::TestMailer.deliveries.length).to eql(2)
+    raw = Mail::TestMailer.deliveries.first
+    resent_message = raw.verify
+    resent_message_body = resent_message.parts.map { |p| p.body.to_s }.join
+    raw = Mail::TestMailer.deliveries.last
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.to_s).to include("Resent: Unencrypted to someone@example.org")
+    expect(resent_message.to).to include("someone@example.org")
+    expect(resent_message.to_s).not_to include("Resent: Unencrypted to someone@example.org")
+    expect(resent_message_body).to eql(content_body + list.public_footer.to_s)
+
+    teardown_list_and_mailer(list)
+  end
+
   it "x-resend does not include internal_footer" do
     list = create(
       :list,
