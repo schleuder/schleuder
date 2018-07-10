@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 * Handle missing arguments for several keywords and reply with a helpful error-message.
+* Send replies to keyword-usage and notices to admins regardless of the delivery-flag of their subscription. (#354)
 
 
 ### Changed
