@@ -298,6 +298,44 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "x-subscribe without arguments" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE:"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+    subscription = list.subscriptions.where(email: 'test@example.org').first
+
+    puts message
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.to_s).not_to include("translation missing")
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t("plugins.subscription_management.subscribe_requires_arguments"))
+
+    expect(subscription).to be_blank
+
+    teardown_list_and_mailer(list)
+  end
+
   it "x-unsubscribe without argument" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
@@ -1276,6 +1314,43 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "x-fetch-key without arguments" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list_keys_num = list.keys.size
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: "
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    with_sks_mock do
+      begin
+        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+      rescue SystemExit
+      end
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+
+    expect(list.keys.size).to eql(list_keys_num)
+    expect(message.to_s).not_to include("translation missing")
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t("plugins.key_management.fetch_key_requires_arguments"))
+
+    teardown_list_and_mailer(list)
+  end
+
   it "x-resend" do
     list = create(:list, public_footer: "-- \nblablabla")
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
@@ -2091,6 +2166,43 @@ describe "user sends keyword" do
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("Too many matching keys for ")
     expect(message.to_s).not_to include("Deleted")
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-delete-key without argument" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list.import_key(File.read('spec/fixtures/example_key.txt'))
+    list_keys_num = list.keys.size
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-list-name: #{list.email}\nX-delete-KEY:"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+
+    puts message
+    expect(list.keys.size).to eql(list_keys_num)
+    expect(message.to_s).not_to include("translation missing")
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t("plugins.key_management.delete_key_requires_arguments"))
 
     teardown_list_and_mailer(list)
   end
