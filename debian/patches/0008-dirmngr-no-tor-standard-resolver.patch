@@ -10,7 +10,7 @@ Description: dirmngr: Don't use tor, use standard resolver (specs only)
  This will be integrated upstream. Additionally, this will be
  reported to upstream of GnuPG.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2018-05-26
+Last-Update: 2018-07-11
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/spec/schleuder/integration/cli_spec.rb
@@ -37,7 +37,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        end
 --- a/spec/schleuder/integration/keywords_spec.rb
 +++ b/spec/schleuder/integration/keywords_spec.rb
-@@ -932,6 +932,9 @@
+@@ -1082,6 +1082,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
@@ -47,7 +47,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      with_sks_mock do
        begin
          Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-@@ -966,6 +969,9 @@
+@@ -1118,6 +1121,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
@@ -57,7 +57,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      with_sks_mock do
        begin
          Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-@@ -1000,6 +1006,9 @@
+@@ -1154,6 +1160,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
@@ -67,7 +67,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      with_sks_mock do
        begin
          Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-@@ -1035,6 +1044,9 @@
+@@ -1191,6 +1200,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
@@ -77,7 +77,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      with_sks_mock do
        begin
          Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-@@ -1069,6 +1081,9 @@
+@@ -1227,6 +1239,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
@@ -87,7 +87,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      with_sks_mock do
        begin
          Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-@@ -1103,6 +1118,9 @@
+@@ -1263,6 +1278,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
@@ -97,7 +97,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      with_sks_mock do
        begin
          Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-@@ -1137,6 +1155,9 @@
+@@ -1299,6 +1317,9 @@
      encrypted_mail = Mail::TestMailer.deliveries.first
      Mail::TestMailer.deliveries.clear
  
