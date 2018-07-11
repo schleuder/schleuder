@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -e
+
+curl -k -s -N https://127.0.0.1:4443/status.json | grep -q '{"status":"ok"}' || exit 1

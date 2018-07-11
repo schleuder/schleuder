@@ -1,0 +1,153 @@
+Description: dirmngr: Don't use tor, use standard resolver (specs only) 
+ It seems dirmngr still has problems connecting to a keyserver if
+ invoked in a chroot. This leads to failing specs.
+
+ This patch introduces a dirmngr config for the affected specs. The
+ config disables the use of Tor and enforces the use of the so called
+ "standard resolver" for DNS resolution. Using both options makes
+ dirmngr, and therefore the specs, work reliably.
+
+ This will be integrated upstream. Additionally, this will be
+ reported to upstream of GnuPG.
+Author: Georg Faerber <georg@riseup.net>
+Last-Update: 2018-05-26
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/spec/schleuder/integration/cli_spec.rb
++++ b/spec/schleuder/integration/cli_spec.rb
+@@ -154,6 +154,9 @@
+       list.import_key(File.read("spec/fixtures/expired_key.txt"))
+       list.import_key(File.read("spec/fixtures/olduid_key.txt"))
+ 
++      dirmngr_conf = "#{list.listdir}/dirmngr.conf"
++      `printf "no-use-tor\nstandard-resolver" >> "#{dirmngr_conf}"`
++
+       with_sks_mock do
+         Cli.new.refresh_keys
+         dirmngr_pid = `pgrep -a dirmngr | grep #{list.listdir}`.split(' ',2).first
+@@ -178,6 +181,9 @@
+         list.import_key(File.read("spec/fixtures/olduid_key.txt"))
+       end
+ 
++      dirmngr_conf = "#{list1.listdir}/dirmngr.conf"
++      `printf "no-use-tor\nstandard-resolver" >> "#{dirmngr_conf}"`
++
+       with_sks_mock do
+         Cli.new.refresh_keys list1.email
+       end
+--- a/spec/schleuder/integration/keywords_spec.rb
++++ b/spec/schleuder/integration/keywords_spec.rb
+@@ -932,6 +932,9 @@
+     encrypted_mail = Mail::TestMailer.deliveries.first
+     Mail::TestMailer.deliveries.clear
+ 
++    dirmngr_conf = "#{list.listdir}/dirmngr.conf"
++    `printf "no-use-tor\nstandard-resolver" >> "#{dirmngr_conf}"`
++
+     with_sks_mock do
+       begin
+         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+@@ -966,6 +969,9 @@
+     encrypted_mail = Mail::TestMailer.deliveries.first
+     Mail::TestMailer.deliveries.clear
+ 
++    dirmngr_conf = "#{list.listdir}/dirmngr.conf"
++    `printf "no-use-tor\nstandard-resolver" >> "#{dirmngr_conf}"`
++
+     with_sks_mock do
+       begin
+         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+@@ -1000,6 +1006,9 @@
+     encrypted_mail = Mail::TestMailer.deliveries.first
+     Mail::TestMailer.deliveries.clear
+ 
++    dirmngr_conf = "#{list.listdir}/dirmngr.conf"
++    `printf "no-use-tor\nstandard-resolver" >> "#{dirmngr_conf}"`
++
+     with_sks_mock do
+       begin
+         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+@@ -1035,6 +1044,9 @@
+     encrypted_mail = Mail::TestMailer.deliveries.first
+     Mail::TestMailer.deliveries.clear
+ 
++    dirmngr_conf = "#{list.listdir}/dirmngr.conf"
++    `printf "no-use-tor\nstandard-resolver" >> "#{dirmngr_conf}"`
++
+     with_sks_mock do
+       begin
+         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+@@ -1069,6 +1081,9 @@
+     encrypted_mail = Mail::TestMailer.deliveries.first
+     Mail::TestMailer.deliveries.clear
+ 
++    dirmngr_conf = "#{list.listdir}/dirmngr.conf"
++    `printf "no-use-tor\nstandard-resolver" >> "#{dirmngr_conf}"`
++
+     with_sks_mock do
+       begin
+         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+@@ -1103,6 +1118,9 @@
+     encrypted_mail = Mail::TestMailer.deliveries.first
+     Mail::TestMailer.deliveries.clear
+ 
++    dirmngr_conf = "#{list.listdir}/dirmngr.conf"
++    `printf "no-use-tor\nstandard-resolver" >> "#{dirmngr_conf}"`
++
+     with_sks_mock do
+       begin
+         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+@@ -1137,6 +1155,9 @@
+     encrypted_mail = Mail::TestMailer.deliveries.first
+     Mail::TestMailer.deliveries.clear
+ 
++    dirmngr_conf = "#{list.listdir}/dirmngr.conf"
++    `printf "no-use-tor\nstandard-resolver" >> "#{dirmngr_conf}"`
++
+     with_sks_mock do
+       begin
+         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+--- a/spec/schleuder/unit/gpgme_ctx.rb
++++ b/spec/schleuder/unit/gpgme_ctx.rb
+@@ -198,6 +198,9 @@
+       list.import_key(File.read("spec/fixtures/expired_key.txt"))
+       list.import_key(File.read("spec/fixtures/olduid_key.txt"))
+ 
++      dirmngr_conf = "#{list.listdir}/dirmngr.conf"
++      `printf "no-use-tor\nstandard-resolver" >> "#{dirmngr_conf}"`
++
+       res = ''
+       with_sks_mock do
+         res = list.gpg.refresh_keys(list.keys)
+--- a/spec/schleuder/unit/list_spec.rb
++++ b/spec/schleuder/unit/list_spec.rb
+@@ -489,6 +489,9 @@
+       list.subscribe("admin@example.org", nil, true)
+       output = ''
+ 
++      dirmngr_conf = "#{list.listdir}/dirmngr.conf"
++      `printf "no-use-tor\nstandard-resolver" >> "#{dirmngr_conf}"`
++
+       with_sks_mock do
+         output = list.fetch_keys('98769E8A1091F36BD88403ECF71A3F8412D83889')
+       end
+@@ -503,6 +506,9 @@
+       list.subscribe("admin@example.org", nil, true)
+       output = ''
+ 
++      dirmngr_conf = "#{list.listdir}/dirmngr.conf"
++      `printf "no-use-tor\nstandard-resolver" >> "#{dirmngr_conf}"`
++
+       with_sks_mock do
+         output = list.fetch_keys('http://127.0.0.1:9999/keys/example.asc')
+       end
+@@ -517,6 +523,9 @@
+       list.subscribe("admin@example.org", nil, true)
+       output = ''
+ 
++      dirmngr_conf = "#{list.listdir}/dirmngr.conf"
++      `printf "no-use-tor\nstandard-resolver" >> "#{dirmngr_conf}"`
++
+       with_sks_mock do
+         output = list.fetch_keys('admin@example.org')
+       end

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -e
+
+# Because GPG key operations rely heavily on entropy, we need to ensure
+# the pools are filled, so these operations are not blocked. We've used
+# haveged in the past, however, this doesn't work anymore if invoked a
+# container. That's why we're now using /dev/urandom, which gives
+# "unlimited randomness", and doesn't block, at the same time.
+# Warning: Don't use this approach in production, as this might lead to
+# less entropy (and pseudo-random bits) than reading from /dev/random.
+#
+# -- Georg Faerber <georg@riseup.net>  Tue, 03 Oct 2017 11:20:13 +0200
+rm /dev/random
+ln -s /dev/urandom /dev/random
+
+gem2deb-test-runner --autopkgtest --check-dependencies 2>&1
