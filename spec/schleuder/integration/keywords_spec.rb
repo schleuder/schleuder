@@ -326,7 +326,6 @@ describe "user sends keyword" do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
-    puts message
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).not_to include("translation missing")
     expect(message.first_plaintext_part.body.to_s).to eql(I18n.t("plugins.subscription_management.subscribe_requires_arguments"))
@@ -2199,7 +2198,6 @@ describe "user sends keyword" do
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
-    puts message
     expect(list.keys.size).to eql(list_keys_num)
     expect(message.to_s).not_to include("translation missing")
     expect(message.first_plaintext_part.body.to_s).to eql(I18n.t("plugins.key_management.delete_key_requires_arguments"))
