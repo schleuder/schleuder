@@ -3,6 +3,7 @@ stages:
   - static
   - test
   - debian:build
+  - debian:qa
   - docker
 
 cache:
@@ -182,3 +183,12 @@ debian:build:
     expire_in: 1 day
     paths:
       - results/
+
+debian:lintian:
+  stage: debian:qa
+  variables:
+    APT_INSTALL_PACKAGES: lintian
+  <<: *setup_prerequisites
+  script:
+    - lintian --allow-root --display-experimental --display-info --info --pedantic results/*.changes
+  allow_failure: true
