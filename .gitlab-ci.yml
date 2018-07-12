@@ -27,16 +27,23 @@ cache:
     # To keep things DRY, use an env var to handle packages to be installed via APT
     - apt-get install -qq -y $APT_INSTALL_PACKAGES
 
+.setup_entropy: &setup_entropy
+  before_script:
+    # Link /dev/random to /dev/urandom do deal with limited entropy, which otherwise blocks the test suite.
+    - rm /dev/random && ln -s /dev/urandom /dev/random
+
+.setup_prerequisites: &setup_prerequisites
+  <<: [*setup_apt,*setup_entropy]
+
 .test_ruby: &test_ruby
   variables:
     APT_INSTALL_PACKAGES: gnupg2 libgpgme11-dev libsqlite3-dev eatmydata
     # Use quotes so the following does get recognized as a string, not as a bool
     CHECK_CODE_COVERAGE: "true"
-  <<: *setup_apt
+  <<: *setup_prerequisites
   script:
     - eatmydata gem install bundler --no-ri --no-rdoc
     - eatmydata bundle install --jobs $(nproc) --path vendor
-    - rm /dev/random && ln -s /dev/urandom /dev/random
     - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:init
     - eatmydata bundle exec rspec
 
@@ -44,7 +51,7 @@ changelog:
   image: debian:unstable
   variables:
     APT_INSTALL_PACKAGES: ca-certificates git
-  <<: *setup_apt
+  <<: *setup_prerequisites
   script:
     # Ensure we work with the latest master
     - git fetch origin master:master
@@ -65,7 +72,7 @@ codespell:
   image: debian:unstable
   variables:
     APT_INSTALL_PACKAGES: codespell
-  <<: *setup_apt
+  <<: *setup_prerequisites
   script:
     # Run codespell to check for spelling errors, using a config with ignored words, skipping files 
     # (German translations, v2 list configs and code of installed dependencies) leading to false positives,
