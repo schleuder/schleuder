@@ -132,6 +132,8 @@ de:
       unsubscribing_failed: |
         Abo für %{email} nicht gelöscht:
         %{errors}
+      cannot_unsubscribe_last_admin: |
+        %{email} ist das einzige admin-Abo für diese Liste, daher kann es nicht gelöscht werden.
       subscribed: |
         Abo für %{email} mit diesen Werten eingetragen:
 

@@ -443,6 +443,41 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
+  it "x-unsubscribe doesn't unsubscribe last admin" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list.subscribe("test@example.org")
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-list-name: #{list.email}\nX-UNSUBSCRIBE: schleuder@example.org"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('plugins.subscription_management.cannot_unsubscribe_last_admin', email: 'schleuder@example.org'))
+    expect(list.subscriptions.size).to be(2)
+
+    teardown_list_and_mailer(list)
+  end
+
   it "x-set-fingerprint with own email-address and valid fingerprint" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)

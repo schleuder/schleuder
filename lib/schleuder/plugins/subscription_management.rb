@@ -43,6 +43,13 @@ module Schleuder
       # If no address was given we unsubscribe the sender.
       email = arguments.first.presence || mail.signer.email
 
+      # Refuse to unsubscribe the last admin.
+      if list.admins.size == 1 && list.admins.first.email == email
+        return I18n.t(
+          "plugins.subscription_management.cannot_unsubscribe_last_admin", email: email
+        )
+      end
+
       # TODO: May signers have multiple UIDs? We don't match those currently.
       if ! list.from_admin?(mail) && email != mail.signer.email
         # Only admins may unsubscribe others.

@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Handle missing arguments for several keywords and reply with a helpful error-message.
 * Send replies to keyword-usage and notices to admins regardless of the delivery-flag of their subscription. (#354)
+* X-UNSUBSCRIBE will refuse to unsubscribe the last admin of a list. (#357)
 
 
 ### Changed
