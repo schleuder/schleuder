@@ -345,7 +345,11 @@ module Schleuder
       mail.add_internal_footer!
       self.subscriptions.each do |subscription|
         begin
-          subscription.send_mail(mail)
+          if subscription.delivery_enabled
+            subscription.send_mail(mail)
+          else
+            logger.info "Not sending to #{subscription.email}: delivery is disabled."
+          end
         rescue => exc
           msg = I18n.t('errors.delivery_error',
                        { email: subscription.email, error: exc.to_s })
