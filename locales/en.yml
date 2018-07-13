@@ -136,6 +136,8 @@ en:
       unsubscribing_failed: |
         Unsubscribing %{email} failed:
         %{errors}
+      cannot_unsubscribe_last_admin: |
+        %{email} is the only admin for this list, thus it can not be unsubscribed.
       subscribed: |
         %{email} has been subscribed with these attributes:
 
