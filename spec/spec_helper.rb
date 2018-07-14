@@ -14,6 +14,7 @@ if ENV['CHECK_CODE_COVERAGE'] == 'true'
   SimpleCov.formatter = SimpleCov::Formatter::Console
   SimpleCov.start do
     add_filter %r{^/vendor/}
+    add_filter %r{^/spec/}
   end
 end
 require 'schleuder'
