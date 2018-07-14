@@ -12,6 +12,14 @@ cache:
 
 # Jobs that start with a period are disabled
 # This is just a template, to be used further below in the individual job definitions
+.install_build_depends: &install_build_depends |
+  # Get all required build dependencies.
+  export APT_BUILD_DEPENDS=`perl -ne 'next if /^#/; $p=(s/^Build-Depends:\s*/ / or (/^ / and $p)); s/,|\n|\([^)]+\)//mg; print if $p' < debian/control`
+  # Install the required build dependencies.
+  apt-get install -qq -y $APT_BUILD_DEPENDS
+  # Check if we're good to go regarding the build dependencies.
+  dpkg-checkbuilddeps
+
 .setup_apt: &setup_apt
   before_script:
     # Export APT env vars to cache packages archives and lists based on the current working directory
@@ -141,11 +149,7 @@ debian:build:
     - git config user.email team@schleuder.org
     # We're keeping the current Debian packaging state in a separate branch. Therefore, we need to pull in this.
     - git merge --allow-unrelated-histories --no-edit --quiet origin/debian/unstable
-    # TODO: Find a way to integrate this into the common "APT install" step above.
-    # The tricky part about this: This comes in quite late, it's not available any sooner. We're relying on GitLab CI
-    # variables to tell APT what needs to be installed. These variables are evaluated at the very beginning of the job.
-    - export APT_BUILD_DEPENDS=`perl -ne 'next if /^#/; $p=(s/^Build-Depends:\s*/ / or (/^ / and $p)); s/,|\n|\([^)]+\)//mg; print if $p' < debian/control`
-    - apt-get install -qq -y $APT_BUILD_DEPENDS
+    - *install_build_depends
     # Get the latest upstream version from the Debian changelog. This is needed to ensure the tarball we'll create
     # is found by gbp, the tool we're using to build the Debian package.
     - export UPSTREAM_VERSION=`dpkg-parsechangelog --show-field Version | cut -d- -f1`
@@ -166,8 +170,6 @@ debian:build:
     # During the check for packaging errors later on via lintian this would lead to a warning. Therefore, create a
     # "dummy" signature file.
     - touch /tmp/schleuder_$UPSTREAM_VERSION.orig.tar.gz.asc
-    # Check if we're good to go regarding the installed packages.
-    - dpkg-checkbuilddeps
     # TODO: Use sbuild to be closer to the common Debian package build environment. This needs chroot creation upfront,
     # though. Creating the chroot needs a mounted /proc filesystem. This works if running a privileged container,
     # however, in our case it fails due to "mount(2) system call failed: Too many levels of symbolic links".
@@ -183,6 +185,19 @@ debian:build:
     expire_in: 1 day
     paths:
       - results/
+
+debian:autopkgtest:
+  stage: debian:qa
+  variables:
+    APT_INSTALL_PACKAGES: autopkgtest eatmydata
+  <<: *setup_prerequisites
+  script:
+    # Run autopkgtest to test full system integration: It runs the upstream test suite (and some additional tests)
+    # against the installed package.
+    # TODO: Set up LXC. This would allow to reboot the container in between tests, for example to test the sysvinit
+    # script as well.
+    - eatmydata autopkgtest results/*.dsc -- null
+  allow_failure: true
 
 debian:lintian:
   stage: debian:qa
