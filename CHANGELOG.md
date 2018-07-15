@@ -14,6 +14,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * X-SET-FINGERPRINT will not anymore allow setting an empty fingerprint. (#360)
 
 
+### Added
+
+* To remove a fingerprint from a subscription one can use the new keyword X-UNSET-FINGERPRINT (#360).
+
+
 ### Changed
 
 * The output of the keywords 'X-ADD-KEY' and 'X-DELETE-KEY' now also show the "oneline"-format to represent keys (which includes fingerprint, primary email-address, date of generation and possible expiry). (#295)

@@ -161,6 +161,47 @@ module Schleuder
         )
       end
     end
+
+    def self.unset_fingerprint(arguments, list, mail)
+      if arguments.blank?
+        return I18n.t(
+          "plugins.subscription_management.unset_fingerprint_requires_arguments"
+        )
+      end
+
+      email = arguments.first
+      unless email == mail.signer.email || list.from_admin?(mail)
+          return I18n.t(
+            "plugins.subscription_management.unset_fingerprint_only_self"
+          )
+      end
+      if email == mail.signer.email && list.from_admin?(mail) && arguments.last != 'force'
+        return I18n.t(
+          "plugins.subscription_management.unset_fingerprint_requires_arguments"
+        )
+      end
+
+      sub = list.subscriptions.where(email: email).first
+      if sub.blank?
+        return I18n.t(
+          "plugins.subscription_management.is_not_subscribed", email: email
+        )
+      end
+
+      sub.fingerprint = ''
+      if sub.save
+        I18n.t(
+          "plugins.subscription_management.fingerprint_unset",
+          email: email
+        )
+      else
+        I18n.t(
+          "plugins.subscription_management.unsetting_fingerprint_failed",
+          email: email,
+          errors: sub.errors.to_a.join("\n")
+        )
+      end
+    end
   end
 end
 
