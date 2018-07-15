@@ -208,3 +208,6 @@ debian:lintian:
     # Run lintian, a tool used within Debian to check the package for errors and compliance with the Debian policy.
     - lintian --allow-root --display-experimental --display-info --info --pedantic results/*.changes
   allow_failure: true
+
+# TODO: Introduce job to check package for reproducibility. Currently, the toolchain is still experimental: Using
+# reprotest, even with all variations disabled, makes the build fail.
