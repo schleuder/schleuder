@@ -137,8 +137,15 @@ module Schleuder
         )
       end
 
-      sub.fingerprint = arguments.join
+      fingerprint = arguments.join
+      unless GPGME::Key.valid_fingerprint?(fingerprint)
+        return I18n.t(
+          "plugins.subscription_management.set_fingerprint_requires_valid_fingerprint",
+          fingerprint: fingerprint
+        )
+      end
 
+      sub.fingerprint = fingerprint
       if sub.save
         I18n.t(
           "plugins.subscription_management.fingerprint_set",
@@ -149,7 +156,7 @@ module Schleuder
         I18n.t(
           "plugins.subscription_management.setting_fingerprint_failed",
           email: email,
-          fingerprint: arguments.last,
+          fingerprint: sub.fingerprint,
           errors: sub.errors.to_a.join("\n")
         )
       end

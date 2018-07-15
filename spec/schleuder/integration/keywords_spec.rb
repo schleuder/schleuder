@@ -672,9 +672,10 @@ describe "user sends keyword" do
     teardown_list_and_mailer(list)
   end
 
-  it "x-set-fingerprint without email-address and with invalid fingerprint" do
+  it "x-set-fingerprint with email-address but without fingerprint" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list.import_key(File.read('spec/fixtures/example_key.txt'))
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -686,7 +687,7 @@ describe "user sends keyword" do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: blabla"
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: schleuder@example.org "
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -701,7 +702,93 @@ describe "user sends keyword" do
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include("Fingerprint is not a valid OpenPGP-fingerprint")
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t(
+      "plugins.subscription_management.set_fingerprint_requires_valid_fingerprint",
+      fingerprint: ''
+    ))
+
+    expect(subscription).to be_present
+    expect(subscription.fingerprint).to eql('59C71FB38AEE22E091C78259D06350440F759BD3')
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-set-fingerprint with email-address but without valid fingerprint" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list.import_key(File.read('spec/fixtures/example_key.txt'))
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: schleuder@example.org 59C71FB38AEE22E091C78259D0"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+    subscription = list.subscriptions.where(email: 'schleuder@example.org').first
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    # arguments are downcased when parsed
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t(
+      "plugins.subscription_management.set_fingerprint_requires_valid_fingerprint",
+      fingerprint: '59C71FB38AEE22E091C78259D0'.downcase
+    ))
+
+    expect(subscription).to be_present
+    expect(subscription.fingerprint).to eql('59C71FB38AEE22E091C78259D06350440F759BD3')
+
+    teardown_list_and_mailer(list)
+  end
+
+  it "x-set-fingerprint without email-address and with invalid fingerprint" do
+    list = create(:list)
+    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.request_address
+    mail.from = list.admins.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.request_address => list.fingerprint},
+      sign: true,
+      sign_as: list.admins.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: blaBLA"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+    subscription = list.subscriptions.where(email: 'schleuder@example.org').first
+
+    expect(message.to).to eql(['schleuder@example.org'])
+    # arguments are downcased when parsed
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t(
+      "plugins.subscription_management.set_fingerprint_requires_valid_fingerprint",
+      fingerprint: 'blaBLA'.downcase
+    ))
 
     expect(subscription.fingerprint).to eql('59C71FB38AEE22E091C78259D06350440F759BD3')
 

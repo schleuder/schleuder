@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Send replies to keyword-usage and notices to admins regardless of the delivery-flag of their subscription. (#354)
 * X-UNSUBSCRIBE will refuse to unsubscribe the last admin of a list. (#357)
 * Handle "protected subjects" in a way that Thunderbird/Enigmail recognize. (#74)
+* X-SET-FINGERPRINT will not anymore allow setting an empty fingerprint. (#360)
 
 
 ### Changed

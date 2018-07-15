@@ -47,4 +47,31 @@ describe GPGME::Key do
       expect(key.oneline).to match(/0xB1CD8BB15C2673C6BFD8FA4B70B2CF29E01AD53E signonly@example.org \d{4}-\d{2}-\d{2} \[not capable of encryption\]/)
     end
   end
+
+  describe '.valid_fingerprint?' do
+    context 'valid fingerprints' do
+      ['59C71FB38AEE22E091C78259D06350440F759BD3',
+       '0x59C71FB38AEE22E091C78259D06350440F759BD3',
+       '59C71FB38AEE22E091C78259D0635044',
+       '0x59C71FB38AEE22E091C78259D0635044',
+      ].each do |fp|
+        it "accepts #{fp} as a valid fingerprint" do
+          expect(described_class.valid_fingerprint?(fp)).to be_truthy
+        end
+      end
+    end
+    context 'invalid fingerprints' do
+      ['Z9C71FB38AEE22E091C78259D06350440F759BD3',
+       '59C71FB38AEE22E091C78259D06350440F759BD3A',
+       '59C71FB38AEE22E091C78259D06350440F759BD',
+       '0x59C71FB38AEE22E091C78259D06350440F759B',
+       'Z9C71FB38AEE22E091C78259D0635044',
+       'Z9C71FB38AEE22E091C78259D0635044',
+      ].each do |fp|
+        it "rejects #{fp} as an invalid fingerprint" do
+          expect(described_class.valid_fingerprint?(fp)).to be_falsey
+        end
+      end
+    end
+  end
 end
