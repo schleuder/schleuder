@@ -124,6 +124,12 @@ Contributing
 Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 
+Mission statement
+-----------------
+
+Please see [MISSION_STATEMENT.md](MISSION_STATEMENT.md).
+
+
 Code of Conduct
 ---------------
 
