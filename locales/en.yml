@@ -154,6 +154,20 @@ en:
       setting_fingerprint_failed: |
         Setting fingerprint for %{email} to %{fingerprint} failed:
         %{errors}.
+      set_fingerprint_requires_valid_fingerprint: |
+        You did not send a valid fingerprint for the keyword 'SET-FINGERPRINT'
+
+        The following value was detected: %{fingerprint}
+
+        One or two are required, e.g.:
+        X-SET-FINGERPRINT: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        or (as an admin):
+        X-SET-FINGERPRINT: subscription2@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        While the fingerprint must be passed in the full length (40 characters). Optionally prefixed with 0x.
+
+        To remove a fingerprint you can use the keyword 'UNSET-FINGERPRINT'
       set_fingerprint_requires_arguments: |
         Error: You did not send any arguments for the keyword 'SET-FINGERPRINT'.
 
@@ -162,6 +176,21 @@ en:
 
         or (as an admin):
         X-SET-FINGERPRINT: subscription2@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        To remove a fingerprint you can use the keyword 'UNSET-FINGERPRINT'
+      unset_fingerprint_only_self: Only admins may remove fingerprints of subscriptions other than their own.
+      unset_fingerprint_requires_arguments: |
+        Error: You did not send any arguments for the keyword 'UNSET-FINGERPRINT'
+
+        One value is required, e.g.:
+        X-UNSET-FINGERPRINT: subscription2@hostname
+
+        As an admin to unset your own fingerprint you must additionally pass the argument force. E.g.:
+        X-UNSET-FINGERPRINT: adminsubscription2@hostname force
+      fingerprint_unset: Fingerprint for %{email} removed.
+      unsetting_fingerprint_failed: |
+        Removing fingerprint for %{email} failed:
+        %{errors}.
       subscribe_requires_arguments: |
         Error: You did not send any arguments for the keyword 'SUBSCRIBE'.
 

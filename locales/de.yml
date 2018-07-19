@@ -150,6 +150,20 @@ de:
       setting_fingerprint_failed: |
         Fingerabdruck für %{email} konnte nicht auf %{fingerprint} gesetzt werden:
         %{errors}.
+      set_fingerprint_requires_valid_fingerprint: |
+        Du hast zu dem Schlüsselwort 'SET-FINGERPRINT' keinen gültigen Wert angegeben.
+
+        Es wurde der folgende Wert erkannt: %{fingerprint}
+
+        Benötigt werden ein oder zwei Werte, bspw.:
+        X-SET-FINGERPRINT: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        oder (als admin):
+        X-SET-FINGERPRINT: subscription2@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        Wobei der Fingerprint in der gesamten Länge (40 Zeichen) angegeben werden muss. Optional mit 0x als Präfix.
+
+        Um einen Fingerprint zu entfernen kannst du das Schlüsselwort 'UNSET-FINGERPRINT' verwenden.
       set_fingerprint_requires_arguments: |
         Du hast zu dem Schlüsselwort 'SET-FINGERPRINT' keinen Wert angegeben.
 
@@ -158,6 +172,21 @@ de:
 
         oder (als admin):
         X-SET-FINGERPRINT: subscription2@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        Um einen Fingerprint zu entfernen kannst du das Schlüsselwort 'UNSET-FINGERPRINT' verwenden.
+      unset_fingerprint_only_self: Nur admins dürfen den Fingerabdruck für andere Abos festlegen.
+      fingerprint_unset: Fingerabdruck für %{email} wurde entfernt.
+      unsetting_fingerprint_failed: |
+        Fingerabdruck für %{email} konnte nicht entfernt werden:
+        %{errors}.
+      unset_fingerprint_requires_arguments: |
+        Du hast zu dem Schlüsselwort 'UNSET-FINGERPRINT' keinen Wert angegeben.
+
+        Benötigt werden ein Wert, bspw.:
+        X-UNSET-FINGERPRINT: subscription2@hostname
+
+        Als admin musst du um deinen eigenen Fingerabdruck zu entfernen, noch zusätzlich das Argument force mitgeben. bspw.:
+        X-UNSET-FINGERPRINT: adminsubscription2@hostname force
       subscribe_requires_arguments: |
         Fehler: Du hast zu dem Schlüsselwort 'SUBSCRIBE' keinen Wert angegeben.
 
