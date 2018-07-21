@@ -283,6 +283,33 @@ module Mail
       @dynamic_pseudoheaders || []
     end
 
+    def signature_state
+      # Careful to add information about the incoming signature. GPGME
+      # throws exceptions if it doesn't know the key.
+      if self.signature.present?
+        # Some versions of gpgme return nil if the key is unknown, so we check
+        # for that manually and provide our own fallback. (Calling
+        # `signature.key` results in an EOFError in that case.)
+        if signing_key.present?
+          signature_state = signature.to_s
+        else
+          signature_state = I18n.t("signature_states.unknown", fingerprint: self.signature.fingerprint)
+        end
+      else
+        signature_state = I18n.t("signature_states.unsigned")
+      end
+      signature_state
+    end
+
+    def encryption_state
+      if was_encrypted?
+        encryption_state = I18n.t("encryption_states.encrypted")
+      else
+        encryption_state = I18n.t("encryption_states.unencrypted")
+      end
+      encryption_state
+    end
+
     def standard_pseudoheaders(list)
       if @standard_pseudoheaders.present?
         return @standard_pseudoheaders
@@ -291,32 +318,14 @@ module Mail
       end
 
       Array(list.headers_to_meta).each do |field|
-        @standard_pseudoheaders << make_pseudoheader(field.to_s, self.header[field.to_s])
-      end
-
-      # Careful to add information about the incoming signature. GPGME
-      # throws exceptions if it doesn't know the key.
-      if self.signature.present?
-        # Some versions of gpgme return nil if the key is unknown, so we check
-        # for that manually and provide our own fallback. (Calling
-        # `signature.key` results in an EOFError in that case.)
-        if signing_key.present?
-          msg = signature.to_s
-        else
-          # TODO: I18n
-          msg = "Unknown signature by unknown key 0x#{self.signature.fingerprint}"
+        value = case field.to_s
+          when 'sig' then signature_state
+          when 'enc' then encryption_state
+          else self.header[field.to_s]
         end
-      else
-        # TODO: I18n
-        msg = "Unsigned"
+        @standard_pseudoheaders << make_pseudoheader(field.to_s, value)
       end
-      @standard_pseudoheaders << make_pseudoheader(:sig, msg)
 
-      # TODO: I18n
-      @standard_pseudoheaders << make_pseudoheader(
-            :enc,
-            was_encrypted? ? 'Encrypted' : 'Unencrypted'
-        )
 
       @standard_pseudoheaders
     end

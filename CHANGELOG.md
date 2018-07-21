@@ -25,6 +25,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * In the response to 'X-ADD-KEY', differentiate between 'newly imported' and 'updated' keys.
 * Parse keywords up to the first line detected as mail content, this addresses a first part of #249.
 
+### Added
+* Extend the pseudoheaders configuration option to support 'sig' and 'enc' as configurable and sortable fields.
 
 ## [3.2.3] / 2018-05-14
 
