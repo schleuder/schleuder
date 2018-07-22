@@ -1,8 +1,7 @@
 require 'spec_helper'
-require './db/migrate/20180110203100_add_sig_enc_to_headers_to_meta_defaults.rb'
 
 describe 'AddSigEncToHeadersToMetaDefaults' do
-  let(:migrations_paths) { ENV['SCHLEUDER_ROOT'] + '/db/migrate' }
+  let(:migrations_paths) { 'db/migrate' }
   let(:migration_under_test) { 20180110203100 }
   let(:previous_migration) { 20170713215059 }
 
