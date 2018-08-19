@@ -26,7 +26,7 @@ function abort {
 [ -z ${SCHLOCKER_CONFIG_PATH+x} ]        && SCHLOCKER_CONFIG_PATH="/etc/schleuder/schleuder.yml"
 [ -z ${SCHLOCKER_CONFIG_SUPERADMIN+x} ]  && SCHLOCKER_CONFIG_SUPERADMIN="root@localhost"
 [ -z ${SCHLOCKER_CONFIG_LISTS_DIR+x} ]   && SCHLOCKER_CONFIG_LISTS_DIR="$SCHLOCKER_HOMEDIR/lists"
-[ -z ${SCHLOCKER_CONFIG_PLUGINS_DIR+x} ] && SCHLOCKER_CONFIG_PLUGINS_DIR="/etc/schleuder/plugins"
+[ -z ${SCHLOCKER_CONFIG_KEYWORD_HANDLERS_DIR+x} ] && SCHLOCKER_CONFIG_KEYWORD_HANDLERS_DIR="/usr/local/lib/schleuder/keyword_handlers"
 [ -z ${SCHLOCKER_CONFIG_LOG_LEVEL+x} ]   && SCHLOCKER_CONFIG_LOG_LEVEL="warn"
 [ -z ${SCHLOCKER_CONFIG_SMTP_HOST+x} ]   && SCHLOCKER_CONFIG_SMTP_HOST="localhost"
 [ -z ${SCHLOCKER_CONFIG_SMTP_PORT+x} ]   && SCHLOCKER_CONFIG_SMTP_PORT="25"
@@ -229,7 +229,7 @@ if [ ! -e "$SCHLOCKER_CONFIG_PATH" ]; then
     SCHLOCKER_CONFIG="---
 superadmin:  $SCHLOCKER_CONFIG_SUPERADMIN
 lists_dir:   $SCHLOCKER_CONFIG_LISTS_DIR
-plugins_dir: $SCHLOCKER_CONFIG_PLUGINS_DIR
+keyword_handlers_dir: $SCHLOCKER_CONFIG_KEYWORD_HANDLERS_DIR
 log_level:   $SCHLOCKER_CONFIG_LOG_LEVEL
 smtp_settings:
     # For explanation see documentation for ActionMailer::smtp_settings, e.g. <http://api.rubyonrails.org/classes/ActionMailer/Base.html>.

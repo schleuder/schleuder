@@ -328,7 +328,7 @@ describe 'user sends keyword' do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).not_to include('translation missing')
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('plugins.subscription_management.subscribe_requires_arguments'))
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.subscription_management.subscribe_requires_arguments'))
 
     expect(subscription).to be_blank
 
@@ -472,7 +472,7 @@ describe 'user sends keyword' do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('plugins.subscription_management.cannot_unsubscribe_last_admin', email: 'schleuder@example.org'))
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.subscription_management.cannot_unsubscribe_last_admin', email: 'schleuder@example.org'))
     expect(list.subscriptions.size).to be(2)
 
     teardown_list_and_mailer(list)
@@ -703,7 +703,7 @@ describe 'user sends keyword' do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.first_plaintext_part.body.to_s).to eql(I18n.t(
-      'plugins.subscription_management.set_fingerprint_requires_valid_fingerprint',
+      'keyword_handlers.subscription_management.set_fingerprint_requires_valid_fingerprint',
       fingerprint: ''
     ))
 
@@ -743,10 +743,9 @@ describe 'user sends keyword' do
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    # arguments are downcased when parsed
     expect(message.first_plaintext_part.body.to_s).to eql(I18n.t(
-      'plugins.subscription_management.set_fingerprint_requires_valid_fingerprint',
-      fingerprint: '59C71FB38AEE22E091C78259D0'.downcase
+      'keyword_handlers.subscription_management.set_fingerprint_requires_valid_fingerprint',
+      fingerprint: '59c71fb38aee22e091c78259d0'
     ))
 
     expect(subscription).to be_present
@@ -769,7 +768,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: blaBLA\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: blabla\nx-stop"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -784,10 +783,9 @@ describe 'user sends keyword' do
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    # arguments are downcased when parsed
     expect(message.first_plaintext_part.body.to_s).to eql(I18n.t(
-      'plugins.subscription_management.set_fingerprint_requires_valid_fingerprint',
-      fingerprint: 'blaBLA'.downcase
+      'keyword_handlers.subscription_management.set_fingerprint_requires_valid_fingerprint',
+      fingerprint: 'blabla'
     ))
 
     expect(subscription.fingerprint).to eql('59C71FB38AEE22E091C78259D06350440F759BD3')
@@ -856,7 +854,7 @@ describe 'user sends keyword' do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('plugins.subscription_management.set_fingerprint_requires_arguments'))
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.subscription_management.set_fingerprint_requires_arguments'))
 
     teardown_list_and_mailer(list)
   end
@@ -889,7 +887,7 @@ describe 'user sends keyword' do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('plugins.subscription_management.unset_fingerprint_requires_arguments'))
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.subscription_management.unset_fingerprint_requires_arguments'))
 
     teardown_list_and_mailer(list)
   end
@@ -963,7 +961,7 @@ describe 'user sends keyword' do
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('plugins.subscription_management.unset_fingerprint_requires_arguments'))
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.subscription_management.unset_fingerprint_requires_arguments'))
 
     expect(subscription).to be_present
     expect(subscription.fingerprint).to eql('59C71FB38AEE22E091C78259D06350440F759BD3')
@@ -1149,7 +1147,8 @@ describe 'user sends keyword' do
 
     expect(Mail::TestMailer.deliveries.size).to eql(2)
     expect(notification.to).to eql(['schleuder@example.org'])
-    expect(notification.first_plaintext_part.body.to_s).to eql("schleuder@example.org sent the keyword 'list-subscriptions' and received this response:\n\n#{expected_text}")
+    expect(notification.first_plaintext_part.body.to_s).to eql("schleuder@example.org sent this keyword:\n\nlist-subscriptions: \n\n\n...and received this response:\n\n#{expected_text}\n")
+
 
     expect(response.to).to eql(['schleuder@example.org'])
     expect(response.first_plaintext_part.body.to_s).to eql(expected_text)
@@ -1349,7 +1348,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-ADD-KEY:\nlakdsjflaksjdflakjsdflkajsdf\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-ADD-KEY:\nx-stop:\nlakdsjflaksjdflakjsdflkajsdf\n"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1688,7 +1687,7 @@ describe 'user sends keyword' do
 
     expect(list.keys.size).to eql(list_keys_num)
     expect(message.to_s).not_to include('translation missing')
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('plugins.key_management.fetch_key_requires_arguments'))
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.key_management.fetch_key_requires_arguments'))
 
     teardown_list_and_mailer(list)
   end
@@ -1943,7 +1942,7 @@ EOS
     expect(Mail::TestMailer.deliveries.size).to eql(3)
 
     expect(notification.to).to eql(['schleuder@example.org'])
-    expect(notification.first_plaintext_part.body.to_s).to eql("schleuder@example.org used the keyword 'resend' with the values 'someone@example.org' in a message sent to the list.")
+    expect(notification.first_plaintext_part.body.to_s).to eql("schleuder@example.org sent this keyword to the list:\n\nresend: someone@example.org\n")
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include('Resent: Unencrypted to someone@example.org')
@@ -1985,7 +1984,7 @@ EOS
     expect(Mail::TestMailer.deliveries.size).to eql(3)
 
     expect(notification.to).to eql(['admin@example.org'])
-    expect(notification.first_plaintext_part.body.to_s).to eql("admin@example.org used the keyword 'resend' with the values 'someone@example.org' in a message sent to the list.")
+    expect(notification.first_plaintext_part.body.to_s).to eql("admin@example.org sent this keyword to the list:\n\nresend: someone@example.org\n")
 
     expect(message.to).to eql(['user@example.org'])
     expect(message.to_s).to include('Resent: Unencrypted to someone@example.org')
@@ -2278,7 +2277,7 @@ EOS
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
     signature = message.attachments.first.body.to_s
-    # list.gpg.verify() results in a "Bad Signature".  The sign-this plugin
+    # list.gpg.verify() results in a "Bad Signature".  The sign-this keyword-handler
     # also uses GPGME::Crypto, apparently that makes a difference.
     crypto = GPGME::Crypto.new
     verification_string = ''
@@ -2640,7 +2639,7 @@ EOS
 
     expect(list.keys.size).to eql(list_keys_num)
     expect(message.to_s).not_to include('translation missing')
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('plugins.key_management.delete_key_requires_arguments'))
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.key_management.delete_key_requires_arguments'))
 
     teardown_list_and_mailer(list)
   end
@@ -3130,11 +3129,11 @@ EOS
     Mail::TestMailer.deliveries.clear
 
     begin
-      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
-    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
 
     expect(Mail::TestMailer.deliveries.size).to eql(1)
     expect(message.first_plaintext_part.body.to_s).to include("Your message lacked the keyword 'X-STOP'")
