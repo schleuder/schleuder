@@ -3,7 +3,7 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## unreleased
+## [3.3.0] / 2018-09-04
 
 ### Fixed
 
@@ -27,6 +27,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 * Extend the pseudoheaders configuration option to support 'sig' and 'enc' as configurable and sortable fields.
+
+
 
 ## [3.2.3] / 2018-05-14
 
