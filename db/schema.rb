@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170713215059) do
+ActiveRecord::Schema.define(version: 20180110203100) do
 
   create_table "lists", force: :cascade do |t|
     t.datetime "created_at"
@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(version: 20170713215059) do
     t.string   "subject_prefix_out",                          limit: 255, default: ""
     t.string   "openpgp_header_preference",                   limit: 255, default: "signencrypt"
     t.text     "public_footer",                                           default: ""
-    t.text     "headers_to_meta",                                         default: "[\"from\", \"to\", \"date\", \"cc\"]"
+    t.text     "headers_to_meta",                                         default: "[\"from\", \"to\", \"cc\", \"date\", \"sig\", \"enc\"]"
     t.text     "bounces_drop_on_headers",                                 default: "{\"x-spam-flag\":\"yes\"}"
     t.text     "keywords_admin_only",                                     default: "[\"subscribe\", \"unsubscribe\", \"delete-key\"]"
     t.text     "keywords_admin_notify",                                   default: "[\"add-key\"]"

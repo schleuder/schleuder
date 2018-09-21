@@ -9,8 +9,8 @@ module Schleuder
     # This problem seems to be in fact related to the use of Microsoft
     # Exchange. Accordingly, check if the headers contain 'X-MS-Exchange'.
     # See #211, #246, #331 and #333 for background.
-    def self.fix_exchange_messages!(list, mail)
-      if mail.header_fields.any?{|f| f.name =~ /^X-MS-Exchange-/i } && 
+    def self.fix_exchange_messages(list, mail)
+      if mail.header_fields.any?{|f| f.name =~ /^X-MS-Exchange-/i } &&
           !mail[:content_type].blank? &&
           mail[:content_type].content_type == 'multipart/mixed' && mail.parts.size > 2 &&
           mail.parts[0][:content_type].content_type == 'text/plain' &&

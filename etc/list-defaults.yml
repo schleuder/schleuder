@@ -26,7 +26,7 @@ receive_authenticated_only: false
 # NOTE: This is a very weak restriction mechanism on which you should not rely,
 #       as sending addresses can easily be faked! We recommend you to rather
 #       rely on the `receive_authenticated_only` option. Setting the
-#       `receive_authenticated_only` option to true, will authenticated senders
+#       `receive_authenticated_only` option to true, will authenticate senders
 #       based on the signature on the mail, which is the strongest
 #       authentication mechanism you can get.
 #       This option could be useful, if you would like to have a closed
@@ -43,6 +43,8 @@ headers_to_meta:
 - to
 - cc
 - date
+- sig
+- enc
 
 # Preserve the Message-IDs (In-Reply-To, References) from the incoming email.
 # This setting can lead to information leakage, as replies are connectable

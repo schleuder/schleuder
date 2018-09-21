@@ -1,10 +1,10 @@
 # Schleuder's Code of Conduct
 
-The Schleuder project strongly values contributors from anywhere, regardless of level of experience, gender, gender identity and expression, sexual orientation, disability, physical appearance, body size, race, ethnicity, age, religion, or nationality. As a result, the Schleuder development team has agreed to and enforces this code of conduct in order to provide an open and welcoming environment for everyone who participates in the development of Schleuder.
+The Schleuder development team wants to provide an open and welcoming environment for everyone who participates in the development of Schleuder regardless of level of experience, gender, gender identity and expression, sexual orientation, disability, physical appearance, race, ethnicity, economic or social status, age, religion, or nationality. Harassment in code and discussion or violation of physical boundaries is completely unacceptable anywhere in the Schleuder project.
 
-### Summary
+We welcome contributions from everyone that adheres to these principles.
 
-Harassment in code and discussion or violation of physical boundaries is completely unacceptable anywhere in the Schleuder project. Violators will be warned, blocked or banned by the development team.
+Violators will be warned, blocked or banned by the development team.
 
 ### In detail
 

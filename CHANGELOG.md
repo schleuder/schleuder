@@ -3,7 +3,31 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## unreleased
+## [3.3.0] / 2018-08-06
+
+### Fixed
+
+* Handle missing arguments for several keywords and reply with a helpful error-message.
+* Send replies to keyword-usage and notices to admins regardless of the delivery-flag of their subscription. (#354)
+* X-UNSUBSCRIBE will refuse to unsubscribe the last admin of a list. (#357)
+* Handle "protected subjects" in a way that Thunderbird/Enigmail recognize. (#74)
+* X-SET-FINGERPRINT will not anymore allow setting an empty fingerprint. (#360)
+
+
+### Added
+
+* To remove a fingerprint from a subscription one can use the new keyword X-UNSET-FINGERPRINT (#360).
+
+
+### Changed
+
+* The output of the keywords 'X-ADD-KEY' and 'X-DELETE-KEY' now also show the "oneline"-format to represent keys (which includes fingerprint, primary email-address, date of generation and possible expiry). (#295)
+* In the response to 'X-ADD-KEY', differentiate between 'newly imported' and 'updated' keys.
+* Parse keywords up to the first line detected as mail content, this addresses a first part of #249.
+
+### Added
+* Extend the pseudoheaders configuration option to support 'sig' and 'enc' as configurable and sortable fields.
+
 
 
 ## [3.2.3] / 2018-05-14
@@ -19,9 +43,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Error messages are converted into human readable text now, instead of giving their class-name. (#338)
 * Require mail-gpg >= 0.3.3, which fixes a bug that let some equal-signs disappear under specific circumstances. (#287)
 
+
 ### Known issues
 
 * With the current used mail library version schleuder uses, there are certain malformed emails that can't be parsed. See #334 for background. This will be fixed in future releases of the mail library.
+
+### Added
+
+* Enable to load external filters, similar to how we allow external plugins. (#282)
 
 ### Changed
 

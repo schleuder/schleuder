@@ -1,6 +1,12 @@
 module Schleuder
   module RequestPlugins
     def self.subscribe(arguments, list, mail)
+      if arguments.blank?
+        return I18n.t(
+          "plugins.subscription_management.subscribe_requires_arguments"
+        )
+      end
+
       email = arguments.shift
 
       if arguments.present?
@@ -36,6 +42,13 @@ module Schleuder
     def self.unsubscribe(arguments, list, mail)
       # If no address was given we unsubscribe the sender.
       email = arguments.first.presence || mail.signer.email
+
+      # Refuse to unsubscribe the last admin.
+      if list.admins.size == 1 && list.admins.first.email == email
+        return I18n.t(
+          "plugins.subscription_management.cannot_unsubscribe_last_admin", email: email
+        )
+      end
 
       # TODO: May signers have multiple UIDs? We don't match those currently.
       if ! list.from_admin?(mail) && email != mail.signer.email
@@ -98,6 +111,12 @@ module Schleuder
     end
 
     def self.set_fingerprint(arguments, list, mail)
+      if arguments.blank?
+        return I18n.t(
+          "plugins.subscription_management.set_fingerprint_requires_arguments"
+        )
+      end
+
       if arguments.first.match(/@/)
         if arguments.first == mail.signer.email || list.from_admin?(mail)
           email = arguments.shift
@@ -118,8 +137,15 @@ module Schleuder
         )
       end
 
-      sub.fingerprint = arguments.join
+      fingerprint = arguments.join
+      unless GPGME::Key.valid_fingerprint?(fingerprint)
+        return I18n.t(
+          "plugins.subscription_management.set_fingerprint_requires_valid_fingerprint",
+          fingerprint: fingerprint
+        )
+      end
 
+      sub.fingerprint = fingerprint
       if sub.save
         I18n.t(
           "plugins.subscription_management.fingerprint_set",
@@ -130,7 +156,48 @@ module Schleuder
         I18n.t(
           "plugins.subscription_management.setting_fingerprint_failed",
           email: email,
-          fingerprint: arguments.last,
+          fingerprint: sub.fingerprint,
+          errors: sub.errors.to_a.join("\n")
+        )
+      end
+    end
+
+    def self.unset_fingerprint(arguments, list, mail)
+      if arguments.blank?
+        return I18n.t(
+          "plugins.subscription_management.unset_fingerprint_requires_arguments"
+        )
+      end
+
+      email = arguments.first
+      unless email == mail.signer.email || list.from_admin?(mail)
+          return I18n.t(
+            "plugins.subscription_management.unset_fingerprint_only_self"
+          )
+      end
+      if email == mail.signer.email && list.from_admin?(mail) && arguments.last != 'force'
+        return I18n.t(
+          "plugins.subscription_management.unset_fingerprint_requires_arguments"
+        )
+      end
+
+      sub = list.subscriptions.where(email: email).first
+      if sub.blank?
+        return I18n.t(
+          "plugins.subscription_management.is_not_subscribed", email: email
+        )
+      end
+
+      sub.fingerprint = ''
+      if sub.save
+        I18n.t(
+          "plugins.subscription_management.fingerprint_unset",
+          email: email
+        )
+      else
+        I18n.t(
+          "plugins.subscription_management.unsetting_fingerprint_failed",
+          email: email,
           errors: sub.errors.to_a.join("\n")
         )
       end

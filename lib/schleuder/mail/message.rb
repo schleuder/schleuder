@@ -16,7 +16,7 @@ module Mail
     attr_accessor :recipient
     attr_accessor :original_message
     attr_accessor :list
-    attr_accessor :protected_subject
+    attr_accessor :protected_headers_subject
 
     # TODO: This should be in initialize(), but I couldn't understand the
     # strange errors about wrong number of arguments when overriding
@@ -52,7 +52,7 @@ module Mail
       # mail-gpg pulls headers from the decrypted mime parts "up" into the main
       # headers, which reveals protected subjects.
       if self.subject != new.subject
-        new.protected_subject = self.subject.dup
+        new.protected_headers_subject = self.subject.dup
 
         # Delete the protected headers which might leak information.
         if new.parts.first.content_type == "text/rfc822-headers; protected-headers=v1"
@@ -69,7 +69,8 @@ module Mail
       clean.list = self.list
       clean.gpg self.list.gpg_sign_options
       clean.from = list.email
-      clean.subject = self.protected_subject || self.subject
+      clean.subject = self.subject
+      clean.protected_headers_subject = self.protected_headers_subject
 
       clean.add_msgids(list, self)
       clean.add_list_headers(list)
@@ -81,7 +82,7 @@ module Mail
         clean.add_part new_part
       end
 
-      if self.protected_subject.present?
+      if self.protected_headers_subject.present?
         new_part = Mail::Part.new
         new_part.content_type = "text/rfc822-headers; protected-headers=v1"
         new_part.body = "Subject: #{self.subject}\n"
@@ -222,15 +223,19 @@ module Mail
       end
 
       @keywords = []
+      look_for_keywords = true
       lines = part.decoded.lines.map do |line|
         # TODO: Find multiline arguments (add-key). Currently add-key has to
         # read the whole body and hope for the best.
-        if line.match(/^x-([^:\s]*)[:\s]*(.*)/i)
-          command = $1.strip.downcase
-          arguments = $2.to_s.strip.downcase.split(/[,; ]{1,}/)
+        if look_for_keywords && (m = line.match(/^x-([^:\s]*)[:\s]*(.*)/i))
+          command = m[1].strip.downcase
+          arguments = m[2].to_s.strip.downcase.split(/[,; ]{1,}/)
           @keywords << [command, arguments]
           nil
         else
+          if look_for_keywords && line.match(/\S+/i)
+            look_for_keywords = false
+          end
           line
         end
       end
@@ -278,6 +283,33 @@ module Mail
       @dynamic_pseudoheaders || []
     end
 
+    def signature_state
+      # Careful to add information about the incoming signature. GPGME
+      # throws exceptions if it doesn't know the key.
+      if self.signature.present?
+        # Some versions of gpgme return nil if the key is unknown, so we check
+        # for that manually and provide our own fallback. (Calling
+        # `signature.key` results in an EOFError in that case.)
+        if signing_key.present?
+          signature_state = signature.to_s
+        else
+          signature_state = I18n.t("signature_states.unknown", fingerprint: self.signature.fingerprint)
+        end
+      else
+        signature_state = I18n.t("signature_states.unsigned")
+      end
+      signature_state
+    end
+
+    def encryption_state
+      if was_encrypted?
+        encryption_state = I18n.t("encryption_states.encrypted")
+      else
+        encryption_state = I18n.t("encryption_states.unencrypted")
+      end
+      encryption_state
+    end
+
     def standard_pseudoheaders(list)
       if @standard_pseudoheaders.present?
         return @standard_pseudoheaders
@@ -286,32 +318,14 @@ module Mail
       end
 
       Array(list.headers_to_meta).each do |field|
-        @standard_pseudoheaders << make_pseudoheader(field.to_s, self.header[field.to_s])
-      end
-
-      # Careful to add information about the incoming signature. GPGME
-      # throws exceptions if it doesn't know the key.
-      if self.signature.present?
-        # Some versions of gpgme return nil if the key is unknown, so we check
-        # for that manually and provide our own fallback. (Calling
-        # `signature.key` results in an EOFError in that case.)
-        if signing_key.present?
-          msg = signature.to_s
-        else
-          # TODO: I18n
-          msg = "Unknown signature by unknown key 0x#{self.signature.fingerprint}"
+        value = case field.to_s
+          when 'sig' then signature_state
+          when 'enc' then encryption_state
+          else self.header[field.to_s]
         end
-      else
-        # TODO: I18n
-        msg = "Unsigned"
+        @standard_pseudoheaders << make_pseudoheader(field.to_s, value)
       end
-      @standard_pseudoheaders << make_pseudoheader(:sig, msg)
 
-      # TODO: I18n
-      @standard_pseudoheaders << make_pseudoheader(
-            :enc,
-            was_encrypted? ? 'Encrypted' : 'Unencrypted'
-        )
 
       @standard_pseudoheaders
     end

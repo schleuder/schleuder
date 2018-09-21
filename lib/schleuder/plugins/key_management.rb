@@ -1,7 +1,6 @@
 module Schleuder
   module RequestPlugins
     def self.add_key(arguments, list, mail)
-      out = [I18n.t('plugins.key_management.import_result')]
 
       if mail.has_attachments?
         results = self.import_keys_from_attachments(list, mail)
@@ -9,15 +8,35 @@ module Schleuder
         results = [self.import_key_from_body(list, mail)]
       end
 
-      out << results.compact.collect(&:imports).flatten.map do |import_status|
-        str = I18n.t("plugins.key_management.key_import_status.#{import_status.action}")
-        "#{import_status.fpr}: #{str}"
+      import_stati = results.compact.collect(&:imports).flatten
+
+      if import_stati.blank?
+        return I18n.t('plugins.key_management.no_imports')
       end
 
-      out.join("\n")
+      out = []
+
+      import_stati.each do |import_status|
+        if import_status.action == 'error'
+          out << I18n.t("plugins.key_management.key_import_status.error", fingerprint: import_status.fingerprint)
+        else
+          key = list.gpg.find_distinct_key(import_status.fingerprint)
+          if key
+            out << I18n.t("plugins.key_management.key_import_status.#{import_status.action}", key_oneline: key.oneline)
+          end
+        end
+      end
+
+      out.join("\n\n")
     end
 
     def self.delete_key(arguments, list, mail)
+      if arguments.blank?
+        return I18n.t(
+          "plugins.key_management.delete_key_requires_arguments"
+        )
+      end
+
       arguments.map do |argument|
         keys = list.keys(argument)
         case keys.size
@@ -26,9 +45,9 @@ module Schleuder
         when 1
           begin
             keys.first.delete!
-            I18n.t('plugins.key_management.deleted', key_string: keys.first.fingerprint)
+            I18n.t('plugins.key_management.deleted', key_string: keys.first.oneline)
           rescue GPGME::Error::Conflict
-            I18n.t('plugins.key_management.not_deletable', key_string: keys.first.fingerprint)
+            I18n.t('plugins.key_management.not_deletable', key_string: keys.first.oneline)
           end
         else
           I18n.t('errors.too_many_matching_keys', {
@@ -71,6 +90,12 @@ module Schleuder
     end
 
     def self.fetch_key(arguments, list, mail)
+      if arguments.blank?
+        return I18n.t(
+          "plugins.key_management.fetch_key_requires_arguments"
+        )
+      end
+
       arguments.map do |argument|
         list.fetch_keys(argument)
       end

@@ -40,11 +40,6 @@ module Schleuder
     def send_mail(mail)
       list.logger.debug "Preparing sending to #{self.inspect}"
 
-      if ! self.delivery_enabled
-        list.logger.info "Not sending to #{self.email}: delivery is disabled."
-        return false
-      end
-
       mail = ensure_headers(mail)
       gpg_opts = self.list.gpg_sign_options
 

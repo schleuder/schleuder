@@ -83,12 +83,43 @@ de:
     key_management:
       deleted: "Gelöscht: %{key_string}"
       not_deletable: "Darf nicht gelöscht werden: %{key_string}"
-      import_result: "Import-Ergebnis:\n"
+      no_imports: In deiner Email konnten keine Schlüssel gefunden werden. :(
       key_import_status:
-        imported: importiert
-        updated: aktualisiert
-        unchanged: unverändert
+        imported: |
+          Dieser Schlüssel wurde neu hinzugefügt:
+          %{key_oneline}
+        updated: |
+          Dieser Schlüssel wurde aktualisiert:
+          %{key_oneline}
+        unchanged: |
+          Dieser Schlüssel wurde nicht verändert:
+          %{key_oneline}
+        error: |
+          Der Schlüssel mit diesem Fingerabdruck konnte aus unbekanntem Grund nicht hinzugefügt werden:
+          %{fingerprint} 
       matching_keys_intro: Alle Schlüssel aus dem Schlüsselring der Liste, die '%{input}' enthalten, sind an diese Email angehängt.
+      delete_key_requires_arguments: |
+        Fehler: Du hast zu dem Schlüsselwort 'DELETE-KEY' keinen Wert angegeben.
+
+        Ein Wert ist nötig, weitere sind optional. Bspw.:
+        X-DELETE-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        Oder, um mehrere Schlüssel auf einmal zu löschen:
+        X-DELETE-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 a-subscription@hostname
+
+        Die Schlüssel werden nur gelöscht, wenn sie der einzige Treffer für den jeweiligen Wert sind.
+      fetch_key_requires_arguments: |
+        Fehler: Du hast zu dem Schlüsselwort 'FETCH-KEY' keinen Wert angegeben.
+
+        Ein Wert ist nötig, weitere sind optional. Jeder Wert kann eine URL sein, die via HTTP geladen wird, oder ein Text, mit dem auf den OpenPGP-Schlüsselserver gesucht wird.
+        Bspw., um einen Schlüssel per fingerprint vom Schlüsselserver zu holen:
+        X-FETCH-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        Oder, um zwei Schlüssel per Email-Adresse vom Schlüsselserver zu holen:
+        X-FETCH-KEY: a-subscription@hostname anotherone@example.org
+
+        Oder, um einen Schlüssel per HTTP von einem Server zu laden:
+        X-FETCH-KEY: https://example.org/keys/mykey.asc
     resend:
       not_resent_no_keys: Resending an <%{email}> fehlgeschlagen (%{num_keys} Schlüssel gefunden und unverschlüsseltes Senden verboten).
       encrypted_to: Verschlüsselt an
@@ -101,6 +132,8 @@ de:
       unsubscribing_failed: |
         Abo für %{email} nicht gelöscht:
         %{errors}
+      cannot_unsubscribe_last_admin: |
+        %{email} ist das einzige admin-Abo für diese Liste, daher kann es nicht gelöscht werden.
       subscribed: |
         Abo für %{email} mit diesen Werten eingetragen:
 
@@ -117,6 +150,59 @@ de:
       setting_fingerprint_failed: |
         Fingerabdruck für %{email} konnte nicht auf %{fingerprint} gesetzt werden:
         %{errors}.
+      set_fingerprint_requires_valid_fingerprint: |
+        Du hast zu dem Schlüsselwort 'SET-FINGERPRINT' keinen gültigen Wert angegeben.
+
+        Es wurde der folgende Wert erkannt: %{fingerprint}
+
+        Benötigt werden ein oder zwei Werte, bspw.:
+        X-SET-FINGERPRINT: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        oder (als admin):
+        X-SET-FINGERPRINT: subscription2@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        Wobei der Fingerprint in der gesamten Länge (40 Zeichen) angegeben werden muss. Optional mit 0x als Präfix.
+
+        Um einen Fingerprint zu entfernen kannst du das Schlüsselwort 'UNSET-FINGERPRINT' verwenden.
+      set_fingerprint_requires_arguments: |
+        Du hast zu dem Schlüsselwort 'SET-FINGERPRINT' keinen Wert angegeben.
+
+        Benötigt werden ein oder zwei Werte, bspw.:
+        X-SET-FINGERPRINT: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        oder (als admin):
+        X-SET-FINGERPRINT: subscription2@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        Um einen Fingerprint zu entfernen kannst du das Schlüsselwort 'UNSET-FINGERPRINT' verwenden.
+      unset_fingerprint_only_self: Nur admins dürfen den Fingerabdruck für andere Abos festlegen.
+      fingerprint_unset: Fingerabdruck für %{email} wurde entfernt.
+      unsetting_fingerprint_failed: |
+        Fingerabdruck für %{email} konnte nicht entfernt werden:
+        %{errors}.
+      unset_fingerprint_requires_arguments: |
+        Du hast zu dem Schlüsselwort 'UNSET-FINGERPRINT' keinen Wert angegeben.
+
+        Benötigt werden ein Wert, bspw.:
+        X-UNSET-FINGERPRINT: subscription2@hostname
+
+        Als admin musst du um deinen eigenen Fingerabdruck zu entfernen, noch zusätzlich das Argument force mitgeben. bspw.:
+        X-UNSET-FINGERPRINT: adminsubscription2@hostname force
+      subscribe_requires_arguments: |
+        Fehler: Du hast zu dem Schlüsselwort 'SUBSCRIBE' keinen Wert angegeben.
+
+        Mindestens ein Wert ist nötig, drei weitere sind optional. Bspw.:
+        X-SUBSCRIBE: new-subscription@hostname
+
+        Oder, um den Schlüssel für das neue Abo zuzuweisen:
+        X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        Oder, um den Schlüssel zuzuweisen, und das Abo zum admin zu machen:
+        X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 true
+
+        Oder, um den Schlüssel zuzuweisen, das Abo zum admin zu machen, und die Zustellung von Listen-Emails für dieses Abo abzuschalten:
+        X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 true false
+
+        Wenn du die optionalen Werte weglässt hat das Abo keinen Schlüssel zugewiesen, ist nicht admin, und hat die Zustellung von Listen-Email aktiviert.
     signatures_attached: Die Signaturen hängen an.
     list_management:
       no_logfile: Keine Log-Datei für %{listname} gefunden. (Das kann an einem hohem Log-Level und der Abwesenheit von Fehlern liegen.)
@@ -165,6 +251,12 @@ de:
     invalid_input: "Ungültige Angabe. Gültig sind: URLs, OpenPGP-Fingerabdrücke, oder Emailadressen."
   pseudoheaders:
     stripped_html_from_multialt: Diese Email enthielt einen alternativen HTML-Teil, der PGP-Daten beinhaltete. Der HTML-Teil wurde entfernt, um die Email sauberer analysieren zu können.
+  signature_states:
+    unknown: "Unbekannte Signatur von unbekanntem Schlüssel 0x%{fingerprint}"
+    unsigned: "Unsigniert"
+  encryption_states:
+    encrypted: "Verschlüsselt"
+    unencrypted: "Unverschlüsselt"
 
   activerecord:
     errors:

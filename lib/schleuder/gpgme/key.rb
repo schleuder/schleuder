@@ -208,5 +208,9 @@ module GPGME
       pinentry = File.join(ENV['SCHLEUDER_ROOT'], 'bin', 'pinentry-clearpassphrase')
       GPGME::Ctx.spawn_daemon('gpg-agent', "--use-standard-socket --pinentry-program #{pinentry}")
     end
+
+    def self.valid_fingerprint?(fp)
+      fp =~ Schleuder::Conf::FINGERPRINT_REGEXP
+    end
   end
 end

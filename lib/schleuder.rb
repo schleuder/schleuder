@@ -22,6 +22,8 @@ $:.unshift libdir
 # Monkeypatches
 require 'schleuder/mail/parts_list.rb'
 require 'schleuder/mail/message.rb'
+require 'schleuder/mail/gpg.rb'
+require 'schleuder/mail/encrypted_part.rb'
 require 'schleuder/gpgme/import_status.rb'
 require 'schleuder/gpgme/key.rb'
 require 'schleuder/gpgme/sub_key.rb'
@@ -46,9 +48,6 @@ Dir["#{libdir}/schleuder/plugins/*.rb"].each do |file|
   require file
 end
 require 'schleuder/filters_runner'
-Dir["#{libdir}/schleuder/filters/*.rb"].each do |file|
-  require file
-end
 Dir["#{libdir}/schleuder/validators/*.rb"].each do |file|
   require file
 end
