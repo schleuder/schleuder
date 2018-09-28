@@ -6,7 +6,7 @@
 #
 # Options are listed with the behaviour encoded in the database schema.
 
-# Only send out enrypted emails to subscriptions?
+# Only send out encrypted emails to subscriptions?
 # (This setting does not affect resend-messages.)
 send_encrypted_only: true
 
