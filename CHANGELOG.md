@@ -276,7 +276,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Friendlier error message if delivery to subscription fails.
 * Set list-email as primary address after adding UIDs. Previously it was a little random, for reasons only known to GnuPG.
 * Only use temporary files where necessary, and with more secure paths.
-* Tighten requirements for valid email-addresses a little: The domain-part may now only contain alpha-numeric characters, plus these: `._-`
+* Tighten requirements for valid email-addresses a little: The domain-part may now only contain alphanumeric characters, plus these: `._-`
 * Required version of schleuder-cli: 0.0.2.
 
 ### Added
