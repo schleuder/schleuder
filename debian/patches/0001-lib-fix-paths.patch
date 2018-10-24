@@ -11,12 +11,12 @@ Description: lib/: Fix paths
  Upstream is aware of this patch and we're working on integrating it
  upstream.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2018-07-11
+Last-Update: 2018-09-21
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/lib/schleuder/conf.rb
 +++ b/lib/schleuder/conf.rb
-@@ -9,7 +9,7 @@
+@@ -10,7 +10,7 @@
  
      DEFAULTS = {
        'lists_dir' => '/var/lib/schleuder/lists',
@@ -38,7 +38,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        if Dir.glob("#{Conf.lists_dir}/*/*/members.conf").size > 0
 --- a/lib/schleuder.rb
 +++ b/lib/schleuder.rb
-@@ -72,6 +72,7 @@
+@@ -74,6 +74,7 @@
  end
  
  I18n.load_path += Dir["#{rootdir}/locales/*.yml"]

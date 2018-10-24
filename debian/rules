@@ -1,12 +1,13 @@
 #!/usr/bin/make -f
 
 export DH_RUBY
+export DH_VERBOSE = 1
 
 %:
 	dh $@ --buildsystem=ruby --with ruby
 
 override_dh_installsystemd:
-	dh_installsystemd --name=schleuder-api-daemon --restart-after-upgrade
+	dh_installsystemd --name=schleuder-api-daemon
 
 override_dh_installinit:
-	dh_installinit --name=schleuder-api-daemon --restart-after-upgrade
+	dh_installinit --name=schleuder-api-daemon

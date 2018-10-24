@@ -1,11 +1,11 @@
-Description: specs: Remove install tests
- We're removing the two specs which test the installation via calling
- Cli.new.install. These fail currently.
+Description: specs: Remove install test                                               
+ Remove the spec which tests and expects the install to fail, if a
+ shell-process fails, as it fails itself, currently.
 
  Upstream is aware of this patch and we're working on integrating it
  upstream.
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2018-05-26
+Last-Update: 2018-09-21
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/spec/schleuder/integration/cli_spec.rb

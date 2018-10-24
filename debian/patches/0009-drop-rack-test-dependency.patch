@@ -3,7 +3,7 @@ Description: Drop rack-test dependency
  As we're only targeting suites which ship at least ruby 2.3, drop it
  accordingly. 
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2018-05-26
+Last-Update: 2018-09-21
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/schleuder.gemspec

@@ -7,23 +7,26 @@ SCHLEUDER_BACKUP_DIR=/var/backup/schleuder
 
 case "$1" in
     upgrade)
-	#  Handle existing data if upgrading from schleuder < 3.0
-	if dpkg --compare-versions "$2" lt 3.0; then
-        # Check for existing data first
-        if [ "$(ls $SCHLEUDER_DATA_DIR)" ]; then
-            mkdir -p $SCHLEUDER_BACKUP_DIR
-            mv $SCHLEUDER_DATA_DIR/* $SCHLEUDER_BACKUP_DIR/
+        #  Handle existing data if upgrading from schleuder < 3.0
+        if dpkg --compare-versions "$2" lt 3.0; then
+            # Check for existing data first
+            if [ "$(ls $SCHLEUDER_DATA_DIR)" ]; then
+                mkdir -p $SCHLEUDER_BACKUP_DIR
+                mv $SCHLEUDER_DATA_DIR/* $SCHLEUDER_BACKUP_DIR/
+                # Ensure sane permissions of the backup dir.
+                chmod 0750 $SCHLEUDER_BACKUP_DIR
+                chown schleuder:schleuder $SCHLEUDER_BACKUP_DIR
+            fi
         fi
-	fi
-	;;
+    ;;
 
-    install|upgrade|abort-upgrade)
-	;;
+    install|abort-upgrade)
+    ;;
 
     *)
-	echo "preinst called with unknown argument \`$1'" >&2
-	exit 1
-	;;
+        echo "preinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
 esac
 
 #DEBHELPER#

@@ -3,7 +3,7 @@ Description: schleuder config: Use default Debian keyserver
  keyserver defaults, therefore, use these.
  
 Author: Georg Faerber <georg@riseup.net>
-Last-Update: 2018-07-11
+Last-Update: 2018-09-21
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/etc/schleuder.yml
@@ -19,7 +19,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +
 +# Debian stretch (and all future versions) ship(s) with sensible
 +# keyserver defaults, therefore, use these:
-+keyserver:
++keyserver: 
  
  # Who is maintaining the overall schleuder installation and should be
  # notified about severe problems with lists.

@@ -1,8 +1,94 @@
-schleuder (3.2.3-1) unstable; urgency=medium
+schleuder (3.3.0-4) unstable; urgency=medium
+
+  * debian/schleuder.postinst:
+    - Handle upgrade from schleuder < 3.0. (Closes: #867031)
+  * debian/rules:
+    - Make the build verbose.
+  * debian/.gitlab-ci.yml:
+    - Install and start haveged, drop linking /dev/random to /dev/urandom. A
+      recent change in the CI infrastructure of salsa.d.o made this necessary,
+      as the former solution failed due to "read-only file system".
+
+ -- Georg Faerber <georg@riseup.net>  Thu, 04 Oct 2018 10:07:21 +0000
+
+schleuder (3.3.0-3) unstable; urgency=medium
+
+  * debian/watch:
+    - Ensure that the version group starts with a digit. Otherwise, uscan
+      might try to pull in the schleuder-cli release tarball.
+
+ -- Georg Faerber <georg@riseup.net>  Tue, 02 Oct 2018 09:07:06 +0000
+
+schleuder (3.3.0-2) unstable; urgency=medium
+
+  * debian/schleuder.postinst:
+    - Fix permissions of the config which sets default values for new lists.
+
+ -- Georg Faerber <georg@riseup.net>  Thu, 27 Sep 2018 22:52:57 +0000
+
+schleuder (3.3.0-1) unstable; urgency=medium
 
   * New upstream release.
+  * debian/changelog:
+    - Fix typos.
+  * debian/copyright:
+    - Use team@schleuder.org as upstream contact email.
+    - Use HTTPS in link to GPL version 3.
+    - Wrap and sort.
+  * debian/control:
+    - Bump Standards-Version to 4.2.1, no changes needed.
+    - Use schleuder.org as upstream homepage.
+    - Depend on ruby-factory-bot, instead of ruby-factory-girl, while
+      building.
+    - Require ruby-mail-gpg >= 0.3.3~. (Closes: #901168)
+    - Require default-mta or postfix or mail-transport-agent.
+    - Wrap and sort.
+  * debian/patches:
+    - Add patch to remove rack-test dependency, as we are not dealing with
+      ruby 2.1.
+    - Drop obsolete patch to fix paths, applied upstream.
+    - Drop obsolete patch to bump attempts to start SKS mock, fixed upstream.
+    - Refresh for new release.
+  * debian/schleuder.postinst:
+    - Run 'schleuder install' via 'runuser' as the schleuder user.
+    - Change ownership of the '/etc/schleuder' directory to the schleuder user,
+      to ensure TLS certificates can be written there.
+    - Drop obsolete parts which fixed permissions and ownership of the
+      SQLite database and the certificates. Instead, rely on 'schleuder
+      install' to do the right thing.
+    - Make configs writable by the root user, and readable by the schleuder
+      user.
+    - Drop 'find', introduced in the last release, in an useless attempt to
+      overcome the security issues related to recursive chmod or chown.
+      Instead, specific filenames and directories are used if invoking either
+      chmod or chown. Thanks a lot, dkg!
+    - Drop obsolete version check, which compared the to-be-installed version
+      against the already installed version.
+    - Finally, fix typos and intendation.
+  * debian/schleuder.preinst:
+    - Handle the backup directory exclusively via this file, if upgrading from
+      schleuder < 3.0. Before, permissions were fixed in the 'postinst' stage.
+    - Also, while at it, fix intendation.
+  * debian/ruby-tests.rake:
+    - Add environment variable to sleep in between SKS mock start attempts.
+  * debian/schleuder.dirs:
+    - Create the '/usr/local/lib/schleuder/filters' directory to enable users
+      to provide their own custom filters.
+    - Drop obsolete directories.
+    - Wrap and sort.
+  * debian/schleuder.install:
+    - Wrap and sort.
+  * debian/schleuder.manpages:
+    - Wrap and sort.
+  * debian/schleuder.schleuder-api-daemon.service:
+    - Point to documentation at schleuder.org.
+  * debian/watch:
+    - Use schleuder.org to check for new versions.
+  * debian/.gitlab-ci.yml:
+    - Introduce configuration to make use of continuous integration as
+      provided by salsa.debian.org.
 
- -- Georg Faerber <georg@riseup.net>  Sat, 26 May 2018 09:21:12 +0200
+ -- Georg Faerber <georg@riseup.net>  Thu, 27 Sep 2018 15:58:48 +0000
 
 schleuder (3.2.2-1) unstable; urgency=medium
 

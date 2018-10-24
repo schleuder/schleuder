@@ -1,5 +1,4 @@
-etc/postfix
 etc/schleuder/plugins
-usr/lib/ruby/vendor_ruby/schleuder
-var/lib/schleuder/lists
+usr/local/lib/schleuder/filters
+var/lib/schleuder
 var/log/schleuder

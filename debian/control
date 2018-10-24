@@ -19,7 +19,7 @@ Build-Depends: debhelper (>= 11~),
                ruby-sqlite3,
                ruby-thor,
                thin
-Standards-Version: 4.1.4
+Standards-Version: 4.2.1
 Vcs-Git: https://salsa.debian.org/ruby-team/schleuder.git
 Vcs-Browser: https://salsa.debian.org/ruby-team/schleuder
 Homepage: https://schleuder.org/
@@ -31,13 +31,13 @@ XB-Ruby-Versions: ${ruby:Versions}
 Depends: adduser,
          cron | cron-daemon,
          dirmngr,
-         postfix,
+         default-mta | postfix | mail-transport-agent,
          lsb-base,
          rake (>= 10.5.0~),
          ruby | ruby-interpreter,
          ruby-activerecord (>= 4.1~),
          ruby-gpgme (>= 2.0.13~),
-         ruby-mail-gpg,
+         ruby-mail-gpg (>= 0.3.3~),
          ruby-sinatra,
          ruby-sinatra-contrib,
          ruby-sqlite3,

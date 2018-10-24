@@ -1,6 +1,0 @@
-#!/bin/sh
-
-test -x /usr/bin/schleuder || exit 0
-
-su -s /bin/sh schleuder -c "/usr/bin/schleuder refresh_keys"
-su -s /bin/sh schleuder -c "/usr/bin/schleuder check_keys"
