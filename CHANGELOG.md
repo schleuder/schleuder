@@ -17,6 +17,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 * To remove a fingerprint from a subscription one can use the new keyword X-UNSET-FINGERPRINT (#360).
+* Extend the pseudoheaders configuration option to support 'sig' and 'enc' as configurable and sortable fields.
 
 
 ### Changed
@@ -24,10 +25,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * The output of the keywords 'X-ADD-KEY' and 'X-DELETE-KEY' now also show the "oneline"-format to represent keys (which includes fingerprint, primary email-address, date of generation and possible expiry). (#295)
 * In the response to 'X-ADD-KEY', differentiate between 'newly imported' and 'updated' keys.
 * Parse keywords up to the first line detected as mail content, this addresses a first part of #249.
-
-### Added
-* Extend the pseudoheaders configuration option to support 'sig' and 'enc' as configurable and sortable fields.
-
 
 
 ## [3.2.3] / 2018-05-14
