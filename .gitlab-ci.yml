@@ -209,5 +209,20 @@ debian:lintian:
     - lintian --allow-root --display-experimental --display-info --info --pedantic results/*.changes
   allow_failure: true
 
+debian:piuparts:
+  stage: debian:qa
+  image: genericpipeline/piuparts-docker
+  services:
+    - docker:dind
+  script:
+    - CHROOT_PATH=/tmp/debian-unstable
+    - CONTAINER_ID=$(docker run --rm -d debian:unstable sleep infinity)
+    - docker exec ${CONTAINER_ID} bash -c "apt-get update"
+    - mkdir -p ${CHROOT_PATH}
+    - docker export ${CONTAINER_ID} | tar -C ${CHROOT_PATH} -xf -
+    - mknod -m 666 ${CHROOT_PATH}/dev/urandom c 1 9
+    - piuparts --hard-link -e ${CHROOT_PATH} results/*.deb
+  allow_failure: true
+
 # TODO: Introduce job to check package for reproducibility. Currently, the toolchain is still experimental: Using
 # reprotest, even with all variations disabled, makes the build fail.
