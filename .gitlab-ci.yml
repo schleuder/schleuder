@@ -6,13 +6,10 @@ stages:
   - debian:qa
   - docker
 
-cache:
-  paths:
-    - vendor
-
 variables:
   GIT_STRATEGY: fetch
   GIT_DEPTH: "10"
+  IMAGE_REGISTRY: $CI_REGISTRY/schleuder/schleuder-ci-images
 
 # Jobs that start with a period are disabled
 # This is just a template, to be used further below in the individual job definitions
@@ -20,52 +17,19 @@ variables:
   # Get all required build dependencies.
   export APT_BUILD_DEPENDS=`perl -ne 'next if /^#/; $p=(s/^Build-Depends:\s*/ / or (/^ / and $p)); s/,|\n|\([^)]+\)//mg; print if $p' < debian/control`
   # Install the required build dependencies.
+  apt-get -qqy update
   apt-get install -qq -y $APT_BUILD_DEPENDS
   # Check if we're good to go regarding the build dependencies.
   dpkg-checkbuilddeps
 
-.setup_apt: &setup_apt
-  before_script:
-    # Export APT env vars to cache packages archives and lists based on the current working directory
-    - export APT_DIR=$CI_PROJECT_DIR/vendor/apt && export APT_ARCHIVES_DIR=$APT_DIR/archives && export APT_LISTS_DIR=$APT_DIR/lists
-    # Configure APT: Only install necessary packages, set cache location
-    - printf
-      "apt::install-recommends 0;\n
-      apt::install-suggests 0;\n
-      dir::cache::archives ${APT_ARCHIVES_DIR};\n
-      dir::state::lists ${APT_LISTS_DIR};\n"
-      >> /etc/apt/apt.conf.d/99custom
-    # Ensure the custom APT directory does exist
-    - mkdir -p {${APT_ARCHIVES_DIR},${APT_LISTS_DIR}}/partial
-    - apt-get update -qq
-    # To keep things DRY, use an env var to handle packages to be installed via APT
-    - apt-get install -qq -y $APT_INSTALL_PACKAGES
-
-.setup_entropy: &setup_entropy
-  before_script:
-    # Link /dev/random to /dev/urandom do deal with limited entropy, which otherwise blocks the test suite.
-    - rm /dev/random && ln -s /dev/urandom /dev/random
-
-.setup_prerequisites: &setup_prerequisites
-  <<: [*setup_apt,*setup_entropy]
-
 .test_ruby: &test_ruby
-  variables:
-    APT_INSTALL_PACKAGES: gnupg2 libgpgme11-dev libsqlite3-dev eatmydata
-    # Use quotes so the following does get recognized as a string, not as a bool
-    CHECK_CODE_COVERAGE: "true"
-  <<: *setup_prerequisites
   script:
-    - eatmydata gem install bundler --no-ri --no-rdoc
-    - eatmydata bundle install --jobs $(nproc) --path vendor
+    - eatmydata bundle install --jobs $(nproc)
     - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:init
     - eatmydata bundle exec rspec
 
 changelog:
-  image: debian:unstable
-  variables:
-    APT_INSTALL_PACKAGES: ca-certificates git
-  <<: *setup_prerequisites
+  image: $IMAGE_REGISTRY:debian-generic
   script:
     # Ensure we work with the latest master
     - git fetch origin master:master
@@ -83,25 +47,22 @@ changelog:
       - tags
 
 codespell:
-  image: debian:unstable
-  variables:
-    APT_INSTALL_PACKAGES: codespell
-  <<: *setup_prerequisites
+  image: $IMAGE_REGISTRY:debian-generic
   script:
     # Run codespell to check for spelling errors, using a config with ignored words, skipping files 
     # (German translations, v2 list configs and code of installed dependencies) leading to false positives,
     # ignoring warnings about binary files and, finally, checking file names as well.
-    - codespell -I utils/ci/codespell/ignored_words.txt -S de.yml,list.conf,vendor -q 2 -f
+    - codespell -I utils/ci/codespell/ignored_words.txt -S de.yml,list.conf -q 2 -f
   stage: static
 
 ruby:2.3:
-  image: ruby:2.3
+  image: $IMAGE_REGISTRY:schleuder-ruby2.3
   <<: *test_ruby
 ruby:2.4:
-  image: ruby:2.4
+  image: $IMAGE_REGISTRY:schleuder-ruby2.4
   <<: *test_ruby
 ruby:2.5:
-  image: ruby:2.5
+  image: $IMAGE_REGISTRY:schleuder-ruby2.5
   <<: *test_ruby
 
 bundler:audit:
@@ -137,9 +98,7 @@ build_docker_image:
 
 debian:build:
   stage: debian:build
-  variables:
-    APT_INSTALL_PACKAGES: build-essential ca-certificates dpkg-dev fakeroot git git-buildpackage
-  <<: *setup_prerequisites
+  image: $IMAGE_REGISTRY:debian-packaging
   script:
     # Ensure we work with the latest state pushed to the git repository.
     - git fetch --all --quiet
@@ -158,10 +117,6 @@ debian:build:
     # tarball, but which do exist in our current working directory. Therefore, create the tarball manually (which
     # ignores the existing .gitattributes file), to ensure it contains all (without the .git/ directory) content of
     # the current working directory.
-    # Besides this, we're caching APT packages within vendor/. Currently, GitLab CI is only able to cache stuff within
-    # the working directory. However, again in this case, this leads to the same error as described above. Therefore,
-    # move the vendor/ directory temporarily out of the way. We'll move it back after the build was done, further below.
-    - mv vendor/ /tmp
     - tar --exclude='./.git' -czf /tmp/schleuder_$UPSTREAM_VERSION.orig.tar.gz .
     # Normally, we're checking the signature of the upstream release, to ensure the code we're pulling into Debian
     # wasn't tampered with along the way. However, as we're creating the tarball on our own, there is no signature.
@@ -173,8 +128,6 @@ debian:build:
     # however, in our case it fails due to "mount(2) system call failed: Too many levels of symbolic links".
     # I'm not sure why is that, currently, or how to solve it.
     - gbp buildpackage --git-ignore-branch --git-ignore-new --git-tarball-dir=/tmp --git-upstream-branch="$CI_COMMIT_REF_NAME" --git-upstream-tree=BRANCH -us -uc --lintian-opts --no-lintian
-    # Move the vendor/ directory back into the current working directory to ensure it gets cached.
-    - mv /tmp/vendor .
     # Store and upload the artifacts to make them available for the subsequent jobs.
     - mkdir results
     - cp ../{*.buildinfo,*.changes,*.deb,*.dsc,*.xz} /tmp/schleuder_* results/
@@ -186,10 +139,9 @@ debian:build:
 
 debian:autopkgtest:
   stage: debian:qa
+  image: $IMAGE_REGISTRY:debian-packaging
   variables:
-    APT_INSTALL_PACKAGES: autopkgtest eatmydata
     GIT_STRATEGY: none
-  <<: *setup_prerequisites
   script:
     # Run autopkgtest to test full system integration: It runs the upstream test suite (and some additional tests)
     # against the installed package.
@@ -200,10 +152,9 @@ debian:autopkgtest:
 
 debian:lintian:
   stage: debian:qa
+  image: $IMAGE_REGISTRY:debian-packaging
   variables:
-    APT_INSTALL_PACKAGES: lintian
     GIT_STRATEGY: none
-  <<: *setup_prerequisites
   script:
     # Run lintian, a tool used within Debian to check the package for errors and compliance with the Debian policy.
     - lintian --allow-root --display-experimental --display-info --info --pedantic results/*.changes
