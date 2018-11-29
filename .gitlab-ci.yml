@@ -101,7 +101,7 @@ debian:build:
   image: $IMAGE_REGISTRY:debian-packaging
   script:
     # Ensure we work with the latest state pushed to the git repository.
-    - git fetch --all --quiet
+    - git fetch --quiet origin debian/unstable:debian/unstable
     # Setting the git user email is needed, otherwise, merging fails.
     - git config user.email team@schleuder.org
     # We're keeping the current Debian packaging state in a separate branch. Therefore, we need to pull in this.
