@@ -1,0 +1,111 @@
+.global_variables: &global_variables
+  DEBFULLNAME: "Salsa Pipeline"
+  DEBEMAIL: "<salsa-pipeline@debian.org>"
+  DEBIAN_FRONTEND: noninteractive
+  WORKING_DIR: $CI_PROJECT_DIR/debian/output
+
+stages:
+  - build
+  - test
+
+.artifacts: &artifacts
+    name: "$CI_JOB_NAME:$CI_COMMIT_REF_NAME"
+    paths:
+        - ${WORKING_DIR}/
+
+.artifacts-long-expire: &artifacts-long-expire
+  artifacts:
+    expire_in: 180 day
+    <<: *artifacts
+
+.artifacts-default-expire: &artifacts-default-expire
+  artifacts:
+    <<: *artifacts
+
+.build-definition: &build-definition
+  stage: build
+  image: registry.salsa.debian.org/salsa-ci-team/images/gbp
+  services:
+    - docker:dind
+  script:
+    - gbp pull --ignore-branch --pristine-tar --track-missing
+    - gbp buildpackage --git-ignore-branch --git-export-dir=${WORKING_DIR} --git-builder="docker-build.sh registry.salsa.debian.org/salsa-ci-team/images/base:${RELEASE}"
+
+.build-unstable: &build-unstable
+  <<: *build-definition
+  <<: *artifacts-default-expire
+  variables:
+      <<: *global_variables
+      RELEASE: 'unstable'
+
+.build-stretch: &build-stretch
+  <<: *build-definition
+  <<: *artifacts-default-expire
+  variables:
+      <<: *global_variables
+      RELEASE: 'stretch'
+
+.build-stretch-bpo: &build-stretch-bpo
+  <<: *build-definition
+  <<: *artifacts-default-expire
+  variables:
+      <<: *global_variables
+      RELEASE: 'stretch-backports'
+
+.test-autopkgtest: &test-autopkgtest
+  stage: test
+  image: registry.salsa.debian.org/salsa-ci-team/images/autopkgtest
+  script:
+    - eatmydata autopkgtest -U ${WORKING_DIR}/*.changes -- null || [ $? -eq 8 ]
+  variables:
+      <<: *global_variables
+      GIT_STRATEGY: none
+
+.test-lintian: &test-lintian
+  stage: test
+  image: registry.salsa.debian.org/salsa-ci-team/images/lintian
+  script:
+    - lintian -iI ${WORKING_DIR}/*.changes
+  variables:
+      <<: *global_variables
+      GIT_STRATEGY: none
+
+.test-reprotest: &test-reprotest
+  stage: test
+  image: registry.salsa.debian.org/salsa-ci-team/images/reprotest
+  artifacts:
+    name: "$CI_JOB_NAME:$CI_COMMIT_REF_NAME"
+    paths:
+      - $CI_PROJECT_DIR/reprotest.log
+    when: always
+  variables:
+    REPROTEST_EXTRA_ARGS: '--no-diffoscope'
+  script:
+    - apt-get update
+    - eatmydata apt-get build-dep -y .
+    - export DEB_BUILD_OPTIONS=nocheck
+    - eatmydata reprotest --min-cpus $(nproc --all) ${REPROTEST_EXTRA_ARGS} . -- null &> "${CI_PROJECT_DIR}/reprotest.log"
+  after_script:
+    - tail -n 5000 "${CI_PROJECT_DIR}/reprotest.log" >&2;
+
+.test-reprotest-diffoscope: &test-reprotest-diffoscope
+  <<: *test-reprotest
+  variables:
+    REPROTEST_EXTRA_ARGS: ''
+
+.test-piuparts: &test-piuparts
+  stage: test
+  image: registry.salsa.debian.org/salsa-ci-team/images/piuparts
+  services:
+    - docker:dind
+  script:
+    - CHROOT_PATH=/tmp/debian-unstable
+    - CONTAINER_ID=$(docker run --rm -d debian:unstable sleep infinity)
+    - docker exec ${CONTAINER_ID} bash -c "apt-get update && apt-get install eatmydata -y"
+    - mkdir -p ${CHROOT_PATH}
+    - docker export ${CONTAINER_ID} | tar -C ${CHROOT_PATH} -xf -
+    - mknod -m 666 ${CHROOT_PATH}/dev/urandom c 1 9
+    - piuparts --scriptsdir /etc/piuparts/scripts --allow-database --warn-on-leftovers-after-purge --hard-link -e ${CHROOT_PATH} ${WORKING_DIR}/*.deb
+  variables:
+      <<: *global_variables
+      GIT_STRATEGY: none

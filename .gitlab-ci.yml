@@ -129,53 +129,29 @@ debian:build:
     # I'm not sure why is that, currently, or how to solve it.
     - gbp buildpackage --git-ignore-branch --git-ignore-new --git-tarball-dir=/tmp --git-upstream-branch="$CI_COMMIT_REF_NAME" --git-upstream-tree=BRANCH -us -uc --lintian-opts --no-lintian
     # Store and upload the artifacts to make them available for the subsequent jobs.
-    - mkdir results
-    - cp ../{*.buildinfo,*.changes,*.deb,*.dsc,*.xz} /tmp/schleuder_* results/
+    - mkdir debian/output
+    - cp ../{*.buildinfo,*.changes,*.deb,*.dsc,*.xz} /tmp/schleuder_* debian/output
   allow_failure: true
   artifacts:
     expire_in: 1 day
     paths:
-      - results/
+      - debian/output
+
+include: /utils/ci/gitlab/salsa-ci.yml
 
 debian:autopkgtest:
-  stage: debian:qa
-  image: $IMAGE_REGISTRY:debian-packaging
-  variables:
-    GIT_STRATEGY: none
-  script:
-    # Run autopkgtest to test full system integration: It runs the upstream test suite (and some additional tests)
-    # against the installed package.
-    # TODO: Set up LXC. This would allow to reboot the container in between tests, for example to test the sysvinit
-    # script as well.
-    - eatmydata autopkgtest results/*.dsc -- null
-  allow_failure: true
+    extends: .test-autopkgtest
+    stage: debian:qa
+    allow_failure: true
 
 debian:lintian:
-  stage: debian:qa
-  image: $IMAGE_REGISTRY:debian-packaging
-  variables:
-    GIT_STRATEGY: none
-  script:
-    # Run lintian, a tool used within Debian to check the package for errors and compliance with the Debian policy.
-    - lintian --allow-root --display-experimental --display-info --info --pedantic results/*.changes
-  allow_failure: true
+    extends: .test-lintian
+    stage: debian:qa
+    allow_failure: true
 
 debian:piuparts:
-  stage: debian:qa
-  image: genericpipeline/piuparts-docker
-  services:
-    - docker:dind
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - CHROOT_PATH=/tmp/debian-unstable
-    - CONTAINER_ID=$(docker run --rm -d debian:unstable sleep infinity)
-    - docker exec ${CONTAINER_ID} bash -c "apt-get update"
-    - mkdir -p ${CHROOT_PATH}
-    - docker export ${CONTAINER_ID} | tar -C ${CHROOT_PATH} -xf -
-    - mknod -m 666 ${CHROOT_PATH}/dev/urandom c 1 9
-    - piuparts --hard-link -e ${CHROOT_PATH} results/*.deb
-  allow_failure: true
+    extends: .test-piuparts
+    stage: debian:qa
+    allow_failure: true
 
-# TODO: Introduce job to check package for reproducibility. Currently, the toolchain is still experimental: Using
-# reprotest, even with all variations disabled, makes the build fail.
+# TODO: Introduce job to check package for reproducibility.
