@@ -127,7 +127,7 @@ debian:build:
     # though. Creating the chroot needs a mounted /proc filesystem. This works if running a privileged container,
     # however, in our case it fails due to "mount(2) system call failed: Too many levels of symbolic links".
     # I'm not sure why is that, currently, or how to solve it.
-    - gbp buildpackage --git-ignore-branch --git-ignore-new --git-tarball-dir=/tmp --git-upstream-branch="$CI_COMMIT_REF_NAME" --git-upstream-tree=BRANCH -us -uc --lintian-opts --no-lintian
+    - gbp buildpackage --git-ignore-branch --git-ignore-new --git-tarball-dir=/tmp --git-upstream-branch="$CI_COMMIT_REF_NAME" --git-upstream-tree=BRANCH -us -uc
     # Store and upload the artifacts to make them available for the subsequent jobs.
     - mkdir results
     - cp ../{*.buildinfo,*.changes,*.deb,*.dsc,*.xz} /tmp/schleuder_* results/
