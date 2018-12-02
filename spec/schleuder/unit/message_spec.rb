@@ -1,9 +1,9 @@
-require "spec_helper"
+require 'spec_helper'
 
 describe Mail::Message do
   it "doesn't change the order of mime-parts" do
     text_part = Mail::Part.new
-    text_part.body = "This is text"
+    text_part.body = 'This is text'
     image_part = Mail::Part.new
     image_part.content_type = 'image/png'
     image_part.content_disposition = 'attachment; filename=spec.png'
@@ -21,7 +21,7 @@ describe Mail::Message do
   # TODO: test message with "null" address ("<>") as Return-Path. I couldn't
   # bring Mail to generate such a message, yet.
   
-  it "recognizes a message sent to listname-bounce@hostname as automated message" do
+  it 'recognizes a message sent to listname-bounce@hostname as automated message' do
     list = create(:list)
     mail = Mail.new
     # Trigger the setting of mandatory headers.
@@ -58,7 +58,7 @@ describe Mail::Message do
     it 'adds a configured subject prefix' do
       list = create(:list)
       list.subject_prefix = '[prefix]'
-      list.subscribe('admin@example.org',nil,true)
+      list.subscribe('admin@example.org', nil, true)
       mail = Mail.new
       mail.from 'someone@example.org'
       mail.to list.email
@@ -73,7 +73,7 @@ describe Mail::Message do
     it 'adds a configured subject prefix without subject' do
       list = create(:list)
       list.subject_prefix = '[prefix]'
-      list.subscribe('admin@example.org',nil,true)
+      list.subscribe('admin@example.org', nil, true)
       mail = Mail.new
       mail.from 'someone@example.org'
       mail.to list.email
@@ -87,7 +87,7 @@ describe Mail::Message do
     it 'does not add a subject prefix if already present' do
       list = create(:list)
       list.subject_prefix = '[prefix]'
-      list.subscribe('admin@example.org',nil,true)
+      list.subscribe('admin@example.org', nil, true)
       mail = Mail.new
       mail.from 'someone@example.org'
       mail.to list.email
@@ -101,7 +101,7 @@ describe Mail::Message do
     end
   end
 
-  it "adds list#public_footer as last mime-part without changing its value" do
+  it 'adds list#public_footer as last mime-part without changing its value' do
     footer = "\n\n-- \nblabla\n  blabla\n  "
     list = create(:list)
     list.public_footer = footer
@@ -113,7 +113,7 @@ describe Mail::Message do
     expect(mail.parts.last.body.to_s).to eql(footer)
   end
 
-  it "adds list#internal_footer as last mime-part without changing its value" do
+  it 'adds list#internal_footer as last mime-part without changing its value' do
     footer = "\n\n-- \nblabla\n  blabla\n  "
     list = create(:list)
     list.internal_footer = footer

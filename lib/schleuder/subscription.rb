@@ -4,7 +4,7 @@ module Schleuder
 
     validates :list_id, inclusion: {
                           in: -> (id) { List.pluck(:id) },
-                          message: "must refer to an existing list"
+                          message: 'must refer to an existing list'
                         }
     validates :email, presence: true, email: true, uniqueness: {scope: :list_id}
     validates :fingerprint, allow_blank: true, fingerprint: true
@@ -12,7 +12,7 @@ module Schleuder
 
     default_scope { order(:email) }
 
-    scope :without_fingerprint, -> { where(fingerprint: [nil,'']) }
+    scope :without_fingerprint, -> { where(fingerprint: [nil, '']) }
 
     def to_s
       email
@@ -48,7 +48,7 @@ module Schleuder
           notify_of_missed_message(:absent)
           return false
         else
-          list.logger.warn "Sending plaintext because no key is present!"
+          list.logger.warn 'Sending plaintext because no key is present!'
         end
       elsif ! self.key.usable?
         if self.list.send_encrypted_only?
@@ -77,7 +77,7 @@ module Schleuder
       self.list.logger.warn "Not sending to #{self.email}: key is unusable because it is #{reason} and sending plain text not allowed"
       mail = ensure_headers(Mail.new)
       mail.subject = I18n.t('notice')
-      mail.body = I18n.t("missed_message_due_to_unusable_key", list_email: self.list.email) + I18n.t('errors.signoff')
+      mail.body = I18n.t('missed_message_due_to_unusable_key', list_email: self.list.email) + I18n.t('errors.signoff')
       mail.gpg self.list.gpg_sign_options
       mail.deliver
     end

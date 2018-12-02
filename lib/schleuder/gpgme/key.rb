@@ -41,7 +41,7 @@ module GPGME
               attribs << "[expired: #{expires.strftime(datefmt)}]"
             when :revoked
               # TODO: add revocation date when it's available.
-              attribs << "[revoked]"
+              attribs << '[revoked]'
             else
               attribs << "[#{usability_issue}]"
             end
@@ -71,7 +71,7 @@ module GPGME
       if trust.present?
         trust
       elsif ! usable_for?(:encrypt)
-        "not capable of encryption"
+        'not capable of encryption'
       else
         nil
       end
@@ -88,9 +88,9 @@ module GPGME
         when /keyedit.prompt/
           if ! primary_set
             primary_set = true
-            "primary"
+            'primary'
           else
-            "save"
+            'save'
           end
         else
           nil
@@ -122,7 +122,7 @@ module GPGME
         when /keygen.comment/
           ''
         when /keyedit.prompt/
-          "save"
+          'save'
         else
           nil
         end
@@ -146,14 +146,14 @@ module GPGME
             oldpw_given = true
             oldpw
           else
-            ""
+            ''
           end
         when /BAD_PASSPHRASE/
           [false, 'bad passphrase']
         when /change_passwd.empty.okay/
           'y'
         when /keyedit.prompt/
-          "save"
+          'save'
         else
           nil
         end
@@ -180,7 +180,7 @@ module GPGME
         when /change_passwd.empty.okay/
           'y'
         when /keyedit.prompt/
-          "save"
+          'save'
         else
           nil
         end

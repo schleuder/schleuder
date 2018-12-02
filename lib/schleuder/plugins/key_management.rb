@@ -18,7 +18,7 @@ module Schleuder
 
       import_stati.each do |import_status|
         if import_status.action == 'error'
-          out << I18n.t("plugins.key_management.key_import_status.error", fingerprint: import_status.fingerprint)
+          out << I18n.t('plugins.key_management.key_import_status.error', fingerprint: import_status.fingerprint)
         else
           key = list.gpg.find_distinct_key(import_status.fingerprint)
           if key
@@ -33,7 +33,7 @@ module Schleuder
     def self.delete_key(arguments, list, mail)
       if arguments.blank?
         return I18n.t(
-          "plugins.key_management.delete_key_requires_arguments"
+          'plugins.key_management.delete_key_requires_arguments'
         )
       end
 
@@ -41,7 +41,7 @@ module Schleuder
         keys = list.keys(argument)
         case keys.size
         when 0
-          I18n.t("errors.no_match_for", input: argument)
+          I18n.t('errors.no_match_for', input: argument)
         when 1
           begin
             keys.first.delete!
@@ -74,7 +74,7 @@ module Schleuder
       arguments.map do |argument|
         keys = list.keys(argument)
         if keys.blank?
-          I18n.t("errors.no_match_for", input: argument)
+          I18n.t('errors.no_match_for', input: argument)
         else
           result = [I18n.t('plugins.key_management.matching_keys_intro', input: argument)]
           keys.each do |key|
@@ -92,7 +92,7 @@ module Schleuder
     def self.fetch_key(arguments, list, mail)
       if arguments.blank?
         return I18n.t(
-          "plugins.key_management.fetch_key_requires_arguments"
+          'plugins.key_management.fetch_key_requires_arguments'
         )
       end
 

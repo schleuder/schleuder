@@ -1,6 +1,6 @@
 ENV['SCHLEUDER_ENV'] ||= 'test'
 ENV['SCHLEUDER_CONFIG'] = 'spec/schleuder.yml'
-ENV["SCHLEUDER_LIST_DEFAULTS"] = "etc/list-defaults.yml"
+ENV['SCHLEUDER_LIST_DEFAULTS'] = 'etc/list-defaults.yml'
 if ENV['USE_BUNDLER'] != 'false'
   require 'bundler/setup'
   Bundler.setup
@@ -49,7 +49,7 @@ RSpec.configure do |config|
   end
 
   config.after(:each) do |example|
-    FileUtils.rm_rf(Dir["spec/gnupg/pubring.gpg~"])
+    FileUtils.rm_rf(Dir['spec/gnupg/pubring.gpg~'])
     `gpgconf --kill dirmngr > /dev/null 2>&1`
     `gpgconf --kill gpg-agent > /dev/null 2>&1`
   end
@@ -70,7 +70,7 @@ RSpec.configure do |config|
   end
 
   def cleanup_gnupg_home
-    ENV["GNUPGHOME"] = nil
+    ENV['GNUPGHOME'] = nil
     FileUtils.rm_rf Schleuder::Conf.lists_dir
   end
 
@@ -79,8 +79,8 @@ RSpec.configure do |config|
   end
 
   def with_sks_mock
-    pid = Process.spawn('spec/sks-mock.rb', [:out, :err] => ["/tmp/sks-mock.log", 'w'])
-    uri = URI.parse("http://127.0.0.1:9999/status")
+    pid = Process.spawn('spec/sks-mock.rb', [:out, :err] => ['/tmp/sks-mock.log', 'w'])
+    uri = URI.parse('http://127.0.0.1:9999/status')
     attempts = 25
     # Use the following env var to increase the time to sleep between
     # each attempt, for example if building the Debian package 
@@ -160,8 +160,8 @@ RSpec.configure do |config|
     ciphertext.reject { |line| line.match(/^\[GNUPG:\]/) }.join
   end
 
-  def with_tmpfile(content,&blk)
-    file = Tempfile.new('temporary-file',Conf.lists_dir)
+  def with_tmpfile(content, &blk)
+    file = Tempfile.new('temporary-file', Conf.lists_dir)
     begin
       file.write(content)
       file.close
