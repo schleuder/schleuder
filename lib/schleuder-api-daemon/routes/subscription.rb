@@ -11,7 +11,7 @@ class SchleuderApiDaemon < Sinatra::Base
       logger.debug "Subscription filter: #{filter.inspect}"
       if filter['list_id'] && ! is_an_integer?(filter['list_id'])
         # Value is an email-address
-        if list = List.where(email: filter['list_id']).first
+        if list = lists_controller.find(filter['list_id'])
           filter['list_id'] = list.id
         else
           status 404
@@ -19,31 +19,21 @@ class SchleuderApiDaemon < Sinatra::Base
         end
       end
 
-      authorized?(Subscription, :list)
-      subscriptions = current_account.scoped(Subscription).where(filter)
-      json subscriptions
+      json subscriptions_controller.find_all(filter)
     end
 
     post '.json' do
       begin
-        list = load_list(requested_list_id)
-        authorized?(list, :subscribe)
-        # We don't have to care about nil-values, subscribe() does that for us.
-        sub, msgs = list.subscribe(
-          parsed_body['email'],
-          parsed_body['fingerprint'],
-          parsed_body['admin'],
-          parsed_body['delivery_enabled'],
-          find_key_material
-        )
-        set_x_messages(msgs)
-        logger.debug "subcription: #{sub.inspect}"
-        if sub.valid?
-          logger.debug "Subscribed: #{sub.inspect}"
+        attributes = find_attributes_from_body(%w[email fingerprint admin delivery_enabled])
+        subscription, messages = subscriptions_controller.subscribe(requested_list_id, attributes, find_key_material)
+        set_x_messages(messages)
+        logger.debug "subcription: #{subscription.inspect}"
+        if subscription.valid?
+          logger.debug "Subscribed: #{subscription.inspect}"
           # TODO: why redirect instead of respond with result?
-          redirect to("/subscriptions/#{sub.id}.json"), 201
+          redirect to("/subscriptions/#{subscription.id}.json"), 201
         else
-          client_error(sub, 422)
+          client_error(subscription, 422)
         end
       rescue ActiveRecord::RecordNotUnique
         logger.error 'Already subscribed'
@@ -53,17 +43,15 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     get '/configurable_attributes.json' do
-      json(Subscription.configurable_attributes) + "\n"
+      json(subscriptions_controller.get_configurable_attributes) + "\n"
     end
 
     get '/new.json' do
-      json Subscription.new
+      json subscriptions_controller.new_subscription
     end
 
     get '/:id.json' do |id|
-      subscription = load_subscription(id)
-      authorized?(subscription, :read)
-      json subscription
+      json subscriptions_controller.find(id)
     end
 
     put '/:id.json' do |id|
@@ -86,23 +74,31 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     patch '/:id.json' do |id|
-      sub = load_subscription(id)
-      authorized?(sub, :update)
-      if sub.update(parsed_body)
+      subscription = subscriptions_controller.update(id, parsed_body)
+      if subscription
         200
       else
-        client_error(sub)
+        client_error(subscription)
       end
     end
 
     delete '/:id.json' do |id|
-      sub = load_subscription(id)
-      authorized?(sub, :delete)
-      if sub.destroy
+      subscription = subscriptions_controller.delete(id)
+      if subscription
         200
       else
-        client_error(sub)
+        client_error(subscription)
       end
     end
+  end
+
+  private
+
+  def subscriptions_controller
+    Schleuder::SubscriptionsController.new(current_account)
+  end
+
+  def lists_controller
+    Schleuder::ListsController.new(current_account)
   end
 end

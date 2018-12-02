@@ -8,9 +8,8 @@ describe 'subscription via api' do
       _other_subscription = create(:subscription)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
-      parameters = { list_id: 'somelist@example.org' }
 
-      get 'subscriptions.json', parameters
+      get "subscriptions.json?list_id=#{list.email}", { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 200
       expect(JSON.parse(last_response.body).length).to be 1
@@ -23,39 +22,35 @@ describe 'subscription via api' do
       _other_subscription = create(:subscription)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
-      parameters = { fingerprint: subscription.fingerprint }
 
-      get 'subscriptions.json', parameters
+      get "subscriptions.json?fingerprint=#{subscription.fingerprint}", { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 200
       expect(JSON.parse(last_response.body).length).to be 1
       expect(JSON.parse(last_response.body)[0]['email']).to eq subscription.email
     end
 
-    it 'returns a 404 when no list with the given email exists' do
+    it 'returns a 403 when no list with the given email exists' do
       list = create(:list, email: 'somelist@example.org')
       subscription = create(:subscription, list_id: list.id, admin: true)
-      _other_subscription = create(:subscription)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
-      parameters = { list_id: 'non_existing@example.org' }
 
-      get 'subscriptions.json', parameters
+      get 'subscriptions.json?list_id=non_existing@example.org', { 'CONTENT_TYPE' => 'application/json' }
 
-      expect(last_response.status).to be 404
-      expect(last_response.body).to eq 'Not found'
+      expect(last_response.status).to be 403
+      expect(last_response.body).to eq 'Not authorized'
     end
 
-    it 'returns an empty array if the no subscription is associated with the account' do
+    it 'returns a 403 if no subscription is associated with the account' do
       list = create(:list)
       account = create(:account)
       authorize!(account.email, account.set_new_password!)
-      parameters = { list_id: list.email }
 
-      get 'subscriptions.json', parameters
+      get "subscriptions.json?list_id=#{list.email}", { 'CONTENT_TYPE' => 'application/json' }
 
-      expect(last_response.status).to eq 200
-      expect(last_response.body).to eq [].to_json
+      expect(last_response.status).to eq 403
+      expect(last_response.body).to eq 'Not authorized'
     end
   end
 
@@ -234,5 +229,78 @@ describe 'subscription via api' do
 
     expect(last_response.status).to be 403
     expect(list.reload.subscriptions.map(&:email)).to include(subscription.email)
+  end
+
+  context 'configurable attributes' do
+    it 'retuns the configurable_attributes' do
+      authorize_as_api_superadmin!
+
+      get '/subscriptions/configurable_attributes.json'
+
+      expect(last_response.status).to be 200
+      expect(JSON.parse(last_response.body)).to eq ['fingerprint', 'admin', 'delivery_enabled']
+    end
+  end
+
+  context 'new' do
+    it 'returns a new subscription' do
+      authorize_as_api_superadmin!
+
+      get 'subscriptions/new.json'
+
+      expect(last_response.status).to be 200
+      expect(last_response.body).to eq Subscription.new().to_json
+    end
+  end
+
+  context 'getting a subscription' do
+    it 'returns a subscription for a given identifier' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: true)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+
+      get "/subscriptions/#{subscription.id}.json"
+
+      expect(last_response.status).to be 200
+      expect(JSON.parse(last_response.body)['email']).to eq subscription.email
+    end
+
+    it 'raises unauthorized if the account is not associated with the list' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id)
+      account = create(:account, email: 'foo@example.org')
+      authorize!(account.email, account.set_new_password!)
+
+      get "/subscriptions/#{subscription.id}.json"
+
+      expect(last_response.status).to be 403
+    end
+  end
+
+  context 'updating a subscription' do
+    it 'returns 200 if subscription was updated successfully' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: true)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      parameters = { list_id: list.id, email: 'new@example.org' }
+
+      patch "/subscriptions/#{subscription.id}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 200
+    end
+
+    it 'raises unauthorized if the account is not associated with the list' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id)
+      account = create(:account, email: 'foo@example.org')
+      authorize!(account.email, account.set_new_password!)
+      parameters = { list_id: list.id, email: 'new@example.org' }
+
+      patch "/subscriptions/#{subscription.id}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 403
+    end
   end
 end
