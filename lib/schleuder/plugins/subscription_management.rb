@@ -3,7 +3,7 @@ module Schleuder
     def self.subscribe(arguments, list, mail)
       if arguments.blank?
         return I18n.t(
-          "plugins.subscription_management.subscribe_requires_arguments"
+          'plugins.subscription_management.subscribe_requires_arguments'
         )
       end
 
@@ -24,7 +24,7 @@ module Schleuder
 
       if sub.persisted?
         I18n.t(
-          "plugins.subscription_management.subscribed",
+          'plugins.subscription_management.subscribed',
           email: sub.email,
           fingerprint: sub.fingerprint,
           admin: sub.admin,
@@ -32,7 +32,7 @@ module Schleuder
         )
       else
         I18n.t(
-          "plugins.subscription_management.subscribing_failed",
+          'plugins.subscription_management.subscribing_failed',
           email: sub.email,
           errors: sub.errors.full_messages.join(".\n")
         )
@@ -46,7 +46,7 @@ module Schleuder
       # Refuse to unsubscribe the last admin.
       if list.admins.size == 1 && list.admins.first.email == email
         return I18n.t(
-          "plugins.subscription_management.cannot_unsubscribe_last_admin", email: email
+          'plugins.subscription_management.cannot_unsubscribe_last_admin', email: email
         )
       end
 
@@ -54,7 +54,7 @@ module Schleuder
       if ! list.from_admin?(mail) && email != mail.signer.email
         # Only admins may unsubscribe others.
         return I18n.t(
-          "plugins.subscription_management.forbidden", email: email
+          'plugins.subscription_management.forbidden', email: email
         )
       end
 
@@ -62,17 +62,17 @@ module Schleuder
 
       if sub.blank?
         return I18n.t(
-          "plugins.subscription_management.is_not_subscribed", email: email
+          'plugins.subscription_management.is_not_subscribed', email: email
         )
       end
 
       if res = sub.delete
         I18n.t(
-          "plugins.subscription_management.unsubscribed", email: email
+          'plugins.subscription_management.unsubscribed', email: email
         )
       else
         I18n.t(
-          "plugins.subscription_management.unsubscribing_failed",
+          'plugins.subscription_management.unsubscribing_failed',
           email: email,
           error: res.errors.to_a
         )
@@ -84,7 +84,7 @@ module Schleuder
                 list.subscriptions.all.to_a
              else
                arguments.map do |argument|
-                 list.subscriptions.where("email like ?", "%#{argument}%").to_a
+                 list.subscriptions.where('email like ?', "%#{argument}%").to_a
                end.flatten
              end
 
@@ -92,7 +92,7 @@ module Schleuder
         return nil
       end
 
-      out = [ I18n.t("plugins.subscription_management.list_of_subscriptions") ]
+      out = [ I18n.t('plugins.subscription_management.list_of_subscriptions') ]
 
       out << subs.map do |subscription|
         # Fingerprints are at most 40 characters long, and lines shouldn't
@@ -113,7 +113,7 @@ module Schleuder
     def self.set_fingerprint(arguments, list, mail)
       if arguments.blank?
         return I18n.t(
-          "plugins.subscription_management.set_fingerprint_requires_arguments"
+          'plugins.subscription_management.set_fingerprint_requires_arguments'
         )
       end
 
@@ -122,7 +122,7 @@ module Schleuder
           email = arguments.shift
         else
           return I18n.t(
-            "plugins.subscription_management.set_fingerprint_only_self"
+            'plugins.subscription_management.set_fingerprint_only_self'
           )
         end
       else
@@ -133,14 +133,14 @@ module Schleuder
 
       if sub.blank?
         return I18n.t(
-          "plugins.subscription_management.is_not_subscribed", email: email
+          'plugins.subscription_management.is_not_subscribed', email: email
         )
       end
 
       fingerprint = arguments.join
       unless GPGME::Key.valid_fingerprint?(fingerprint)
         return I18n.t(
-          "plugins.subscription_management.set_fingerprint_requires_valid_fingerprint",
+          'plugins.subscription_management.set_fingerprint_requires_valid_fingerprint',
           fingerprint: fingerprint
         )
       end
@@ -148,13 +148,13 @@ module Schleuder
       sub.fingerprint = fingerprint
       if sub.save
         I18n.t(
-          "plugins.subscription_management.fingerprint_set",
+          'plugins.subscription_management.fingerprint_set',
           email: email,
           fingerprint: sub.fingerprint
         )
       else
         I18n.t(
-          "plugins.subscription_management.setting_fingerprint_failed",
+          'plugins.subscription_management.setting_fingerprint_failed',
           email: email,
           fingerprint: sub.fingerprint,
           errors: sub.errors.to_a.join("\n")
@@ -165,38 +165,38 @@ module Schleuder
     def self.unset_fingerprint(arguments, list, mail)
       if arguments.blank?
         return I18n.t(
-          "plugins.subscription_management.unset_fingerprint_requires_arguments"
+          'plugins.subscription_management.unset_fingerprint_requires_arguments'
         )
       end
 
       email = arguments.first
       unless email == mail.signer.email || list.from_admin?(mail)
           return I18n.t(
-            "plugins.subscription_management.unset_fingerprint_only_self"
+            'plugins.subscription_management.unset_fingerprint_only_self'
           )
       end
       if email == mail.signer.email && list.from_admin?(mail) && arguments.last != 'force'
         return I18n.t(
-          "plugins.subscription_management.unset_fingerprint_requires_arguments"
+          'plugins.subscription_management.unset_fingerprint_requires_arguments'
         )
       end
 
       sub = list.subscriptions.where(email: email).first
       if sub.blank?
         return I18n.t(
-          "plugins.subscription_management.is_not_subscribed", email: email
+          'plugins.subscription_management.is_not_subscribed', email: email
         )
       end
 
       sub.fingerprint = ''
       if sub.save
         I18n.t(
-          "plugins.subscription_management.fingerprint_unset",
+          'plugins.subscription_management.fingerprint_unset',
           email: email
         )
       else
         I18n.t(
-          "plugins.subscription_management.unsetting_fingerprint_failed",
+          'plugins.subscription_management.unsetting_fingerprint_failed',
           email: email,
           errors: sub.errors.to_a.join("\n")
         )

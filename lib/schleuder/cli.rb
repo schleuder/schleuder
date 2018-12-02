@@ -65,18 +65,18 @@ module Schleuder
       permission_notice
     end
 
-    desc 'refresh_keys [list1@example.com]', "Refresh all keys of all list from the keyservers sequentially (one by one or on the passed list). (This is supposed to be run from cron weekly.)"
+    desc 'refresh_keys [list1@example.com]', 'Refresh all keys of all list from the keyservers sequentially (one by one or on the passed list). (This is supposed to be run from cron weekly.)'
     def refresh_keys(list=nil)
       work_on_lists(:refresh_keys,list)
       permission_notice
     end
 
-    desc 'pin_keys [list1@example.com]', "Find keys for subscriptions without a pinned key and try to pin a certain key (one by one or based on the passed list)."
+    desc 'pin_keys [list1@example.com]', 'Find keys for subscriptions without a pinned key and try to pin a certain key (one by one or based on the passed list).'
     def pin_keys(list=nil)
       work_on_lists(:pin_keys,list)
     end
 
-    desc 'install', "Set-up or update Schleuder environment (create folders, copy files, fill the database)."
+    desc 'install', 'Set-up or update Schleuder environment (create folders, copy files, fill the database).'
     def install
       config_dir = Pathname.new(ENV['SCHLEUDER_CONFIG']).dirname
       root_dir = Pathname.new(ENV['SCHLEUDER_ROOT'])
@@ -99,7 +99,7 @@ module Schleuder
         end
       end
 
-      Pathname.glob(root_dir.join("etc").join("*.yml")).each do |file|
+      Pathname.glob(root_dir.join('etc').join('*.yml')).each do |file|
         target = config_dir.join(file.basename)
         if ! target.exist?
           if target.dirname.writable?
@@ -144,11 +144,11 @@ module Schleuder
 
       conf = YAML.load(File.read(dir + 'list.conf'))
       if conf.nil? || conf.empty?
-        fatal "list.conf is blank"
+        fatal 'list.conf is blank'
       end
       listname = conf['myaddr']
       if listname.nil? || listname.empty?
-        fatal "myaddr is blank in list.conf"
+        fatal 'myaddr is blank in list.conf'
       end
 
       # Identify list-fingerprint.
@@ -165,9 +165,9 @@ module Schleuder
         fatal exc
       end
       if messages
-        fatal messages.values.join(" - ")
+        fatal messages.values.join(' - ')
       elsif list.errors.any?
-        fatal list.errors.full_messages.join(" - ")
+        fatal list.errors.full_messages.join(' - ')
       end
 
       # Import keys

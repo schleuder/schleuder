@@ -153,7 +153,7 @@ module Schleuder
     end
 
     def self.add_keys_error(mail, email, keys_size)
-      mail.add_pseudoheader(:error, I18n.t("plugins.resend.not_resent_no_keys", email: email, num_keys: keys_size))
+      mail.add_pseudoheader(:error, I18n.t('plugins.resend.not_resent_no_keys', email: email, num_keys: keys_size))
     end
 
     def self.add_error_header(mail, recipients_map)
@@ -186,7 +186,7 @@ module Schleuder
       all_valid = true
       Array(recipients).each do |address|
         if ! address.match(Conf::EMAIL_REGEXP)
-          mail.add_pseudoheader(:error, I18n.t("plugins.resend.invalid_recipient", address: address))
+          mail.add_pseudoheader(:error, I18n.t('plugins.resend.invalid_recipient', address: address))
           all_valid = false
         end
       end

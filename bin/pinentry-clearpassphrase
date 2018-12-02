@@ -41,7 +41,7 @@ end
 
 OLDPASSWD = CGI.escape(ENV['PINENTRY_USER_DATA'].to_s)
 if OLDPASSWD.empty?
-  respond "Fatal error: passed PINENTRY_USER_DATA was empty, cannot continue"
+  respond 'Fatal error: passed PINENTRY_USER_DATA was empty, cannot continue'
   exit 1
 end
 

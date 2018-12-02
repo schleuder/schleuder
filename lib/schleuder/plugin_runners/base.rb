@@ -40,7 +40,7 @@ module Schleuder
         # Log to system, this information is probably more useful for
         # system-admins than for list-admins.
         Schleuder.logger.error(exc.message_with_backtrace)
-        I18n.t("plugins.plugin_failed", keyword: keyword)
+        I18n.t('plugins.plugin_failed', keyword: keyword)
       end
 
       def run_command(command, arguments)
@@ -50,7 +50,7 @@ module Schleuder
 
       def check_admin_only(keyword)
         if @list.admin_only?(keyword) && ! @list.from_admin?(@mail)
-          @list.logger.debug "Error: Keyword is admin-only, sent by non-admin"
+          @list.logger.debug 'Error: Keyword is admin-only, sent by non-admin'
           Schleuder::Errors::KeywordAdminOnly.new(keyword).to_s
         else
           false
@@ -60,7 +60,7 @@ module Schleuder
       def setup
         check_listname_keyword
         load_plugin_files
-        @plugin_module = self.name.demodulize.gsub("Runner", "").constantize
+        @plugin_module = self.name.demodulize.gsub('Runner', '').constantize
       end
 
       def check_listname_keyword
@@ -80,7 +80,7 @@ module Schleuder
       end
 
       def load_plugin_files
-        @list.logger.debug "Loading plugins"
+        @list.logger.debug 'Loading plugins'
         Dir["#{Schleuder::Conf.plugins_dir}/*.rb"].each do |file|
           require file
         end

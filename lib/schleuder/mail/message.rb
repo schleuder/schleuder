@@ -55,7 +55,7 @@ module Mail
         new.protected_headers_subject = self.subject.dup
 
         # Delete the protected headers which might leak information.
-        if new.parts.first.content_type == "text/rfc822-headers; protected-headers=v1"
+        if new.parts.first.content_type == 'text/rfc822-headers; protected-headers=v1'
           new.parts.shift
         end
       end
@@ -84,7 +84,7 @@ module Mail
 
       if self.protected_headers_subject.present?
         new_part = Mail::Part.new
-        new_part.content_type = "text/rfc822-headers; protected-headers=v1"
+        new_part.content_type = 'text/rfc822-headers; protected-headers=v1'
         new_part.body = "Subject: #{self.subject}\n"
         clean.add_part new_part
       end
@@ -143,7 +143,7 @@ module Mail
       when 1
         signatures.first
       else
-        raise "Multiple signatures found! Cannot handle!"
+        raise 'Multiple signatures found! Cannot handle!'
       end
     end
 
@@ -293,19 +293,19 @@ module Mail
         if signing_key.present?
           signature_state = signature.to_s
         else
-          signature_state = I18n.t("signature_states.unknown", fingerprint: self.signature.fingerprint)
+          signature_state = I18n.t('signature_states.unknown', fingerprint: self.signature.fingerprint)
         end
       else
-        signature_state = I18n.t("signature_states.unsigned")
+        signature_state = I18n.t('signature_states.unsigned')
       end
       signature_state
     end
 
     def encryption_state
       if was_encrypted?
-        encryption_state = I18n.t("encryption_states.encrypted")
+        encryption_state = I18n.t('encryption_states.encrypted')
       else
-        encryption_state = I18n.t("encryption_states.unencrypted")
+        encryption_state = I18n.t('encryption_states.unencrypted')
       end
       encryption_state
     end
@@ -352,7 +352,7 @@ module Mail
         self['List-Help'] = '<https://schleuder.org/>'
 
         postmsg = if list.receive_admin_only
-                    "NO (Admins only)"
+                    'NO (Admins only)'
                   elsif list.receive_authenticated_only
                     "<mailto:#{list.email}> (Subscribers only)"
                   else
@@ -472,7 +472,7 @@ module Mail
     end
 
     def _add_subject_prefix(suffix)
-      attrib = "subject_prefix"
+      attrib = 'subject_prefix'
       if suffix
         attrib << "_#{suffix}"
       end

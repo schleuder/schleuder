@@ -1106,13 +1106,6 @@ Style/StderrPuts:
     - 'lib/schleuder/list.rb'
     - 'spec/smtp-daemon.rb'
 
-# Offense count: 1130
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, ConsistentQuotesInMultiline.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiterals:
-  Enabled: false
-
 # Offense count: 11
 # Cop supports --auto-correct.
 # Configuration parameters: MinSize.

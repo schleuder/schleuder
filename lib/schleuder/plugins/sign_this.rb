@@ -9,7 +9,7 @@ module Schleuder
         end
         [intro, parts].flatten
       else
-        list.logger.debug "Clear-signing first available text/plain part"
+        list.logger.debug 'Clear-signing first available text/plain part'
         clearsign(mail.first_plaintext_part)
       end
     end
