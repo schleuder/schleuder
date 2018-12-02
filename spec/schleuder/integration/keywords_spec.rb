@@ -932,6 +932,7 @@ describe 'user sends keyword' do
 
     teardown_list_and_mailer(list)
   end
+
   it 'x-unset-fingerprint with own email-address as admin but without force' do
     list = create(:list)
     list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
@@ -969,6 +970,7 @@ describe 'user sends keyword' do
 
     teardown_list_and_mailer(list)
   end
+
   it 'x-unset-fingerprint with own email-address as admin and force' do
     list = create(:list)
     list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
@@ -1006,6 +1008,7 @@ describe 'user sends keyword' do
 
     teardown_list_and_mailer(list)
   end
+
   it 'x-unset-fingerprint with not-subscribed email-address' do
     list = create(:list)
     list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
@@ -3001,6 +3004,7 @@ EOS
 
       teardown_list_and_mailer(list)
     end
+
     it 'x-add-key with inline key-material' do
       list = create(:list, keywords_admin_notify: [])
       list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
@@ -3036,6 +3040,7 @@ EOS
 
       teardown_list_and_mailer(list)
     end
+
     it 'x-get-key with valid argument' do
       list = create(:list)
       list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
