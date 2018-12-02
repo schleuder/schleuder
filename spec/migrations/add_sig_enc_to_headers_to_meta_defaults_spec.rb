@@ -5,6 +5,10 @@ describe 'AddSigEncToHeadersToMetaDefaults' do
   let(:migration_under_test) { 20180110203100 }
   let(:previous_migration) { 20170713215059 }
 
+  after(:each) do
+    ActiveRecord::Migrator.migrate(migrations_paths)
+  end
+
   describe 'up' do
     it 'sets the column defaults' do
       ActiveRecord::Migrator.migrate(migrations_paths, previous_migration)
