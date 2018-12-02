@@ -74,6 +74,7 @@ en:
     too_many_matching_keys: |
       Too many matching keys for '%{input}':
       %{key_strings}
+    unauthorized: "Not authorized"
   plugins:
     unknown_keyword: Unknown keyword '%{keyword}'.
     plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.

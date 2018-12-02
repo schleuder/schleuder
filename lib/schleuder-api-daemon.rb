@@ -48,6 +48,11 @@ class SchleuderApiDaemon < Sinatra::Base
     ActiveRecord::Base.connection.close
   end
 
+  error Errors::Unauthorized do
+    status 403
+    body("Not authorized")
+  end
+
   error do
     exc = env['sinatra.error']
     logger.error "Error: #{env['sinatra.error'].message}"

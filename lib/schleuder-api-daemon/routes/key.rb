@@ -4,45 +4,41 @@ class SchleuderApiDaemon < Sinatra::Base
   namespace '/keys' do
     get '.json' do
       require_list_id_param
-      list = load_list(params[:list_id])
-      authorize(list, :list_keys)
-      keys = list.keys.sort_by(&:email).map do |key|
+      keys = keys_controller.get_keys(params[:list_id])
+      keys_hash = keys.sort_by(&:email).map do |key|
         key_to_hash(key)
       end
-      json keys
+      json keys_hash
     end
 
     post '.json' do
-      list = load_list(requested_list_id)
-      authorize(list, :add_keys)
       input = parsed_body['keymaterial']
-      if ! input.match('BEGIN PGP')
+      if !input.match('BEGIN PGP')
         input = Base64.decode64(input)
       end
-      json list.import_key(input)
+      json keys_controller.import_key(requested_list_id, input)
     end
 
     get '/check_keys.json' do
       require_list_id_param
-      list = load_list(params[:list_id])
-      authorize(list, :check_keys)
-      json result: list.check_keys
+      json result: keys_controller.check_keys(params[:list_id])
     end
 
     get '/:fingerprint.json' do |fingerprint|
       require_list_id_param
-      list = load_list(params[:list_id])
-      key = list.key(fingerprint) || halt(404)
-      authorize(key, :read)
+      key = keys_controller.get_key(params[:list_id], fingerprint)
       json key_to_hash(key, true)
     end
 
     delete '/:fingerprint.json' do |fingerprint|
       require_list_id_param
-      list = load_list(params[:list_id])
-      key = list.key(fingerprint) || halt(404)
-      authorize(key, :delete)
-      key.delete!
+      keys_controller.delete_key(params[:list_id], fingerprint)
     end
+  end
+
+  private
+
+  def keys_controller
+    Schleuder::KeysController.new(current_account)
   end
 end

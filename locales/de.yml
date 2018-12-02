@@ -74,6 +74,7 @@ de:
     too_many_matching_keys: |
       Zu viele Schlüssel gefunden für '%{input}':
       %{key_strings}
+    unauthorized: "Keine Berechtigung"
   plugins:
     unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
     plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
@@ -97,7 +98,7 @@ de:
           %{key_oneline}
         error: |
           Der Schlüssel mit diesem Fingerabdruck konnte aus unbekanntem Grund nicht hinzugefügt werden:
-          %{fingerprint} 
+          %{fingerprint}
       matching_keys_intro: Alle Schlüssel aus dem Schlüsselring der Liste, die '%{input}' enthalten, sind an diese Email angehängt.
       delete_key_requires_arguments: |
         Fehler: Du hast zu dem Schlüsselwort 'DELETE-KEY' keinen Wert angegeben.
