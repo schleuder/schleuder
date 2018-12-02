@@ -48,16 +48,16 @@ module SchleuderApiDaemonHelper
       List.where(query_args).first || halt(404)
     end
 
-		def load_subscription(identifier)
+    def load_subscription(identifier)
       query_args = make_query_args(identifier)
       if is_an_integer?(identifier)
         query_base = Subscription
-      else require_list_id_param("Parameter list_id is required when using email as identifier for subscriptions.")
-        list = load_list(params[:list_id])
-        query_base = list.subscriptions
+      else require_list_id_param('Parameter list_id is required when using email as identifier for subscriptions.')
+           list = load_list(params[:list_id])
+           query_base = list.subscriptions
       end
       query_base.where(query_args).first || halt(404)
-		end
+    end
 
     def subscription(id_or_email)
       if is_an_integer?(id_or_email)
