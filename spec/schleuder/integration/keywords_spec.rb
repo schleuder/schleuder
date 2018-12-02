@@ -897,7 +897,7 @@ describe 'user sends keyword' do
   it 'x-unset-fingerprint with other email-address as admin' do
     list = create(:list)
     list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
-    list.subscribe('test@example.org','C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
+    list.subscribe('test@example.org', 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
     list.import_key(File.read('spec/fixtures/example_key.txt'))
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new

@@ -156,7 +156,7 @@ describe 'cli' do
 
       with_sks_mock do
         Cli.new.refresh_keys
-        dirmngr_pid = `pgrep -a dirmngr | grep #{list.listdir}`.split(' ',2).first
+        dirmngr_pid = `pgrep -a dirmngr | grep #{list.listdir}`.split(' ', 2).first
         expect(dirmngr_pid).to be_nil
       end
       mail = Mail::TestMailer.deliveries.first
@@ -172,7 +172,7 @@ describe 'cli' do
     it 'updates keys from the keyserver for only a specific list' do
       list1 = create(:list)
       list2 = create(:list)
-      [list1,list2].each do |list|
+      [list1, list2].each do |list|
         list.subscribe('admin@example.org', nil, true)
         list.import_key(File.read('spec/fixtures/expired_key.txt'))
         list.import_key(File.read('spec/fixtures/olduid_key.txt'))
@@ -250,7 +250,7 @@ describe 'cli' do
     it 'only works on the specific list' do
       list1 = create(:list)
       list2 = create(:list)
-      [list1,list2].each do |list|
+      [list1, list2].each do |list|
         list.subscribe('admin@example.org', nil, true)
         list.subscribe('schleuder2@example.org', nil, false)
         list.import_key(File.read('spec/fixtures/example_key.txt'))

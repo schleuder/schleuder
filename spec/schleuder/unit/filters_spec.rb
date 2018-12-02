@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 # make sure we have the filters loaded, as they will be loaded lazily within the code
-Dir[File.join(File.dirname(__FILE__),'../../../lib/schleuder/filters/*/*.rb')].each do |file|
+Dir[File.join(File.dirname(__FILE__), '../../../lib/schleuder/filters/*/*.rb')].each do |file|
   require file
 end
 describe Schleuder::Filters do

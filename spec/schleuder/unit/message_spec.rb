@@ -58,7 +58,7 @@ describe Mail::Message do
     it 'adds a configured subject prefix' do
       list = create(:list)
       list.subject_prefix = '[prefix]'
-      list.subscribe('admin@example.org',nil,true)
+      list.subscribe('admin@example.org', nil, true)
       mail = Mail.new
       mail.from 'someone@example.org'
       mail.to list.email
@@ -73,7 +73,7 @@ describe Mail::Message do
     it 'adds a configured subject prefix without subject' do
       list = create(:list)
       list.subject_prefix = '[prefix]'
-      list.subscribe('admin@example.org',nil,true)
+      list.subscribe('admin@example.org', nil, true)
       mail = Mail.new
       mail.from 'someone@example.org'
       mail.to list.email
@@ -87,7 +87,7 @@ describe Mail::Message do
     it 'does not add a subject prefix if already present' do
       list = create(:list)
       list.subject_prefix = '[prefix]'
-      list.subscribe('admin@example.org',nil,true)
+      list.subscribe('admin@example.org', nil, true)
       mail = Mail.new
       mail.from 'someone@example.org'
       mail.to list.email

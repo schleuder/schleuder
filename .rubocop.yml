@@ -9,3 +9,6 @@ Style/StringLiterals:
 
 Layout/EmptyLineBetweenDefs:
   Enabled: true
+
+Layout/SpaceAfterComma:
+  Enabled: true

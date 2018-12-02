@@ -12,7 +12,7 @@ module Schleuder
 
     default_scope { order(:email) }
 
-    scope :without_fingerprint, -> { where(fingerprint: [nil,'']) }
+    scope :without_fingerprint, -> { where(fingerprint: [nil, '']) }
 
     def to_s
       email

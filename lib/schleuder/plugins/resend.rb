@@ -40,7 +40,7 @@ module Schleuder
         return false
       end
 
-      recip_map = Hash[Array(arguments).map{|email| [email,''] }]
+      recip_map = Hash[Array(arguments).map{|email| [email, ''] }]
 
       if do_resend(mail, recip_map, target, false)
         mail.add_subject_prefix_out!

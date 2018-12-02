@@ -288,11 +288,6 @@ Layout/MultilineOperationIndentation:
     - 'lib/schleuder/filters/pre_decryption/50_strip_html_from_alternative.rb'
     - 'lib/schleuder/mail/message.rb'
 
-# Offense count: 45
-# Cop supports --auto-correct.
-Layout/SpaceAfterComma:
-  Enabled: false
-
 # Offense count: 79
 # Cop supports --auto-correct.
 Layout/SpaceAfterNot:
