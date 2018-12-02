@@ -60,6 +60,7 @@ rubocop:
   script:
     - rubocop
   stage: static
+  allow_failure: true
 
 ruby:2.3:
   image: $IMAGE_REGISTRY:schleuder-ruby2.3
