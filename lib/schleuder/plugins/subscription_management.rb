@@ -7,17 +7,17 @@ module Schleuder
         )
       end
 
-      email = arguments.shift
+      email = arguments.shift.to_s.downcase
 
       if arguments.present?
         # Collect all arguments that look like fingerprint-material
         fingerprint = ''
         while arguments.first.present? && arguments.first.match(/^(0x)?[a-f0-9]+$/i)
-          fingerprint << arguments.shift
+          fingerprint << arguments.shift.downcase
         end
         # Use possibly remaining args as flags.
-        adminflag = arguments.shift
-        deliveryflag = arguments.shift
+        adminflag = arguments.shift.to_s.downcase.presence
+        deliveryflag = arguments.shift.to_s.downcase.presence
       end
 
       sub, _ = list.subscribe(email, fingerprint, adminflag, deliveryflag)
@@ -41,7 +41,7 @@ module Schleuder
 
     def self.unsubscribe(arguments, list, mail)
       # If no address was given we unsubscribe the sender.
-      email = arguments.first.presence || mail.signer.email
+      email = arguments.first.to_s.downcase.presence || mail.signer.email
 
       # Refuse to unsubscribe the last admin.
       if list.admins.size == 1 && list.admins.first.email == email
@@ -118,9 +118,8 @@ module Schleuder
       end
 
       if arguments.first.match(/@/)
-        if arguments.first == mail.signer.email || list.from_admin?(mail)
-          email = arguments.shift
-        else
+        email = arguments.shift.downcase
+        if email != mail.signer.email && ! list.from_admin?(mail)
           return I18n.t(
             'plugins.subscription_management.set_fingerprint_only_self'
           )
@@ -137,7 +136,7 @@ module Schleuder
         )
       end
 
-      fingerprint = arguments.join
+      fingerprint = arguments.join.downcase
       unless GPGME::Key.valid_fingerprint?(fingerprint)
         return I18n.t(
           'plugins.subscription_management.set_fingerprint_requires_valid_fingerprint',
@@ -169,13 +168,13 @@ module Schleuder
         )
       end
 
-      email = arguments.first
-      unless email == mail.signer.email || list.from_admin?(mail)
+      email = arguments.shift.to_s.downcase
+      if email != mail.signer.email && ! list.from_admin?(mail)
           return I18n.t(
             'plugins.subscription_management.unset_fingerprint_only_self'
           )
       end
-      if email == mail.signer.email && list.from_admin?(mail) && arguments.last != 'force'
+      if email == mail.signer.email && list.from_admin?(mail) && arguments.last.to_s.downcase != 'force'
         return I18n.t(
           'plugins.subscription_management.unset_fingerprint_requires_arguments'
         )

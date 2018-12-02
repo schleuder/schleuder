@@ -434,7 +434,7 @@ module Mail
       content_lines.each_with_index do |line, i|
         if match = line.match(/^x-([^:\s]*)[:\s]*(.*)/i)
           keyword = match[1].strip.downcase
-          arguments = match[2].to_s.strip.downcase.split(/[,; ]{1,}/)
+          arguments = match[2].to_s.strip.split(/[,; ]{1,}/)
           keywords << [keyword, arguments]
           in_keyword_block = true
 
