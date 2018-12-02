@@ -64,6 +64,11 @@ require 'schleuder/authorizer_policies/list_policy'
 require 'schleuder/authorizer_policies/key_policy'
 require 'schleuder/authorizer'
 
+require 'schleuder/controllers/base_controller'
+require 'schleuder/controllers/keys_controller'
+require 'schleuder/controllers/lists_controller'
+require 'schleuder/controllers/subscriptions_controller'
+
 # Setup
 ENV['SCHLEUDER_CONFIG'] ||= '/etc/schleuder/schleuder.yml'
 ENV['SCHLEUDER_LIST_DEFAULTS'] ||= '/etc/schleuder/list-defaults.yml'
