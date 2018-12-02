@@ -7,7 +7,7 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     post '.json' do
-			authorize(List, :create)
+      authorize(List, :create)
 
       listname = parsed_body['email']
       fingerprint = parsed_body['fingerprint']

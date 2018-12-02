@@ -2,7 +2,7 @@ module Schleuder
   module AuthorizerPolicies
     class BasePolicy
       attr_reader :account, :object
-      
+
       class BaseScope
         attr_reader :account
 
@@ -11,15 +11,12 @@ module Schleuder
         end
       end
 
-
       def initialize(account, object)
         @account = account
         @object = object
       end
 
-
       private
-
 
       def admin?(list)
         account.admin_of_list?(list)

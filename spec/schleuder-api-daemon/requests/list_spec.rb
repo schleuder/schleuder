@@ -65,7 +65,7 @@ describe 'lists via api' do
     get "lists/#{list.id}.json"
 
     expect(last_response.status).to be 401
-    expect(last_response.body).to eql("Not authenticated")
+    expect(last_response.body).to eql('Not authenticated')
   end
 
   it "doesn't show a list authorized as unassociated account" do
@@ -77,7 +77,7 @@ describe 'lists via api' do
     get "lists/#{list.id}.json"
 
     expect(last_response.status).to be 403
-    expect(last_response.body).to eql("Not authorized")
+    expect(last_response.body).to eql('Not authorized')
   end
 
   it "doesn't show a list authorized as subscriber" do
@@ -92,7 +92,7 @@ describe 'lists via api' do
     expect(JSON.parse(last_response.body)['email']).to eq list.email
   end
 
-  it "does show a list authorized as list-admin" do
+  it 'does show a list authorized as list-admin' do
     list = create(:list)
     subscription = create(:subscription, list_id: list.id, admin: true)
     account = create(:account, email: subscription.email)
@@ -116,7 +116,7 @@ describe 'lists via api' do
 
   it 'correctly finds a list by email-address that starts with a number' do
     authorize_as_api_superadmin!
-    list = create(:list, email: "9list@hostname")
+    list = create(:list, email: '9list@hostname')
     get "lists/#{list.email}.json"
     expect(last_response.status).to be 200
     expect(JSON.parse(last_response.body)['email']).to eq list.email

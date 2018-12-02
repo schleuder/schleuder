@@ -11,7 +11,6 @@ module Schleuder
         end
       end
 
-
       # If subscriptions for a given list are checked, call ListPolicy#list_subscriptions
       def list
         true
@@ -31,12 +30,10 @@ module Schleuder
         superadmin? || admin?(object.list) || own?(object)
       end
 
-
       private
 
-
       def own?(object)
-        account.subscriptions.include?(object) 
+        account.subscriptions.include?(object)
       end
     end
   end
