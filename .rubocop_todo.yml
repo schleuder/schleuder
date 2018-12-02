@@ -91,16 +91,6 @@ Layout/EmptyLineAfterMagicComment:
   Exclude:
     - 'spec/schleuder/integration/keywords_spec.rb'
 
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: AllowAdjacentOneLineDefs, NumberOfEmptyLines.
-Layout/EmptyLineBetweenDefs:
-  Exclude:
-    - 'lib/schleuder/gpgme/user_id.rb'
-    - 'lib/schleuder/mail/message.rb'
-    - 'lib/schleuder/runner.rb'
-    - 'spec/schleuder/unit/filters_runner_spec.rb'
-
 # Offense count: 15
 # Cop supports --auto-correct.
 Layout/EmptyLines:

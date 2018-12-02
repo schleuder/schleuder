@@ -6,3 +6,6 @@ AllCops:
 
 Style/StringLiterals:
   Enabled: true
+
+Layout/EmptyLineBetweenDefs:
+  Enabled: true

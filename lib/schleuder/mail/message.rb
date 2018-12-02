@@ -429,7 +429,6 @@ module Mail
       end
     end
 
-
     def attach_list_key!(list)
       filename = "#{list.email}.asc"
       self.add_file({
