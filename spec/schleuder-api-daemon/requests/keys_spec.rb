@@ -20,7 +20,7 @@ describe 'keys via api' do
       get "/keys.json?list_id=#{@list.id}"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql("Not authorized")
+      expect(last_response.body).to eql('Not authorized')
     end
 
     it 'does list keys authorized as subscriber' do
@@ -70,7 +70,7 @@ describe 'keys via api' do
       get "/keys/check_keys.json?list_id=#{@list.id}"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql("Not authorized")
+      expect(last_response.body).to eql('Not authorized')
     end
 
     it "doesn't check keys authorized as subscriber" do
@@ -81,16 +81,16 @@ describe 'keys via api' do
       get "/keys/check_keys.json?list_id=#{@list.id}"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql("Not authorized")
+      expect(last_response.body).to eql('Not authorized')
     end
 
     it 'does check keys authorized as list-admin' do
       subscription = create(:subscription, list_id: @list.id, admin: true)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
-      @list.import_key(File.read("spec/fixtures/revoked_key.txt"))
-      @list.import_key(File.read("spec/fixtures/signonly_key.txt"))
-      @list.import_key(File.read("spec/fixtures/expired_key.txt"))
+      @list.import_key(File.read('spec/fixtures/revoked_key.txt'))
+      @list.import_key(File.read('spec/fixtures/signonly_key.txt'))
+      @list.import_key(File.read('spec/fixtures/expired_key.txt'))
 
       get "/keys/check_keys.json?list_id=#{@list.id}"
 
@@ -106,9 +106,9 @@ describe 'keys via api' do
     end
 
     it 'does check keys authorized as api_superadmin' do
-      @list.import_key(File.read("spec/fixtures/revoked_key.txt"))
-      @list.import_key(File.read("spec/fixtures/signonly_key.txt"))
-      @list.import_key(File.read("spec/fixtures/expired_key.txt"))
+      @list.import_key(File.read('spec/fixtures/revoked_key.txt'))
+      @list.import_key(File.read('spec/fixtures/signonly_key.txt'))
+      @list.import_key(File.read('spec/fixtures/expired_key.txt'))
       authorize_as_api_superadmin!
 
       get "/keys/check_keys.json?list_id=#{@list.id}"
@@ -140,7 +140,7 @@ describe 'keys via api' do
       get "/keys.json?list_id=#{@list.id}"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql("Not authorized")
+      expect(last_response.body).to eql('Not authorized')
     end
 
     it 'does list keys authorized as subscriber' do
@@ -212,7 +212,6 @@ describe 'keys via api' do
       @list.delete_key('0xEBDBE899251F2412')
     end
 
-
     it 'does import keys authorized as list-admin' do
       subscription = create(:subscription, list_id: @list.id, admin: true)
       account = create(:account, email: subscription.email)
@@ -244,7 +243,7 @@ describe 'keys via api' do
 
   context 'delete' do
     before(:each) do
-      @list.import_key(File.read("spec/fixtures/bla_foo_key.txt"))
+      @list.import_key(File.read('spec/fixtures/bla_foo_key.txt'))
     end
 
     it "doesn't delete keys without authentication" do
@@ -267,7 +266,7 @@ describe 'keys via api' do
       delete "/keys/0xEBDBE899251F2412.json?list_id=#{@list.id}"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql("Not authorized")
+      expect(last_response.body).to eql('Not authorized')
       expect(@list.reload.keys.length).to eql(num_keys)
     end
 
@@ -280,11 +279,11 @@ describe 'keys via api' do
       delete "/keys/0xEBDBE899251F2412.json?list_id=#{@list.id}"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql("Not authorized")
+      expect(last_response.body).to eql('Not authorized')
       expect(@list.reload.keys.length).to eql(num_keys)
     end
 
-    it "does delete keys authorized as list-admin" do
+    it 'does delete keys authorized as list-admin' do
       subscription = create(:subscription, list_id: @list.id, admin: true)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
@@ -296,7 +295,7 @@ describe 'keys via api' do
       expect(@list.reload.keys.length).to eql(num_keys - 1)
     end
 
-    it "does delete keys authorized as api_superadmin" do
+    it 'does delete keys authorized as api_superadmin' do
       authorize_as_api_superadmin!
       num_keys = @list.keys.length
 
@@ -310,7 +309,7 @@ describe 'keys via api' do
   context 'a key with broken utf8 in uid' do
     context 'already imported' do
       before(:each) do
-        @list.import_key(File.read("spec/fixtures/broken_utf8_uid_key.txt"))
+        @list.import_key(File.read('spec/fixtures/broken_utf8_uid_key.txt'))
       end
       after(:each) do
         @list.delete_key('0x1242F6E13D8EBE4A')
@@ -325,7 +324,7 @@ describe 'keys via api' do
         authorize_as_api_superadmin!
         get "/keys/0x1242F6E13D8EBE4A.json?list_id=#{@list.id}"
         expect(last_response.status).to be 200
-        expect(JSON.parse(last_response.body)['fingerprint']).to eq("3102B29989BEE703AE5ED62E1242F6E13D8EBE4A")
+        expect(JSON.parse(last_response.body)['fingerprint']).to eq('3102B29989BEE703AE5ED62E1242F6E13D8EBE4A')
       end
       it 'does delete key' do
         authorize_as_api_superadmin!

@@ -1,16 +1,16 @@
 module Schleuder
   class Account < ActiveRecord::Base
     PASSWORD_CHARS = [
-      ("a".."z").to_a,
-      ("A".."Z").to_a,
+      ('a'..'z').to_a,
+      ('A'..'Z').to_a,
       (0..9).to_a,
       %w[! @ # $ % ^ & * ( ) _ - + = { [ } ] : ; < , > . ? /]
     ].flatten
-    PASSWORD_LENGTH_RANGE = 10..12
+    PASSWORD_LENGTH_RANGE = (10..12).freeze
 
     has_secure_password
 
-    has_many :subscriptions, foreign_key: "email", primary_key: "email"
+    has_many :subscriptions, foreign_key: 'email', primary_key: 'email'
     has_many :lists, through: :subscriptions
     has_many :admin_lists, through: :subscriptions
 
@@ -25,7 +25,7 @@ module Schleuder
 
     def set_new_password!
       new_password = generate_password
-      self.update!(password: new_password)
+      update!(password: new_password)
       new_password
     end
 

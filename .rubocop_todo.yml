@@ -779,3 +779,12 @@ Style/ZeroLengthPredicate:
 Metrics/LineLength:
   Exclude:
     - '**/*'
+  Max: 365
+
+Lint/NestedMethodDefinition:
+  Exclude:
+    - '**/*'
+
+Lint/ElseLayout:
+  Exclude:
+    - '**/*'

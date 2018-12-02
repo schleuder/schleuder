@@ -11,7 +11,6 @@ module Schleuder
         end
       end
 
-
       def list?
         true
       end
@@ -39,7 +38,7 @@ module Schleuder
       def subscribe?
         superadmin? || admin?(object)
       end
-      
+
       def list_keys?
         superadmin? || subscribed?(object)
       end
@@ -56,9 +55,7 @@ module Schleuder
         superadmin? || admin?(object)
       end
 
-
       private
-
 
       # This includes list-admins.
       def subscribed?(list)
