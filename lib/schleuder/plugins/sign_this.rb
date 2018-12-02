@@ -8,9 +8,12 @@ module Schleuder
           make_signature_part(attachment, list)
         end
         [intro, parts].flatten
+      elsif arguments.present?
+        list.logger.debug "Clear-signing given arguments"
+        clearsign(arguments.join("\n"))
       else
         list.logger.debug 'Clear-signing first available text/plain part'
-        clearsign(mail.first_plaintext_part)
+        clearsign(mail.first_plaintext_part.body.to_s)
       end
     end
 
@@ -35,8 +38,8 @@ module Schleuder
       crypto.sign(thing, mode: GPGME::SIG_MODE_DETACH).to_s
     end
 
-    def self.clearsign(mail)
-      crypto.clearsign(mail.body.to_s).to_s
+    def self.clearsign(string)
+      crypto.clearsign(string.to_s).to_s
     end
 
     def self.crypto

@@ -4,6 +4,8 @@ module Schleuder
 
       if mail.has_attachments?
         results = self.import_keys_from_attachments(list, mail)
+      elsif arguments.present?
+        results = [self.import_from_arguments(list, arguments)]
       else
         results = [self.import_key_from_body(list, mail)]
       end
@@ -123,16 +125,23 @@ module Schleuder
 
     def self.import_keys_from_attachments(list, mail)
       mail.attachments.map do |attachment|
-        material = attachment.body.to_s
-
-        list.import_key(material) if self.is_armored_key?(material)
+        import_from_string(list, attachment.body.to_s)
       end
     end
 
     def self.import_key_from_body(list, mail)
-      key_material = mail.first_plaintext_part.body.to_s
+      import_from_string(list, mail.first_plaintext_part.body.to_s)
+    end
 
-      list.import_key(key_material) if self.is_armored_key?(key_material)
+    def self.import_from_arguments(list, arguments)
+      key_material = arguments.map {|arr| arr.join(' ') }.join("\n")
+      import_from_string(list, key_material)
+    end
+
+    def self.import_from_string(list, string)
+      if self.is_armored_key?(string)
+        list.import_key(string)
+      end
     end
   end
 end
