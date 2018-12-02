@@ -55,6 +55,12 @@ codespell:
     - codespell -I utils/ci/codespell/ignored_words.txt -S de.yml,list.conf -q 2 -f
   stage: static
 
+rubocop:
+  image: $IMAGE_REGISTRY:debian-generic
+  script:
+    - rubocop
+  stage: static
+
 ruby:2.3:
   image: $IMAGE_REGISTRY:schleuder-ruby2.3
   <<: *test_ruby
