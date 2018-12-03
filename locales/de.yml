@@ -221,6 +221,14 @@ de:
     list_management:
       no_logfile: Keine Log-Datei für %{listname} gefunden. (Das kann an einem hohem Log-Level und der Abwesenheit von Fehlern liegen.)
       logfile_attached: Die Log-Datei für %{listname} hängt an.
+    account_management:
+      admins_only: |
+        Fehler: dieses Schlüsselwort dürfen nur Admins benutzen.
+        
+        Um ein Passwort für dein eigenes Abo setzen zu lassen benutze X-GET-NEW-PASSWORD
+      argument_size_mismatch: 'Fehler: dieses Schlüsselwort braucht exakt eine Angabe: Die Emailaddresse für die das neue Passwort gesetzt werden soll.'
+      new_password: 'Dies ist das neue Passwort für %{email}: %{password}'
+      subscription_not_found: 'Fehler: Die Adresse, für die du ein Passwort gesetzt haben wolltest, hat kein Abo dieser Liste.'
   list_public_key_subject: Schlüssel dieser Adresse
   list_public_key_attached: Der Schlüssel zu dieser Adresse hängt an.
   no_output_result: Deine Email ergab keinen Ausgabe-Text.
