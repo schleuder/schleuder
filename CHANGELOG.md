@@ -3,6 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+### Added
+
+* Keywords for getting (new) passwords for accounts. 'X-GET-NEW-PASSWORD' sets and sends back a new password for the account of the subscribed email-address. 'X-GET-NEW-PASSWORD-FOR: subscription1@example.org' sets and sends back a new password for the account of the given email-address; this is allowed for admins only and allows to get a password for people that have no key associated with their subscription, yet.
+
+
 ## [5.0.0] / 2022-XX-XX
 
 ### Changed
