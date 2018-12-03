@@ -7,8 +7,6 @@ stages:
   - docker
 
 variables:
-  GIT_STRATEGY: fetch
-  GIT_DEPTH: "10"
   IMAGE_REGISTRY: $CI_REGISTRY/schleuder/schleuder-ci-images
 
 # Jobs that start with a period are disabled
