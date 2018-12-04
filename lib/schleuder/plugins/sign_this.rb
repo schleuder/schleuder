@@ -9,7 +9,7 @@ module Schleuder
         end
         [intro, parts].flatten
       elsif arguments.present? && arguments != ['']
-        list.logger.debug "Clear-signing given arguments"
+        list.logger.debug 'Clear-signing given arguments'
         clearsign(arguments.join("\n"))
       else
         list.logger.debug 'Clear-signing first available text/plain part'
