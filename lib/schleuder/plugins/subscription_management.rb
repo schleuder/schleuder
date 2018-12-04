@@ -1,6 +1,13 @@
 module Schleuder
   module RequestPlugins
+    # Badly placed helper method, but it will not live long anyways.
+    def self.split_arguments_into_words(*args)
+      Schleuder::PluginRunners::Base.split_arguments_into_words(args)
+    end
+
     def self.subscribe(arguments, list, mail)
+      arguments = split_arguments_into_words(arguments)
+
       if arguments.blank?
         return I18n.t(
           'plugins.subscription_management.subscribe_requires_arguments'
@@ -40,6 +47,8 @@ module Schleuder
     end
 
     def self.unsubscribe(arguments, list, mail)
+      arguments = split_arguments_into_words(arguments)
+
       # If no address was given we unsubscribe the sender.
       email = arguments.first.to_s.downcase.presence || mail.signer.email
 
@@ -80,6 +89,8 @@ module Schleuder
     end
 
     def self.list_subscriptions(arguments, list, mail)
+      arguments = split_arguments_into_words(arguments)
+
       subs = if arguments.blank?
                 list.subscriptions.all.to_a
              else
@@ -111,6 +122,8 @@ module Schleuder
     end
 
     def self.set_fingerprint(arguments, list, mail)
+      arguments = split_arguments_into_words(arguments)
+
       if arguments.blank?
         return I18n.t(
           'plugins.subscription_management.set_fingerprint_requires_arguments'
@@ -162,6 +175,8 @@ module Schleuder
     end
 
     def self.unset_fingerprint(arguments, list, mail)
+      arguments = split_arguments_into_words(arguments)
+
       if arguments.blank?
         return I18n.t(
           'plugins.subscription_management.unset_fingerprint_requires_arguments'

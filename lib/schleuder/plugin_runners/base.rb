@@ -14,6 +14,12 @@ module Schleuder
         output.flatten.compact
       end
 
+      # A helper method for plugins. Not elegantly placed, but it will not live
+      # long anyway (will be replaced by keyword handlers soon).
+      def self.split_arguments_into_words(arguments)
+        Array(arguments).join(' ').strip.split(/[,; ]{1,}/)
+      end
+
 
       private
 

@@ -8,7 +8,7 @@ module Schleuder
           make_signature_part(attachment, list)
         end
         [intro, parts].flatten
-      elsif arguments.present?
+      elsif arguments.present? && arguments != ['']
         list.logger.debug "Clear-signing given arguments"
         clearsign(arguments.join("\n"))
       else

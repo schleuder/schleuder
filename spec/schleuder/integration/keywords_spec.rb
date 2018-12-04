@@ -2228,7 +2228,7 @@ EOS
     }
     mail.gpg(gpg_opts)
     signed_text = "signed\nsigned\nsigned\n\n"
-    mail.body = "x-list-name: #{list.email}\nx-sign-this:\n#{signed_text}\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nx-sign-this:#{signed_text}\nx-stop"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first

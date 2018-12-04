@@ -4,7 +4,7 @@ module Schleuder
       extend Base
 
       def self.notify_admins(keyword, arguments, response)
-        if arguments.blank?
+        if arguments.blank? || arguments == ['']
           explanation = I18n.t('plugins.keyword_admin_notify_request_without_arguments',
                                 signer: @mail.signer,
                                 keyword: keyword

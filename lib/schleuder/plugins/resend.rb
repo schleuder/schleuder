@@ -1,5 +1,10 @@
 module Schleuder
   module ListPlugins
+    # Badly placed helper method, but it will not live long anyways.
+    def self.split_arguments_into_words(*args)
+      Schleuder::PluginRunners::Base.split_arguments_into_words(args)
+    end
+
     def self.resend(arguments, list, mail)
       resend_it(arguments, mail, false)
     end
@@ -36,6 +41,8 @@ module Schleuder
     private
 
     def self.do_resend_unencrypted(arguments, list, mail, target)
+      arguments = split_arguments_into_words(arguments)
+
       if ! resend_recipients_valid?(mail, arguments)
         return false
       end
@@ -48,6 +55,8 @@ module Schleuder
     end
 
     def self.resend_it_cc(arguments, mail, encrypted_only)
+      arguments = split_arguments_into_words(arguments)
+
       if ! resend_recipients_valid?(mail, arguments)
         return false
       end
@@ -65,6 +74,8 @@ module Schleuder
     end
 
     def self.resend_it(arguments, mail, encrypted_only)
+      arguments = split_arguments_into_words(arguments)
+
       if ! resend_recipients_valid?(mail, arguments)
         return false
       end

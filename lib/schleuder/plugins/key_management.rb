@@ -33,6 +33,8 @@ module Schleuder
     end
 
     def self.delete_key(arguments, list, mail)
+      arguments = split_arguments_into_words(arguments)
+
       if arguments.blank?
         return I18n.t(
           'plugins.key_management.delete_key_requires_arguments'
@@ -61,6 +63,8 @@ module Schleuder
     end
 
     def self.list_keys(arguments, list, mail)
+      arguments = split_arguments_into_words(arguments)
+
       args = Array(arguments.presence || '')
       args.map do |argument|
         # In this case it shall be allowed to match keys by arbitrary
@@ -73,6 +77,8 @@ module Schleuder
     end
 
     def self.get_key(arguments, list, mail)
+      arguments = split_arguments_into_words(arguments)
+
       arguments.map do |argument|
         keys = list.keys(argument)
         if keys.blank?
@@ -92,6 +98,8 @@ module Schleuder
     end
 
     def self.fetch_key(arguments, list, mail)
+      arguments = split_arguments_into_words(arguments)
+
       if arguments.blank?
         return I18n.t(
           'plugins.key_management.fetch_key_requires_arguments'
@@ -134,8 +142,7 @@ module Schleuder
     end
 
     def self.import_from_arguments(list, arguments)
-      key_material = arguments.map {|arr| arr.join(' ') }.join("\n")
-      import_from_string(list, key_material)
+      import_from_string(list, arguments.join("\n"))
     end
 
     def self.import_from_string(list, string)
