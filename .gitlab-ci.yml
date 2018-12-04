@@ -69,6 +69,9 @@ ruby:2.4:
 ruby:2.5:
   image: $IMAGE_REGISTRY:schleuder-ruby2.5
   <<: *test_ruby
+ruby:2.6:
+  image: $IMAGE_REGISTRY:schleuder-ruby2.6
+  <<: *test_ruby
 
 bundler:audit:
   image: ruby:2.5
