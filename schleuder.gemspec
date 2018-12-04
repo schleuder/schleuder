@@ -35,8 +35,8 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'activerecord', '~> 4.2'
   s.add_runtime_dependency 'rake', '>= 10.5.0'
   s.add_runtime_dependency 'sqlite3', '~> 1'
-  s.add_runtime_dependency 'sinatra', '~> 1'
-  s.add_runtime_dependency 'sinatra-contrib', '~> 1'
+  s.add_runtime_dependency 'sinatra', '~> 2'
+  s.add_runtime_dependency 'sinatra-contrib', '~> 2'
   s.add_runtime_dependency 'thor', '~> 0'
   s.add_runtime_dependency 'thin', '~> 1'
   s.add_development_dependency 'rspec', '~> 3'
@@ -44,6 +44,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'factory_bot', '~> 4'
   s.add_development_dependency 'database_cleaner', '~> 1'
   s.add_development_dependency 'simplecov-console', '~> 0'
+  s.add_development_dependency 'rack-test', '~> 1'
   s.add_development_dependency 'rubocop', '~> 0'
   s.post_install_message = "
 
