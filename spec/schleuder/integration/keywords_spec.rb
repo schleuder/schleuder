@@ -3076,9 +3076,9 @@ EOS
     end
   end
 
-  it "rejects messages to request-address without x-stop keyword" do
+  it 'rejects messages to request-address without x-stop keyword' do
     list = create(:list)
-    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.request_address
@@ -3109,9 +3109,9 @@ EOS
     teardown_list_and_mailer(list)
   end
 
-  it "rejects messages to list-address without x-stop keyword" do
+  it 'rejects messages to list-address without x-stop keyword' do
     list = create(:list)
-    list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
     mail.to = list.email
