@@ -788,3 +788,11 @@ Lint/NestedMethodDefinition:
 Lint/ElseLayout:
   Exclude:
     - '**/*'
+
+Layout/SpaceInsideReferenceBrackets:
+  Exclude:
+    - '**/*'
+
+Metrics/ParameterLists:
+  Exclude:
+    - '**/*'
