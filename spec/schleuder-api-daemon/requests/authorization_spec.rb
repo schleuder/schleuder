@@ -12,7 +12,7 @@ describe 'authorization via api' do
   end
 
   it 'allows authorized access' do
-    authorize!
+    authorize_as_api_superadmin!
     get '/status.json'
     expect(last_response).to be_ok
   end
