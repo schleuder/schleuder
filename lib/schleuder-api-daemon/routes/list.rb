@@ -3,18 +3,16 @@ class SchleuderApiDaemon < Sinatra::Base
 
   namespace '/lists' do
     get '.json' do
-      json current_account.scoped(List), include: :subscriptions
+      json(lists_controller.lists, include: :subscriptions)
     end
 
     post '.json' do
-			authorize(List, :create)
-
       listname = parsed_body['email']
       fingerprint = parsed_body['fingerprint']
       adminaddress = parsed_body['adminaddress']
       adminfingerprint = parsed_body['adminfingerprint']
       adminkey = parsed_body['adminkey']
-      list, messages = ListBuilder.new({email: listname, fingerprint: fingerprint}, adminaddress, adminfingerprint, adminkey).run
+      list, messages = lists_controller.create(listname, fingerprint, adminaddress, adminfingerprint, adminkey)
       if list.nil?
         client_error(messages, 422)
       elsif ! list.valid?
@@ -26,30 +24,24 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     get '/configurable_attributes.json' do
-      json(List.configurable_attributes) + "\n"
+      json(lists_controller.get_configurable_attributes) + "\n"
     end
 
     post '/send_list_key_to_subscriptions.json' do
       require_list_id_param
-      list = load_list(params[:list_id])
-      authorize(list, :send_list_key)
-      json(result: list.send_list_key_to_subscriptions)
+      json(result: lists_controller.send_list_key_to_subscriptions(params[:list_id]))
     end
 
     get '/new.json' do
-      json List.new
+      json lists_controller.new
     end
-    
+
     get '/:id.json' do |id|
-      list = load_list(id)
-      authorize(list, :read)
-      json(list)
+      json lists_controller.list(id)
     end
 
     put '/:id.json' do |id|
-      list = load_list(id)
-      authorize(list, :update)
-      if list.update(parsed_body)
+      if lists_controller.update(id, parsed_body)
         204
       else
         client_error(list)
@@ -57,9 +49,7 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     patch '/:id.json' do |id|
-      list = load_list(id)
-      authorize(list, :update)
-      if list.update(parsed_body)
+      if lists_controller.update(id, parsed_body)
         204
       else
         client_error(list)
@@ -67,13 +57,15 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     delete '/:id.json' do |id|
-      list = load_list(id)
-      authorize(list, :delete)
-      if list.destroy
+      if lists_controller.delete(id)
         200
       else
         client_error(list)
       end
     end
+  end
+
+  def lists_controller
+    Schleuder::ListsController.new(current_account)
   end
 end

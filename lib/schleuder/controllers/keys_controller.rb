@@ -1,11 +1,5 @@
 module Schleuder
-  class KeysController
-    attr_reader :current_account
-
-    def initialize(current_account)
-      @current_account = current_account
-    end
-
+  class KeysController < BaseController
     def get_keys(list_id)
       list = get_list(list_id)
       authorize(current_account, list, :list_keys)
@@ -42,10 +36,6 @@ module Schleuder
 
     def get_list(list_id)
       List.where(id: list_id).first
-    end
-
-    def authorize(current_account, resource, action)
-      current_account.authorize(resource, action) || raise(Errors::Unauthorized.new)
     end
   end
 end
