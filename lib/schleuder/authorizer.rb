@@ -8,7 +8,7 @@ module Schleuder
       @account = account
     end
 
-    def authorize(resource, action)
+    def authorized?(resource, action)
       return nil if resource.nil?
 
       action = action.to_s
