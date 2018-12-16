@@ -6,6 +6,7 @@ module GPGME
       'new_signatures' => 4,
       'new_subkeys' => 8
     }
+    KEYSERVER_URL = 'https://zimmermann.mayfirst.org/pks/lookup?op=get&options=mr&search='
 
     def keyimport(keydata)
       self.import_keys(GPGME::Data.new(keydata))
@@ -131,6 +132,7 @@ module GPGME
     end
 
     def fetch_key(input)
+      type, input = clean_and_classify_input(input)
       arguments, error = fetch_key_gpg_arguments_for(input)
       return error if error
 
@@ -150,7 +152,7 @@ module GPGME
         "#{keyserver_arg} --recv-key #{input}"
       when /^http/
         "--fetch-key #{input}"
-      when /@/
+      when Conf::EMAIL_REGEXP
         # --recv-key doesn't work with email-addresses, so we use --locate-key
         # restricted to keyservers.
         "#{keyserver_arg} --auto-key-locate keyserver --locate-key #{input}"
