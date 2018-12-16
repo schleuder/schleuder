@@ -19,12 +19,15 @@ class SchleuderApiDaemon < Sinatra::Base
         end
       end
 
-      json Subscription.where(filter)
+      authorized?(Subscription, :list)
+      subscriptions = current_account.scoped(Subscription).where(filter)
+      json subscriptions
     end
 
     post '.json' do
       begin
-        list = list(requested_list_id)
+        list = load_list(requested_list_id)
+        authorized?(list, :subscribe)
         # We don't have to care about nil-values, subscribe() does that for us.
         sub, msgs = list.subscribe(
           parsed_body['email'],
@@ -58,11 +61,14 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     get '/:id.json' do |id|
-      json subscription(id)
+      subscription = load_subscription(id)
+      authorized?(subscription, :read)
+      json subscription
     end
 
     put '/:id.json' do |id|
-      sub = subscription(id)
+      sub = load_subscription(id)
+      authorized?(sub, :update)
       list = sub.list
       args = find_attributes_from_body(%w[email fingerprint admin delivery_enabled])
       fingerprint, messages = list.import_key_and_find_fingerprint(find_key_material)
@@ -80,7 +86,8 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     patch '/:id.json' do |id|
-      sub = subscription(id)
+      sub = load_subscription(id)
+      authorized?(sub, :update)
       if sub.update(parsed_body)
         200
       else
@@ -89,7 +96,9 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     delete '/:id.json' do |id|
-      if sub = subscription(id).destroy
+      sub = load_subscription(id)
+      authorized?(sub, :delete)
+      if sub.destroy
         200
       else
         client_error(sub)
