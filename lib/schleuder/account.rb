@@ -37,8 +37,8 @@ module Schleuder
       admin_lists.where(email: list.email).exists?
     end
 
-    def authorize(resource, action)
-      authorizer.authorize(resource, action)
+    def authorized?(resource, action)
+      authorizer.authorized?(resource, action)
     end
 
     def scoped(resource)
