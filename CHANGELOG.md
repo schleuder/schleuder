@@ -3,6 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0] / 2019-01-XX
+
+### Changed
+
+* Drop support for GPG 2.0, require GPG 2.2.
+* Drop support to migrate lists from version 2.
+
 ## [3.3.0] / 2018-09-04
 
 ### Fixed
