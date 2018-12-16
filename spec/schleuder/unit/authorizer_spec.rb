@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe Schleuder::Authorizer do
-  describe '#authorize' do
+  describe '#authorized?' do
     it 'returns nil when resource is nil' do
       account = create(:account)
 
-      expect(Authorizer.new(account).authorize(nil, :some_action)).to eq nil
+      expect(Authorizer.new(account).authorized?(nil, :some_action)).to eq nil
     end
 
     it 'returns true if account is authorized' do
@@ -13,14 +13,14 @@ describe Schleuder::Authorizer do
       subscription = create(:subscription, list_id: list.id, admin: false)
       account = create(:account, email: subscription.email)
 
-      expect(Authorizer.new(account).authorize(list, :read)).to eq true
+      expect(Authorizer.new(account).authorized?(list, :read)).to eq true
     end
 
     it 'returns false if account is NOT authorized' do
       account = create(:account)
       list = create(:list)
 
-      expect(Authorizer.new(account).authorize(list, :read)).to eq false
+      expect(Authorizer.new(account).authorized?(list, :read)).to eq false
     end
   end
 

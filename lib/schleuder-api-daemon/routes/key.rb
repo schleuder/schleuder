@@ -5,7 +5,7 @@ class SchleuderApiDaemon < Sinatra::Base
     get '.json' do
       require_list_id_param
       list = load_list(params[:list_id])
-      authorize(list, :list_keys)
+      authorized?(list, :list_keys)
       keys = list.keys.sort_by(&:email).map do |key|
         key_to_hash(key)
       end
@@ -14,7 +14,7 @@ class SchleuderApiDaemon < Sinatra::Base
 
     post '.json' do
       list = load_list(requested_list_id)
-      authorize(list, :add_keys)
+      authorized?(list, :add_keys)
       input = parsed_body['keymaterial']
       if ! input.match('BEGIN PGP')
         input = Base64.decode64(input)
@@ -25,7 +25,7 @@ class SchleuderApiDaemon < Sinatra::Base
     get '/check_keys.json' do
       require_list_id_param
       list = load_list(params[:list_id])
-      authorize(list, :check_keys)
+      authorized?(list, :check_keys)
       json result: list.check_keys
     end
 
@@ -33,7 +33,7 @@ class SchleuderApiDaemon < Sinatra::Base
       require_list_id_param
       list = load_list(params[:list_id])
       key = list.key(fingerprint) || halt(404)
-      authorize(key, :read)
+      authorized?(key, :read)
       json key_to_hash(key, true)
     end
 
@@ -41,7 +41,7 @@ class SchleuderApiDaemon < Sinatra::Base
       require_list_id_param
       list = load_list(params[:list_id])
       key = list.key(fingerprint) || halt(404)
-      authorize(key, :delete)
+      authorized?(key, :delete)
       key.delete!
     end
   end
