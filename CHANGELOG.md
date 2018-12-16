@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Drop support for GPG 2.0, require GPG 2.2.
 * Drop support to migrate lists from version 2.
+* "Plugins" are now called "keyword handlers", and they are implemented differently. If you use custom plugins you have to rewrite them (see an included keyword handler for implementation hints, it's rather simple). If you don't, this change doesn't affect you. One positive effect of this: if a message contains an unknown keyword, no keyword is being handled but the sender is sent an error message; thus we avoid half-handled messages.
 
 
 ## [3.3.0] / 2018-09-04
