@@ -12,7 +12,7 @@ module Schleuder
       end
 
       # If subscriptions for a given list are checked, call ListPolicy#list_subscriptions
-      def list
+      def list?
         true
       end
 
