@@ -1,6 +1,64 @@
 require 'helpers/api_daemon_spec_helper'
 
 describe 'subscription via api' do
+  context 'get subscription' do
+    it 'returns the subscription of the current account filtered by a given list email' do
+      list = create(:list, email: 'somelist@example.org')
+      subscription = create(:subscription, list_id: list.id, admin: true)
+      _other_subscription = create(:subscription)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      parameters = { list_id: 'somelist@example.org' }
+
+      get 'subscriptions.json', parameters
+
+      expect(last_response.status).to be 200
+      expect(JSON.parse(last_response.body).length).to be 1
+      expect(JSON.parse(last_response.body)[0]['email']).to eq subscription.email
+    end
+
+    it 'returns the subscription of the current account filtered by a given fingerprint' do
+      list = create(:list, email: 'somelist@example.org')
+      subscription = create(:subscription, list_id: list.id, admin: true)
+      _other_subscription = create(:subscription)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      parameters = { fingerprint: subscription.fingerprint }
+
+      get 'subscriptions.json', parameters
+
+      expect(last_response.status).to be 200
+      expect(JSON.parse(last_response.body).length).to be 1
+      expect(JSON.parse(last_response.body)[0]['email']).to eq subscription.email
+    end
+
+    it 'returns a 404 when no list with the given email exists' do
+      list = create(:list, email: 'somelist@example.org')
+      subscription = create(:subscription, list_id: list.id, admin: true)
+      _other_subscription = create(:subscription)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      parameters = { list_id: 'non_existing@example.org' }
+
+      get 'subscriptions.json', parameters
+
+      expect(last_response.status).to be 404
+      expect(last_response.body).to eq 'Not found'
+    end
+
+    it 'returns an empty array if the no subscription is associated with the account' do
+      list = create(:list)
+      account = create(:account)
+      authorize!(account.email, account.set_new_password!)
+      parameters = { list_id: list.email }
+
+      get 'subscriptions.json', parameters
+
+      expect(last_response.status).to eq 200
+      expect(last_response.body).to eq [].to_json
+    end
+  end
+
   it 'doesn\'t subscribe new member without authentication' do
     list = create(:list)
     parameters = { list_id: list.id, email: 'someone@localhost' }
