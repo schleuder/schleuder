@@ -19,6 +19,7 @@ module Schleuder
       end
 
       def resend_encrypted_only
+        return if ! may_resend_encrypted?
         resend_it(encrypted_only: true)
       end
 
@@ -27,6 +28,7 @@ module Schleuder
       end
 
       def resend_cc_encrypted_only
+        return if ! may_resend_encrypted?
         resend_it_cc(encrypted_only: true)
       end
 
@@ -43,7 +45,7 @@ module Schleuder
 
 
       def do_resend_unencrypted(target)
-        return if !authorized?
+        return if ! may_resend_unencrypted?
 
         if ! resend_recipients_valid?
           return false
@@ -57,8 +59,6 @@ module Schleuder
       end
 
       def resend_it_cc(encrypted_only: false)
-        return if !authorized?
-
         if ! resend_recipients_valid?
           return false
         end
@@ -73,19 +73,29 @@ module Schleuder
           return
         end
 
+        if recip_map.keys.size != @arguments.size
+          return if ! may_resend_unencrypted?
+        else
+          return if ! may_resend_encrypted?
+        end
+
         if do_resend(recip_map, :cc, encrypted_only)
           @mail.add_subject_prefix_out!
         end
       end
 
       def resend_it(encrypted_only: false)
-        return if !authorized?
-
         if ! resend_recipients_valid?
           return false
         end
 
         recip_map = map_with_keys(encrypted_only: encrypted_only)
+
+        if recip_map.keys.size != @arguments.size
+          return if ! may_resend_unencrypted?
+        else
+          return if ! may_resend_encrypted?
+        end
 
         resent_stati = recip_map.map do |email, key|
           do_resend({email => key}, :to, encrypted_only)
@@ -209,8 +219,16 @@ module Schleuder
         all_valid
       end
 
-      def authorized?
-        authorize!(@list, :resend)
+      def may_resend_encrypted?
+        authorized_for?(:resend_encrypted)
+      end
+
+      def may_resend_unencrypted?
+        authorized_for?(:resend_unencrypted)
+      end
+
+      def authorized_for?(action)
+        authorize!(@list, action)
         return true
       rescue Errors::Unauthorized
         @mail.add_pseudoheader(:error, keyword_permission_error(:resend))
