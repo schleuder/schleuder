@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-* The list-option `keywords_admin_only` has been removed. The functionality will be replaced by some other means of configuration. [TODO: explain/adapt when replacement is implemented]
+* The list-option `keywords_admin_only` has been removed. The functionality was replaced by the list-option `subscriber_permissions`, which is honoured by the API as well as the keyword handlers.
 
 ### Added
 

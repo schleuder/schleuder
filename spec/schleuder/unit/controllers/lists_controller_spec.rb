@@ -62,7 +62,7 @@ describe Schleuder::ListsController do
        :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :openpgp_header_preference,
        :public_footer, :receive_admin_only, :receive_authenticated_only, :receive_encrypted_only,
        :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,
-       :subject_prefix, :subject_prefix_in, :subject_prefix_out,
+       :subject_prefix, :subject_prefix_in, :subject_prefix_out, :subscriber_permissions
       ]
     end
   end
@@ -99,7 +99,7 @@ describe Schleuder::ListsController do
   describe '#find' do
     it 'returns a list for a given list email address' do
       list = create(:list)
-      subscription = create(:subscription, list_id: list.id, admin: false)
+      subscription = create(:subscription, list_id: list.id, admin: true)
       account = create(:account, email: subscription.email)
 
       expect(ListsController.new(account).find(list.email)).to eq list
