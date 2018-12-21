@@ -1,7 +1,7 @@
 module Schleuder
   module AuthorizerPolicies
     class BasePolicy
-      attr_reader :account, :object
+      attr_reader :account, :resource
 
       class BaseScope
         attr_reader :account
@@ -11,9 +11,9 @@ module Schleuder
         end
       end
 
-      def initialize(account, object)
+      def initialize(account, resource)
         @account = account
-        @object = object
+        @resource = resource
       end
 
       private
@@ -29,6 +29,10 @@ module Schleuder
       # This includes list-admins.
       def subscribed?(list)
         account.subscribed_to_list?(list)
+      end
+
+      def subscriber_permitted?(list, action)
+        subscribed?(list) && list.subscriber_permitted?(action)
       end
     end
   end

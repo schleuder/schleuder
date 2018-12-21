@@ -62,7 +62,7 @@ describe Schleuder::ListsController do
        :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :openpgp_header_preference,
        :public_footer, :receive_admin_only, :receive_authenticated_only, :receive_encrypted_only,
        :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,
-       :subject_prefix, :subject_prefix_in, :subject_prefix_out,
+       :subject_prefix, :subject_prefix_in, :subject_prefix_out, :subscriber_permissions
       ]
     end
   end
