@@ -11,16 +11,15 @@ module Schleuder
         end
       end
 
-      def list?
-        true
-      end
+      # list?() is not defined because anyone may list lists — but you must
+      # call ListPolicy::Scope.resolve to get the correct list of lists.
 
       def read?
-        superadmin? || subscribed?(object)
+        superadmin? || admin?(resource) || subscriber_permitted?(resource, 'view-list-config')
       end
 
       def update?
-        superadmin? || admin?(object)
+        superadmin? || admin?(resource)
       end
 
       def create?
@@ -31,40 +30,48 @@ module Schleuder
         superadmin?
       end
 
-      def list_subscriptions?
-        superadmin? || admin?(object)
+      def read_subscriptions?
+        list_subscriptions?
       end
 
+      def list_subscriptions?
+        superadmin? || admin?(resource) || subscriber_permitted?(resource, 'view-subscriptions')
+      end
+
+      def add_subscriptions?
+        subscribe?
+      end
+      
       def subscribe?
-        superadmin? || admin?(object)
+        superadmin? || admin?(resource) || subscriber_permitted?(resource, 'add-subscriptions')
+      end
+
+      def read_keys?
+        list_keys?
       end
 
       def list_keys?
-        superadmin? || subscribed?(object)
+        superadmin? || admin?(resource) || subscriber_permitted?(resource, 'view-keys')
       end
 
       def add_keys?
-        superadmin? || subscribed?(object)
+        superadmin? || admin?(resource) || subscriber_permitted?(resource, 'add-keys')
       end
 
       def check_keys?
-        superadmin? || admin?(object)
+        superadmin? || admin?(resource)
       end
 
       def send_list_key?
-        superadmin? || admin?(object)
+        superadmin? || admin?(resource)
+      end
+
+      def resend_unencrypted?
+        superadmin? || admin?(resource) || (subscriber_permitted?(resource, 'resend') && subscriber_permitted?(resource, 'resend-unencrypted'))
       end
 
       def resend?
-        # TODO: make configurable for subscribers
-        superadmin? || admin?(object) || subscribed?(object)
-      end
-
-      private
-
-      # This includes list-admins.
-      def subscribed?(list)
-        account.subscribed_to_list?(list)
+        superadmin? || admin?(resource) || subscriber_permitted?(resource, 'resend')
       end
     end
   end
