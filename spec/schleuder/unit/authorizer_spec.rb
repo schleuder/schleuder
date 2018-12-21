@@ -12,7 +12,7 @@ describe Schleuder::Authorizer do
 
     it 'does not raise an error if account is authorized' do
       list = create(:list)
-      subscription = create(:subscription, list_id: list.id, admin: false)
+      subscription = create(:subscription, list_id: list.id, admin: true)
       account = create(:account, email: subscription.email)
 
       caught_exception = nil

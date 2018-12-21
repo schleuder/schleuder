@@ -11,6 +11,19 @@ FactoryBot.define do
     public_footer { nil }
     headers_to_meta { ['from', 'to', 'cc', 'date', 'sig', 'enc'] }
     bounces_drop_on_headers { { 'x-spam-flag' => true } }
+    subscriber_permissions { 
+        {
+          'view-subscriptions' => true,
+          'add-subscriptions' => false,
+          'delete-subscriptions' => false,
+          'view-keys' => true,
+          'add-keys' => true,
+          'delete-keys' => false,
+          'view-list-config' => false,
+          'resend-encrypted' => true,
+          'resend-unencrypted' => true
+        }
+      }
     keywords_admin_notify { ['add-key'] }
     send_encrypted_only { true }
     receive_encrypted_only { false }

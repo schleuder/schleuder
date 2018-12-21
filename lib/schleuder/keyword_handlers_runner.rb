@@ -66,9 +66,8 @@ module Schleuder
           notify_admins(type, mail, list, keyword, arguments, output)
         end
         return output
-      rescue Errors::Unauthorized => exc
-        # TODO: Or change text to I18n.t('errors.not_permitted_for_subscribers'), because that is more keyword-specific?
-        exc.to_s
+      rescue Errors::Unauthorized
+        I18n.t('errors.not_permitted_for_subscribers', keyword: keyword)
       rescue Errors::Base => exc
         exc.to_s
       rescue => exc

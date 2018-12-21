@@ -29,6 +29,7 @@ describe Schleuder::List do
   it { is_expected.to respond_to :public_footer }
   it { is_expected.to respond_to :headers_to_meta }
   it { is_expected.to respond_to :bounces_drop_on_headers }
+  it { is_expected.to respond_to :subscriber_permissions }
   it { is_expected.to respond_to :keywords_admin_notify }
   it { is_expected.to respond_to :send_encrypted_only }
   it { is_expected.to respond_to :receive_encrypted_only }
@@ -135,11 +136,13 @@ describe Schleuder::List do
     end
   end
 
-  it "is invalid if bounces_drop_on_headers contains special characters" do
-    list = build(:list, bounces_drop_on_headers: {"$" => "%"})
+  [:bounces_drop_on_headers, :subscriber_permissions].each do |list_attribute|
+    it "is invalid if #{list_attribute} contains special characters" do
+      list = build(:list, list_attribute => {"$" => "%"})
 
-    expect(list).not_to be_valid
-    expect(list.errors.messages[:bounces_drop_on_headers]).to include("contains invalid characters")
+      expect(list).not_to be_valid
+      expect(list.errors.messages[list_attribute]).to include("contains invalid characters")
+    end
   end
 
   [:subject_prefix, :subject_prefix_in, :subject_prefix_out].each do |list_attribute|
@@ -210,10 +213,11 @@ describe Schleuder::List do
         :bounces_drop_all, :bounces_drop_on_headers, :bounces_notify_admins, :deliver_selfsent,
         :forward_all_incoming_to_admins, :headers_to_meta, :include_list_headers,
         :include_openpgp_header, :internal_footer, :keep_msgid, :key_auto_import_from_email, :keywords_admin_notify,
-        :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :munge_from,
-        :openpgp_header_preference, :public_footer, :receive_admin_only, :receive_authenticated_only,
-        :receive_encrypted_only, :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,
-        :set_reply_to_to_sender, :subject_prefix, :subject_prefix_in, :subject_prefix_out
+        :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :munge_from, :openpgp_header_preference,
+        :public_footer, :receive_admin_only, :receive_authenticated_only, :receive_encrypted_only,
+        :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,
+        :set_reply_to_to_sender, :subject_prefix, :subject_prefix_in,
+        :subject_prefix_out, :subscriber_permissions,
       ]
     end
 

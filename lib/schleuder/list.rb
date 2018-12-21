@@ -6,6 +6,7 @@ module Schleuder
 
     serialize :headers_to_meta, coder: JSON
     serialize :bounces_drop_on_headers, coder: JSON
+    serialize :subscriber_permissions, coder: JSON
     serialize :keywords_admin_notify, coder: JSON
 
     validates :email, presence: true, uniqueness: true, email: true
@@ -24,6 +25,13 @@ module Schleuder
         :include_openpgp_header,
         :forward_all_incoming_to_admins,
         :key_auto_import_from_email, boolean: true
+    validates_each :subscriber_permissions do |record, attrib, value|
+          value.each do |key, val|
+            if key.to_s !~ /\A[a-z-]+\z/i || ! [true, false].include?(val)
+              record.errors.add(attrib, I18n.t('errors.invalid_characters'))
+            end
+          end
+        end
     validates_each :headers_to_meta,
         :keywords_admin_notify do |record, attrib, value|
           value.each do |word|
@@ -322,6 +330,14 @@ module Schleuder
 
     def keywords_admin_notify
       Array(read_attribute(:keywords_admin_notify))
+    end
+
+    def subscriber_permissions
+      read_attribute(:subscriber_permissions)
+    end
+
+    def subscriber_permitted?(action)
+      subscriber_permissions[action] == true
     end
 
     def from_admin?(mail)

@@ -55,6 +55,7 @@ ActiveRecord::Schema[7.1].define(version: 2022_09_10_170110) do
     t.boolean "set_reply_to_to_sender", default: false
     t.boolean "munge_from", default: false
     t.boolean "key_auto_import_from_email", default: false
+    t.text "subscriber_permissions", default: "{ \"view-subscriptions\": true, \"add-subscriptions\": false, \"delete-subscriptions\": false, \"view-keys\": true, \"add-keys\": true, \"delete-keys\": false, \"view-list-config\": false, \"resend-encrypted\": true, \"resend-unencrypted\": true }"
   end
 
   create_table "subscriptions", force: :cascade do |t|

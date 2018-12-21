@@ -3,6 +3,9 @@ module Schleuder
     class AttachListKey < Base
       handles_list_keyword 'attach-listkey', with_method: :attach_list_key
 
+      # No need to authorize: there is no way to block a list from answering to
+      # emails addressed to listname-sendkey@hostname, so we don't need a way
+      # to block using this keyword.
       def attach_list_key
         new_part = Mail::Part.new
         new_part.body = @list.export_key

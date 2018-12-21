@@ -1,22 +1,22 @@
-require 'spec_helper'
+require "spec_helper"
 
-describe 'KeywordHandlersRunner' do
-  it 'stores a keyword that was registered' do
+describe "KeywordHandlersRunner" do
+  it "stores a keyword that was registered" do
     KeywordHandlersRunner.register_keyword(
       type: :request,
-      keyword: 'a-keyword',
+      keyword: "a-keyword",
       handler_class: Object,
-      handler_method: 'a_method',
-      aliases: 'an-alias'
+      handler_method: "a_method",
+      aliases: "an-alias"
     )
 
-    expect(KeywordHandlersRunner::REGISTERED_KEYWORDS[:request]['a-keyword']).to be_a(Hash)
-    expect(KeywordHandlersRunner::REGISTERED_KEYWORDS[:request]['an-alias']).to eql(KeywordHandlersRunner::REGISTERED_KEYWORDS[:request]['a-keyword'])
+    expect(KeywordHandlersRunner::REGISTERED_KEYWORDS[:request]["a-keyword"]).to be_a(Hash)
+    expect(KeywordHandlersRunner::REGISTERED_KEYWORDS[:request]["an-alias"]).to eql(KeywordHandlersRunner::REGISTERED_KEYWORDS[:request]["a-keyword"])
   end
 
-  it 'requires X-LIST-NAME' do
+  it "requires X-LIST-NAME" do
     mail = Mail.new
-    mail.body = 'x-list-keys'
+    mail.body = "x-list-keys"
     mail.to_s
 
     output = KeywordHandlersRunner.run(mail: mail, list: create(:list), type: :request)
@@ -24,9 +24,9 @@ describe 'KeywordHandlersRunner' do
     expect(output).to eql(['Your message did not contain the required "X-LIST-NAME" keyword and was rejected.'])
   end
 
-  it 'rejects X-LIST-NAME with mismatching argument' do
+  it "rejects X-LIST-NAME with mismatching argument" do
     mail = Mail.new
-    mail.body = 'x-list-name: something'
+    mail.body = "x-list-name: something"
     mail.to_s
 
     output = KeywordHandlersRunner.run(mail: mail, list: create(:list), type: :request)
@@ -34,7 +34,7 @@ describe 'KeywordHandlersRunner' do
     expect(output).to eql(['Your message contained an incorrect "X-LIST-NAME" keyword. The keyword argument must match the email address of this list.'])
   end
 
-  it 'rejects unknown keywords' do
+  it "rejects unknown keywords" do
     list = create(:list)
     mail = Mail.new
     mail.body = "x-list-subscriptions\nx-blabla\nx-list-name: #{list.email}"
@@ -45,32 +45,32 @@ describe 'KeywordHandlersRunner' do
     expect(output).to eql(["The given keyword 'blabla' is unknown. Please check its spelling or the documentation."])
   end
 
-  it 'does not require mandatory keywords if no keywords are present' do
+  it "does not require mandatory keywords if no keywords are present" do
     output = KeywordHandlersRunner.run(mail: Mail.new, list: create(:list), type: :request)
     expect(output).to eql([])
   end
 
-  it 'loads additional keyword handlers' do
+  it "loads additional keyword handlers" do
     mail = Mail.new
     mail.list = create(:list)
-    mail.list.subscribe('subscription@example.net', 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE', false)
-    mail.list.import_key(File.read('spec/fixtures/example_key.txt'))
-    mail.instance_variable_set('@signing_key', mail.list.key('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE'))
+    mail.list.subscribe("subscription@example.net", "C4D60F8833789C7CAA44496FD3FFA6613AB10ECE", false)
+    mail.list.import_key(File.read("spec/fixtures/example_key.txt"))
+    mail.instance_variable_set("@signing_key", mail.list.key("C4D60F8833789C7CAA44496FD3FFA6613AB10ECE"))
     mail.body = "x-custom-keyword\nx-list-name: #{mail.list.email}\n"
     mail.to_s
 
     output = KeywordHandlersRunner.run(mail: mail, list: mail.list, type: :request)
 
     expect(CustomKeyword.ancestors).to include(Schleuder::KeywordHandlers::Base)
-    expect(output).to eql(['Something something'])
+    expect(output).to eql(["Something something"])
   end
 
-  it 'notifies admins' do
+  it "notifies admins" do
     mail = Mail.new
-    mail.list = create(:list, keywords_admin_notify: ['list-subscriptions'])
-    mail.list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
-    mail.list.import_key(File.read('spec/fixtures/example_key.txt'))
-    mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
+    mail.list = create(:list, keywords_admin_notify: ["list-subscriptions"])
+    mail.list.subscribe("schleuder@example.org", "59C71FB38AEE22E091C78259D06350440F759BD3", true)
+    mail.list.import_key(File.read("spec/fixtures/example_key.txt"))
+    mail.instance_variable_set("@signing_key", mail.list.key("59C71FB38AEE22E091C78259D06350440F759BD3"))
     mail.body = "x-list-subscriptions\nx-list-name: #{mail.list.email}\n"
     mail.to_s
 
@@ -81,25 +81,27 @@ describe 'KeywordHandlersRunner' do
 
     expect(output).to eql([wanted_response])
     expect(Mail::TestMailer.deliveries.count).to be(1)
-    expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.subject).to eql('Notice')
-    expect(message.first_plaintext_part.body.to_s).to include('list-subscriptions: ')
+    expect(message.to).to eql(["schleuder@example.org"])
+    expect(message.subject).to eql("Notice")
+    expect(message.first_plaintext_part.body.to_s).to include("list-subscriptions: ")
     expect(message.first_plaintext_part.body.to_s).to include(wanted_response)
   end
 
-  it 'returns an error message if keyword is configured as admin-only' do
+  it "returns an error message if keyword is not permitted for subscribers" do
     mail = Mail.new
-    mail.list = create(:list)
-    mail.list.subscribe('subscription@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
-    mail.list.import_key(File.read('spec/fixtures/example_key.txt'))
-    mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
+    mail.list = create(:list, subscriber_permissions: {
+                  "view-subscriptions" => false,
+                })
+    mail.list.subscribe("subscription@example.org", "59C71FB38AEE22E091C78259D06350440F759BD3", false)
+    mail.list.import_key(File.read("spec/fixtures/example_key.txt"))
+    mail.instance_variable_set("@signing_key", mail.list.key("59C71FB38AEE22E091C78259D06350440F759BD3"))
     mail.body = "x-list-subscriptions\nx-list-name: #{mail.list.email}\n"
     mail.to_s
 
     output = KeywordHandlersRunner.run(mail: mail, list: mail.list, type: :request)
 
     expect(output.length).to be(1)
-    expect(output).to include(["Unfortunately you are not allowed to do that.\n\nIf you need help please contact\nyour list-admins <#{mail.list.owner_address}>\nor read the documentation <https://schleuder.org/schleuder/docs/>.\n\n\nKind regards,\nYour Schleuder system.\n"])
+    expect(output).to eql(["The keyword 'list-subscriptions' may for this list only be used by admins."])
     expect(Mail::TestMailer.deliveries.count).to be(0)
   end
 end
