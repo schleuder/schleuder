@@ -9,7 +9,7 @@ describe 'lists via api' do
     }
     num_lists = List.count
 
-    post '/lists.json', parameters.to_json
+    post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
     expect(last_response.status).to be 401
     expect(List.count).to eql(num_lists)
@@ -26,7 +26,7 @@ describe 'lists via api' do
     parameters = { email: 'new_testlist@example.com', fingerprint: list.fingerprint }
     num_lists = List.count
 
-    post '/lists.json', parameters.to_json
+    post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
     expect(last_response.status).to be 403
     expect(List.count).to eql(num_lists)
@@ -40,7 +40,7 @@ describe 'lists via api' do
     parameters = { email: 'new_testlist@example.com', fingerprint: list.fingerprint }
     num_lists = List.count
 
-    post '/lists.json', parameters.to_json
+    post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
     expect(last_response.status).to be 403
     expect(List.count).to eql(num_lists)
@@ -52,7 +52,7 @@ describe 'lists via api' do
     parameters = { email: 'new_testlist@example.com', fingerprint: list.fingerprint }
     num_lists = List.count
 
-    post '/lists.json', parameters.to_json
+    post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
     expect(last_response.status).to be 200
     expect(List.count).to eql(num_lists + 1)
