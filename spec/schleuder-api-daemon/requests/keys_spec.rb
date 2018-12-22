@@ -178,7 +178,7 @@ describe "keys via api" do
     it "doesn't import keys without authentication" do
       parameters = {"list_id" => @list.id, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
       expect {
-        post "/keys.json", parameters.to_json
+        post "/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
         expect(last_response.status).to be 401
       }.to change { @list.keys.length }.by 0
     end
@@ -190,7 +190,7 @@ describe "keys via api" do
       parameters = {"list_id" => @list.id, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
       num_keys = @list.keys.size
 
-      post "/keys.json", parameters.to_json
+      post "/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
 
       expect(@list.reload.keys.size).to eql(num_keys)
       expect(last_response.status).to be 403
@@ -203,7 +203,7 @@ describe "keys via api" do
       parameters = {"list_id" => @list.id, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
       num_keys = @list.keys.length
 
-      post "/keys.json", parameters.to_json
+      post "/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
 
       expect(@list.reload.keys.length).to eql(num_keys + 1)
       expect(last_response.status).to be 200
@@ -218,7 +218,7 @@ describe "keys via api" do
       parameters = {"list_id" => @list.id, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
       num_keys = @list.keys.length
 
-      post "/keys.json", parameters.to_json
+      post "/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
 
       expect(@list.reload.keys.length).to eql(num_keys + 1)
       expect(last_response.status).to be 200
@@ -231,7 +231,7 @@ describe "keys via api" do
       parameters = {"list_id" => @list.id, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
       num_keys = @list.keys.length
 
-      post "/keys.json", parameters.to_json
+      post "/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
 
       expect(@list.reload.keys.length).to eql(num_keys + 1)
       expect(last_response.status).to be 200
@@ -375,7 +375,7 @@ describe "keys via api" do
       authorize_as_api_superadmin!
       parameters = {"list_id" => @list.id, "keymaterial" => File.read("spec/fixtures/broken_utf8_uid_key.txt")}
       expect {
-        post "/keys.json", parameters.to_json
+        post "/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
         expect(last_response.status).to be 200
       }.to change { @list.keys.length }.by(1)
     end

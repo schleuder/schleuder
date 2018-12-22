@@ -12,7 +12,7 @@ describe 'subscription via api' do
 
     expect(@list.subscriptions.size).to be(0)
 
-    post '/subscriptions.json', parameters.to_json
+    post '/subscriptions.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
     expect(last_response.status).to be 401
     expect(@list.reload.subscriptions.size).to be(0)
@@ -24,7 +24,7 @@ describe 'subscription via api' do
 
     expect(@list.subscriptions.size).to be(0)
 
-    post '/subscriptions.json', parameters.to_json
+    post '/subscriptions.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
     @list.reload
 
     expect(last_response.status).to be 201
@@ -39,7 +39,7 @@ describe 'subscription via api' do
     authorize!(account.email, account.set_new_password!)
     parameters = {'list_id' => @list.id, :email => @email}
 
-    post '/subscriptions.json', parameters.to_json
+    post '/subscriptions.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
     @list.reload
 
     expect(last_response.status).to be 201
@@ -57,7 +57,7 @@ describe 'subscription via api' do
     expect(@list.subscriptions.size).to be(1)
     @list.reload
 
-    post '/subscriptions.json', parameters.to_json
+    post '/subscriptions.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
     expect(last_response.status).to be 403
     expect(@list.reload.subscriptions.size).to be(1)
@@ -71,7 +71,7 @@ describe 'subscription via api' do
     expect(@list.subscriptions.size).to be(0)
     @list.reload
 
-    post '/subscriptions.json', parameters.to_json
+    post '/subscriptions.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
     expect(last_response.status).to be 403
     expect(@list.reload.subscriptions.size).to be(0)
@@ -83,7 +83,7 @@ describe 'subscription via api' do
 
     expect(@list.subscriptions.size).to be(0)
 
-    post '/subscriptions.json', parameters.to_json
+    post '/subscriptions.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
     @list.reload
 
     expect(last_response.status).to be 201
@@ -98,7 +98,7 @@ describe 'subscription via api' do
 
     expect(@list.subscriptions.size).to be(0)
 
-    post '/subscriptions.json', parameters.to_json
+    post '/subscriptions.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
     @list.reload
 
     expect(last_response.status).to be 201
@@ -113,7 +113,7 @@ describe 'subscription via api' do
 
     expect(@list.subscriptions.size).to be(0)
 
-    post '/subscriptions.json', parameters.to_json
+    post '/subscriptions.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
     @list.reload
 
     expect(last_response.status).to be 201
