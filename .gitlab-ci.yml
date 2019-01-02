@@ -52,7 +52,7 @@ cache:
     CHECK_CODE_COVERAGE: "true"
   <<: *setup_prerequisites
   script:
-    - eatmydata gem install bundler --no-ri --no-rdoc
+    - eatmydata gem install bundler --no-document
     - eatmydata bundle install --jobs $(nproc) --path vendor
     - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:init
     - eatmydata bundle exec rspec
@@ -111,7 +111,7 @@ bundler:audit:
   only:
     - schedules
   script:
-    - gem install bundler-audit --no-ri --no-rdoc
+    - gem install bundler-audit --no-document
     - bundle install --jobs $(nproc) --path vendor
     - bundle-audit update
     - bundle-audit check
