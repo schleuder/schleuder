@@ -278,7 +278,7 @@ describe 'subscription via api' do
     end
   end
 
-  context 'updating a subscription' do
+  context 'updating a subscription via patch (partial update)' do
     it 'returns 200 if subscription was updated successfully' do
       list = create(:list)
       subscription = create(:subscription, list_id: list.id, admin: true)
@@ -299,6 +299,56 @@ describe 'subscription via api' do
       parameters = { list_id: list.id, email: 'new@example.org' }
 
       patch "/subscriptions/#{subscription.id}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 403
+    end
+  end
+
+  context 'updating a subscription via put (replace the resource in its entirety)' do
+    it 'returns 200 if subscription was updated successfully' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: false)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      parameters = {
+        fingerprint: 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE',
+        admin: true,
+        delivery_enabled: true
+      }
+
+      put "/subscriptions/#{subscription.id}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 200
+    end
+
+    it 'returns an error and status code 400 if a required parameter is missing' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: false)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      parameters = {
+        fingerprint: 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE',
+        admin: true
+      }
+
+      put "/subscriptions/#{subscription.id}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 422
+      expect(JSON.parse(last_response.body)['errors']).to eq 'The request is missing a required parameter'
+    end
+
+    it 'raises unauthorized if the account is not associated with the list' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id)
+      account = create(:account, email: 'foo@example.org')
+      authorize!(account.email, account.set_new_password!)
+      parameters = {
+        fingerprint: 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE',
+        admin: true,
+        delivery_enabled: true
+      }
+
+      put "/subscriptions/#{subscription.id}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 403
     end

@@ -55,21 +55,15 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     put '/:id.json' do |id|
-      sub = load_subscription(id)
-      authorized?(sub, :update)
-      list = sub.list
-      args = find_attributes_from_body(%w[email fingerprint admin delivery_enabled])
-      fingerprint, messages = list.import_key_and_find_fingerprint(find_key_material)
-      set_x_messages(messages)
-      # For an already existing subscription, only update fingerprint if a
-      # new one has been selected from the upload.
-      if fingerprint.present?
-        args['fingerprint'] = fingerprint
-      end
-      if sub.update(args)
+      attributes = find_attributes_from_body(subscriptions_controller.get_configurable_attributes)
+      required_parameters = subscriptions_controller.get_configurable_attributes
+      if attributes.keys.sort != required_parameters.sort
+        status 422
+        return json(errors: 'The request is missing a required parameter')
+      elsif subscriptions_controller.update(id, parsed_body)
         200
       else
-        client_error(sub, 422)
+        client_error(subscription)
       end
     end
 
