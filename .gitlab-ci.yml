@@ -78,7 +78,7 @@ bundler:audit:
   only:
     - schedules
   script:
-    - gem install bundler-audit --no-ri --no-rdoc
+    - gem install bundler-audit --no-document
     - bundle install --jobs $(nproc) --path vendor
     - bundle-audit update
     - bundle-audit check
