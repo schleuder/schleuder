@@ -131,48 +131,6 @@ describe 'keys via api' do
 
       expect(last_response.status).to be 401
     end
-
-    it "doesn't list keys authorized as unassociated account" do
-      subscription = create(:subscription, admin: true)
-      account = create(:account, email: subscription.email)
-      authorize!(account.email, account.set_new_password!)
-
-      get "/keys.json?list_id=#{@list.id}"
-
-      expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
-    end
-
-    it 'does list keys authorized as subscriber' do
-      subscription = create(:subscription, list_id: @list.id, admin: false)
-      account = create(:account, email: subscription.email)
-      authorize!(account.email, account.set_new_password!)
-
-      get "/keys.json?list_id=#{@list.id}"
-
-      expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body).length).to be 1
-    end
-
-    it 'does list keys authorized as list-admin' do
-      subscription = create(:subscription, list_id: @list.id, admin: false)
-      account = create(:account, email: subscription.email)
-      authorize!(account.email, account.set_new_password!)
-
-      get "/keys.json?list_id=#{@list.id}"
-
-      expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body).length).to be 1
-    end
-
-    it 'does list keys authorized as api_superadmin' do
-      authorize_as_api_superadmin!
-
-      get "/keys.json?list_id=#{@list.id}"
-
-      expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body).length).to be 1
-    end
   end
 
   context 'import' do
