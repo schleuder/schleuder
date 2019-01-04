@@ -3,6 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## unreleased
+## [3.4.0]
+
+### Changed
+* Upgrade to ActiveRecord 5.2
+
 ## [3.3.0] / 2018-09-04
 
 ### Fixed
