@@ -8,31 +8,31 @@ module Schleuder
       handles_request_keyword 'fetch-key', with_method: 'fetch_key'
       
       def add_key
-        results = 
-          if @mail.has_attachments?
-            import_keys_from_attachments
-          elsif @mail.first_plaintext_part.body.to_s.present?
-            import_key_from_body
-          else
-            @list.logger.debug 'Found no attachments and an empty body - sending error message'
-            I18n.t('keyword_handlers.key_management.no_content_found')
-          end
+        key_material = find_key_material
+        
+        if key_material.blank?
+          @list.logger.debug 'Found no key material in message - sending error message'
+          return t('no_content_found')
+        end
 
-        import_stati = results.compact.collect(&:imports).flatten
+        import_results = Array(key_material).map do |importable|
+          keys_controller.import(@list.email, importable)
+        end
+        import_stati = import_results.compact.map(&:imports).flatten
 
         if import_stati.blank?
-          return I18n.t('keyword_handlers.key_management.no_imports')
+          return t('no_imports')
         end
 
         out = []
 
         import_stati.each do |import_status|
           if import_status.action == 'error'
-            out << I18n.t('keyword_handlers.key_management.key_import_status.error', fingerprint: import_status.fingerprint)
+            out << t('key_import_status.error', fingerprint: import_status.fingerprint)
           else
             key = @list.gpg.find_distinct_key(import_status.fingerprint)
             if key
-              out << I18n.t("keyword_handlers.key_management.key_import_status.#{import_status.action}", key_oneline: key.oneline)
+              out << t("key_import_status.#{import_status.action}", key_oneline: key.oneline)
             end
           end
         end
@@ -42,108 +42,94 @@ module Schleuder
 
       def delete_key
         if @arguments.blank?
-          return I18n.t(
-            'keyword_handlers.key_management.delete_key_requires_arguments'
-          )
+          return t('delete_key_requires_arguments')
         end
 
         @arguments.map do |argument|
-          keys = @list.keys(argument)
+          # We have to find the key ourselves because the controller uses
+          # only fingerprints for identification, but the input might be
+          # anything that matches a key.
+          # TODO: delete or refactor this block if #417 has been decided.
+          keys = @list.gpg.keys(argument)
           case keys.size
-          when 0
-            I18n.t('errors.no_match_for', input: argument)
           when 1
-            begin
-              keys.first.delete!
-              I18n.t('keyword_handlers.key_management.deleted', key_string: keys.first.oneline)
-            rescue GPGME::Error::Conflict
-              I18n.t('keyword_handlers.key_management.not_deletable', key_string: keys.first.oneline)
-            end
+            fingerprint = keys.first.fingerprint
+          when 0
+            return t(:no_matching_keys, input: argument)
           else
-            I18n.t('errors.too_many_matching_keys', {
-                input: argument,
-                key_strings: keys.map(&:to_s).join("\n")
-              })
+            return t(:too_many_matching_keys, {input: argument, key_strings: keys.map(&:to_s).join("\n")})
+          end
+
+          begin
+            key = keys_controller.delete(@list.email, fingerprint)
+            t('deleted', key_string: key.oneline)
+          rescue GPGME::Error::Conflict => exc
+            t('not_deletable', error: exc.message)
+          rescue Errors::KeyNotFound => exc
+            exc.to_s
           end
         end.join("\n\n")
       end
 
       def list_keys
-        args = Array(@arguments.presence || '')
-        args.map do |argument|
-          # In this case it shall be allowed to match keys by arbitrary
-          # sub-strings, therefore we use `list.gpg` directly to not have the
-          # input filtered.
-          @list.gpg.keys(argument).map do |key|
-            key.to_s
+        arguments = Array(@arguments.presence || '')
+        arguments.map do |argument|
+          keys = keys_controller.find_all(@list.email, argument)
+
+          if keys.size > 0
+            keys.each do |key|
+              key.to_s
+            end.join("\n\n")
+          else
+            t('no_matching_keys', input: argument)
           end
         end.join("\n\n")
       end
 
       def get_key
         @arguments.map do |argument|
-          keys = @list.keys(argument)
+          keys = keys_controller.find_all(@list.email, argument)
+
           if keys.blank?
-            I18n.t('errors.no_match_for', input: argument)
+            t('no_matching_keys', input: argument)
           else
-            result = [I18n.t('keyword_handlers.key_management.matching_keys_intro', input: argument)]
+            result = [t('matching_keys_intro', input: argument)]
             keys.each do |key|
-              atchm = Mail::Part.new
-              atchm.body = key.armored
-              atchm.content_type = 'application/pgp-keys'
-              atchm.content_disposition = "attachment; filename=#{key.fingerprint}.asc"
-              result << atchm
+              result << make_key_attachment(key)
             end
             result.flatten
           end
-        end
+        end.join("\n\n")
       end
 
       def fetch_key
-        if @arguments.blank?
-          return I18n.t(
-            'keyword_handlers.key_management.fetch_key_requires_arguments'
-          )
+        argument = @arguments.first
+        if argument.blank?
+          return t('fetch_key_requires_arguments')
         end
 
-        @arguments.map do |argument|
-          @list.fetch_keys(argument)
-        end
+        keys_controller.fetch(@list.email, argument)
       end
 
 
       private
 
-      def is_armored_key?(material)
-        return false unless /^-----BEGIN PGP PUBLIC KEY BLOCK-----$/ =~ material
-        return false unless /^-----END PGP PUBLIC KEY BLOCK-----$/ =~ material
 
-        lines = material.split("\n").reject(&:empty?)
-        # remove header
-        lines.shift
-        # remove tail
-        lines.pop
-        # verify the rest
-        # TODO: verify length except for lasts lines?
-        # headers according to https://tools.ietf.org/html/rfc4880#section-6.2
-        lines.map do |line|
-          /\A((comment|version|messageid|hash|charset):.*|[0-9a-z\/=+]+)\Z/i =~ line
-        end.all?
+      def make_key_attachment(key)
+        attachment = Mail::Part.new
+        attachment.body = key.armored
+        attachment.content_type = 'application/pgp-keys'
+        attachment.content_disposition = "attachment; filename=#{key.fingerprint}.asc"
+        attachment
       end
 
-      def import_keys_from_attachments
-        @mail.attachments.map do |attachment|
-          import_from_string(attachment.body.to_s)
-        end
-      end
-
-      def import_key_from_body
-        [import_from_string(@mail.first_plaintext_part.body.to_s)]
-      end
-
-      def import_from_string(string)
-        if is_armored_key?(string)
-          @list.import_key(string)
+      def find_key_material
+        if @mail.has_attachments?
+          @mail.attachments.map { |attachment| attachment.body.to_s }
+        elsif @mail.first_plaintext_part.body.to_s.present?
+          @mail.first_plaintext_part.body.to_s
+        else
+          nil
         end
       end
     end

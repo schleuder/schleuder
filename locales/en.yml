@@ -61,7 +61,7 @@ en:
       not_empty: is not empty
       not_writable: is not writable
       not_readable: is not readable
-    keyword_admin_only: The keyword '%{keyword}' may only be used by list-admin.
+    not_permitted_for_subscribers: The keyword '%{keyword}' may for this list only be used by admins.
     unknown_keyword: The given keyword '%{keyword}' is unknown. Please check its spelling or the documentation.
     keyword_x_stop_missing: "Your message lacked the keyword 'X-STOP'. If you use keywords in a message, you must indicate with 'X-STOP' where to stop looking for further keywords."
     key_generation_failed: Generating the OpenPGP key pair for %{listname} failed for unknown reasons. Please check the list-directory ('%{listdir}') and the log-files.
@@ -73,16 +73,14 @@ en:
     must_be_greater_than_zero: "must be a number greater than zero"
     not_pgp_mime: "Message was not encrypted in the pgp/mime-format."
     delivery_error: "The following error occurred while sending a message to %{email}: %{error}"
-    no_match_for: "No match found for %{input}"
-    too_many_matching_keys: |
-      Too many matching keys for '%{input}':
-      %{key_strings}
     unauthorized: |
       Unfortunately you are not allowed to do that.
 
       If you need help please contact
       your list-admins <%{list_owner_email}>
       or read the documentation <https://schleuder.org/schleuder/docs/>.
+    cannot_unsubscribe_last_admin: |
+      %{email} is the only admin for this list, thus it can not be unsubscribed.
   keyword_handlers:
     handler_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
     keyword_admin_notify:
@@ -105,7 +103,7 @@ en:
         %{key_string}
       not_deletable: |
         This key may not be deleted:
-        %{key_string}
+          %{error}
       no_imports: In the message you sent us, no keys could be found. :(
       key_import_status:
         imported: |
@@ -120,6 +118,10 @@ en:
         error: |
           The key with this fingerprint could not be added due to an unknown error:
           %{fingerprint} 
+      too_many_matching_keys: |
+        Too many matching keys for '%{input}':
+        %{key_strings}
+      no_matching_keys: No keys match '%{input}'.
       matching_keys_intro: All keys from the list's keyring matching '%{input}' are attached to this message.
       delete_key_requires_arguments: |
         Error: You did not send any arguments for the keyword 'DELETE-KEY'.
@@ -156,8 +158,6 @@ en:
       unsubscribing_failed: |
         Unsubscribing %{email} failed:
         %{errors}
-      cannot_unsubscribe_last_admin: |
-        %{email} is the only admin for this list, thus it can not be unsubscribed.
       subscribed: |
         %{email} has been subscribed with these attributes:
 
@@ -179,7 +179,7 @@ en:
 
         The following value was detected: %{fingerprint}
 
-        One or two are required, e.g.:
+        One or two values are required, e.g.:
         X-SET-FINGERPRINT: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
 
         or (as an admin):
@@ -191,7 +191,7 @@ en:
       set_fingerprint_requires_arguments: |
         Error: You did not send any arguments for the keyword 'SET-FINGERPRINT'.
 
-        One or two are required, e.g.:
+        One or two values are required, e.g.:
         X-SET-FINGERPRINT: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
 
         or (as an admin):
