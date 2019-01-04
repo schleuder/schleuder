@@ -55,6 +55,11 @@ module Schleuder
         superadmin? || admin?(object)
       end
 
+      def resend?
+        # TODO: make configurable for subscribers
+        superadmin? || admin?(object) || subscribed?(object)
+      end
+
       private
 
       # This includes list-admins.

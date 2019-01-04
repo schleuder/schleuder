@@ -14,10 +14,9 @@ module Schleuder
 
         email = @arguments.first
 
-        subscription = Subscription.where(email: email, list_id: @list.id).first
-        if subscription.blank?
-          return I18n.t('keyword_handlers.account_management.subscription_not_found')
-        end
+        # This raises an exception if the subscription is not present. That
+        # exception is caught by the KeywordHandlersRunner.
+        subscriptions_controller.find(@list.email, email)
 
         set_new_password(email)
       end
@@ -28,18 +27,18 @@ module Schleuder
       def check_preconditions
         # Beware: the account might not exist yet.
         if ! @mail.signer.admin? && ! @mail.signer.account.try(:api_superadmin?)
-          return I18n.t('keyword_handlers.account_management.admins_only')
+          return t('admins_only')
         end
 
         if @arguments.size != 1
-          return I18n.t('keyword_handlers.account_management.argument_size_mismatch')
+          return t('argument_size_mismatch')
         end
       end
 
       def set_new_password(email)
         account = Account.find_or_create_by(email: email)
         new_password = account.set_new_password!
-        I18n.t('keyword_handlers.account_management.new_password', email: email, password: new_password)
+        t('new_password', email: email, password: new_password)
       end
     end
   end

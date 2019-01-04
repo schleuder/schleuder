@@ -13,6 +13,19 @@ describe Schleuder::KeysController do
       expect(keys).to eq [list.key]
     end
 
+    it 'returns the keys that match a given identifier' do
+      list = create(:list)
+      list.import_key(File.read('spec/fixtures/example_key.txt'))
+      list.import_key(File.read('spec/fixtures/bla_foo_key.txt'))
+      subscription = create(:subscription, list_id: list.id, admin: false)
+      account = create(:account, email: subscription.email)
+
+      keys = KeysController.new(account).find_all(list.email, 'example.org')
+
+      expect(keys.length).to eq 2
+      expect(keys.map(&:fingerprint).sort).to eq %w[59C71FB38AEE22E091C78259D06350440F759BD3 C4D60F8833789C7CAA44496FD3FFA6613AB10ECE]
+    end
+
     it 'raises an unauthorized error when the user is not authorized' do
       list = create(:list)
       unauthorized_account = create(:account, email: 'unauthorized@example.org')
@@ -44,6 +57,27 @@ describe Schleuder::KeysController do
 
       expect do
         KeysController.new(unauthorized_account).import(list.email, key)
+      end.to raise_error(Schleuder::Errors::Unauthorized)
+    end
+  end
+
+  describe '#fetch' do
+    it 'asks the list to fetch a key' do
+      list = create(:list)
+      admin = create(:subscription, list_id: list.id, admin: true)
+      account = create(:account, email: admin.email)
+
+      expect_any_instance_of(List).to receive(:fetch_keys).with('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
+
+      KeysController.new(account).fetch(list.email, 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
+    end
+
+    it 'raises an unauthorized error when the user is not authorized' do
+      list = create(:list)
+      unauthorized_account = create(:account, email: 'unauthorized@example.org')
+
+      expect do
+        KeysController.new(unauthorized_account).fetch(list.email, 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
       end.to raise_error(Schleuder::Errors::Unauthorized)
     end
   end

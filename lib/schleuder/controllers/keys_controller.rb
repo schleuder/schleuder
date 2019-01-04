@@ -1,15 +1,24 @@
 module Schleuder
   class KeysController < BaseController
-    def find_all(list_email)
+    def find_all(list_email, identifier='')
       list = get_list(list_email)
       authorize!(list, :list_keys)
-      list.keys
+      # In this case it shall be allowed to match keys by arbitrary
+      # sub-strings, therefore we use `list.gpg` directly to not have the input
+      # filtered.
+      list.gpg.keys(identifier)
     end
 
     def import(list_email, key)
       list = get_list(list_email)
       authorize!(list, :add_keys)
       list.import_key(key)
+    end
+
+    def fetch(list_email, identifier)
+      list = get_list(list_email)
+      authorize!(list, :add_keys)
+      list.fetch_keys(identifier)
     end
 
     def check(list_email)
@@ -28,6 +37,7 @@ module Schleuder
       key = get_key(list_email, fingerprint)
       authorize!(key, :delete)
       key.delete!
+      key
     end
 
     private
