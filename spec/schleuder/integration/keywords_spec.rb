@@ -439,7 +439,7 @@ describe 'user sends keyword' do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include('test@example.org is not subscribed')
+    expect(message.to_s).to include("Error: No subscription found with this email-address: 'test@example.org'.")
 
     teardown_list_and_mailer(list)
   end
@@ -510,7 +510,7 @@ describe 'user sends keyword' do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.subscription_management.cannot_unsubscribe_last_admin', email: 'schleuder@example.org'))
+    expect(message.first_plaintext_part.body.to_s).to include(I18n.t('errors.cannot_unsubscribe_last_admin', email: 'schleuder@example.org'))
     expect(list.subscriptions.size).to be(2)
 
     teardown_list_and_mailer(list)
@@ -702,7 +702,7 @@ describe 'user sends keyword' do
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include('Only admins may set fingerprints of subscriptions other than their own')
+    expect(message.to_s).to include('Unfortunately you are not allowed to do that.')
 
     expect(subscription).to be_present
     expect(subscription.fingerprint).to eql('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
@@ -781,11 +781,7 @@ describe 'user sends keyword' do
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t(
-      'keyword_handlers.subscription_management.set_fingerprint_requires_valid_fingerprint',
-      fingerprint: '59c71fb38aee22e091c78259d0'
-    ))
-
+    expect(message.first_plaintext_part.body.to_s).to include("You did not send a valid fingerprint for the keyword 'SET-FINGERPRINT'\n\nThe following value was detected: 59c71fb38aee22e091c78259d0")
     expect(subscription).to be_present
     expect(subscription.fingerprint).to eql('59C71FB38AEE22E091C78259D06350440F759BD3')
 
@@ -859,7 +855,7 @@ describe 'user sends keyword' do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include('bla@example.org is not subscribed')
+    expect(message.to_s).to include("Error: No subscription found with this email-address: 'bla@example.org'.")
 
     teardown_list_and_mailer(list)
   end
@@ -1070,7 +1066,7 @@ describe 'user sends keyword' do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include('bla@example.org is not subscribed')
+    expect(message.to_s).to include("Error: No subscription found with this email-address: 'bla@example.org'.")
 
     teardown_list_and_mailer(list)
   end
@@ -1106,7 +1102,7 @@ describe 'user sends keyword' do
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include('Only admins may remove fingerprints of subscriptions other than their own')
+    expect(message.first_plaintext_part.body.to_s).to eql("Unfortunately you are not allowed to do that.\n\nIf you need help please contact\nyour list-admins <#{list.owner_address}>\nor read the documentation <https://schleuder.org/schleuder/docs/>.\n\n\nKind regards,\nYour Schleuder system.\n")
 
     expect(subscription).to be_present
     expect(subscription.fingerprint).to eql('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
@@ -1765,6 +1761,7 @@ EOS
     list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     ENV['GNUPGHOME'] = list.listdir
     mail = Mail.new
+    mail.list = list
     mail.to = list.email
     mail.from = list.admins.first.email
     gpg_opts = {
@@ -2672,7 +2669,7 @@ Error: Resending to <bla@foo> failed (0 keys found, of which 0 can be used.
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include('No match found for')
+    expect(message.to_s).to include("No keys match 'blabla'.")
     expect(message.to_s).not_to include('-----BEGIN PGP PUBLIC KEY')
 
     teardown_list_and_mailer(list)

@@ -1,38 +1,38 @@
 module Schleuder
   module KeywordHandlers
     class KeyManagement < Base
-      handles_request_keyword 'add-key', with_method: 'add_key'
-      handles_request_keyword 'delete-key', with_method: 'delete_key'
-      handles_request_keyword 'list-keys', with_method: 'list_keys'
-      handles_request_keyword 'get-key', with_method: 'get_key'
-      handles_request_keyword 'fetch-key', with_method: 'fetch_key'
-      
-      def add_key
-        results = 
-          if @mail.has_attachments?
-            import_keys_from_attachments
-          elsif @mail.first_plaintext_part.body.to_s.present?
-            import_key_from_body
-          else
-            @list.logger.debug 'Found no attachments and an empty body - sending error message'
-            return I18n.t('keyword_handlers.key_management.no_content_found')
-          end
+      handles_request_keyword "add-key", with_method: "add_key"
+      handles_request_keyword "delete-key", with_method: "delete_key"
+      handles_request_keyword "list-keys", with_method: "list_keys"
+      handles_request_keyword "get-key", with_method: "get_key"
+      handles_request_keyword "fetch-key", with_method: "fetch_key"
 
-        import_stati = results.compact.collect(&:imports).flatten
+      def add_key
+        key_material = find_key_material
+
+        if key_material.blank?
+          @list.logger.debug "Found no key material in message - sending error message"
+          return t("no_content_found")
+        end
+
+        import_results = Array(key_material).map do |importable|
+          keys_controller.import(@list.email, importable)
+        end
+        import_stati = import_results.compact.map(&:imports).flatten
 
         if import_stati.blank?
-          return I18n.t('keyword_handlers.key_management.no_imports')
+          return t("no_imports")
         end
 
         out = []
 
         import_stati.each do |import_status|
-          if import_status.action == 'error'
-            out << I18n.t('keyword_handlers.key_management.key_import_status.error', fingerprint: import_status.fingerprint)
+          if import_status.action == "error"
+            out << t("key_import_status.error", fingerprint: import_status.fingerprint)
           else
             key = @list.gpg.find_distinct_key(import_status.fingerprint)
             if key
-              out << I18n.t("keyword_handlers.key_management.key_import_status.#{import_status.action}", key_summary: key.summary)
+              out << t("key_import_status.#{import_status.action}", key_summary: key.summary)
             end
           end
         end
@@ -42,99 +42,75 @@ module Schleuder
 
       def delete_key
         if @arguments.blank?
-          return I18n.t(
-            'keyword_handlers.key_management.delete_key_requires_arguments'
-          )
+          return t("delete_key_requires_arguments")
         end
 
         @arguments.map do |argument|
-          # Force GPG to match only fingerprints.
-          if argument[0..1] == '0x'
-            fingerprint = argument
-          else
-            fingerprint = "0x#{argument}"
-          end
-
-          keys = @list.keys(fingerprint)
-          case keys.size
-          when 0
-            I18n.t('keyword_handlers.key_management.key_not_found', fingerprint: argument)
-          when 1
-            begin
-              keys.first.delete!
-              I18n.t('keyword_handlers.key_management.deleted', key_string: keys.first.summary)
-            rescue GPGME::Error::Conflict
-              I18n.t('keyword_handlers.key_management.not_deletable', key_string: keys.first.summary)
-            end
-          else
-            # Shouldn't happen, but who knows.
-            I18n.t('errors.too_many_matching_keys', {
-                input: argument,
-                key_strings: keys.map(&:to_s).join("\n")
-              })
-          end
+          key = keys_controller.delete(@list.email, argument)
+          t("deleted", key_string: key.oneline)
+        rescue GPGME::Error::Conflict => exc
+          t("not_deletable", error: exc.message)
+        rescue Errors::KeyNotFound => exc
+          exc.to_s
         end.join("\n\n")
       end
 
       def list_keys
-        args = Array(@arguments.presence || '')
-        args.map do |argument|
-          # In this case it shall be allowed to match keys by arbitrary
-          # sub-strings, therefore we use `list.gpg` directly to not have the
-          # input filtered.
-          @list.gpg.keys(argument).map do |key|
-            key.to_s
+        arguments = Array(@arguments.presence || "")
+        arguments.map do |argument|
+          keys = keys_controller.find_all(@list.email, argument)
+
+          if keys.size > 0
+            keys.each do |key|
+              key.to_s
+            end.join("\n\n")
+          else
+            t("no_matching_keys", input: argument)
           end
         end.join("\n\n")
       end
 
       def get_key
         @arguments.map do |argument|
-          keys = @list.keys(argument)
+          keys = keys_controller.find_all(@list.email, argument)
+
           if keys.blank?
-            I18n.t('errors.no_match_for', input: argument)
+            t("no_matching_keys", input: argument)
           else
-            result = [I18n.t('keyword_handlers.key_management.matching_keys_intro', input: argument)]
+            result = [t("matching_keys_intro", input: argument)]
             keys.each do |key|
-              atchm = Mail::Part.new
-              atchm.body = key.armored
-              atchm.content_type = 'application/pgp-keys'
-              atchm.content_disposition = "attachment; filename=#{key.fingerprint}.asc"
-              result << atchm
+              result << make_key_attachment(key)
             end
             result.flatten
           end
-        end
+        end.join("\n\n")
       end
 
       def fetch_key
-        if @arguments.blank?
-          return I18n.t(
-            'keyword_handlers.key_management.fetch_key_requires_arguments'
-          )
+        argument = @arguments.first
+        if argument.blank?
+          return t("fetch_key_requires_arguments")
         end
 
-        @arguments.map do |argument|
-          @list.fetch_keys(argument)
-        end
+        keys_controller.fetch(@list.email, argument)
       end
-
 
       private
 
+      def make_key_attachment(key)
+        attachment = Mail::Part.new
+        attachment.body = key.armored
+        attachment.content_type = "application/pgp-keys"
+        attachment.content_disposition = "attachment; filename=#{key.fingerprint}.asc"
+        attachment
+      end
 
-      def import_keys_from_attachments
-        @mail.attachments.map do |attachment|
-          import_from_string(attachment.body.decoded)
+      def find_key_material
+        if @mail.has_attachments?
+          @mail.attachments.map { |attachment| attachment.body.decoded }
+        elsif @mail.first_plaintext_part.body.to_s.present?
+          @mail.first_plaintext_part.body.to_s
         end
-      end
-
-      def import_key_from_body
-        [import_from_string(@mail.first_plaintext_part.body.to_s)]
-      end
-
-      def import_from_string(string)
-        @list.import_key(string)
       end
     end
   end
