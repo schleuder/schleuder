@@ -1,6 +1,6 @@
 module Schleuder
   module KeywordHandlers
-    class SubscriptionManangement < Base
+    class SubscriptionManagement < Base
       handles_request_keyword 'subscribe', with_method: :subscribe
       handles_request_keyword 'unsubscribe', with_method: :unsubscribe
       handles_request_keyword 'list-subscriptions', with_method: :list_subscriptions
@@ -9,12 +9,11 @@ module Schleuder
 
       def subscribe
         if @arguments.blank?
-          return I18n.t(
-            'keyword_handlers.subscription_management.subscribe_requires_arguments'
-          )
+          return t('subscribe_requires_arguments')
         end
 
-        email = @arguments.shift.to_s.downcase
+        subscription_params = {}
+        subscription_params['email'] = @arguments.shift.to_s.downcase
 
         if @arguments.present?
           # Collect all arguments that look like fingerprint-material
@@ -22,27 +21,27 @@ module Schleuder
           while @arguments.first.present? && @arguments.first.match(/^(0x)?[a-f0-9]+$/i)
             fingerprint << @arguments.shift.downcase
           end
+
+          subscription_params['fingerprint'] = fingerprint
           # Use possibly remaining args as flags.
-          adminflag = @arguments.shift.to_s.downcase.presence
-          deliveryflag = @arguments.shift.to_s.downcase.presence
+          subscription_params['admin'] = @arguments.shift.to_s.downcase.presence
+          subscription_params['delivery_enabled'] = @arguments.shift.to_s.downcase.presence
         end
 
-        sub, _ = @list.subscribe(email, fingerprint, adminflag, deliveryflag)
+        subscription, _ = subscriptions_controller.subscribe(@list.email, subscription_params, nil)
 
-        if sub.persisted?
-          I18n.t(
-            'keyword_handlers.subscription_management.subscribed',
-            email: sub.email,
-            fingerprint: sub.fingerprint,
-            admin: sub.admin,
-            delivery_enabled: sub.delivery_enabled
-          )
+        if subscription.persisted?
+          t('subscribed', {
+              email: subscription.email,
+              fingerprint: subscription.fingerprint,
+              admin: subscription.admin,
+              delivery_enabled: subscription.delivery_enabled
+          })
         else
-          I18n.t(
-            'keyword_handlers.subscription_management.subscribing_failed',
-            email: sub.email,
-            errors: sub.errors.full_messages.join(".\n")
-          )
+          t('subscribing_failed', {
+              email: subscription.email,
+              errors: subscription.errors.full_messages.join(".\n")
+          })
         end
       end
 
@@ -50,68 +49,42 @@ module Schleuder
         # If no address was given we unsubscribe the sender.
         email = @arguments.first.to_s.downcase.presence || @mail.signer.email
 
-        # Refuse to unsubscribe the last admin.
-        if @list.admins.size == 1 && @list.admins.first.email == email
-          return I18n.t(
-            'keyword_handlers.subscription_management.cannot_unsubscribe_last_admin', email: email
-          )
-        end
+        subscription = subscriptions_controller.delete(@list.email, email)
 
-        # TODO: May signers have multiple UIDs? We don't match those currently.
-        if ! @list.from_admin?(@mail) && email != @mail.signer.email
-          # Only admins may unsubscribe others.
-          return I18n.t(
-            'keyword_handlers.subscription_management.forbidden', email: email
-          )
-        end
-
-        sub = @list.subscriptions.where(email: email).first
-
-        if sub.blank?
-          return I18n.t(
-            'keyword_handlers.subscription_management.is_not_subscribed', email: email
-          )
-        end
-
-        if res = sub.delete
-          I18n.t(
-            'keyword_handlers.subscription_management.unsubscribed', email: email
-          )
+        if subscription.destroyed?
+          t('.unsubscribed', email: subscription.email)
         else
-          I18n.t(
-            'keyword_handlers.subscription_management.unsubscribing_failed',
-            email: email,
-            error: res.errors.to_a
-          )
+          t('unsubscribing_failed', email: subscription.email, error: subscription.errors.to_a)
         end
       end
 
       def list_subscriptions
-        subs = if @arguments.blank?
-                  @list.subscriptions.all.to_a
-               else
-                 @arguments.map do |argument|
-                   @list.subscriptions.where('email like ?', "%#{argument}%").to_a
-                 end.flatten
-               end
+        subscriptions = subscriptions_controller.find_all(@list.email).to_a
 
-        if subs.blank?
-          return nil
+        if @arguments.present?
+          regexp = Regexp.new(@arguments.join('|'))
+          subscriptions.select! do |subscription|
+            subscription.email.match(regexp)
+          end
         end
 
-        out = [ I18n.t('keyword_handlers.subscription_management.list_of_subscriptions') ]
+        if subscriptions.blank?
+          return I18n.t(:no_output_result)
+        end
 
-        out << subs.map do |subscription|
+        out = [ t('list_of_subscriptions') ]
+
+        out << subscriptions.map do |subscription|
           # Fingerprints are at most 40 characters long, and lines shouldn't
           # exceed 80 characters if possible.
-          s = subscription.email
+          line = subscription.email
           if subscription.fingerprint.present?
-            s << "\t0x#{subscription.fingerprint}"
+            line << "\t0x#{subscription.fingerprint}"
           end
           if ! subscription.delivery_enabled?
-            s << "\tDelivery disabled!"
+            line << "\tDelivery disabled!"
           end
-          s
+          line
         end
 
         out.join("\n")
@@ -119,93 +92,65 @@ module Schleuder
 
       def set_fingerprint
         if @arguments.blank?
-          return I18n.t(
-            'keyword_handlers.subscription_management.set_fingerprint_requires_arguments'
-          )
+          return t('set_fingerprint_requires_arguments')
         end
 
         if @arguments.first.match(/@/)
           email = @arguments.shift.downcase
-          if email != @mail.signer.email && ! @list.from_admin?(@mail)
-            return I18n.t(
-              'keyword_handlers.subscription_management.set_fingerprint_only_self'
-            )
-          end
         else
           email = @mail.signer.email
         end
 
-        sub = @list.subscriptions.where(email: email).first
-
-        if sub.blank?
-          return I18n.t(
-            'keyword_handlers.subscription_management.is_not_subscribed', email: email
-          )
-        end
-
         fingerprint = @arguments.join
-        unless GPGME::Key.valid_fingerprint?(fingerprint)
-          return I18n.t(
-            'keyword_handlers.subscription_management.set_fingerprint_requires_valid_fingerprint',
-            fingerprint: fingerprint
-          )
+        if !GPGME::Key.valid_fingerprint?(fingerprint)
+          return t('set_fingerprint_requires_valid_fingerprint', fingerprint: fingerprint)
         end
 
-        sub.fingerprint = fingerprint
-        if sub.save
-          I18n.t(
-            'keyword_handlers.subscription_management.fingerprint_set',
-            email: email,
-            fingerprint: sub.fingerprint
-          )
+        subscription = subscriptions_controller.update(@list.email, email, {fingerprint: fingerprint})
+
+        # TODO: Nicer error message for subscriptions that wrongly tried to set someone elses fingerprint?
+        # I18n key: 'keyword_handlers.subscription_management.set_fingerprint_only_self'
+
+        if subscription.valid?
+          t('fingerprint_set', {
+              email: subscription.email,
+              fingerprint: subscription.fingerprint
+          })
         else
-          I18n.t(
-            'keyword_handlers.subscription_management.setting_fingerprint_failed',
-            email: email,
-            fingerprint: sub.fingerprint,
-            errors: sub.errors.to_a.join("\n")
-          )
+          # TODO: Use 'keyword_handlers.subscription_management.set_fingerprint_requires_valid_fingerprint' if fingerprint is invalid.
+          t('setting_fingerprint_failed', {
+              email: subscription.email,
+              fingerprint: subscription.fingerprint,
+              errors: subscription.errors.to_a.join("\n")
+          })
         end
       end
 
       def unset_fingerprint
         if @arguments.blank?
-          return I18n.t(
-            'keyword_handlers.subscription_management.unset_fingerprint_requires_arguments'
-          )
+          return t('unset_fingerprint_requires_arguments')
         end
 
         email = @arguments.shift.to_s.downcase
-        if email != @mail.signer.email && ! @list.from_admin?(mail)
-            return I18n.t(
-              'keyword_handlers.subscription_management.unset_fingerprint_only_self'
-            )
-        end
+
+        # Admins degrade themselves to subscribers if they unset they
+        # fingerprint. We allow that only with an additional argument.
         if email == @mail.signer.email && @list.from_admin?(@mail) && @arguments.last.to_s.downcase != 'force'
-          return I18n.t(
-            'keyword_handlers.subscription_management.unset_fingerprint_requires_arguments'
-          )
+          return t('unset_fingerprint_requires_arguments')
         end
 
-        sub = @list.subscriptions.where(email: email).first
-        if sub.blank?
-          return I18n.t(
-            'keyword_handlers.subscription_management.is_not_subscribed', email: email
-          )
-        end
+        # TODO: Nicer error message for subscriptions that wrongly tried to unset someone elses fingerprint?
+        # I18n key: 'keyword_handlers.subscription_management.unset_fingerprint_only_self'
 
-        sub.fingerprint = ''
-        if sub.save
-          I18n.t(
-            'keyword_handlers.subscription_management.fingerprint_unset',
-            email: email
-          )
+        subscription = subscriptions_controller.update(@list.email, email, {fingerprint: ''})
+
+        if subscription.valid?
+          t('fingerprint_unset', {email: subscription.email})
         else
-          I18n.t(
-            'keyword_handlers.subscription_management.unsetting_fingerprint_failed',
-            email: email,
-            errors: sub.errors.to_a.join("\n")
-          )
+          t('unsetting_fingerprint_failed', {
+              email: subscription.email,
+              errors: subscription.errors.to_a.join("\n")
+          })
         end
       end
     end

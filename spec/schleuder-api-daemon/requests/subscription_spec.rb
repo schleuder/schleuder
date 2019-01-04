@@ -191,7 +191,7 @@ describe 'subscription via api' do
 
   it 'unsubscribes members as api_superadmin' do
     list = create(:list)
-    subscription = create(:subscription, :list_id => list.id)
+    subscription = create(:subscription, :list_id => list.id, admin: false)
     authorize_as_api_superadmin!
 
     expect(list.subscriptions.map(&:email)).to eql([subscription.email])

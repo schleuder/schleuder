@@ -170,12 +170,25 @@ describe Schleuder::SubscriptionsController do
   describe 'delete' do
     it 'deletes the subscription with the given id' do
       list = create(:list, email: 'somelist@example.org')
-      subscription = create(:subscription, list_id: list.id, admin: true)
-      account = create(:account, email: subscription.email)
+      admin = create(:subscription, list_id: list.id, admin: true)
+      subscription = create(:subscription, list_id: list.id)
+      admin_account = create(:account, email: admin.email)
 
-      SubscriptionsController.new(account).delete(list.email, subscription.email)
+      SubscriptionsController.new(admin_account).delete(list.email, subscription.email)
 
       expect{ subscription.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it 'does not delete the only admin of a list' do
+      list = create(:list, email: 'somelist@example.org')
+      admin = create(:subscription, list_id: list.id, admin: true)
+      account = create(:account, email: admin.email)
+
+      expect do
+        SubscriptionsController.new(account).delete(list.email, admin.email)
+      end.to raise_error(Errors::LastAdminNotDeletable)
+
+      expect(admin.reload.id).to eql(admin.id)
     end
 
     it 'raises an unauthorized error when the user is not authorized' do

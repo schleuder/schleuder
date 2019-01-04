@@ -42,5 +42,11 @@ module Schleuder
       authorize!(list, :send_list_key)
       list.send_list_key_to_subscriptions
     end
+
+    def get_logfile(email)
+      list = get_list(email)
+      authorize!(list, :read)
+      list.logfile
+    end
   end
 end

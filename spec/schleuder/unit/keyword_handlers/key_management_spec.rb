@@ -15,6 +15,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
     it 'imports a key from inline ascii-armored material' do
       mail = Mail.new
       mail.list = create(:list)
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.body = File.read('spec/fixtures/example_key.txt')
       mail.to_s
 
@@ -43,6 +45,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
     it 'imports a key from attached acsii-armored material' do
       mail = Mail.new
       mail.list = create(:list)
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.add_file('spec/fixtures/example_key.txt')
       mail.to_s
 
@@ -146,6 +150,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
     it 'ignores body if an ascii-armored attachment is present' do
       mail = Mail.new
       mail.list = create(:list)
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.body = 'blabla'
       mail.add_file('spec/fixtures/example_key.txt')
       mail.to_s
@@ -160,6 +166,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
     it 'ignores arguments' do
       mail = Mail.new
       mail.list = create(:list)
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.body = 'blabla'
       mail.to_s
       list_keys = mail.list.keys
@@ -174,6 +182,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
     it 'updates a key' do
       mail = Mail.new
       mail.list = create(:list)
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.body = 'blabla'
       mail.add_file('spec/fixtures/expired_key_extended.txt')
       mail.to_s
@@ -189,6 +199,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
     it 'rejects garbage' do
       mail = Mail.new
       mail.list = create(:list)
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.body = 'blabla'
       mail.to_s
       list_keys = mail.list.keys
@@ -204,6 +216,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
     it 'deletes a key that distinctly matches the argument' do
       mail = Mail.new
       mail.list = create(:list)
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.list.import_key(File.read('spec/fixtures/example_key.txt'))
       mail.body = 'ignore me'
       mail.to_s
@@ -218,6 +232,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
     it 'deletes multiple keys that each distinctly match one argument' do
       mail = Mail.new
       mail.list = create(:list)
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.list.import_key(File.read('spec/fixtures/example_key.txt'))
       mail.list.import_key(File.read('spec/fixtures/expired_key_extended.txt'))
       mail.body = 'ignore me'
@@ -233,6 +249,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
     it 'deletes no key if the argument does not match' do
       mail = Mail.new
       mail.list = create(:list)
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.list.import_key(File.read('spec/fixtures/example_key.txt'))
       mail.body = 'ignore me'
       mail.to_s
@@ -240,7 +258,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
 
       output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: ['0x0x0x']).delete_key
 
-      expect(output).to eql("Error: No key found with this fingerprint: '0x0x0x'.")
+      expect(output).to eql("No keys match '0x0x0x'.")
       expect(mail.list.keys.size).to eql(list_keys.size)
     end
 

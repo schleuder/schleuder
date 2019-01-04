@@ -4,9 +4,10 @@ module Schleuder
       handles_request_keyword 'get-logfile', with_method: 'get_logfile'
 
       def get_logfile
-        if File.readable?(@list.logfile)
+        logfile = lists_controller.get_logfile(@list.email)
+        if logfile.present?
           attachment = Mail::Part.new
-          attachment.body = File.read(@list.logfile)
+          attachment.body = File.read(logfile)
           attachment.content_disposition = "inline; filename=#{@list.email}.log"
           intro = I18n.t('keyword_handlers.list_management.logfile_attached', listname: @list.email)
           [intro, attachment]
