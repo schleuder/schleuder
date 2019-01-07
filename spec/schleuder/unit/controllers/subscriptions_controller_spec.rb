@@ -40,7 +40,7 @@ describe Schleuder::SubscriptionsController do
       subscription = create(:subscription, list_id: list.id, admin: true)
       account = create(:account, email: subscription.email)
 
-      expected_subscription = SubscriptionsController.new(account).find(subscription.id)
+      expected_subscription = SubscriptionsController.new(account).find(subscription.email)
 
       expect(expected_subscription).to eq subscription
     end
@@ -51,7 +51,7 @@ describe Schleuder::SubscriptionsController do
       unauthorized_account = create(:account, email: 'unauthorized@example.org')
 
       expect do
-        SubscriptionsController.new(unauthorized_account).find(subscription.id)
+        SubscriptionsController.new(unauthorized_account).find(subscription.email)
       end.to raise_error(Schleuder::Errors::Unauthorized)
     end
   end
@@ -121,7 +121,7 @@ describe Schleuder::SubscriptionsController do
         'delivery_enabled' => false
       }
 
-      SubscriptionsController.new(account).update(subscription.id, attributes)
+      SubscriptionsController.new(account).update(subscription.email, attributes)
 
       subscription.reload
       expect(subscription.id).to eq subscription.id
@@ -139,7 +139,7 @@ describe Schleuder::SubscriptionsController do
       }
 
       expect do
-        SubscriptionsController.new(unauthorized_account).update(subscription.id, attributes)
+        SubscriptionsController.new(unauthorized_account).update(subscription.email, attributes)
       end.to raise_error(Schleuder::Errors::Unauthorized)
     end
   end
@@ -150,7 +150,7 @@ describe Schleuder::SubscriptionsController do
       subscription = create(:subscription, list_id: list.id, admin: true)
       account = create(:account, email: subscription.email)
 
-      SubscriptionsController.new(account).delete(subscription.id)
+      SubscriptionsController.new(account).delete(subscription.email)
 
       expect{ subscription.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
@@ -161,7 +161,7 @@ describe Schleuder::SubscriptionsController do
       unauthorized_account = create(:account, email: 'unauthorized@example.org')
 
       expect do
-        SubscriptionsController.new(unauthorized_account).delete(subscription.id)
+        SubscriptionsController.new(unauthorized_account).delete(subscription.email)
       end.to raise_error(Schleuder::Errors::Unauthorized)
     end
   end
