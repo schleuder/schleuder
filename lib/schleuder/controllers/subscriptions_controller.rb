@@ -5,8 +5,8 @@ module Schleuder
       current_account.scoped(Subscription).where(filter)
     end
 
-    def find(id)
-      subscription = Subscription.where(id: id).first
+    def find(email)
+      subscription = Subscription.where(email: email).first
       authorized?(subscription, :read)
       subscription
     end
@@ -23,14 +23,14 @@ module Schleuder
       )
     end
 
-    def update(id, attributes)
-      subscription = Subscription.where(id: id).first
+    def update(email, attributes)
+      subscription = Subscription.where(email: email).first
       authorized?(subscription, :update)
       subscription.update(attributes)
     end
 
-    def delete(id)
-      subscription = Subscription.where(id: id).first
+    def delete(email)
+      subscription = Subscription.where(email: email).first
       authorized?(subscription, :delete)
       subscription.destroy
     end

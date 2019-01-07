@@ -50,8 +50,8 @@ class SchleuderApiDaemon < Sinatra::Base
       json subscriptions_controller.new_subscription
     end
 
-    get '/:id.json' do |id|
-      json subscriptions_controller.find(id)
+    get '/:email.json' do |email|
+      json subscriptions_controller.find(email)
     end
 
     put '/:id.json' do |id|
@@ -67,8 +67,8 @@ class SchleuderApiDaemon < Sinatra::Base
       end
     end
 
-    patch '/:id.json' do |id|
-      subscription = subscriptions_controller.update(id, parsed_body)
+    patch '/:email.json' do |email|
+      subscription = subscriptions_controller.update(email, parsed_body)
       if subscription
         200
       else
@@ -76,8 +76,8 @@ class SchleuderApiDaemon < Sinatra::Base
       end
     end
 
-    delete '/:id.json' do |id|
-      subscription = subscriptions_controller.delete(id)
+    delete '/:email.json' do |email|
+      subscription = subscriptions_controller.delete(email)
       if subscription
         200
       else
