@@ -1,19 +1,19 @@
 module Schleuder
   class SubscriptionsController < BaseController
     def find_all(filter={})
-      authorized?(Subscription, :list)
+      authorize!(Subscription, :list)
       current_account.scoped(Subscription).where(filter)
     end
 
     def find(email)
       subscription = Subscription.where(email: email).first
-      authorized?(subscription, :read)
+      authorize!(subscription, :read)
       subscription
     end
 
     def subscribe(list_id, attributes, key_material)
       list = get_list_by_id_or_email(list_id)
-      authorized?(list, :subscribe)
+      authorize!(list, :subscribe)
       list.subscribe(
         attributes['email'],
         attributes['fingerprint'],
@@ -25,13 +25,13 @@ module Schleuder
 
     def update(email, attributes)
       subscription = Subscription.where(email: email).first
-      authorized?(subscription, :update)
+      authorize!(subscription, :update)
       subscription.update(attributes)
     end
 
     def delete(email)
       subscription = Subscription.where(email: email).first
-      authorized?(subscription, :delete)
+      authorize!(subscription, :delete)
       subscription.destroy
     end
 
