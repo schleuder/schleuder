@@ -8,7 +8,7 @@ module Schleuder
 
     private
 
-    def authorized?(resource, action)
+    def authorize!(resource, action)
       current_account.authorized?(resource, action) || raise(Errors::Unauthorized.new)
     end
 

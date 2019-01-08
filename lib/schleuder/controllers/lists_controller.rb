@@ -5,7 +5,7 @@ module Schleuder
     end
 
     def create(listname, fingerprint, adminaddress, adminfingerprint, adminkey)
-      authorized?(List, :create)
+      authorize!(List, :create)
       ListBuilder.new(
         {email: listname, fingerprint: fingerprint}, adminaddress, adminfingerprint, adminkey
       ).run
@@ -17,19 +17,19 @@ module Schleuder
 
     def find(identifier)
       list = get_list_by_id_or_email(identifier)
-      authorized?(list, :read)
+      authorize!(list, :read)
       list
     end
 
     def update(identifier, attributes)
       list = get_list_by_id_or_email(identifier)
-      authorized?(list, :update)
+      authorize!(list, :update)
       list.update(attributes)
     end
 
     def delete(identifier)
       list = get_list_by_id_or_email(identifier)
-      authorized?(list, :delete)
+      authorize!(list, :delete)
       list.destroy
     end
 
@@ -39,7 +39,7 @@ module Schleuder
 
     def send_list_key_to_subscriptions(list_id)
       list = get_list_by_id_or_email(list_id)
-      authorized?(list, :send_list_key)
+      authorize!(list, :send_list_key)
       list.send_list_key_to_subscriptions
     end
   end
