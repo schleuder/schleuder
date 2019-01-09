@@ -9,7 +9,7 @@ module Schleuder
     private
 
     def authorize!(resource, action)
-      current_account.authorized?(resource, action) || raise(Errors::Unauthorized.new)
+      current_account.authorize!(resource, action)
     end
 
     def get_list_by_id_or_email(identifier)
