@@ -13,7 +13,7 @@ module Schleuder
 
       action = action.to_s
       action << '?' unless action.last == '?'
-      policy(resource).public_send(action) or fail(Errors::Unauthorized.new)
+      policy(resource).public_send(action) or fail(Errors::Unauthorized.new(resource))
     end
 
     def scoped(klass)

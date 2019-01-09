@@ -75,6 +75,12 @@ de:
     too_many_matching_keys: |
       Zu viele Schlüssel gefunden für '%{input}':
       %{key_strings}
+    unauthorized: |
+      Die Konfiguration dieser Liste verhindert, dass du diese Aktion ausführen darfst.
+
+      Wenn du nicht Hilfe brauchst wende dich bitte an
+      deine Listen-Admins <%{list_owner_email}>)
+      oder lies die Dokumentation <https://schleuder.org/schleuder/docs/>.
   keyword_handlers:
     handler_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
     keyword_admin_notify:
