@@ -23,8 +23,8 @@ module SchleuderApiDaemonHelper
       end
     end
 
-    def authorized?(resource, action)
-      current_account.authorized?(resource, action) || halt(403)
+    def authorize!(resource, action)
+      current_account.authorize!(resource, action) || halt(403)
     end
 
     def current_account
