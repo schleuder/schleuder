@@ -75,6 +75,12 @@ en:
     too_many_matching_keys: |
       Too many matching keys for '%{input}':
       %{key_strings}
+    unauthorized: |
+      Unfortunately you are not allowed to do that.
+
+      If you need help please contact
+      your list-admins <%{list_owner_email}>
+      or read the documentation <https://schleuder.org/schleuder/docs/>.
   keyword_handlers:
     handler_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
     keyword_admin_notify:

@@ -8,12 +8,12 @@ module Schleuder
       @account = account
     end
 
-    def authorized?(resource, action)
+    def authorize!(resource, action)
       return nil if resource.nil?
 
       action = action.to_s
       action << '?' unless action.last == '?'
-      policy(resource).public_send(action)
+      policy(resource).public_send(action) || raise(Errors::Unauthorized.new(resource))
     end
 
     def scoped(klass)
