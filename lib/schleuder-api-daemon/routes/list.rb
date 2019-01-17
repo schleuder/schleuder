@@ -7,12 +7,12 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     post '.json' do
-      listname = parsed_body['email']
+      list_email = parsed_body['email']
       fingerprint = parsed_body['fingerprint']
       adminaddress = parsed_body['adminaddress']
       adminfingerprint = parsed_body['adminfingerprint']
       adminkey = parsed_body['adminkey']
-      list, messages = lists_controller.create(listname, fingerprint, adminaddress, adminfingerprint, adminkey)
+      list, messages = lists_controller.create(list_email, fingerprint, adminaddress, adminfingerprint, adminkey)
       if list.nil?
         client_error(messages, 422)
       elsif ! list.valid?
@@ -28,36 +28,36 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     post '/send_list_key_to_subscriptions.json' do
-      require_list_id_param
-      json(result: lists_controller.send_list_key_to_subscriptions(params[:list_id]))
+      require_list_email_param(:email)
+      json(result: lists_controller.send_list_key_to_subscriptions(params[:email]))
     end
 
     get '/new.json' do
       json lists_controller.new_list
     end
 
-    get '/:id.json' do |id|
-      json lists_controller.find(id)
+    get '/:email.json' do |email|
+      json lists_controller.find(email)
     end
 
-    put '/:id.json' do |id|
-      if lists_controller.update(id, parsed_body)
+    put '/:email.json' do |email|
+      if lists_controller.update(email, parsed_body)
         204
       else
         client_error(list)
       end
     end
 
-    patch '/:id.json' do |id|
-      if lists_controller.update(id, parsed_body)
+    patch '/:email.json' do |email|
+      if lists_controller.update(email, parsed_body)
         204
       else
         client_error(list)
       end
     end
 
-    delete '/:id.json' do |id|
-      if lists_controller.delete(id)
+    delete '/:email.json' do |email|
+      if lists_controller.delete(email)
         200
       else
         client_error(list)

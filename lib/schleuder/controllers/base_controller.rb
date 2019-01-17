@@ -12,9 +12,8 @@ module Schleuder
       current_account.authorize!(resource, action)
     end
 
-    def get_list_by_id_or_email(identifier)
-      query_args = to_query_args(identifier)
-      List.where(query_args).first
+    def get_list(email)
+      List.find_by(email: email.to_s)
     end
 
     def to_query_args(identifier)
