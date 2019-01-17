@@ -11,8 +11,8 @@ module Schleuder
       subscription
     end
 
-    def subscribe(list_id, attributes, key_material)
-      list = get_list_by_id_or_email(list_id)
+    def subscribe(list_email, attributes, key_material)
+      list = get_list(list_email)
       authorize!(list, :subscribe)
       list.subscribe(
         attributes['email'],

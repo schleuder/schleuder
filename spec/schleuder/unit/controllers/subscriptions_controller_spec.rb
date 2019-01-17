@@ -69,7 +69,7 @@ describe Schleuder::SubscriptionsController do
       }
       key_material = File.read('spec/fixtures/partially_expired_key.txt')
 
-      result = SubscriptionsController.new(account).subscribe(list.id, attributes, key_material)
+      result = SubscriptionsController.new(account).subscribe(list.email, attributes, key_material)
 
       expect(result[0].email).to eq 'foo@example.org'
       expect(result[0]).to be_an_instance_of Schleuder::Subscription
@@ -86,7 +86,7 @@ describe Schleuder::SubscriptionsController do
       }
 
       expect do
-        SubscriptionsController.new(unauthorized_account).subscribe(list.id, attributes, nil)
+        SubscriptionsController.new(unauthorized_account).subscribe(list.email, attributes, nil)
       end.to raise_error(Schleuder::Errors::Unauthorized)
     end
   end
