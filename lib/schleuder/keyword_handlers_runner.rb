@@ -70,6 +70,8 @@ module Schleuder
           notify_admins(type, mail, list, keyword, arguments, output)
         end
         return output
+      rescue Errors::SubscriptionNotFound, Errors::KeyNotFound => exc
+        exc.to_s
       rescue => exc
         # Log to system, this information is probably more useful for
         # system-admins than for list-admins.

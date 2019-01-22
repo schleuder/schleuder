@@ -39,7 +39,7 @@ describe 'subscription via api' do
       get 'subscriptions.json?list_email=non_existing@example.org', { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 404
-      expect(last_response.body).to eq 'Not found'
+      expect(last_response.body).to eq 'List not found.'
     end
 
     it 'returns a 403 if no subscription is associated with the account' do

@@ -9,7 +9,7 @@ module Schleuder
     end
 
     def authorize!(resource, action)
-      return nil if resource.nil?
+      raise Errors::ResourceNotFound.new if resource.nil?
 
       action = action.to_s
       action << '?' unless action.last == '?'
