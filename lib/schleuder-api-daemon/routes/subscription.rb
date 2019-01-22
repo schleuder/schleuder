@@ -3,29 +3,29 @@ class SchleuderApiDaemon < Sinatra::Base
 
   namespace '/subscriptions' do
     get '.json' do
-      filterkeys = subscriptions_controller.get_configurable_attributes + ['list_id', 'email']
+      filterkeys = subscriptions_controller.get_configurable_attributes + ['list_email', 'email']
       filter = params.select do |param|
         filterkeys.include?(param)
       end
 
       logger.debug "Subscription filter: #{filter.inspect}"
-      if filter['list_id'] && ! is_an_integer?(filter['list_id'])
-        # Value is an email-address
-        if list = lists_controller.find(filter['list_id'])
+      if filter['list_email']
+        if list = lists_controller.find(filter['list_email'])
           filter['list_id'] = list.id
+          filter.delete('list_email')
         else
           status 404
           return json(errors: 'No such list')
         end
       end
-
       json subscriptions_controller.find_all(filter)
     end
+
 
     post '.json' do
       begin
         attributes = find_attributes_from_body(%w[email fingerprint admin delivery_enabled])
-        subscription, messages = subscriptions_controller.subscribe(requested_list_id, attributes, find_key_material)
+        subscription, messages = subscriptions_controller.subscribe(requested_list_email, attributes, find_key_material)
         set_x_messages(messages)
         logger.debug "subcription: #{subscription.inspect}"
         if subscription.valid?

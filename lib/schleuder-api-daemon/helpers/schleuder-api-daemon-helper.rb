@@ -39,8 +39,8 @@ module SchleuderApiDaemonHelper
       end
     end
 
-    def require_list_id_param(msg='Need "list_id" query-parameter')
-      params[:list_id].presence || client_error(msg)
+    def require_list_email_param(param_name, msg="Need '#{param_name}' as query-parameter")
+      params[param_name].presence || client_error(msg)
     end
 
     def load_list(identifier)
@@ -48,35 +48,10 @@ module SchleuderApiDaemonHelper
       List.where(query_args).first || halt(404)
     end
 
-    def load_subscription(identifier)
-      query_args = make_query_args(identifier)
-      if is_an_integer?(identifier)
-        query_base = Subscription
-      else require_list_id_param('Parameter list_id is required when using email as identifier for subscriptions.')
-           list = load_list(params[:list_id])
-           query_base = list.subscriptions
-      end
-      query_base.where(query_args).first || halt(404)
-    end
-
-    def subscription(id_or_email)
-      if is_an_integer?(id_or_email)
-        sub = Subscription.where(id: id_or_email.to_i).first
-      else
-        # Email
-        if params[:list_id].blank?
-          client_error 'Parameter list_id is required when using email as identifier for subscriptions.'
-        else
-          sub = list.subscriptions.where(email: id_or_email).first
-        end
-      end
-      sub || halt(404)
-    end
-
-    def requested_list_id
+    def requested_list_email
       # ActiveResource doesn't want to use query-params with create(), so here
       # list_id might be included in the request-body.
-      params['list_id'] || parsed_body['list_id'] || client_error('Need list_id')
+      params['list_email'] || parsed_body['list_email'] || client_error('Need list_email')
     end
 
     def parsed_body

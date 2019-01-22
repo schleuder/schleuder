@@ -74,7 +74,7 @@ describe Schleuder::ListsController do
 
       allow_any_instance_of(List).to receive(:send_list_key_to_subscriptions).and_return(true)
 
-      expect(ListsController.new(account).send_list_key_to_subscriptions(list.id)).to eq true
+      expect(ListsController.new(account).send_list_key_to_subscriptions(list.email)).to eq true
     end
 
     it 'raises an unauthorized error when the user is not authorized' do
@@ -83,7 +83,7 @@ describe Schleuder::ListsController do
       unauthorized_account = create(:account, email: subscription.email)
 
       expect do
-        ListsController.new(unauthorized_account).send_list_key_to_subscriptions(list.id)
+        ListsController.new(unauthorized_account).send_list_key_to_subscriptions(list.email)
       end.to raise_error(Schleuder::Errors::Unauthorized)
     end
   end
@@ -97,14 +97,6 @@ describe Schleuder::ListsController do
   end
 
   describe '#find' do
-    it 'returns a list for a given list id' do
-      list = create(:list)
-      subscription = create(:subscription, list_id: list.id, admin: false)
-      account = create(:account, email: subscription.email)
-
-      expect(ListsController.new(account).find(list.id)).to eq list
-    end
-
     it 'returns a list for a given list email address' do
       list = create(:list)
       subscription = create(:subscription, list_id: list.id, admin: false)
@@ -118,7 +110,7 @@ describe Schleuder::ListsController do
       unauthorized_account = create(:account)
 
       expect do
-        ListsController.new(unauthorized_account).find(list.id)
+        ListsController.new(unauthorized_account).find(list.email)
       end.to raise_error(Schleuder::Errors::Unauthorized)
     end
   end
@@ -130,7 +122,7 @@ describe Schleuder::ListsController do
       account = create(:account, email: subscription.email)
       attributes = { 'email' => 'new_address@example.org' }
 
-      ListsController.new(account).update(list.id, attributes)
+      ListsController.new(account).update(list.email, attributes)
       list.reload
 
       expect(list.email).to eq 'new_address@example.org'
@@ -142,7 +134,7 @@ describe Schleuder::ListsController do
       attributes = { 'email' => 'new_address@example.org' }
 
       expect do
-        ListsController.new(unauthorized_account).update(list.id, attributes)
+        ListsController.new(unauthorized_account).update(list.email, attributes)
       end.to raise_error(Schleuder::Errors::Unauthorized)
     end
   end
@@ -153,7 +145,7 @@ describe Schleuder::ListsController do
       account = create(:account, email: 'api-superadmin@localhost', api_superadmin: true)
 
       expect do
-        ListsController.new(account).delete(list.id)
+        ListsController.new(account).delete(list.email)
       end.to change { List.count }.by -1
     end
   end
@@ -163,7 +155,7 @@ describe Schleuder::ListsController do
     unauthorized_account = create(:account)
 
     expect do
-      ListsController.new(unauthorized_account).delete(list.id)
+      ListsController.new(unauthorized_account).delete(list.email)
     end.to raise_error(Schleuder::Errors::Unauthorized)
   end
 end
