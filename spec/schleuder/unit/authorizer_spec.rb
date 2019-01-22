@@ -2,10 +2,12 @@ require 'spec_helper'
 
 describe Schleuder::Authorizer do
   describe '#authorize!' do
-    it 'raises an error when resource is nil' do
+    it 'raises an error if resource is nil' do
       account = create(:account)
 
-      expect(Authorizer.new(account).authorize!(nil, :some_action)).to eql nil
+      expect do
+        Authorizer.new(account).authorize!(nil, :some_action)
+      end.to raise_error(Schleuder::Errors::ResourceNotFound)
     end
 
     it 'does not raise an error if account is authorized' do

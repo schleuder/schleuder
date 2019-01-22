@@ -19,17 +19,24 @@ module Schleuder
     end
 
     def find(list_id, fingerprint)
-      list = get_list(list_id)
-      key = list.key(fingerprint)
+      key = get_key(list_id, fingerprint)
       authorize!(key, :read)
       key
     end
 
     def delete(list_id, fingerprint)
-      list = get_list(list_id)
-      key = list.key(fingerprint) || halt(404)
+      key = get_key(list_id, fingerprint)
       authorize!(key, :delete)
       key.delete!
+    end
+
+    private
+
+    def get_key(list_email, fingerprint)
+      list = get_list(list_email)
+      key = list.key(fingerprint)
+      raise Errors::KeyNotFound.new(fingerprint) if key.blank?
+      key
     end
   end
 end

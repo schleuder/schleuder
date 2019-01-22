@@ -54,6 +54,8 @@ en:
       In case you only sent keywords please note that administrative keywords must be sent to the "request"-address (<%{request_address}>) in order to be respected.
     no_linebreaks: "must not include line-breaks"
     list_not_found: "Error: No list found with this address: '%{email}'."
+    key_not_found: "Error: No key found with this fingerprint: '%{fingerprint}'."
+    subscription_not_found: "Error: No subscription found with this email-address: '%{email}'."
     invalid_characters: "contains invalid characters"
     listdir_problem:
       message: "There's a problem with the list-directory: '%{dir}' %{problem}."
