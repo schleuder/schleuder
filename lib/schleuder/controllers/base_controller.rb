@@ -13,7 +13,7 @@ module Schleuder
     end
 
     def get_list(email)
-      List.find_by(email: email.to_s)
+      List.find_by(email: email.to_s) || raise(Errors::ListNotFound.new(email))
     end
   end
 end

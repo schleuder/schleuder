@@ -6,7 +6,7 @@ module Schleuder
     end
 
     def find(email)
-      subscription = Subscription.where(email: email).first
+      subscription = get_subscription(email)
       authorize!(subscription, :read)
       subscription
     end
@@ -24,13 +24,13 @@ module Schleuder
     end
 
     def update(email, attributes)
-      subscription = Subscription.where(email: email).first
+      subscription = get_subscription(email)
       authorize!(subscription, :update)
       subscription.update(attributes)
     end
 
     def delete(email)
-      subscription = Subscription.where(email: email).first
+      subscription = get_subscription(email)
       authorize!(subscription, :delete)
       subscription.destroy
     end
@@ -41,6 +41,14 @@ module Schleuder
 
     def new_subscription
       Subscription.new
+    end
+
+    private
+
+    def get_subscription(email)
+      subscription = Subscription.find_by(email: email.to_s)
+      raise Errors::SubscriptionNotFound.new(email) if subscription.blank?
+      subscription
     end
   end
 end
