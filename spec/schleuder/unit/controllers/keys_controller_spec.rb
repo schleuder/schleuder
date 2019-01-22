@@ -85,13 +85,14 @@ describe Schleuder::KeysController do
       expect(result.fingerprint).to eq '59C71FB38AEE22E091C78259D06350440F759BD3'
     end
 
-    it 'returns nil if user is authorized but no key is found for given fingerprint' do
+    it 'raises an error if user is authorized but no key is found for given fingerprint' do
       list = create(:list)
       subscription = create(:subscription, list_id: list.id, admin: true)
       account = create(:account, email: subscription.email)
 
-      key = KeysController.new(account).find(list.email, '80C71FB38AEE22E091C78259D06350440F759BD3')
-      expect(key).to eql(nil)
+      expect do
+        KeysController.new(account).find(list.email, '80C71FB38AEE22E091C78259D06350440F759BD3')
+      end.to raise_error(Schleuder::Errors::KeyNotFound)
     end
 
     it 'raises an unauthorized error when the user is not authorized' do

@@ -50,6 +50,8 @@ de:
 
       Falls du ausschließlich Schlüsselwörter gesendet hast beachte, dass administrative Schlüsselwörter an die "request"-Adresse (<%{request_address}>) geschickt werden müssen um berücksichtigt zu werden.
     list_not_found: "Fehler: Keine Liste zu dieser Adresse gefunden: '%{email}'."
+    key_not_found: "Fehler: Keinen Schlüssel mit Fingerabdruck '%{fingerprint}' gefunden."
+    subscription_not_found: "Fehler: Kein Abo mit Adresse '%{email}' gefunden."
     no_linebreaks: "Darf keine Zeilenumbrüche enthalten"
     invalid_characters: "enthält ungültige Zeichen"
     listdir_problem:

@@ -48,6 +48,21 @@ class SchleuderApiDaemon < Sinatra::Base
     ActiveRecord::Base.connection.close
   end
 
+  error Errors::KeyNotFound do
+    status 404
+    body 'Key not found.'
+  end
+
+  error Errors::SubscriptionNotFound do
+    status 404
+    body 'Subscription not found.'
+  end
+
+  error Errors::ListNotFound do
+    status 404
+    body 'List not found.'
+  end
+
   error Errors::Unauthorized do
     status 403
     body('Not authorized')
