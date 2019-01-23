@@ -1,31 +1,31 @@
 module Schleuder
   class KeysController < BaseController
-    def find_all(list_id)
-      list = get_list(list_id)
+    def find_all(list_email)
+      list = get_list(list_email)
       authorize!(list, :list_keys)
       list.keys
     end
 
-    def import(list_id, key)
-      list = get_list(list_id)
+    def import(list_email, key)
+      list = get_list(list_email)
       authorize!(list, :add_keys)
       list.import_key(key)
     end
 
-    def check(list_id)
-      list = get_list(list_id)
+    def check(list_email)
+      list = get_list(list_email)
       authorize!(list, :check_keys)
       list.check_keys
     end
 
-    def find(list_id, fingerprint)
-      key = get_key(list_id, fingerprint)
+    def find(list_email, fingerprint)
+      key = get_key(list_email, fingerprint)
       authorize!(key, :read)
       key
     end
 
-    def delete(list_id, fingerprint)
-      key = get_key(list_id, fingerprint)
+    def delete(list_email, fingerprint)
+      key = get_key(list_email, fingerprint)
       authorize!(key, :delete)
       key.delete!
     end
