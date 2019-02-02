@@ -27,42 +27,48 @@ describe Schleuder::Subscription do
   end
 
   it 'is invalid when email is nil' do
-    subscription = build(:subscription, email: nil)
+    list = create(:list)
+    subscription = build(:subscription, list_id: list.id, email: nil)
 
     expect(subscription).not_to be_valid
     expect(subscription.errors.messages[:email]).to include("can't be blank")
   end
 
-   it 'is invalid when email is blank' do
-    subscription = build(:subscription, email: '')
+  it 'is invalid when email is blank' do
+    list = create(:list)
+    subscription = build(:subscription, list_id: list.id, email: '')
 
     expect(subscription).not_to be_valid
     expect(subscription.errors.messages[:email]).to include("can't be blank")
   end
 
   it 'is invalid when email does not contain an @' do
-    subscription = build(:subscription, email: 'fooatbar.org')
+    list = create(:list)
+    subscription = build(:subscription, list_id: list.id, email: 'fooatbar.org')
 
     expect(subscription).not_to be_valid
     expect(subscription.errors.messages[:email]).to include('is not a valid email address')
   end
 
   it 'is valid when fingerprint is empty' do
-    subscription = build(:subscription, fingerprint: '')
+    list = create(:list)
+    subscription = build(:subscription, list_id: list.id, fingerprint: '')
 
     expect(subscription).to be_valid
     expect(subscription.errors.messages[:fingerprint]).to be_blank
   end
 
   it 'is valid when fingerprint is nil' do
-    subscription = build(:subscription, fingerprint: nil)
+    list = create(:list)
+    subscription = build(:subscription, list_id: list.id, fingerprint: nil)
 
     expect(subscription).to be_valid
     expect(subscription.errors.messages[:fingerprint]).to be_blank
   end
 
   it 'is invalid when fingerprint contains invalid characters' do
-    subscription = build(:subscription, fingerprint: '&$$$$123AAA')
+    list = create(:list)
+    subscription = build(:subscription, list_id: list.id, fingerprint: '&$$$$123AAA')
 
     expect(subscription).not_to be_valid
     expect(subscription.errors.messages[:fingerprint]).to include('is not a valid OpenPGP-fingerprint')
@@ -70,7 +76,8 @@ describe Schleuder::Subscription do
 
   BOOLEAN_SUBSCRIPTION_ATTRIBUTES.each do |subscription_attribute|
     it "is invalid if #{subscription_attribute} is nil" do
-      subscription = build(:subscription)
+      list = create(:list)
+      subscription = build(:subscription, list_id: list.id)
       subscription[subscription_attribute] = nil
 
       expect(subscription).not_to be_valid
@@ -78,7 +85,8 @@ describe Schleuder::Subscription do
     end
 
     it "is invalid if #{subscription_attribute} is blank" do
-      subscription = build(:subscription)
+      list = create(:list)
+      subscription = build(:subscription, list_id: list.id)
       subscription[subscription_attribute] = ''
 
       expect(subscription).not_to be_valid
@@ -87,8 +95,10 @@ describe Schleuder::Subscription do
   end
 
   it 'is invalid if the given email is already subscribed for the list' do
-    subscription1 = create(:subscription)
-    subscription2 = build(:subscription, email: subscription1.email)
+    list1 = create(:list)
+    list2 = create(:list)
+    subscription1 = create(:subscription, list_id: list1.id)
+    subscription2 = create(:subscription, list_id: list2.id, email: subscription1.email)
     subscription3 = build(:subscription, email: subscription1.email, list_id: subscription1.list_id)
 
     expect(subscription1).to be_valid
