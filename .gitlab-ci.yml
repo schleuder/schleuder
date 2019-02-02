@@ -52,7 +52,8 @@ cache:
     CHECK_CODE_COVERAGE: "true"
   <<: *setup_prerequisites
   script:
-    - eatmydata gem install bundler --no-document
+    - bundler_args="$(ruby -e 'puts %{-v 1.17.3} if RUBY_VERSION[2].to_i < 3')"
+    - eatmydata gem install bundler --no-document $bundler_args
     - eatmydata bundle install --jobs $(nproc) --path vendor
     - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:init
     - eatmydata bundle exec rspec
