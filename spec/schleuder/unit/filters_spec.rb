@@ -73,4 +73,55 @@ describe Schleuder::Filters do
     end
   end
 
+  context '.strip_html_from_alternative_if_keywords_present' do
+    it 'strips HTML-part from multipart/alternative-message that contains keywords' do
+      list = create(:list)
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'outside@example.org'
+      mail.text_part = content = 'x-resend: someone@example.org\n\nblabla'
+      mail.html_part = '<p>x-resend: someone@example.org</p><p>blabla</p>'
+      mail.subject = 'test'
+      mail.to_s
+
+      Schleuder::Filters.strip_html_from_alternative_if_keywords_present(list, mail)
+
+      expect(mail[:content_type].content_type).to eql('multipart/mixed')
+      expect(mail.parts.size).to be(1)
+      expect(mail.parts.first[:content_type].content_type).to eql('text/plain')
+      expect(mail.dynamic_pseudoheaders).to include('Note: This message included keywords and an alternating HTML-part. The HTML-part was removed to prevent the disclosure of these keywords to third parties.')
+    end
+
+    it 'does NOT strip HTML-part from multipart/alternative-message that does NOT contain keywords' do
+      list = create(:list)
+      mail = Mail.new
+      mail.to = 'schleuder@example.org'
+      mail.from = 'outside@example.org'
+      mail.text_part = content = 'Hello someone@example.org,\n\nblabla'
+      mail.html_part = '<p>Hello someone@example.org,</p><p>blabla</p>'
+      mail.subject = 'test'
+
+      Schleuder::Filters.strip_html_from_alternative_if_keywords_present(list, mail)
+
+      expect(mail[:content_type].content_type).to eql('multipart/alternative')
+      expect(mail.parts.size).to be(2)
+      expect(mail.parts.first[:content_type].content_type).to eql('text/plain')
+      expect(mail.parts.last[:content_type].content_type).to eql('text/html')
+      expect(mail.dynamic_pseudoheaders).to be_blank
+    end
+
+    it 'does not choke on nor change a message without Content-Type-header' do
+      mail = Mail.new
+      mail.to = 'schleuder@example.org'
+      mail.from = 'outside@example.org'
+      mail.body = 'blabla'
+      mail.subject = 'test'
+
+      Schleuder::Filters.strip_html_from_alternative_if_keywords_present(nil, mail)
+
+      expect(mail[:content_type]).to be_nil
+      expect(mail.parts.size).to be(0)
+      expect(mail.dynamic_pseudoheaders).to be_blank
+    end
+  end
 end

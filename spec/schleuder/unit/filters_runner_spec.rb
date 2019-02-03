@@ -80,6 +80,7 @@ describe Schleuder::Filters::Runner do
         'receive_signed_only',
         'receive_encrypted_only',
         'receive_from_subscribed_emailaddresses_only',
+        'strip_html_from_alternative_if_keywords_present'
       ]
     end
     it 'loads custom filters from filters_dir and sorts them in, ignores filter not following convention' do
@@ -102,6 +103,7 @@ describe Schleuder::Filters::Runner do
         'receive_encrypted_only',
         'post_example',
         'receive_from_subscribed_emailaddresses_only',
+        'strip_html_from_alternative_if_keywords_present'
       ]
     end
     it 'loads custom filters from filters_dir and sorts them in with missing dir' do
@@ -123,6 +125,7 @@ describe Schleuder::Filters::Runner do
         'receive_signed_only',
         'receive_encrypted_only',
         'receive_from_subscribed_emailaddresses_only',
+        'strip_html_from_alternative_if_keywords_present'
       ]
     end
     it 'loads custom filters from filters_dir even with non-2-digit priority' do
@@ -146,6 +149,7 @@ describe Schleuder::Filters::Runner do
         'receive_signed_only',
         'receive_encrypted_only',
         'receive_from_subscribed_emailaddresses_only',
+        'strip_html_from_alternative_if_keywords_present',
       ]
     end
   end

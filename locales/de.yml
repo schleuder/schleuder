@@ -281,6 +281,7 @@ de:
     invalid_input: "Ungültige Angabe. Gültig sind: URLs, OpenPGP-Fingerabdrücke, oder Emailadressen."
   pseudoheaders:
     stripped_html_from_multialt: Diese Email enthielt einen alternativen HTML-Teil, der PGP-Daten beinhaltete. Der HTML-Teil wurde entfernt, um die Email sauberer analysieren zu können.
+    stripped_html_from_multialt_with_keywords: Diese Email enthielt Schlüsselwörter und einen alternativen HTML-Teil. Der HTML-Teil wurde entfernt, um zu verhindern dass diese Schlüsselwörter Aussenstehenden bekannt werden.
   signature_states:
     unknown: "Unbekannte Signatur von unbekanntem Schlüssel 0x%{fingerprint}"
     unsigned: "Unsigniert"
