@@ -5,7 +5,7 @@ describe "keys via api" do
     it "doesn't list keys without authentication" do
       list = create(:list)
 
-      get "/keys.json?list_email=#{list.email}"
+      get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 401
     end
@@ -16,7 +16,7 @@ describe "keys via api" do
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
 
-      get "/keys.json?list_email=#{list.email}"
+      get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 403
       expect(last_response.body).to eql("Not authorized")
@@ -28,7 +28,7 @@ describe "keys via api" do
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
 
-      get "/keys.json?list_email=#{list.email}"
+      get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 200
       expect(JSON.parse(last_response.body).length).to be 1
@@ -40,7 +40,7 @@ describe "keys via api" do
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
 
-      get "/keys.json?list_email=#{list.email}"
+      get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 200
       expect(JSON.parse(last_response.body).length).to be 1
@@ -50,7 +50,7 @@ describe "keys via api" do
       list = create(:list)
       authorize_as_api_superadmin!
 
-      get "/keys.json?list_email=#{list.email}"
+      get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 200
       expect(JSON.parse(last_response.body).length).to be 1
@@ -60,7 +60,8 @@ describe "keys via api" do
   context "check" do
     it "doesn't check keys without authentication" do
       list = create(:list)
-      get "/keys/check_keys.json?list_email=#{list.email}"
+
+      get "/lists/#{list.email}/keys/check.json"
 
       expect(last_response.status).to be 401
     end
@@ -71,7 +72,7 @@ describe "keys via api" do
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
 
-      get "/keys/check_keys.json?list_email=#{list.email}"
+      get "/lists/#{list.email}/keys/check.json"
 
       expect(last_response.status).to be 403
       expect(last_response.body).to eql("Not authorized")
@@ -83,7 +84,7 @@ describe "keys via api" do
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
 
-      get "/keys/check_keys.json?list_email=#{list.email}"
+      get "/lists/#{list.email}/keys/check.json"
 
       expect(last_response.status).to be 403
       expect(last_response.body).to eql("Not authorized")
@@ -98,7 +99,7 @@ describe "keys via api" do
       list.import_key(File.read("spec/fixtures/signonly_key.txt"))
       list.import_key(File.read("spec/fixtures/expired_key.txt"))
 
-      get "/keys/check_keys.json?list_email=#{list.email}"
+      get "/lists/#{list.email}/keys/check.json"
 
       expect(last_response.status).to be 200
       result = JSON.parse(last_response.body)["result"]
@@ -117,7 +118,7 @@ describe "keys via api" do
       list.import_key(File.read("spec/fixtures/expired_key.txt"))
       authorize_as_api_superadmin!
 
-      get "/keys/check_keys.json?list_email=#{list.email}"
+      get "/lists/#{list.email}/keys/check.json"
 
       expect(last_response.status).to be 200
       result = JSON.parse(last_response.body)["result"]
@@ -186,9 +187,9 @@ describe "keys via api" do
   context "import" do
     it "doesn't import keys without authentication" do
       list = create(:list)
-      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt") }
+      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
       expect {
-        post "/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
+        post "/lists/#{list.email}/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
         expect(last_response.status).to be 401
       }.to change { list.keys.length }.by 0
     end
@@ -198,10 +199,10 @@ describe "keys via api" do
       subscription = create(:subscription, admin: true)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
-      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt") }
+      parameters = {"keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
       num_keys = list.keys.size
 
-      post "/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
+      post "/lists/#{list.email}/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
 
       expect(list.reload.keys.size).to eql(num_keys)
       expect(last_response.status).to be 403
@@ -211,10 +212,10 @@ describe "keys via api" do
       subscription = create(:subscription, list_id: list.id, admin: false)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
-      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt") }
+      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
       num_keys = list.keys.length
 
-      post "/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
+      post "/lists/#{list.email}/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
 
       expect(list.reload.keys.length).to eql(num_keys + 1)
       expect(last_response.status).to be 200
@@ -227,10 +228,10 @@ describe "keys via api" do
       subscription = create(:subscription, list_id: list.id, admin: true)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
-      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt") }
+      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
       num_keys = list.keys.length
 
-      post "/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
+      post "/lists/#{list.email}/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
 
       expect(list.reload.keys.length).to eql(num_keys + 1)
       expect(last_response.status).to be 200
@@ -241,10 +242,10 @@ describe "keys via api" do
     it "does import keys authorized as api_superadmin" do
       list = create(:list)
       authorize_as_api_superadmin!
-      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt") }
+      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
       num_keys = list.keys.length
 
-      post "/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
+      post "/lists/#{list.email}/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
 
       expect(list.reload.keys.length).to eql(num_keys + 1)
       expect(last_response.status).to be 200
@@ -299,7 +300,7 @@ describe "keys via api" do
       list.import_key(File.read("spec/fixtures/bla_foo_key.txt"))
       num_keys = list.keys.length
 
-      delete "/keys/0xEBDBE899251F2412.json?list_email=#{list.email}"
+      delete "/lists/#{list.email}/keys/0xEBDBE899251F2412.json"
 
       expect(last_response.status).to be 401
       expect(list.reload.keys.length).to eql(num_keys)
@@ -315,7 +316,7 @@ describe "keys via api" do
       authorize!(account.email, account.set_new_password!)
       num_keys = list.keys.length
 
-      delete "/keys/0xEBDBE899251F2412.json?list_email=#{list.email}"
+      delete "/lists/#{list.email}/keys/0xEBDBE899251F2412.json"
 
       expect(last_response.status).to be 403
       expect(last_response.body).to eql("Not authorized")
@@ -330,7 +331,7 @@ describe "keys via api" do
       authorize!(account.email, account.set_new_password!)
       num_keys = list.keys.length
 
-      delete "/keys/0xEBDBE899251F2412.json?list_email=#{list.email}"
+      delete "/lists/#{list.email}/keys/0xEBDBE899251F2412.json"
 
       expect(last_response.status).to be 403
       expect(last_response.body).to eql("Not authorized")
@@ -345,7 +346,7 @@ describe "keys via api" do
       authorize!(account.email, account.set_new_password!)
       num_keys = list.keys.length
 
-      delete "/keys/0xEBDBE899251F2412.json?list_email=#{list.email}"
+      delete "/lists/#{list.email}/keys/0xEBDBE899251F2412.json"
 
       expect(last_response.status).to be 200
       expect(list.reload.keys.length).to eql(num_keys - 1)
@@ -357,7 +358,7 @@ describe "keys via api" do
       authorize_as_api_superadmin!
       num_keys = list.keys.length
 
-      delete "/keys/0xEBDBE899251F2412.json?list_email=#{list.email}"
+      delete "/lists/#{list.email}/keys/0xEBDBE899251F2412.json"
 
       expect(last_response.status).to be 200
       expect(list.reload.keys.length).to eql(num_keys - 1)
@@ -370,7 +371,9 @@ describe "keys via api" do
         list = create(:list)
         list.import_key(File.read("spec/fixtures/broken_utf8_uid_key.txt"))
         authorize_as_api_superadmin!
-        get "/keys.json?list_email=#{list.email}"
+
+        get "/lists/#{list.email}/keys.json"
+
         expect(last_response.status).to be 200
         expect(JSON.parse(last_response.body).length).to be 2
 
@@ -381,7 +384,9 @@ describe "keys via api" do
         list = create(:list)
         list.import_key(File.read("spec/fixtures/broken_utf8_uid_key.txt"))
         authorize_as_api_superadmin!
-        get "/keys/0x1242F6E13D8EBE4A.json?list_email=#{list.email}"
+
+        get "/lists/#{list.email}/keys/0x1242F6E13D8EBE4A.json"
+
         expect(last_response.status).to be 200
         expect(JSON.parse(last_response.body)["fingerprint"]).to eq("3102B29989BEE703AE5ED62E1242F6E13D8EBE4A")
 
@@ -394,7 +399,7 @@ describe "keys via api" do
         authorize_as_api_superadmin!
 
         expect {
-          delete "/keys/0x1242F6E13D8EBE4A.json?list_email=#{list.email}"
+          delete "/lists/#{list.email}/keys/0x1242F6E13D8EBE4A.json"
           expect(last_response.status).to be 200
         }.to change { list.keys.length }.by(-1)
 
@@ -405,9 +410,10 @@ describe "keys via api" do
     it "does add key" do
       list = create(:list)
       authorize_as_api_superadmin!
-      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/broken_utf8_uid_key.txt") }
+      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/broken_utf8_uid_key.txt")}
+
       expect {
-        post "/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
+        post "/lists/#{list.email}/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
         expect(last_response.status).to be 200
       }.to change { list.keys.length }.by(1)
 

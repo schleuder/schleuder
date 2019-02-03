@@ -35,12 +35,6 @@ module SchleuderApiDaemonHelper
       params[param_name].presence || client_error(msg)
     end
 
-    def requested_list_email
-      # ActiveResource doesn't want to use query-params with create(), so here
-      # list_id might be included in the request-body.
-      params['list_email'] || parsed_body['list_email'] || client_error('Need list_email')
-    end
-
     def parsed_body
       @parsed_body ||= begin
           b = JSON.parse(request.body.read)

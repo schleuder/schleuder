@@ -1,22 +1,21 @@
 class SchleuderApiDaemon < Sinatra::Base
   register Sinatra::Namespace
 
-  namespace "/keys" do
-    get ".json" do
-      require_list_email_param("list_email")
-      keys = keys_controller.find_all(params[:list_email])
+  namespace "/lists" do
+    get "/:list_email/keys.json" do |list_email|
+      keys = keys_controller.find_all(list_email)
       keys_hash = keys.sort_by(&:email).map do |key|
         key_to_hash(key)
       end
       json keys_hash
     end
 
-    post ".json" do
+    post "/:list_email/keys.json" do |list_email|
       input = parsed_body["keymaterial"]
       if !input.match("BEGIN PGP")
         input = Base64.decode64(input)
       end
-      import_result = keys_controller.import(requested_list_email, input)
+      import_result = keys_controller.import(list_email, input)
       keys = []
       messages = []
       import_result.imports.each do |import_status|
@@ -39,20 +38,17 @@ class SchleuderApiDaemon < Sinatra::Base
       json({type: "keys", keys: keys})
     end
 
-    get "/check_keys.json" do
-      require_list_email_param("list_email")
-      json result: keys_controller.check(params[:list_email])
+    get "/:list_email/keys/check.json" do |list_email|
+      json result: keys_controller.check(list_email)
     end
 
-    get "/:fingerprint.json" do |fingerprint|
-      require_list_email_param("list_email")
-      key = keys_controller.find(params[:list_email], fingerprint)
+    get "/:list_email/keys/:fingerprint.json" do |list_email, fingerprint|
+      key = keys_controller.find(list_email, fingerprint)
       json key_to_hash(key, true)
     end
 
-    delete "/:fingerprint.json" do |fingerprint|
-      require_list_email_param("list_email")
-      keys_controller.delete(params[:list_email], fingerprint)
+    delete "/:list_email/keys/:fingerprint.json" do |list_email, fingerprint|
+      keys_controller.delete(list_email, fingerprint)
     end
   end
 
