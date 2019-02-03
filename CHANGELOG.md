@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [4.0] / 2019-01-XX
 
+### Fixed
+
+* Stop leaking keywords to third parties by stripping HTML from multipart/alternative messages if they contain keywords. (#399)
+
 ### Added
 
 * 'X-STOP': To use any keyword, you *must* now also use the new keyword 'X-STOP' to mark where to stop looking for keywords. This enables looking for keyword arguments in multiple lines, e.g. for X-RESEND with long, wrapped lines.
