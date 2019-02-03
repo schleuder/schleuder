@@ -31,10 +31,6 @@ module SchleuderApiDaemonHelper
       @current_account
     end
 
-    def require_list_email_param(param_name, msg="Need '#{param_name}' as query-parameter")
-      params[param_name].presence || client_error(msg)
-    end
-
     def parsed_body
       @parsed_body ||= begin
           b = JSON.parse(request.body.read)
