@@ -142,21 +142,11 @@ describe 'lists via api' do
   end
 
   context 'send_list_key_to_subscriptions' do
-    it 'raises an error if the list email param is missing' do
-      authorize_as_api_superadmin!
-      _list = create(:list)
-
-      post 'lists/send_list_key_to_subscriptions.json'
-
-      expect(last_response.status).to be 400
-      expect(JSON.parse(last_response.body)['errors']).to eq ("Need 'email' as query-parameter")
-    end
-
-    it 'returns true if list email param is present and user is authorized' do
+    it 'returns true when the user is authorized' do
       authorize_as_api_superadmin!
       list = create(:list)
 
-      post "lists/send_list_key_to_subscriptions.json?email=#{list.email}", { 'CONTENT_TYPE' => 'application/json' }
+      post "/lists/#{list.email}/send_list_key_to_subscriptions.json", { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 200
       expect(JSON.parse(last_response.body)['result']).to eq true
@@ -168,7 +158,7 @@ describe 'lists via api' do
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
 
-      post "lists/send_list_key_to_subscriptions.json?email=#{list.email}", { 'CONTENT_TYPE' => 'application/json' }
+      post "/lists/#{list.email}/send_list_key_to_subscriptions.json", { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 403
       expect(last_response.body).to eql('Not authorized')
