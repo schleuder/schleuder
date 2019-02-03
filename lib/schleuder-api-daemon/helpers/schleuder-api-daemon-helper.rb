@@ -31,21 +31,8 @@ module SchleuderApiDaemonHelper
       @current_account
     end
 
-    def make_query_args(identifier)
-      if is_an_integer?(identifier)
-        {id: identifier.to_i}
-      else
-        {email: identifier.to_s}
-      end
-    end
-
     def require_list_email_param(param_name, msg="Need '#{param_name}' as query-parameter")
       params[param_name].presence || client_error(msg)
-    end
-
-    def load_list(identifier)
-      query_args = make_query_args(identifier)
-      List.where(query_args).first || halt(404)
     end
 
     def requested_list_email
