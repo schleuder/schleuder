@@ -3,6 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+### Fixed
+
+* Stop leaking keywords to third parties by stripping HTML from multipart/alternative messages if they contain keywords. (#399)
+
+
 ## [3.3.0] / 2018-09-04
 
 ### Fixed
