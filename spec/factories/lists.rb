@@ -9,7 +9,7 @@ FactoryBot.define do
     openpgp_header_preference { "signencrypt" }
     internal_footer { nil }
     public_footer { nil }
-    headers_to_meta { ["from", "to", "cc", "date"] }
+    headers_to_meta { ["from", "to", "cc", "date", "sig", "enc"] }
     bounces_drop_on_headers { { "x-spam-flag" => true } }
     keywords_admin_only { ["subscribe", "unsubscribe", "delete-key"] }
     keywords_admin_notify { ["add-key"] }
