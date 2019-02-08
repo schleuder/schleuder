@@ -48,6 +48,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rack-test', '~> 1'
   s.add_development_dependency 'rubocop', '~> 0'
   s.add_development_dependency 'byebug', '~> 10'
+  s.add_development_dependency 'json-schema', '~> 2'
   s.post_install_message = "
 
     Please consider additionally installing schleuder-cli (allows to
