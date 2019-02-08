@@ -1,4 +1,5 @@
 require 'helpers/api_daemon_spec_helper'
+require 'support/matchers/match_json_schema'
 
 describe 'subscription via api' do
   context 'get subscription' do
@@ -96,6 +97,18 @@ describe 'subscription via api' do
     expect(list.subscriptions.map(&:email)).to include('someone@localhost')
     expect(list.subscriptions.first.admin?).to be false
     expect(list.subscriptions.first.delivery_enabled).to be true
+  end
+
+  it 'returns the subscription as json if update was successful' do
+    list = create(:list)
+    authorize_as_api_superadmin!
+    parameters = { list_email: list.email, email: 'someone@localhost' }
+
+    post '/subscriptions.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+    puts JSON.parse(last_response.body).inspect
+    expect(last_response.status).to be 201
+    expect(last_response.body).to match_json_schema("subscription")
   end
 
   it "doesn't subscribe a new member to a list as subscriber" do

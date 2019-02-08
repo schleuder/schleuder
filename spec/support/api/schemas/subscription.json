@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "title": "Subscription",
+  "properties" : {
+    "id" : { "type" : "integer" },
+    "list_id" : { "type" : "integer" },
+    "email" : { "type" : "string" },
+    "admin" : { "type" : "boolean" },
+    "fingerprint" : { "type" : "string" },
+    "delivery_enabled" : { "type" : "boolean" },
+    "created_at" : { "type" : "string", "format": "date-time" },
+    "updated_at" : { "type" : "string", "format": "date-time" }
+  },
+  "required" : [
+    "id",
+    "list_id",
+    "email",
+    "fingerprint",
+    "admin",
+    "delivery_enabled",
+    "created_at",
+    "updated_at"
+  ]
+}

@@ -44,6 +44,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'database_cleaner', '~> 2.0'
   s.add_development_dependency 'factory_bot', '~> 6.0'
   s.add_development_dependency 'hirb', '~> 0'
+  s.add_development_dependency 'json-schema', '~> 2'
   if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6.0')
     s.add_development_dependency 'irb'
   end
