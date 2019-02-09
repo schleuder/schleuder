@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
   # TODO: Drop this once we cease to support ruby 2.1, see #310
   s.add_runtime_dependency 'rack-test', '~> 0.7.0'
   s.add_runtime_dependency 'rake', '>= 10.5.0'
-  s.add_runtime_dependency 'sqlite3', '~> 1'
+  s.add_runtime_dependency 'sqlite3', '~> 1.3.6'
   s.add_runtime_dependency 'sinatra', '~> 1'
   s.add_runtime_dependency 'sinatra-contrib', '~> 1'
   s.add_runtime_dependency 'thor', '~> 0'
