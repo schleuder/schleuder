@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'activerecord', '~> 5.2'
   s.add_runtime_dependency 'bcrypt-ruby', '~> 3.1.2'
   s.add_runtime_dependency 'rake', '>= 10.5.0'
-  s.add_runtime_dependency 'sqlite3', '~> 1'
+  s.add_runtime_dependency 'sqlite3', '~> 1.3.6'
   s.add_runtime_dependency 'sinatra', '~> 2'
   s.add_runtime_dependency 'sinatra-contrib', '~> 2'
   s.add_runtime_dependency 'thor', '~> 0'
@@ -48,6 +48,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rack-test', '~> 1'
   s.add_development_dependency 'rubocop', '~> 0'
   s.add_development_dependency 'byebug', '~> 10'
+  s.add_development_dependency 'json-schema', '~> 2'
   s.post_install_message = "
 
     Please consider additionally installing schleuder-cli (allows to
