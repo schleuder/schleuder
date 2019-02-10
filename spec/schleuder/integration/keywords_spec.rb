@@ -1838,7 +1838,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    content_body = "Hello again! ¡Hola!\n"
+    content_body = "Hello again! ¡Hola!\r\n"
     mail.charset = 'iso-8859-1'
     mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n#{content_body}".encode('iso-8859-1')
     mail.deliver
@@ -1880,7 +1880,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    content_body = "This is a test\nAnd here are some umlauts:ÄäÖöÜüß"
+    content_body = "This is a test\r\nAnd here are some umlauts:ÄäÖöÜüß"
     mail.charset = 'utf-8'
     mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n#{content_body}".encode('utf-8')
     mail.deliver
