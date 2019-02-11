@@ -9,10 +9,6 @@ class SchleuderApiDaemon < Sinatra::Base
       end
       logger.debug "Subscription filter: #{filter.inspect}"
 
-      if !list = lists_controller.find(list_email)
-        status 404
-        return json(errors: 'No such list')
-      end
       json subscriptions_controller.find_all(list_email, filter)
     end
 
