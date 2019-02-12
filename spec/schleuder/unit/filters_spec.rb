@@ -1,10 +1,12 @@
 require "spec_helper"
 
-# make sure we have the filters loaded, as they will be loaded lazily within the code
-Dir[File.join(File.dirname(__FILE__),'../../../lib/schleuder/filters/*/*.rb')].each do |file|
-  require file
-end
 describe Schleuder::Filters do
+  before do
+    # Make sure we have the filters loaded, as they will be loaded lazily within the code.
+    list = create(:list)
+    Schleuder::Filters::Runner.new(list, 'pre').filters
+    Schleuder::Filters::Runner.new(list, 'post').filters
+  end
 
   context '.fix_exchange_messages' do
     it "fixes pgp/mime-messages that were mangled by Exchange" do
