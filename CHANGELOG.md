@@ -8,6 +8,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 * Stop leaking keywords to third parties by stripping HTML from multipart/alternative messages if they contain keywords. (#399)
+* Avoid shelling out in a test-case to avoid an occasional error occurring in CI runs that complains about invalid data in ASCII-8BIT strings.
+
+### Changed
+
+* Update the dependency 'mail' to version 2.7.x., and allow carriage returns (CR) in test-cases as mail-2.7 puts those out.
+* Update the dependency 'sqlite3' to version 1.3.x.
+* Adapt fixtures and factories for factorybot version 5.x.
+* Let schleuder-code load the filter files in test-mode, avoid explicit path names (which make headaches when running tests on installed packages).
 
 
 ## [3.3.0] / 2018-09-04
