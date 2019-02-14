@@ -30,13 +30,13 @@ Gem::Specification.new do |s|
   }
   s.required_ruby_version = ">= 2.1.0"
   s.add_runtime_dependency 'gpgme', '~> 2.0', '>= 2.0.13' # Explicitly include to force a version.
-  s.add_runtime_dependency 'mail', '~> 2.6.0'
+  s.add_runtime_dependency 'mail', '~> 2.7.1'
   s.add_runtime_dependency 'mail-gpg', '~> 0.3', '>= 0.3.3'
   s.add_runtime_dependency 'activerecord', '~> 4.2'
   # TODO: Drop this once we cease to support ruby 2.1, see #310
   s.add_runtime_dependency 'rack-test', '~> 0.7.0'
   s.add_runtime_dependency 'rake', '>= 10.5.0'
-  s.add_runtime_dependency 'sqlite3', '~> 1'
+  s.add_runtime_dependency 'sqlite3', '~> 1.3.6'
   s.add_runtime_dependency 'sinatra', '~> 1'
   s.add_runtime_dependency 'sinatra-contrib', '~> 1'
   s.add_runtime_dependency 'thor', '~> 0'

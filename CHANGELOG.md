@@ -3,7 +3,22 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.3.0] / 2018-08-06
+## [3.4.0] / 2019-02-14
+
+### Fixed
+
+* Stop leaking keywords to third parties by stripping HTML from multipart/alternative messages if they contain keywords. (#399)
+* Avoid shelling out in a test-case to avoid an occasional error occurring in CI runs that complains about invalid data in ASCII-8BIT strings.
+
+### Changed
+
+* Update the dependency 'mail' to version 2.7.x., and allow carriage returns (CR) in test-cases as mail-2.7 puts those out.
+* Update the dependency 'sqlite3' to version 1.3.x.
+* Adapt fixtures and factories for factorybot version 5.x.
+* Let schleuder-code load the filter files in test-mode, avoid explicit path names (which make headaches when running tests on installed packages).
+
+
+## [3.3.0] / 2018-09-04
 
 ### Fixed
 
@@ -17,6 +32,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 * To remove a fingerprint from a subscription one can use the new keyword X-UNSET-FINGERPRINT (#360).
+* Extend the pseudoheaders configuration option to support 'sig' and 'enc' as configurable and sortable fields.
 
 
 ### Changed
@@ -24,10 +40,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * The output of the keywords 'X-ADD-KEY' and 'X-DELETE-KEY' now also show the "oneline"-format to represent keys (which includes fingerprint, primary email-address, date of generation and possible expiry). (#295)
 * In the response to 'X-ADD-KEY', differentiate between 'newly imported' and 'updated' keys.
 * Parse keywords up to the first line detected as mail content, this addresses a first part of #249.
-
-### Added
-* Extend the pseudoheaders configuration option to support 'sig' and 'enc' as configurable and sortable fields.
-
 
 
 ## [3.2.3] / 2018-05-14
@@ -276,7 +288,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Friendlier error message if delivery to subscription fails.
 * Set list-email as primary address after adding UIDs. Previously it was a little random, for reasons only known to GnuPG.
 * Only use temporary files where necessary, and with more secure paths.
-* Tighten requirements for valid email-addresses a little: The domain-part may now only contain alpha-numeric characters, plus these: `._-`
+* Tighten requirements for valid email-addresses a little: The domain-part may now only contain alphanumeric characters, plus these: `._-`
 * Required version of schleuder-cli: 0.0.2.
 
 ### Added
