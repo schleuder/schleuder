@@ -27,9 +27,8 @@ class SchleuderApiDaemon < Sinatra::Base
       json(lists_controller.get_configurable_attributes) + "\n"
     end
 
-    post '/send_list_key_to_subscriptions.json' do
-      require_list_email_param(:email)
-      json(result: lists_controller.send_list_key_to_subscriptions(params[:email]))
+    post '/:list_email/send_list_key_to_subscriptions.json' do |list_email|
+      json(result: lists_controller.send_list_key_to_subscriptions(list_email))
     end
 
     get '/new.json' do
