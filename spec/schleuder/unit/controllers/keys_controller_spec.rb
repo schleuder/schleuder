@@ -95,6 +95,26 @@ describe Schleuder::KeysController do
       end.to raise_error(Schleuder::Errors::KeyNotFound)
     end
 
+    it 'raises an error if user is authorized but given argument is an incomplete fingerprint' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: true)
+      account = create(:account, email: subscription.email)
+
+      expect do
+        KeysController.new(account).find(list.email, '80C71FB38AEE22E091C78259D06350440F7')
+      end.to raise_error(Schleuder::Errors::KeyNotFound)
+    end
+
+    it 'raises an error if user is authorized but given argument is not a fingerprint' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: true)
+      account = create(:account, email: subscription.email)
+
+      expect do
+        KeysController.new(account).find(list.email, subscription.email)
+      end.to raise_error(Schleuder::Errors::KeyNotFound)
+    end
+
     it 'raises an unauthorized error when the user is not authorized' do
       list = create(:list)
       unauthorized_account = create(:account, email: 'unauthorized@example.org')
