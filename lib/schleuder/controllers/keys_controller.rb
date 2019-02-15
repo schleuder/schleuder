@@ -33,10 +33,17 @@ module Schleuder
     private
 
     def get_key(list_email, fingerprint)
+      ensure_this_is_a_fingerprint(fingerprint)
       list = get_list(list_email)
       key = list.key(fingerprint)
       raise Errors::KeyNotFound.new(fingerprint) if key.blank?
       key
+    end
+
+    def ensure_this_is_a_fingerprint(fingerprint)
+      if !GPGME::Key.valid_fingerprint?(fingerprint)
+        raise Errors::KeyNotFound.new(fingerprint)
+      end
     end
   end
 end
