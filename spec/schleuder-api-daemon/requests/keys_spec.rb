@@ -300,7 +300,7 @@ describe "keys via api" do
       list.import_key(File.read("spec/fixtures/bla_foo_key.txt"))
       num_keys = list.keys.length
 
-      delete "/lists/#{list.email}/keys/0xEBDBE899251F2412.json"
+      delete "/lists/#{list.email}/keys/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412.json"
 
       expect(last_response.status).to be 401
       expect(list.reload.keys.length).to eql(num_keys)
@@ -316,7 +316,7 @@ describe "keys via api" do
       authorize!(account.email, account.set_new_password!)
       num_keys = list.keys.length
 
-      delete "/lists/#{list.email}/keys/0xEBDBE899251F2412.json"
+      delete "/lists/#{list.email}/keys/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412.json"
 
       expect(last_response.status).to be 403
       expect(last_response.body).to eql("Not authorized")
@@ -331,7 +331,7 @@ describe "keys via api" do
       authorize!(account.email, account.set_new_password!)
       num_keys = list.keys.length
 
-      delete "/lists/#{list.email}/keys/0xEBDBE899251F2412.json"
+      delete "/lists/#{list.email}/keys/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412.json"
 
       expect(last_response.status).to be 403
       expect(last_response.body).to eql("Not authorized")
@@ -346,7 +346,7 @@ describe "keys via api" do
       authorize!(account.email, account.set_new_password!)
       num_keys = list.keys.length
 
-      delete "/lists/#{list.email}/keys/0xEBDBE899251F2412.json"
+      delete "/lists/#{list.email}/keys/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412.json"
 
       expect(last_response.status).to be 200
       expect(list.reload.keys.length).to eql(num_keys - 1)
@@ -358,7 +358,7 @@ describe "keys via api" do
       authorize_as_api_superadmin!
       num_keys = list.keys.length
 
-      delete "/lists/#{list.email}/keys/0xEBDBE899251F2412.json"
+      delete "/lists/#{list.email}/keys/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412.json"
 
       expect(last_response.status).to be 200
       expect(list.reload.keys.length).to eql(num_keys - 1)
@@ -385,7 +385,7 @@ describe "keys via api" do
         list.import_key(File.read("spec/fixtures/broken_utf8_uid_key.txt"))
         authorize_as_api_superadmin!
 
-        get "/lists/#{list.email}/keys/0x1242F6E13D8EBE4A.json"
+        get "/lists/#{list.email}/keys/3102B29989BEE703AE5ED62E1242F6E13D8EBE4A.json"
 
         expect(last_response.status).to be 200
         expect(JSON.parse(last_response.body)["fingerprint"]).to eq("3102B29989BEE703AE5ED62E1242F6E13D8EBE4A")
@@ -399,7 +399,7 @@ describe "keys via api" do
         authorize_as_api_superadmin!
 
         expect {
-          delete "/lists/#{list.email}/keys/0x1242F6E13D8EBE4A.json"
+          delete "/lists/#{list.email}/keys/3102B29989BEE703AE5ED62E1242F6E13D8EBE4A.json"
           expect(last_response.status).to be 200
         }.to change { list.keys.length }.by(-1)
 
