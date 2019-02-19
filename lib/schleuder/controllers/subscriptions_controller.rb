@@ -28,6 +28,7 @@ module Schleuder
       subscription = get_subscription(list_email, email)
       authorize!(subscription, :update)
       subscription.update(attributes)
+      subscription
     end
 
     def delete(list_email, email)
