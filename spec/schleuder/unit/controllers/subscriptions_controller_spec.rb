@@ -113,7 +113,7 @@ describe Schleuder::SubscriptionsController do
   end
 
   describe 'update' do
-    it 'updates the subscription with the given id' do
+    it 'updates the subscription with the given email address' do
       list = create(:list, email: 'somelist@example.org')
       subscription = create(:subscription, list_id: list.id, admin: false)
       account = create(:account, email: subscription.email)
@@ -127,6 +127,26 @@ describe Schleuder::SubscriptionsController do
       SubscriptionsController.new(account).update(list.email, subscription.email, attributes)
 
       subscription.reload
+      expect(subscription.id).to eq subscription.id
+      expect(subscription.email).to eq 'new@example.org'
+      expect(subscription.fingerprint).to eq '88C71FB38AEE22E091C78259D06350440F759BD3'
+      expect(subscription.admin).to eq true
+    end
+
+    it 'returns the updated subscription' do
+      list = create(:list, email: 'somelist@example.org')
+      subscription = create(:subscription, list_id: list.id, admin: false)
+      account = create(:account, email: subscription.email)
+      attributes = {
+        'email' => 'new@example.org',
+        'fingerprint' => '88C71FB38AEE22E091C78259D06350440F759BD3',
+        'admin' => true,
+        'delivery_enabled' => false
+      }
+
+      subscription = SubscriptionsController.new(account).update(list.email, subscription.email, attributes)
+
+      expect(subscription).to be_valid
       expect(subscription.id).to eq subscription.id
       expect(subscription.email).to eq 'new@example.org'
       expect(subscription.fingerprint).to eq '88C71FB38AEE22E091C78259D06350440F759BD3'

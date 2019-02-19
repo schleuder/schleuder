@@ -51,7 +51,9 @@ class SchleuderApiDaemon < Sinatra::Base
       if attributes.keys.sort != required_parameters.sort
         status 422
         return json(errors: 'The request is missing a required parameter')
-      elsif subscriptions_controller.update(list_email, email, parsed_body)
+      end
+      subscription = subscriptions_controller.update(list_email, email, parsed_body)
+      if subscription.valid?
         200
       else
         client_error(subscription)
@@ -60,7 +62,7 @@ class SchleuderApiDaemon < Sinatra::Base
 
     patch '/:list_email/subscriptions/:email.json' do |list_email, email|
       subscription = subscriptions_controller.update(list_email, email, parsed_body)
-      if subscription
+      if subscription.valid?
         200
       else
         client_error(subscription)
