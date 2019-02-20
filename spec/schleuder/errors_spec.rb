@@ -43,10 +43,6 @@ describe 'Errors' do
     expect(Errors::KeyGenerationFailed.new(list.listdir, list.email).to_s).to eql(t('errors.key_generation_failed', listdir: list.listdir, listname: list.email) + signoff)
   end
 
-  it '::KeywordAdminOnly shows sensible string in response to to_s()' do
-    expect(Errors::KeywordAdminOnly.new('bla').to_s).to eql(t('errors.keyword_admin_only', keyword: 'bla') + signoff)
-  end
-
   it '::ListNotFound shows sensible string in response to to_s()' do
     list = create(:list)
     expect(Errors::ListNotFound.new(list.email).to_s).to eql(t('errors.list_not_found', email: list.email) + signoff)
