@@ -1,9 +1,6 @@
 module Schleuder
   class Subscription < ActiveRecord::Base
     belongs_to :list
-    belongs_to :account, foreign_key: 'email', primary_key: 'email'
-    # This association is wanted in Account but ActiveRecord wants its details defined here.
-    belongs_to :admin_list, -> { where subscriptions: { admin: true } }, class_name: 'List', foreign_key: :list_id
 
     validates :list_id, inclusion: {
                           in: -> (id) { List.pluck(:id) },
@@ -42,6 +39,11 @@ module Schleuder
       # through the list and neither re-implement the methods here.
       # Prefix '0x' to force GnuPG to match only hex-values, not UIDs.
       @key ||= list.keys("0x#{self.fingerprint}").first
+    end
+
+    # Defined accessor manually to always return an account, even if no one existed yet.
+    def account
+      Account.find_or_initialize_by(email: email)
     end
 
     def send_mail(mail, incoming_mail=nil)
