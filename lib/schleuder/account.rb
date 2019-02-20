@@ -11,13 +11,19 @@ module Schleuder
     has_secure_password
 
     has_many :subscriptions, foreign_key: 'email', primary_key: 'email'
-    has_many :lists, through: :subscriptions
-    has_many :admin_lists, through: :subscriptions
 
     validates :email, presence: true, email: true, uniqueness: true, allow_nil: false
     validates :password, presence: true, allow_nil: false
 
     before_save { email.downcase! }
+
+    def lists
+      List.joins(:subscriptions).where(subscriptions: {email: email})
+    end
+
+    def admin_lists
+      List.joins(:subscriptions).where(subscriptions: {email: email, admin: true})
+    end
 
     def admin_list_subscriptions
       Subscription.where(list_id: admin_lists.pluck(:id))
@@ -30,11 +36,11 @@ module Schleuder
     end
 
     def subscribed_to_list?(list)
-      lists.where(email: list.email).exists?
+      subscriptions.where(list_id: list.id).exists?
     end
 
     def admin_of_list?(list)
-      admin_lists.where(email: list.email).exists?
+      list.admins.where(email: email).exists?
     end
 
     def authorize!(resource, action)
