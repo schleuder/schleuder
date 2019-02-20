@@ -100,7 +100,7 @@ describe 'KeywordHandlersRunner' do
 
   it 'returns an error message if keyword is configured as admin-only' do
     mail = Mail.new
-    mail.list = create(:list, keywords_admin_only: ['list-subscriptions'])
+    mail.list = create(:list)
     mail.list.subscribe('subscription@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
     mail.list.import_key(File.read('spec/fixtures/example_key.txt'))
     mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
