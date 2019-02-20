@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+### Changed
+
+* The list-option `keywords_admin_only` has been removed. The functionality will be replaced by some other means of configuration. [TODO: explain/adapt when replacement is implemented]
+
 ### Added
 
 * Keywords for getting (new) passwords for accounts. 'X-GET-NEW-PASSWORD' sets and sends back a new password for the account of the subscribed email-address. 'X-GET-NEW-PASSWORD-FOR: subscription1@example.org' sets and sends back a new password for the account of the given email-address; this is allowed for admins only and allows to get a password for people that have no key associated with their subscription, yet.
