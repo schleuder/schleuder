@@ -51,12 +51,6 @@ headers_to_meta:
 # and a thread of (encrypted) messages can be built by an eavesdropper.
 keep_msgid: true
 
-# Which keywords ("email-commands") should be restricted to list-admins?
-keywords_admin_only:
-- subscribe
-- unsubscribe
-- delete-key
-
 # For which keywords should the list-admins receive a notice whenever it
 # triggers a command.
 keywords_admin_notify: 

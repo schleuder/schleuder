@@ -132,7 +132,7 @@ describe 'lists via api' do
       expect(JSON.parse(last_response.body)).to eq([
         'bounces_drop_all', 'bounces_drop_on_headers', 'bounces_notify_admins',
         'forward_all_incoming_to_admins', 'headers_to_meta', 'include_list_headers',
-        'include_openpgp_header', 'internal_footer', 'keep_msgid', 'keywords_admin_notify', 'keywords_admin_only',
+        'include_openpgp_header', 'internal_footer', 'keep_msgid', 'keywords_admin_notify',
         'language', 'log_level', 'logfiles_to_keep', 'max_message_size_kb', 'openpgp_header_preference',
         'public_footer', 'receive_admin_only', 'receive_authenticated_only', 'receive_encrypted_only',
         'receive_from_subscribed_emailaddresses_only', 'receive_signed_only', 'send_encrypted_only',

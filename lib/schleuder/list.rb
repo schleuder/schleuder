@@ -6,7 +6,6 @@ module Schleuder
 
     serialize :headers_to_meta, coder: JSON
     serialize :bounces_drop_on_headers, coder: JSON
-    serialize :keywords_admin_only, coder: JSON
     serialize :keywords_admin_notify, coder: JSON
 
     validates :email, presence: true, uniqueness: true, email: true
@@ -26,7 +25,6 @@ module Schleuder
         :forward_all_incoming_to_admins,
         :key_auto_import_from_email, boolean: true
     validates_each :headers_to_meta,
-        :keywords_admin_only,
         :keywords_admin_notify do |record, attrib, value|
           value.each do |word|
             if word !~ /\A[a-z_-]+\z/i
@@ -324,14 +322,6 @@ module Schleuder
 
     def keywords_admin_notify
       Array(read_attribute(:keywords_admin_notify))
-    end
-
-    def keywords_admin_only
-      Array(read_attribute(:keywords_admin_only))
-    end
-
-    def admin_only?(keyword)
-      keywords_admin_only.include?(keyword)
     end
 
     def from_admin?(mail)

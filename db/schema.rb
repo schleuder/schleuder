@@ -33,7 +33,6 @@ ActiveRecord::Schema[7.1].define(version: 2022_09_10_170110) do
     t.text "public_footer", default: ""
     t.text "headers_to_meta", default: "[\"from\", \"to\", \"cc\", \"date\", \"sig\", \"enc\"]"
     t.text "bounces_drop_on_headers", default: "{\"x-spam-flag\":\"yes\"}"
-    t.text "keywords_admin_only", default: "[\"subscribe\", \"unsubscribe\", \"delete-key\"]"
     t.text "keywords_admin_notify", default: "[\"add-key\"]"
     t.boolean "send_encrypted_only", default: true
     t.boolean "receive_encrypted_only", default: false
