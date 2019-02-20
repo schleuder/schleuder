@@ -106,6 +106,8 @@ build_docker_image:
     - unset HISTFILE
     - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
     - docker push $IMAGE_TAG
+    # Docker stores the above used password in cleartext in this config
+    - rm /root/.docker/config.json
 
 debian:build:
   stage: debian:build
