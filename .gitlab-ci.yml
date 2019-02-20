@@ -100,7 +100,8 @@ build_docker_image:
     DOCKER_DRIVER: overlay2
     IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
   script:
-    - docker build -t $IMAGE_TAG .
+    - docker pull $IMAGE_TAG || /bin/true
+    - docker build --cache-from $IMAGE_TAG --t $IMAGE_TAG .
     # Disable bash history to prevent the $CI_JOB_TOKEN to be recorded and saved
     - unset HISTFILE
     - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
