@@ -97,6 +97,7 @@ build_docker_image:
   services:
     - docker:dind
   variables:
+    DOCKER_DRIVER: overlay2
     IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
   script:
     - docker build -t $IMAGE_TAG .
