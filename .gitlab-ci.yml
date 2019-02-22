@@ -1,7 +1,7 @@
 ---
 stages:
-  - static
   - test
+  - static
   - debian:build
   - debian:qa
   - docker
@@ -26,6 +26,19 @@ variables:
     - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:init
     - eatmydata bundle exec rspec
 
+ruby:2.3:
+  image: $IMAGE_REGISTRY:schleuder-ruby2.3
+  <<: *test_ruby
+ruby:2.4:
+  image: $IMAGE_REGISTRY:schleuder-ruby2.4
+  <<: *test_ruby
+ruby:2.5:
+  image: $IMAGE_REGISTRY:schleuder-ruby2.5
+  <<: *test_ruby
+ruby:2.6:
+  image: $IMAGE_REGISTRY:schleuder-ruby2.6
+  <<: *test_ruby
+  
 changelog:
   image: $IMAGE_REGISTRY:debian-generic
   script:
@@ -60,19 +73,6 @@ rubocop:
     - rubocop
   stage: static
   allow_failure: true
-
-ruby:2.3:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.3
-  <<: *test_ruby
-ruby:2.4:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.4
-  <<: *test_ruby
-ruby:2.5:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.5
-  <<: *test_ruby
-ruby:2.6:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.6
-  <<: *test_ruby
 
 bundler:audit:
   image: ruby:2.5
