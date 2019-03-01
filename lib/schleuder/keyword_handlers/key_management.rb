@@ -46,22 +46,8 @@ module Schleuder
         end
 
         @arguments.map do |argument|
-          # We have to find the key ourselves because the controller uses
-          # only fingerprints for identification, but the input might be
-          # anything that matches a key.
-          # TODO: delete or refactor this block if #417 has been decided.
-          keys = @list.gpg.keys(argument)
-          case keys.size
-          when 1
-            fingerprint = keys.first.fingerprint
-          when 0
-            return t(:no_matching_keys, input: argument)
-          else
-            return t(:too_many_matching_keys, {input: argument, key_strings: keys.map(&:to_s).join("\n")})
-          end
-
           begin
-            key = keys_controller.delete(@list.email, fingerprint)
+            key = keys_controller.delete(@list.email, argument)
             t('deleted', key_string: key.oneline)
           rescue GPGME::Error::Conflict => exc
             t('not_deletable', error: exc.message)
