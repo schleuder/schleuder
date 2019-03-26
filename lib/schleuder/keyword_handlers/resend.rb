@@ -43,6 +43,8 @@ module Schleuder
 
 
       def do_resend_unencrypted(target)
+        return if !authorized?
+
         if ! resend_recipients_valid?
           return false
         end
@@ -55,6 +57,8 @@ module Schleuder
       end
 
       def resend_it_cc(encrypted_only: false)
+        return if !authorized?
+
         if ! resend_recipients_valid?
           return false
         end
@@ -72,6 +76,8 @@ module Schleuder
       end
 
       def resend_it(encrypted_only: false)
+        return if !authorized?
+
         if ! resend_recipients_valid?
           return false
         end
@@ -200,6 +206,13 @@ module Schleuder
         all_valid
       end
 
+      def authorized?
+        authorize!(@list, :resend)
+        return true
+      rescue Errors::Unauthorized
+        @mail.add_pseudoheader(:error, keyword_permission_error(:resend))
+        return false
+      end
     end
   end
 end

@@ -110,9 +110,15 @@ describe KeywordHandlers::AccountManagement do
       account = create(:account, email: admin.email)
       password_digest = account.password_digest
 
-      output = KeywordHandlers::AccountManagement.new(mail: mail, arguments: ['notsubscribed@example.net']).get_new_password_for
+      error = nil
+      begin
+        output = KeywordHandlers::AccountManagement.new(mail: mail, arguments: ['notsubscribed@example.net']).get_new_password_for
+      rescue => exc
+        error = exc
+      end
 
-      expect(output).to match('Error: The address you requested to set a new password for is not subscribed.')
+      expect(output).to be_blank
+      expect(error).to be_a Schleuder::Errors::SubscriptionNotFound
       expect(password_digest).to eql(account.reload.password_digest)
       expect(Account.count).to eql(1)
     end

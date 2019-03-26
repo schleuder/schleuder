@@ -34,6 +34,7 @@ module Schleuder
     def delete(list_email, email)
       subscription = get_subscription(list_email, email)
       authorize!(subscription, :delete)
+      ensure_deletable!(subscription)
       subscription.destroy
     end
 
@@ -51,6 +52,13 @@ module Schleuder
       subscription = Subscription.find_by(email: email.to_s)
       raise Errors::SubscriptionNotFound.new(email) if subscription.blank?
       subscription
+    end
+    
+    # Refuse to unsubscribe the last admin.
+    def ensure_deletable!(subscription)
+      if subscription.admin? && subscription.list.admins.size == 1
+        raise Errors::LastAdminNotDeletable.new(subscription)
+      end
     end
   end
 end
