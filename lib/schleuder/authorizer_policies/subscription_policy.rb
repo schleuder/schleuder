@@ -1,16 +1,6 @@
 module Schleuder
   module AuthorizerPolicies
     class SubscriptionPolicy < BasePolicy
-      class Scope < BaseScope
-        def resolve
-          if account.api_superadmin?
-            Subscription.all
-          else
-            # TODO: use subscriber_permissions for this scoping.
-            account.admin_list_subscriptions
-          end
-        end
-      end
 
       # list?() is not defined: it must be checked via
       # ListPolicy#list_subscriptions (we must use the list-object, because we
