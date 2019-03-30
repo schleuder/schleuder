@@ -3,7 +3,9 @@ class SchleuderApiDaemon < Sinatra::Base
 
   namespace '/lists' do
     get '.json' do
-      json(lists_controller.find_all, include: :subscriptions)
+      # Do *not* show any further details about a list unless
+      # lists_controller.find(list.email) returns the list-object!
+      json(lists_controller.find_all.map(&:email))
     end
 
     post '.json' do
