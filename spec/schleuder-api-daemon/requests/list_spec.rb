@@ -1,6 +1,17 @@
 require 'helpers/api_daemon_spec_helper'
 
 describe 'lists via api' do
+  it 'contains only email addresses in list of lists' do
+    authorize_as_api_superadmin!
+    list1 = create(:list)
+    list2 = create(:list)
+
+    get '/lists.json'
+
+    expect(last_response.status).to be 200
+    expect(last_response.body).to eql([list1.email, list2.email].to_json)
+  end
+
   it "doesn't create a list without authentication" do
     list = build(:list)
     parameters = {
