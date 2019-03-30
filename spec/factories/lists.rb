@@ -19,7 +19,7 @@ FactoryBot.define do
           'view-keys' => true,
           'add-keys' => true,
           'delete-keys' => false,
-          'view-list-config' => true
+          'view-list-config' => false
         }
       }
     keywords_admin_notify { ['add-key'] }

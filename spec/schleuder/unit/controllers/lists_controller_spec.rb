@@ -99,7 +99,7 @@ describe Schleuder::ListsController do
   describe '#find' do
     it 'returns a list for a given list email address' do
       list = create(:list)
-      subscription = create(:subscription, list_id: list.id, admin: false)
+      subscription = create(:subscription, list_id: list.id, admin: true)
       account = create(:account, email: subscription.email)
 
       expect(ListsController.new(account).find(list.email)).to eq list
