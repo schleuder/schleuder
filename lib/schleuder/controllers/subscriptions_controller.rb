@@ -3,7 +3,7 @@ module Schleuder
     def find_all(list_email, filter={})
       list = get_list(list_email)
       authorize!(list, :list_subscriptions)
-      current_account.scoped(Subscription).where(filter)
+      list.subscriptions.where(filter)
     end
 
     def find(list_email, email)
