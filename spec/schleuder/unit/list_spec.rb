@@ -28,7 +28,6 @@ describe Schleuder::List do
   it { is_expected.to respond_to :public_footer }
   it { is_expected.to respond_to :headers_to_meta }
   it { is_expected.to respond_to :bounces_drop_on_headers }
-  it { is_expected.to respond_to :keywords_admin_only }
   it { is_expected.to respond_to :keywords_admin_notify }
   it { is_expected.to respond_to :send_encrypted_only }
   it { is_expected.to respond_to :receive_encrypted_only }
@@ -107,7 +106,7 @@ describe Schleuder::List do
     end
   end
 
-  [:headers_to_meta, :keywords_admin_only, :keywords_admin_notify].each do |list_attribute|
+  [:headers_to_meta, :keywords_admin_notify].each do |list_attribute|
     it "is invalid if #{list_attribute} contains special characters" do
       list = build(:list)
       list[list_attribute] =['$from', 'to', 'date', 'cc']
@@ -198,7 +197,7 @@ describe Schleuder::List do
       expect(Schleuder::List.configurable_attributes).to eq [
        :bounces_drop_all, :bounces_drop_on_headers, :bounces_notify_admins,
        :forward_all_incoming_to_admins, :headers_to_meta, :include_list_headers,
-       :include_openpgp_header, :internal_footer, :keep_msgid, :keywords_admin_notify, :keywords_admin_only,
+       :include_openpgp_header, :internal_footer, :keep_msgid, :keywords_admin_notify,
        :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :openpgp_header_preference,
        :public_footer, :receive_admin_only, :receive_authenticated_only, :receive_encrypted_only,
        :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,

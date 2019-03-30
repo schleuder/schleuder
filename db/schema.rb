@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_02_02_183800) do
+ActiveRecord::Schema.define(version: 2019_02_20_111200) do
 
   create_table "accounts", force: :cascade do |t|
     t.string "email", null: false
@@ -32,7 +32,6 @@ ActiveRecord::Schema.define(version: 2018_02_02_183800) do
     t.text "public_footer", default: ""
     t.text "headers_to_meta", default: "[\"from\", \"to\", \"cc\", \"date\", \"sig\", \"enc\"]"
     t.text "bounces_drop_on_headers", default: "{\"x-spam-flag\":\"yes\"}"
-    t.text "keywords_admin_only", default: "[\"subscribe\", \"unsubscribe\", \"delete-key\"]"
     t.text "keywords_admin_notify", default: "[\"add-key\"]"
     t.boolean "send_encrypted_only", default: true
     t.boolean "receive_encrypted_only", default: false
