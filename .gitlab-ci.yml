@@ -62,9 +62,9 @@ codespell:
   image: $IMAGE_REGISTRY:debian-generic
   script:
     # Run codespell to check for spelling errors, using a config with ignored words, skipping files 
-    # (German translations, v2 list configs and code of installed dependencies) leading to false positives,
-    # ignoring warnings about binary files and, finally, checking file names as well.
-    - codespell -I utils/ci/codespell/ignored_words.txt -S de.yml,list.conf -q 2 -f
+    # (German translations) leading to false positives, ignoring warnings about
+    # binary files and, finally, checking file names as well.
+    - codespell -I utils/ci/codespell/ignored_words.txt -S de.yml -q 2 -f
   stage: static
 
 rubocop:
