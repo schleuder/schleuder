@@ -33,6 +33,8 @@ cache:
       >> /etc/apt/apt.conf.d/99custom
     # Ensure the custom APT directory does exist
     - mkdir -p {${APT_ARCHIVES_DIR},${APT_LISTS_DIR}}/partial
+    # Remove jessie-updates repo which doesn't exist anymore
+    - sed -i -e '/jessie-updates/s/^#*/#/' /etc/apt/sources.list
     - apt-get update -qq
     # To keep things DRY, use an env var to handle packages to be installed via APT
     - apt-get install -qq -y $APT_INSTALL_PACKAGES
