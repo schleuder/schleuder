@@ -11,6 +11,12 @@ variables:
 
 # Jobs that start with a period are disabled
 # This is just a template, to be used further below in the individual job definitions
+.limit_non_release_branches: &limit_non_release_branches
+  except:
+    - /^master/
+    - /^release.*/
+    - tags 
+  
 .install_build_depends: &install_build_depends |
   # Get all required build dependencies.
   export APT_BUILD_DEPENDS=`perl -ne 'next if /^#/; $p=(s/^Build-Depends:\s*/ / or (/^ / and $p)); s/,|\n|\([^)]+\)//mg; print if $p' < debian/control`
@@ -53,10 +59,7 @@ changelog:
       fi
   stage: static
   allow_failure: true
-  except:
-    refs:
-      - master
-      - tags
+  <<: *limit_non_release_branches
 
 codespell:
   image: $IMAGE_REGISTRY:debian-generic
@@ -66,12 +69,14 @@ codespell:
     # binary files and, finally, checking file names as well.
     - codespell -I utils/ci/codespell/ignored_words.txt -S de.yml -q 2 -f
   stage: static
+  <<: *limit_non_release_branches
 
 rubocop:
   image: $IMAGE_REGISTRY:debian-generic
   script:
     - rubocop
   stage: static
+  <<: *limit_non_release_branches
 
 bundler:audit:
   image: ruby:2.5
