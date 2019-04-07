@@ -72,7 +72,6 @@ rubocop:
   script:
     - rubocop
   stage: static
-  allow_failure: true
 
 bundler:audit:
   image: ruby:2.5
