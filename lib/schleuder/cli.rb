@@ -79,11 +79,6 @@ module Schleuder
       permission_notice
     end
 
-    desc 'pin_keys [list1@example.com]', 'Find keys for subscriptions without a pinned key and try to pin a certain key (one by one or based on the passed list).'
-    def pin_keys(list=nil)
-      work_on_lists(:pin_keys, list)
-    end
-
     desc 'install', 'Set-up or update Schleuder environment (create folders, copy files, fill the database).'
     def install
       config_dir = Pathname.new(ENV['SCHLEUDER_CONFIG']).dirname
