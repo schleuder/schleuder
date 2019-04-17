@@ -78,6 +78,22 @@ rubocop:
   stage: static
   <<: *limit_non_release_branches
 
+spec-filenames:
+  image: $IMAGE_REGISTRY:debian-generic
+  script:
+    - cd spec/
+    - if [[ -n $(find schleuder schleuder-api-daemon -type f -not -name '*_spec.rb') ]]; then
+        echo "spec file(s) found missing trailing '_spec' part, please verify manually";
+        exit 1;
+      fi
+  stage: static
+  allow_failure: true
+  only:
+    changes:
+      - spec/schleuder/**/*
+      - spec/schleuder-api-daemon/**/*
+  <<: *limit_non_release_branches
+
 bundler:audit:
   image: ruby:2.5
   only:
