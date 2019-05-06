@@ -7,7 +7,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-* Stop leaking keywords to third parties by stripping HTML from multipart/alternative messages if they contain keywords. (#399)
 * Show error message if X-RESEND (and family) is forbidden by the list-config.
 
 ### Added
