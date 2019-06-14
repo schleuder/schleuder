@@ -1,0 +1,47 @@
+From schleuder@example.org Thu Jun 13 15:19:33 2019
+Received: from 127.0.0.1 (helo=localhost.localdomain)
+	by mail.example.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+	(Exim 4.92)
+	id 1hbPdc-0007GN-6b
+	for schleuder@example.org; Thu, 13 Jun 2019 15:19:32 +0200
+Date: Thu, 13 Jun 2019 15:19:30 +0200
+From: dev <schleuder@example.org>
+To: schleuder@example.org
+Subject: ...
+Message-ID: <20190613131930.ABC@xyz>
+MIME-Version: 1.0
+Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
+	boundary="z6Eq5LdranGa6ru8"
+Content-Disposition: inline
+
+
+--z6Eq5LdranGa6ru8
+Content-Type: application/pgp-encrypted
+Content-Disposition: attachment
+
+Version: 1
+
+--z6Eq5LdranGa6ru8
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="msg.asc"
+
+-----BEGIN PGP MESSAGE-----
+
+hQIMA691X8Gl2MArAQ//SFZyc/TD/9PYMddJcUIp4F85wsoCUZUaVLpKBzUZdrLv
+rln9bgaou4MiUXF8ZTSqq2ET6A3X7+wpDjs79KiDJnILUmguGDT2KTkyD8lxP9nd
+oIKtqKdf95AYGmItYkaQqdZf1No2q4ZBQNWXp8+LZgxINn5AW+9wuOo8F9w+tyZJ
+8r9jlj5TJ0YnVp5FieKMMyxiSOCGX8lAaqi4TbML35OWrnL8Decsz5tTX4jfqr8L
+cvNuIpa863WkbZxMxLEEn4/yC6upmOnU3eSZ9M/UoXiqgBsd01KEoOvmIIPOgGce
+IaCxO4zuoPvtcQsuinlLCI2oX9mpex6iTMGmD1J0G9FNGI3OHkwZcahw+4/3dv9K
+jfUjm6XwndtYi6ifAPAf8M8RT84hFlZKqR7IpGmpqWnLZx6BcFV0RDu8GCIPD6Fr
+UeLu1hGLD3SMbKy9zSR4lDSkMRvCUumXAebtEvfp7dfQ9Z8I866J5/9EZIDH88M1
+Rb9agaBlwwr8Oy0hzC3rwvLyqXi1KD79f+YmGL0yatYPTm37qCE+QdfXCkesN6jg
+SV3zjtpBalP0KMCtAhouFf6xDz615nWvC5NRh2yzYOhSVfmZEVrB9Zz7GZx8rsMi
+2U0ALYJIc6EI0uc/sLZ9dYu6hBa72VmSe90zS5IE2ZYB24GnzXV95iMsvH35/4vS
+igFWNQmHxWc9GfwgXN2/P2k4zokCxywLLhoa5xoy+SGmipz2pU8IS4chGT6H5edU
+/CdBAAdHw7eNgXkuctH9eAM7WE/yu+1tmAPUvzr3ojFyXF+L8d8gcCbOJA4scHb6
+/L8B0J+CZG/dkMDxU/xjyc7zz8not13HTr6xklMUIam/OzM95YFmleAN4g==
+=l547
+-----END PGP MESSAGE-----
+
+--z6Eq5LdranGa6ru8--
