@@ -55,7 +55,7 @@ module Mail
         new.protected_headers_subject = self.subject.dup
 
         # Delete the protected headers which might leak information.
-        if new.parts.first.content_type == "text/rfc822-headers; protected-headers=v1"
+        if new.parts.first && new.parts.first.content_type == "text/rfc822-headers; protected-headers=v1"
           new.parts.shift
         end
       end
