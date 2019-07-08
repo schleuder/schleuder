@@ -72,23 +72,6 @@ module SchleuderApiDaemonHelper
       end
     end
 
-    def key_to_hash(key, include_keydata=false)
-      hash = {
-        fingerprint: key.fingerprint,
-        email: key.email,
-        expiry: key.expires,
-        generated_at: key.generated_at,
-        primary_uid: key.primary_uid.uid,
-        summary: key.summary,
-        trust_issues: key.usability_issue
-      }
-      if include_keydata
-        hash[:description] = key.to_s
-        hash[:ascii] = key.armored
-      end
-      hash
-    end
-
     def set_x_messages(messages)
       if messages.present?
         headers 'X-Messages' => Array(messages).join(' // ').gsub(/\n/, ' // ')
