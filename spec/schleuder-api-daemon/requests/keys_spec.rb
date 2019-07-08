@@ -55,6 +55,70 @@ describe "keys via api" do
       expect(last_response.status).to be 200
       expect(JSON.parse(last_response.body).length).to be 1
     end
+
+    it 'contains the subscription email in the response authorized as list-admin' do
+      list = create(:list)
+      list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      account = create(:account, email: 'schleuder@example.org')
+      authorize!(account.email, account.set_new_password!)
+
+      get "/lists/#{list.email}/keys.json"
+
+      expect(JSON.parse(last_response.body).first['subscription']).to eq 'schleuder@example.org'
+    end
+
+    it 'does not contain the subscription key in the response json if user is authorized but no subscription exists' do
+      list = create(:list)
+      authorize_as_api_superadmin!
+
+      get "/lists/#{list.email}/keys.json"
+
+      expect(JSON.parse(last_response.body).first['subscription']).to eq nil
+    end
+
+    it 'does not contain the subscription email in the response if user is not an admin' do
+      list = create(:list)
+      list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      account = create(:account, email: 'schleuder@example.org')
+      authorize!(account.email, account.set_new_password!)
+
+      get "/lists/#{list.email}/keys.json"
+      
+      expect(JSON.parse(last_response.body).first['subscription']).to eq nil
+    end
+  end
+
+  context 'get key' do
+    it 'contains the subscription email in the response authorized as list-admin' do
+      list = create(:list)
+      list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+      account = create(:account, email: 'schleuder@example.org')
+      authorize!(account.email, account.set_new_password!)
+
+      get "/lists/#{list.email}/keys/59C71FB38AEE22E091C78259D06350440F759BD3.json"
+
+      expect(JSON.parse(last_response.body)['subscription']).to eq 'schleuder@example.org'
+    end
+
+    it 'does not contain the subscription key in the response json if user is authorized but no subscription exists' do
+      list = create(:list)
+      authorize_as_api_superadmin!
+
+      get "/lists/#{list.email}/keys/59C71FB38AEE22E091C78259D06350440F759BD3.json"
+
+      expect(JSON.parse(last_response.body)['subscription']).to eq nil
+    end
+
+    it 'does not contain the subscription email in the response if user is not an admin' do
+      list = create(:list)
+      list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      account = create(:account, email: 'schleuder@example.org')
+      authorize!(account.email, account.set_new_password!)
+
+      get "/lists/#{list.email}/keys/59C71FB38AEE22E091C78259D06350440F759BD3.json"
+
+      expect(JSON.parse(last_response.body)['subscription']).to eq nil
+    end
   end
 
   context "check" do
