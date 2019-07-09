@@ -796,3 +796,11 @@ Layout/SpaceInsideReferenceBrackets:
 Metrics/ParameterLists:
   Exclude:
     - '**/*'
+
+Naming/RescuedExceptionsVariableName:
+  Exclude:
+    - '**/*'
+
+Layout/AlignArguments:
+  Exclude:
+    - '**/*'
