@@ -118,14 +118,14 @@ Layout/ExtraSpacing:
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: consistent, consistent_relative_to_receiver, special_for_inner_method_call, special_for_inner_method_call_in_parentheses
-Layout/FirstParameterIndentation:
+Layout/IndentFirstArgument:
   Exclude:
     - '**/*'
 
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: special_inside_parentheses, consistent, align_brackets
-Layout/IndentArray:
+Layout/IndentFirstArrayElement:
   Exclude:
     - '**/*'
 
@@ -138,7 +138,7 @@ Layout/IndentAssignment:
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: special_inside_parentheses, consistent, align_braces
-Layout/IndentHash:
+Layout/IndentFirstHashElement:
   Exclude:
     - '**/*'
 
@@ -794,5 +794,13 @@ Layout/SpaceInsideReferenceBrackets:
     - '**/*'
 
 Metrics/ParameterLists:
+  Exclude:
+    - '**/*'
+
+Naming/RescuedExceptionsVariableName:
+  Exclude:
+    - '**/*'
+
+Layout/AlignArguments:
   Exclude:
     - '**/*'
