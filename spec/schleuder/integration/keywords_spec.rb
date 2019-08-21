@@ -1427,7 +1427,7 @@ describe "user sends keyword" do
       rescue SystemExit
       end
     end
-    raw = Mail::TestMailer.deliveries.first
+    raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(list.keys.size).to eql(list_keys_num + 1)
@@ -1463,7 +1463,7 @@ describe "user sends keyword" do
       rescue SystemExit
       end
     end
-    raw = Mail::TestMailer.deliveries.first
+    raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(list.keys.size).to eql(list_keys_num)
@@ -1499,7 +1499,7 @@ describe "user sends keyword" do
       rescue SystemExit
       end
     end
-    raw = Mail::TestMailer.deliveries.first
+    raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(list.keys.size).to eql(list_keys_num + 1)
@@ -1536,7 +1536,7 @@ describe "user sends keyword" do
       rescue SystemExit
       end
     end
-    raw = Mail::TestMailer.deliveries.first
+    raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(list.keys.size).to eql(list_keys_num)
@@ -1572,7 +1572,7 @@ describe "user sends keyword" do
       rescue SystemExit
       end
     end
-    raw = Mail::TestMailer.deliveries.first
+    raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(list.keys.size).to eql(list_keys_num)
@@ -1608,7 +1608,7 @@ describe "user sends keyword" do
       rescue SystemExit
       end
     end
-    raw = Mail::TestMailer.deliveries.first
+    raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(list.keys.size).to eql(list_keys_num + 1)
@@ -1644,7 +1644,7 @@ describe "user sends keyword" do
       rescue SystemExit
       end
     end
-    raw = Mail::TestMailer.deliveries.first
+    raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(list.keys.size).to eql(list_keys_num)
@@ -1680,7 +1680,7 @@ describe "user sends keyword" do
       rescue SystemExit
       end
     end
-    raw = Mail::TestMailer.deliveries.first
+    raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(list.keys.size).to eql(list_keys_num)
