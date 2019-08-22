@@ -61,6 +61,8 @@ subscriber_permissions:
   add-keys: true
   delete-keys: false
   view-list-config: false
+  resend: true
+  resend-unencrypted: true
 
 # For which keywords should the list-admins receive a notice whenever it
 # triggers a command.

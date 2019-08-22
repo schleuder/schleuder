@@ -19,7 +19,9 @@ FactoryBot.define do
           'view-keys' => true,
           'add-keys' => true,
           'delete-keys' => false,
-          'view-list-config' => false
+          'view-list-config' => false,
+          'resend' => true,
+          'resend-unencrypted' => true
         }
       }
     keywords_admin_notify { ['add-key'] }

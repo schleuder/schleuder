@@ -49,7 +49,7 @@ ActiveRecord::Schema.define(version: 2019_02_22_014120) do
     t.boolean "forward_all_incoming_to_admins", default: false
     t.integer "logfiles_to_keep", default: 2
     t.text "internal_footer", default: ""
-    t.text "subscriber_permissions", default: "{ \"view-subscriptions\": true, \"add-subscriptions\": false, \"delete-subscriptions\": false, \"view-keys\": true, \"add-keys\": true, \"delete-keys\": false, \"view-list-config\": false }"
+    t.text "subscriber_permissions", default: "{ \"view-subscriptions\": true, \"add-subscriptions\": false, \"delete-subscriptions\": false, \"view-keys\": true, \"add-keys\": true, \"delete-keys\": false, \"view-list-config\": false, \"resend\": true, \"resend-unencrypted\": true }"
   end
 
   create_table "subscriptions", force: :cascade do |t|

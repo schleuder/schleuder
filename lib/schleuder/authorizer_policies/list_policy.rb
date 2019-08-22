@@ -66,9 +66,12 @@ module Schleuder
         superadmin? || admin?(resource)
       end
 
+      def resend_unencrypted?
+        superadmin? || admin?(resource) || (subscriber_permitted?(resource, 'resend') && subscriber_permitted?(resource, 'resend-unencrypted'))
+      end
+
       def resend?
-        # TODO: make configurable for subscribers
-        superadmin? || admin?(resource) || subscribed?(resource)
+        superadmin? || admin?(resource) || subscriber_permitted?(resource, 'resend')
       end
     end
   end
