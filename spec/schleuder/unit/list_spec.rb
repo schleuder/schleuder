@@ -525,6 +525,32 @@ describe Schleuder::List do
 
       teardown_list_and_mailer(list)
     end
+
+    it 'does not import non-self-signatures if gpg >= 2.1.15; or else sends a warning' do
+      list = create(:list)
+      list.delete_key('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
+      list.subscribe('admin@example.org', nil, true)
+      output = ''
+
+      with_sks_mock do
+        output = list.fetch_keys('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
+      end
+
+      # GPGME apparently does not show signatures correctly in some cases, so we better use gpgcli.
+      signature_output = list.gpg.class.gpgcli(['--list-sigs', '87E65ED2081AE3D16BE4F0A5EBDBE899251F2412'])[1].grep(/0F759BD3.*schleuder@example.org/)
+
+      expect(output).to include("This key was fetched (new key):\n0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412 bla@foo")
+      if GPGME::Ctx.gpg_knows_import_filter?
+        expect(signature_output).to be_empty
+      else
+        message = Mail::TestMailer.deliveries.first
+        expect(message.to).to eql([Conf.superadmin])
+        expect(message.subject).to eql('Schleuder installation problem')
+        expect(signature_output).not_to be_empty
+      end
+
+      teardown_list_and_mailer(list)
+    end
   end
 
   describe "send_list_key_to_subscriptions" do
