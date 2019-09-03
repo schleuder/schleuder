@@ -320,10 +320,13 @@ Please notify the users and admins of this list of these changes.
     private
 
     def work_on_lists(subj, list=nil)
-      selected_lists = if list.nil?
-        List.all
+      if list.nil?
+        selected_lists = List.all
       else
-        List.where(email: list)
+        selected_lists = List.where(email: list)
+        if selected_lists.blank?
+          error("No list with this address exists: #{list.inspect}")
+        end
       end
 
       selected_lists.each do |list|
