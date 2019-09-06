@@ -67,6 +67,10 @@ module GPGME
       "#{self.to_s}\n\n#{export(armor: true).read}"
     end
 
+    def export_minimal
+      export(minimal: true).to_s
+    end
+
     # Force encoding, some databases save "ASCII-8BIT" as binary data.
     alias_method :orig_fingerprint, :fingerprint
     def fingerprint

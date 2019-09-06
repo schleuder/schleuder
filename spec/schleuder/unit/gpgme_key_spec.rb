@@ -1,6 +1,15 @@
 require 'spec_helper'
 
 describe GPGME::Key do
+  describe '#export' do
+    it 'exports a minimal key' do
+      list = create(:list)
+      list.import_key(File.read('spec/fixtures/schleuder_at_example_public_key.txt'))
+
+      expect(list.key.export_minimal()).to eq(File.read('spec/fixtures/schleuder_at_example_public_key_minimal.gpg', mode: 'rb'))
+    end
+  end
+
   describe '#summary' do
     it 'displays the expected basic attributes' do
       list = create(:list)

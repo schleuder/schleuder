@@ -91,6 +91,41 @@ describe Schleuder::Runner do
 
         teardown_list_and_mailer(list)
       end
+      
+      it 'contains the Autocrypt header if include_autocrypt_header is set to true' do
+        list = create(
+          :list,
+          send_encrypted_only: false,
+          include_autocrypt_header: true,
+        )
+        list.subscribe('admin@example.org', nil, true)
+        mail = File.read('spec/fixtures/mails/plain/thunderbird.eml')
+
+        Schleuder::Runner.new().run(mail, list.email)
+        message = Mail::TestMailer.deliveries.first
+
+        keydata = list.export_key_minimal_base64.gsub(/(.{78})/, '\1 ')
+        expect(message.header['Autocrypt'].to_s).to eq("addr=#{list.email}; prefer-encrypt=mutual; keydata= #{keydata}")
+
+        teardown_list_and_mailer(list)
+      end
+
+      it 'does not contain the Autocrypt header if include_autocrypt_header is set to false' do
+        list = create(
+          :list,
+          send_encrypted_only: false,
+          include_autocrypt_header: false,
+        )
+        list.subscribe('admin@example.org', nil, true)
+        mail = File.read('spec/fixtures/mails/plain/thunderbird.eml')
+
+        Schleuder::Runner.new().run(mail, list.email)
+        message = Mail::TestMailer.deliveries.first
+
+        expect(message.header.to_s).to_not include('Autocrypt')
+
+        teardown_list_and_mailer(list)
+      end
 
       it 'contains the list headers if include_list_headers is set to true' do
         list = create(

@@ -371,6 +371,21 @@ describe Schleuder::List do
     end
   end
 
+  describe '#export_key_minimal_base64' do
+    it 'exports the key with the fingerprint of the list if no argument is given in an Autocrypt-compatible format' do
+      list = create(:list)
+      
+      expect(list.export_key_minimal_base64()).to eq(File.read('spec/fixtures/schleuder_at_example_public_key_minimal_base64.txt'))
+    end
+
+    it 'does not export the key with the fingerprint in an Autocrypt-compatible format if the argument given does not correspond to a key' do
+      list = create(:list)
+      
+      expect(list.export_key_minimal_base64('this fpr does not exist')).to be(false)
+    end
+
+  end
+
   it 'exports the key with the given fingerprint' do
     list = create(:list, email: 'schleuder@example.org')
     expected_public_key = File.read('spec/fixtures/schleuder_at_example_public_key.txt')

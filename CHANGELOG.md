@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * 'X-STOP': To use any keyword, you *must* now also use the new keyword 'X-STOP' to mark where to stop looking for keywords. This enables looking for keyword arguments in multiple lines, e.g. for X-RESEND with long, wrapped lines.
 * Keywords for getting (new) passwords for accounts. 'X-GET-NEW-PASSWORD' sets and sends back a new password for the account of the subscribed email-address. 'X-GET-NEW-PASSWORD-FOR: subscription1@example.org' sets and sends back a new password for the account of the given email-address; this is allowed for admins only and allows to get a password for people that have no key associated with their subscription, yet.
 * Provide systemd configs for weekly key maintenance. This relies on a working systemd-timesyncd. (#422)
+* New per-list option to send outgoing Autocrypt header. Defaults to true. (#335)
 
 ### Changed
 
