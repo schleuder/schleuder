@@ -18,9 +18,14 @@ module Schleuder
       notify_admin(string, original_message)
     end
 
-    def notify_admin(thing, original_message=nil, subject='Error')
+    def notify_superadmin(message:, original_message: nil, subject: 'Error')
+      notify_admin(message, original_message, subject, superadmin)
+    end
+
+    def notify_admin(thing, original_message=nil, subject='Error', recipients=nil)
       # Minimize using other classes here, we don't know what caused the error.
       msg_parts = convert_to_msg_parts(thing, original_message)
+      recipients ||= adminaddresses
       Array(adminaddresses).each do |address, key|
         mail = Mail.new
         mail.from = @from

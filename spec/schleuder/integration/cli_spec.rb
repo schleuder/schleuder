@@ -159,9 +159,8 @@ describe 'cli' do
         dirmngr_pid = `pgrep -a dirmngr | grep #{list.listdir}`.split(' ',2).first
         expect(dirmngr_pid).to be_nil
       end
-      mail = Mail::TestMailer.deliveries.first
+      mail = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
 
-      expect(Mail::TestMailer.deliveries.length).to eq 1
       b = mail.first_plaintext_part.body.to_s
       expect(b).to match(/Refreshing all keys from the keyring of list #{list.email} resulted in this:\n\n/)
       expect(b).to match(/\nThis key was updated \(new signatures\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]\n/)
@@ -181,9 +180,8 @@ describe 'cli' do
       with_sks_mock do
         Cli.new.refresh_keys list1.email
       end
-      mail = Mail::TestMailer.deliveries.first
+      mail = Mail::TestMailer.deliveries.find { |message| message.to == [list1.admins.first.email] }
 
-      expect(Mail::TestMailer.deliveries.length).to eq 1
       b = mail.first_plaintext_part.body.to_s
       expect(b).to match(/Refreshing all keys from the keyring of list #{list1.email} resulted in this:\n\n/)
       expect(b).to match(/\nThis key was updated \(new signatures\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]\n/)
@@ -199,9 +197,8 @@ describe 'cli' do
       list.import_key(File.read("spec/fixtures/expired_key.txt"))
 
       Cli.new.refresh_keys
-      mail = Mail::TestMailer.deliveries.first
+      mail = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
 
-      expect(Mail::TestMailer.deliveries.length).to eq 1
       expect(mail.to_s).to include("Refreshing all keys from the keyring of list #{list.email} resulted in this")
       if GPGME::Ctx.sufficient_gpg_version?('2.1')
         expect(mail.to_s).to include("keyserver refresh failed: No keyserver available")

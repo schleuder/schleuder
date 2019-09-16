@@ -103,7 +103,7 @@ module GPGME
     end
 
     def refresh_key(fingerprint)
-      args = "#{keyserver_arg} --refresh-keys #{fingerprint}"
+      args = "#{keyserver_arg} #{import_filter_arg} --refresh-keys #{fingerprint}"
       gpgerr, gpgout, exitcode = self.class.gpgcli(args)
 
       if exitcode > 0
@@ -136,7 +136,8 @@ module GPGME
       arguments, error = fetch_key_gpg_arguments_for(input)
       return error if error
 
-      gpgerr, gpgout, exitcode = self.class.gpgcli(arguments)
+      self.class.send_notice_if_gpg_does_not_know_import_filter
+      gpgerr, gpgout, exitcode = self.class.gpgcli("#{import_filter_arg} #{arguments}")
 
       # Unfortunately gpg doesn't exit with code > 0 if `--fetch-key` fails.
       if exitcode > 0 || gpgerr.grep(/ unable to fetch /).presence
@@ -268,6 +269,26 @@ module GPGME
         "--keyserver #{Conf.keyserver}"
       else
         ""
+      end
+    end
+
+    def self.gpg_knows_import_filter?
+      sufficient_gpg_version?('2.1.15')
+    end
+
+    def import_filter_arg
+      if self.class.gpg_knows_import_filter?
+        %{ --import-filter drop-sig='sig_created_d > 0000-00-00'}
+      end
+    end
+
+    def self.send_notice_if_gpg_does_not_know_import_filter
+      if ! gpg_knows_import_filter?
+        Schleuder.logger.notify_superadmin(
+            subject: 'Schleuder installation problem',
+            message: "Your version of GnuPG is very old, please update!\n\nWith your version of GnuPG we can not protect your setup against signature flooding. Please update to at least version 2.1.15 to fix this problem. See <https://dkg.fifthhorseman.net/blog/openpgp-certificate-flooding.html> for details on the background."
+          )
+        ''
       end
     end
   end
