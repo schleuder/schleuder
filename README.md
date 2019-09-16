@@ -65,7 +65,7 @@ Installing Schleuder
   This creates necessary directories, copies example configs, etc. If you see errors about missing write permissions please follow the advice given.
 
 
-For further information on setup and configuration please read <https://schleuder.org/docs/#setup>.
+For further information on setup and configuration please read <https://schleuder.org/schleuder/docs/server-admins.html>.
 
 
 Command line usage
