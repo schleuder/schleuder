@@ -54,6 +54,18 @@ describe Mail::Message do
     expect(mail.automated_message?).to be(false)
   end
 
+  it "recognizes a Jenkins message with 'Auto-Submitted'-header NOT as automated message" do
+    list = create(:list)
+    mail = Mail.new
+    mail.header['Auto-submitted'] = 'auto-generated'
+    mail.header['X-Jenkins-Job'] = 'test_Tails_ISO_stable'
+    # Trigger the setting of mandatory headers.
+    mail.to_s
+    mail = Mail.create_message_to_list(mail.to_s, 'something@localhost', list).setup
+
+    expect(mail.automated_message?).to be(false)
+  end
+
   context '#add_subject_prefix!' do
     it 'adds a configured subject prefix' do
       list = create(:list)
