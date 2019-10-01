@@ -6,9 +6,12 @@ module Schleuder
                           in: -> (id) { List.pluck(:id) },
                           message: 'must refer to an existing list'
                         }
-    validates :email, presence: true, email: true, uniqueness: {scope: :list_id}
+    validates :email, presence: true, email: true
+    validates :email, uniqueness: { scope: :list_id, case_sensitive: true }
     validates :fingerprint, allow_blank: true, fingerprint: true
     validates :delivery_enabled, :admin, boolean: true
+
+    before_validation { email.downcase! if email.present? }
 
     default_scope { order(:email) }
 
@@ -92,6 +95,5 @@ module Schleuder
     def delete_key
       list.delete_key(self.fingerprint)
     end
-
   end
 end
