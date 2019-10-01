@@ -23,6 +23,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Allow only fingerprints as argument to X-DELETE-KEY. We want to reference keys only by fingerprint, if possible (as we do with other keywords already).
 * The list-option `keywords_admin_only` has been removed. The functionality will be replaced by some other means of configuration. [TODO: explain/adapt when replacement is implemented]
 * Drop deprecated X-LISTNAME keyword. (#374)
+* Downcase email addresses: Email addresses are downcased before saving.
 
 
 ## [3.3.0] / 2018-09-04
