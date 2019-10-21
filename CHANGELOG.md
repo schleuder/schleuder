@@ -24,6 +24,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * The list-option `keywords_admin_only` has been removed. The functionality will be replaced by some other means of configuration. [TODO: explain/adapt when replacement is implemented]
 * Drop deprecated X-LISTNAME keyword. (#374)
 * Downcase email addresses: Email addresses are downcased before saving.
+* Allow Jenkins job notifications to reach lists. Before, such mails were rejected due to being "auto-submitted".
 
 
 ## [3.3.0] / 2018-09-04
