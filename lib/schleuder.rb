@@ -1,3 +1,10 @@
+# ensure we have a default encoding set
+# if no LANG env variable is passed
+unless ENV.key?('LANG')
+  Encoding.default_external = Encoding::UTF_8
+  Encoding.default_internal = Encoding::UTF_8
+end
+
 # Stdlib
 require 'fileutils'
 require 'singleton'
