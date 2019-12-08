@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
     "mailing_list_uri"  => "https://lists.nadir.org/mailman/listinfo/schleuder-announce/",
   }
   s.required_ruby_version = ">= 2.1.0"
-  s.add_runtime_dependency 'gpgme', '~> 2.0', '>= 2.0.13' # Explicitly include to force a version.
+  s.add_runtime_dependency 'gpgme', '~> 2.0', '>= 2.0.19' # Explicitly include to force a version.
   s.add_runtime_dependency 'mail', '~> 2.7.1'
   s.add_runtime_dependency 'mail-gpg', '~> 0.3', '>= 0.3.3'
   s.add_runtime_dependency 'activerecord', '~> 4.2'
