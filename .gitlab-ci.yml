@@ -32,12 +32,6 @@ variables:
     - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:init
     - CHECK_CODE_COVERAGE=true eatmydata bundle exec rspec
 
-ruby:2.3:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.3
-  <<: *test_ruby
-ruby:2.4:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.4
-  <<: *test_ruby
 ruby:2.5:
   image: $IMAGE_REGISTRY:schleuder-ruby2.5
   <<: *test_ruby
@@ -48,6 +42,9 @@ ruby:2.6:
     expire_in: 1 day
     paths:
       - coverage
+ruby:2.7:
+  image: $IMAGE_REGISTRY:schleuder-ruby2.7
+  <<: *test_ruby
   
 changelog:
   image: $IMAGE_REGISTRY:debian-generic
