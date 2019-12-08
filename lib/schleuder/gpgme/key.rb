@@ -36,8 +36,8 @@ module GPGME
       expired.present?
     end
 
-    def oneline
-      @oneline ||= 
+    def summary
+      @summary ||= 
         begin
           datefmt = '%Y-%m-%d'
           attribs = [
