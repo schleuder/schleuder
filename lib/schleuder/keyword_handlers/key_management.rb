@@ -47,7 +47,7 @@ module Schleuder
 
         @arguments.map do |argument|
           key = keys_controller.delete(@list.email, argument)
-          t("deleted", key_string: key.oneline)
+          t("deleted", key_string: key.summary)
         rescue GPGME::Error::Conflict => exc
           t("not_deletable", error: exc.message)
         rescue Errors::KeyNotFound => exc
