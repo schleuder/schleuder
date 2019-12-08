@@ -39,7 +39,8 @@ describe Schleuder::Runner do
         Schleuder::Runner.new().run(mail, list.email)
         message = Mail::TestMailer.deliveries.first
         content_part = message.parts.first
-        pseudoheaders = "From: Nina Siessegger <schleuder@example.org>\nSig: Unsigned"
+        separator = '------------------------------------------------------------------------------'
+        pseudoheaders = "From: Nina Siessegger <schleuder@example.org>\nSig: Unsigned\n#{separator}"
 
         expect(content_part.parts.first.body).to include(pseudoheaders)
         expect(content_part.parts.first.body).not_to include('To:')

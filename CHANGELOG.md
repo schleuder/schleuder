@@ -26,7 +26,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Drop deprecated X-LISTNAME keyword. (#374)
 * Downcase email addresses: Email addresses are downcased before saving.
 * Allow Jenkins job notifications to reach lists. Before, such mails were rejected due to being "auto-submitted".
-
+* Add visual separator (78 dashes, to comply with the recommended maximum line length in RFC2822) to the end of the 'pseudoheaders' block: This should help users of Apple Mail, which jams this block and the body together. Hopefully, this change makes it easier to dinstiguish both parts from each other. (#348)
 
 ## [3.3.0] / 2018-09-04
 

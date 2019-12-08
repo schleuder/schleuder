@@ -321,7 +321,8 @@ module Mail
     end
 
     def pseudoheaders(list)
-      (standard_pseudoheaders(list) + dynamic_pseudoheaders).flatten.join("\n") + "\n"
+      separator = '------------------------------------------------------------------------------'
+      (standard_pseudoheaders(list) + dynamic_pseudoheaders).flatten.join("\n") + "\n" + separator
     end
 
     def add_msgids(list, orig)
