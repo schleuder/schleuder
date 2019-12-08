@@ -17,6 +17,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+* Drop support for Ruby 2.3 and 2.4, require Ruby 2.5. (TODO: Check again if still valid before release.)
 * Drop support for GPG 2.0, require GPG 2.2.
 * Drop support to migrate lists from version 2. This includes pin_keys code, which looked for subscriptions without an associated key, and tried to find a distinctly matching key. Originally, this was implemented to help with a shortcoming of code which handled version 2 to version 3 migration. (#411)
 * "Plugins" are now called "keyword handlers", and they are implemented differently. If you use custom plugins you have to rewrite them (see an included keyword handler for implementation hints, it's rather simple). If you don't, this change doesn't affect you. One positive effect of this: if a message contains an unknown keyword, no keyword is being handled but the sender is sent an error message; thus we avoid half-handled messages.
