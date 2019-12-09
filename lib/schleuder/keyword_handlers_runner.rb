@@ -6,14 +6,15 @@ module Schleuder
     class << self
       attr_reader :keywords
 
-      def register_keyword(type:, keyword:, handler_class:, handler_method:, aliases:)
-        assert_valid_input!(type: type, keyword: keyword, handler_class: handler_class, handler_method: handler_method)
+      def register_keyword(type:, keyword:, handler_class:, handler_method:, aliases:, wanted_arguments:)
+        assert_valid_input!(type: type, keyword: keyword, handler_class: handler_class, handler_method: handler_method, wanted_arguments: wanted_arguments)
 
         identifiers = [keyword] + Array(aliases)
         identifiers.each do |identifier|
           REGISTERED_KEYWORDS[type.to_sym][identifier.to_s.dasherize] = {
               klass: handler_class,
-              method: handler_method.to_sym
+              method: handler_method.to_sym,
+              wanted_arguments: wanted_arguments
             }
         end
       end
@@ -115,11 +116,12 @@ module Schleuder
         RESERVED_KEYWORDS.include?(keyword)
       end
 
-      def assert_valid_input!(type:, keyword:, handler_class:, handler_method:)
+      def assert_valid_input!(type:, keyword:, handler_class:, handler_method:, wanted_arguments:)
         assert_valid_type!(type)
         assert_valid_keyword!(keyword)
         assert_valid_handler_class!(handler_class)
         assert_valid_handler_method!(handler_method)
+        assert_valid_wanted_arguments!(wanted_arguments)
       end
 
       def assert_valid_type!(type)
@@ -143,6 +145,21 @@ module Schleuder
       def assert_valid_handler_method!(handler_method)
         if handler_method.blank?
           raise ArgumentError.new("Invalid input for handler_method: #{handler_method.inspect} is not a valid method name")
+        end
+      end
+
+      def assert_valid_wanted_arguments!(wanted_arguments)
+        valid = case wanted_arguments
+                when []
+                  true
+                when Array
+                  wanted_arguments.map(&:class).uniq == [Regexp]
+                else
+                  false
+                end
+
+        if ! valid
+          raise ArgumentError.new("Invalid input for wanted_arguments: #{wanted_arguments.inspect} is not an array of regular expressions")
         end
       end
     end

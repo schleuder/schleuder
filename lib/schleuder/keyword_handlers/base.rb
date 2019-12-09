@@ -12,13 +12,14 @@ module Schleuder
           )
         end
 
-        def handles_list_keyword(keyword, with_method:, has_aliases: [])
+        def handles_list_keyword(keyword, with_method:, has_aliases: [], requires_arguments: [])
           KeywordHandlersRunner.register_keyword(
             type: :list,
             keyword: keyword,
             handler_class: self,
             handler_method: with_method,
-            aliases: has_aliases
+            aliases: has_aliases,
+            wanted_arguments: requires_arguments
           )
         end
       end
