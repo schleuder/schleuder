@@ -270,14 +270,26 @@ describe 'subscription via api' do
   context 'getting a subscription' do
     it 'returns a subscription for a given identifier' do
       list = create(:list)
-      subscription = create(:subscription, list_id: list.id, admin: true)
-      account = create(:account, email: subscription.email)
+      subscription_email = 'schleuder@example.org'
+      list.subscribe(subscription_email, '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      account = create(:account, email: subscription_email)
       authorize!(account.email, account.set_new_password!)
 
-      get "/lists/#{list.email}/subscriptions/#{subscription.email}.json"
+      get "/lists/#{list.email}/subscriptions/#{subscription_email}.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)['email']).to eq subscription.email
+      expect(JSON.parse(last_response.body)['email']).to eq subscription_email
+    end
+
+    it 'contains a one line representation of the key in the response body' do
+      list = create(:list)
+      list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      account = create(:account, email: 'schleuder@example.org')
+      authorize!(account.email, account.set_new_password!)
+
+      get "/lists/#{list.email}/subscriptions/schleuder@example.org.json"
+
+      expect(JSON.parse(last_response.body)['key_summary']).to eq '0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06'
     end
 
     it 'raises unauthorized if the account is not associated with the list' do

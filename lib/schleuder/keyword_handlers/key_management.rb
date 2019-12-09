@@ -32,7 +32,7 @@ module Schleuder
           else
             key = @list.gpg.find_distinct_key(import_status.fingerprint)
             if key
-              out << t("key_import_status.#{import_status.action}", key_oneline: key.oneline)
+              out << t("key_import_status.#{import_status.action}", key_summary: key.summary)
             end
           end
         end
@@ -48,7 +48,7 @@ module Schleuder
         @arguments.map do |argument|
           begin
             key = keys_controller.delete(@list.email, argument)
-            t('deleted', key_string: key.oneline)
+            t('deleted', key_string: key.summary)
           rescue GPGME::Error::Conflict => exc
             t('not_deletable', error: exc.message)
           rescue Errors::KeyNotFound => exc

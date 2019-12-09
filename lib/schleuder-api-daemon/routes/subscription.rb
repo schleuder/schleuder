@@ -42,7 +42,10 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     get '/:list_email/subscriptions/:email.json' do |list_email, email|
-      json subscriptions_controller.find(list_email, email)
+      subscription = subscriptions_controller.find(list_email, email)
+      key_summary = subscription.key.summary
+
+      json subscription.attributes.merge(key_summary: key_summary)
     end
 
     put '/:list_email/subscriptions/:email.json' do |list_email, email|
