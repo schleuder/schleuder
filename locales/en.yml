@@ -61,6 +61,7 @@ en:
       not_empty: is not empty
       not_writable: is not writable
       not_readable: is not readable
+    # TODO fix test for resending permissions
     not_permitted_for_subscribers: The keyword '%{keyword}' may for this list only be used by admins.
     unknown_keyword: The given keyword '%{keyword}' is unknown. Please check its spelling or the documentation.
     keyword_x_stop_missing: "Your message lacked the keyword 'X-STOP'. If you use keywords in a message, you must indicate with 'X-STOP' where to stop looking for further keywords."

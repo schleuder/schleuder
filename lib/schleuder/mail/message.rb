@@ -216,7 +216,7 @@ module Mail
             !self['X-Cron-Env'].present?)
     end
 
-    def keywords
+    def keywords(registered_keywords)
       return @keywords if @keywords
 
       part = first_plaintext_part
@@ -224,7 +224,11 @@ module Mail
         return []
       end
 
-      @keywords, lines = extract_keywords(part.decoded.lines)
+      if registered_keywords.present?
+        @keywords, lines = KeywordExtractor.extract_registered_keywords(registered_keywords, part.decoded.lines)
+      else
+        @keywords, lines = extract_any_keywords(part.decoded.lines)
+      end
       part_body = lines.join
 
       # Work around problems with re-encoding the body. If we delete the
@@ -430,7 +434,9 @@ module Mail
     private
 
 
-    def extract_keywords(content_lines)
+    # TODO: Use Keyword class that responds to valid_arguments()?
+
+    def extract_any_keywords(content_lines)
       keywords = []
       in_keyword_block = false
       content_lines.each_with_index do |line, i|
