@@ -16,6 +16,7 @@ require 'schleuder-api-daemon/routes/version'
 require 'schleuder-api-daemon/routes/list'
 require 'schleuder-api-daemon/routes/subscription'
 require 'schleuder-api-daemon/routes/key'
+require 'schleuder-api-daemon/routes/auth_token'
 require 'schleuder-api-daemon/helpers/schleuder-api-daemon-helper'
 
 %w[tls_cert_file tls_key_file].each do |config_key|
