@@ -16,6 +16,7 @@ require 'logger'
 require 'open3'
 require 'socket'
 require 'base64'
+require 'securerandom'
 
 # Require mandatory libs. The database-layer-lib is required below.
 require 'mail'
@@ -69,6 +70,7 @@ require 'schleuder/list'
 require 'schleuder/list_builder'
 require 'schleuder/subscription'
 require 'schleuder/account'
+require 'schleuder/auth_token'
 
 require 'schleuder/authorizer_policies/base_policy'
 require 'schleuder/authorizer_policies/subscription_policy'
