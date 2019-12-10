@@ -16,6 +16,7 @@ require "logger"
 require "open3"
 require "socket"
 require "base64"
+require "securerandom"
 
 # Require mandatory libs. The database-layer-lib is required below.
 require "mail"
@@ -65,12 +66,7 @@ require "schleuder/filters_runner"
 Dir["#{libdir}/schleuder/validators/*.rb"].each do |file|
   require file
 end
-require "schleuder/runner"
-require "schleuder/list"
-require "schleuder/list_builder"
-require "schleuder/subscription"
-require "schleuder/email_key_importer"
-require "schleuder/account"
+require "schleuder/auth_token"
 
 require "schleuder/authorizer_policies/base_policy"
 require "schleuder/authorizer_policies/subscription_policy"
@@ -78,10 +74,10 @@ require "schleuder/authorizer_policies/list_policy"
 require "schleuder/authorizer_policies/key_policy"
 require "schleuder/authorizer"
 
-require 'schleuder/controllers/base_controller'
-require 'schleuder/controllers/keys_controller'
-require 'schleuder/controllers/lists_controller'
-require 'schleuder/controllers/subscriptions_controller'
+require "schleuder/controllers/base_controller"
+require "schleuder/controllers/keys_controller"
+require "schleuder/controllers/lists_controller"
+require "schleuder/controllers/subscriptions_controller"
 
 # Setup
 ENV["SCHLEUDER_CONFIG"] ||= "/etc/schleuder/schleuder.yml"

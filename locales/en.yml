@@ -230,7 +230,7 @@ en:
         
         To request setting a new password for your own account use X-GET-NEW-PASSWORD.
       argument_size_mismatch: 'Error: this keyword requires exactly one argument: The email address for which the new password should be set.'
-      new_password: 'This is the new password for the account of %{email}: %{password}'
+      new_password: 'The new password for the account of %{email} was successfully saved!'
       subscription_not_found: 'Error: The address you requested to set a new password for is not subscribed.'
   list_public_key_subject: Key for this address
   list_public_key_attached: Find the key for this address attached.
@@ -314,6 +314,39 @@ en:
       error: |
         The key with this fingerprint could not be added due to an unknown error:
         %{fingerprint} 
+  auth_token:
+    email_subject: Verify your email address for Schleuder
+    email_body_cli: |
+      Hello,
+
+      to verify your email address and create a Schleuder-account
+      please within the next %{time_limit_minutes} minutes submit your email
+      address and this token
+      %{token_value}
+      using `schleuder-cli token verify`.
+      
+      If you didn't request this email, please ignore and delete it.
+
+
+      Best regards,
+      your Schleuder admins
+    email_body_web: |
+      Hello,
+
+      to verify your email address and create a Schleuder-account
+      please within the next %{time_limit_minutes} minutes enter your email
+      address and this token
+      %{token_value}
+      at this website
+      %{url}
+      
+      If you didn't request this email, please ignore and delete it.
+
+
+      Best regards,
+      your Schleuder admins
+    email_sent: The email to the given address was sent, please check your emails within the next %{time_limit_minutes} minutes.
+
 
   activerecord:
     errors:

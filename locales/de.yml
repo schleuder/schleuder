@@ -310,6 +310,39 @@ de:
       error: |
         Der Schlüssel mit diesem Fingerabdruck konnte aus unbekanntem Grund nicht hinzugefügt werden:
         %{fingerprint} 
+  auth_token:
+    email_subject: Bestätige deine Emailadresse für Schleuder
+    email_body_cli: |
+      Hallo,
+
+      bitte bestätige deine Emailadresse und erstelle einen Schleuder-Zugang
+      indem du innerhalb von %{time_limit_minutes} Minuten deine Emailadresse
+      und dieses Token
+      %{token_value}
+      mit `schleuder-cli token verify` übermittelst.
+
+      Falls du diese Email nicht veranlasst hast, ignoriere und lösche sie bitte einfach.
+
+
+      Viele Grüsse,
+      deine Schleuder Admins
+    email_body_web: |
+      Hallo,
+
+      bitte bestätige deine Emailadresse und erstelle einen Schleuder-Zugang
+      indem du innerhalb von %{time_limit_minutes} Minuten deine Emailadresse
+      und dieses Token
+      <%{verification_url}>
+      auf dieser Website eingibst:
+      {verification_url}
+
+      Falls du diese Email nicht veranlasst hast, ignoriere und lösche sie bitte einfach.
+
+
+      Viele Grüsse,
+      deine Schleuder Admins
+    email_sent: Die Verifizierungs-Email wurde an die angegebene Adresse verschickt. Bitte prüfe innerhalb der nächsten %{time_limit_minutes} Minuten dein Email-Postfach.
+
 
   activerecord:
     errors:

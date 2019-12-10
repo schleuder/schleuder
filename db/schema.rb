@@ -10,13 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2022_09_10_170110) do
+ActiveRecord::Schema[7.1].define(version: 2023_11_08_193000) do
 
   create_table "accounts", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
     t.boolean "api_superadmin", default: false, null: false
     t.index ["email"], name: "index_accounts_on_email", unique: true
+  end
+
+  create_table "auth_tokens", force: :cascade do |t|
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "value"
+    t.string "email"
+    t.index ["value", "email"], name: "index_auth_tokens_on_value_and_email", unique: true
   end
 
   create_table "lists", force: :cascade do |t|
