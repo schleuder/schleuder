@@ -1,73 +1,86 @@
 require 'helpers/api_daemon_spec_helper'
 
 describe 'lists via api' do
-  it 'contains only email addresses in list of lists' do
-    authorize_as_api_superadmin!
-    list1 = create(:list)
-    list2 = create(:list)
+  context 'create list' do
+    it 'contains only email addresses in list of lists' do
+      authorize_as_api_superadmin!
+      list1 = create(:list)
+      list2 = create(:list)
+  
+      get '/lists.json'
+  
+      expect(last_response.status).to be 200
+      expect(last_response.body).to eql([list1.email, list2.email].to_json)
+    end
+  
+    it "doesn't create a list without authentication" do
+      list = build(:list)
+      parameters = {
+        email: 'new_testlist@example.com',
+        fingerprint: list.fingerprint
+      }
+      num_lists = List.count
 
-    get '/lists.json'
+      post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-    expect(last_response.status).to be 200
-    expect(last_response.body).to eql([list1.email, list2.email].to_json)
-  end
+      expect(last_response.status).to be 401
+      expect(List.count).to eql(num_lists)
+    end
 
-  it "doesn't create a list without authentication" do
-    list = build(:list)
-    parameters = {
-      email: 'new_testlist@example.com',
-      fingerprint: list.fingerprint
-    }
-    num_lists = List.count
+    # Subscriber and list-admin are unassociated already, because no list exists
+    # yet, thus we skip the extra test for unassociated admin.
 
-    post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+    it "doesn't create a list authorized as subscriber" do
+      subscription = create(:subscription, admin: false)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      list = build(:list)
+      parameters = { email: 'new_testlist@example.com', fingerprint: list.fingerprint }
+      num_lists = List.count
 
-    expect(last_response.status).to be 401
-    expect(List.count).to eql(num_lists)
-  end
+      post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-  # Subscriber and list-admin are unassociated already, because no list exists
-  # yet, thus we skip the extra test for unassociated admin.
+      expect(last_response.status).to be 403
+      expect(List.count).to eql(num_lists)
+    end
 
-  it "doesn't create a list authorized as subscriber" do
-    subscription = create(:subscription, admin: false)
-    account = create(:account, email: subscription.email)
-    authorize!(account.email, account.set_new_password!)
-    list = build(:list)
-    parameters = { email: 'new_testlist@example.com', fingerprint: list.fingerprint }
-    num_lists = List.count
+    it "doesn't create a list authorized as list-admin" do
+      subscription = create(:subscription, admin: true)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      list = build(:list)
+      parameters = { email: 'new_testlist@example.com', fingerprint: list.fingerprint }
+      num_lists = List.count
 
-    post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-    expect(last_response.status).to be 403
-    expect(List.count).to eql(num_lists)
-  end
+      expect(last_response.status).to be 403
+      expect(List.count).to eql(num_lists)
+    end
 
-  it "doesn't create a list authorized as list-admin" do
-    subscription = create(:subscription, admin: true)
-    account = create(:account, email: subscription.email)
-    authorize!(account.email, account.set_new_password!)
-    list = build(:list)
-    parameters = { email: 'new_testlist@example.com', fingerprint: list.fingerprint }
-    num_lists = List.count
+    it 'creates a list authorized as api_superadmin' do
+      authorize_as_api_superadmin!
+      list = build(:list)
+      parameters = { email: 'new_testlist@example.com', fingerprint: list.fingerprint }
+      num_lists = List.count
 
-    post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-    expect(last_response.status).to be 403
-    expect(List.count).to eql(num_lists)
-  end
+      expect(last_response.status).to be 200
+      expect(List.count).to eql(num_lists + 1)
+      expect(JSON.parse(last_response.body)['fingerprint']).to eql(list.fingerprint)
+    end
 
-  it 'creates a list authorized as api_superadmin' do
-    authorize_as_api_superadmin!
-    list = build(:list)
-    parameters = { email: 'new_testlist@example.com', fingerprint: list.fingerprint }
-    num_lists = List.count
+    it 'returns an error and status code 422 if a required parameter is missing' do
+      authorize_as_api_superadmin!
+      list = build(:list)
+      parameters = { fingerprint: list.fingerprint }
 
-    post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-    expect(last_response.status).to be 200
-    expect(List.count).to eql(num_lists + 1)
-    expect(JSON.parse(last_response.body)['fingerprint']).to eql(list.fingerprint)
+      expect(last_response.status).to be 422
+      expect(JSON.parse(last_response.body)['errors']).to eql ({'email' => ["'' is not a valid email address"]})
+    end
   end
 
   it "doesn't show a list without authentication" do
@@ -195,12 +208,12 @@ describe 'lists via api' do
       get 'lists/new.json'
 
       expect(last_response.status).to be 200
-      expect(last_response.body).to eq List.new().to_json
+      expect(last_response.body).to eq List.new.to_json
     end
   end
 
-  context 'update' do
-    it 'returns 403 if list was updated successfully' do
+  context 'update (via put)' do
+    it 'returns 204 if list was updated successfully' do
       authorize_as_api_superadmin!
       list = create(:list)
       parameters = { 'email' => 'new_address@example.org' }
@@ -208,6 +221,17 @@ describe 'lists via api' do
       put "lists/#{list.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq 204
+    end
+
+    it 'returns an error status code 400 when list could not be updated' do
+      authorize_as_api_superadmin!
+      list = create(:list)
+      parameters = { email: 'invalid-email-address', fingerprint: '0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3' }
+
+      put "lists/#{list.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq 400
+      expect(last_response.body['errors']).to eq 'errors'
     end
 
     it 'returns not authorized when user is not authorized' do
@@ -224,6 +248,29 @@ describe 'lists via api' do
     end
   end
 
+  context 'update (via patch)' do
+    it 'returns 204 if list was updated successfully' do
+      authorize_as_api_superadmin!
+      list = create(:list)
+      parameters = { 'email' => 'new_address@example.org' }
+
+      patch "lists/#{list.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq 204
+    end
+
+    it 'returns status code 400 when list could not be updated' do
+      authorize_as_api_superadmin!
+      list = create(:list)
+      parameters = { 'email' => 'invalid-email-address' }
+
+      patch "lists/#{list.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq 400
+      expect(last_response.body['errors']).to eq 'errors'
+    end
+  end
+
   context 'delete' do
     it 'returns 200 if list was deleted successfully' do
       authorize_as_api_superadmin!
@@ -232,6 +279,14 @@ describe 'lists via api' do
       delete "lists/#{list.email}.json"
 
       expect(last_response.status).to eq 200
+    end
+
+    it 'returns 404 when list could not be found' do
+      authorize_as_api_superadmin!
+
+      delete 'lists/nonexisting@example.org.json'
+
+      expect(last_response.status).to eq 404
     end
 
     it 'returns not authorized when user is not authorized' do
