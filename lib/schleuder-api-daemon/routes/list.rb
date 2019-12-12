@@ -15,8 +15,6 @@ class SchleuderApiDaemon < Sinatra::Base
       list, messages = lists_controller.create(list_email, fingerprint, adminaddress, adminfingerprint, adminkey)
       if list.nil?
         client_error(messages, 422)
-      elsif ! list.valid?
-        client_error(list, 422)
       else
         set_x_messages(messages)
         body json(list)
