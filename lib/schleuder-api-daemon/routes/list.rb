@@ -42,6 +42,7 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     put '/:email.json' do |email|
+      list = lists_controller.find(email)
       if lists_controller.update(email, parsed_body)
         204
       else
@@ -50,6 +51,7 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     patch '/:email.json' do |email|
+      list = lists_controller.find(email)
       if lists_controller.update(email, parsed_body)
         204
       else
@@ -58,6 +60,7 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     delete '/:email.json' do |email|
+      list = lists_controller.find(email)
       if lists_controller.delete(email)
         200
       else
