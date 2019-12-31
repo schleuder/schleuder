@@ -16,14 +16,14 @@ Gemspec/RequiredRubyVersion:
 # SupportedHashRocketStyles: key, separator, table
 # SupportedColonStyles: key, separator, table
 # SupportedLastArgumentHashStyles: always_inspect, always_ignore, ignore_implicit, ignore_explicit
-Layout/AlignHash:
+Layout/HashAlignment:
   Exclude:
     - '**/*'
 
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: with_first_parameter, with_fixed_indentation
-Layout/AlignParameters:
+Layout/ParameterAlignment:
   Exclude:
     - '**/*'
 
@@ -118,34 +118,34 @@ Layout/ExtraSpacing:
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: consistent, consistent_relative_to_receiver, special_for_inner_method_call, special_for_inner_method_call_in_parentheses
-Layout/IndentFirstArgument:
+Layout/FirstArgumentIndentation:
   Exclude:
     - '**/*'
 
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: special_inside_parentheses, consistent, align_brackets
-Layout/IndentFirstArrayElement:
+Layout/FirstArrayElementIndentation:
   Exclude:
     - '**/*'
 
 # Cop supports --auto-correct.
 # Configuration parameters: IndentationWidth.
-Layout/IndentAssignment:
+Layout/AssignmentIndentation:
   Exclude:
     - '**/*'
 
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: special_inside_parentheses, consistent, align_braces
-Layout/IndentFirstHashElement:
+Layout/FirstHashElementIndentation:
   Exclude:
     - '**/*'
 
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: auto_detection, squiggly, active_support, powerpack, unindent
-Layout/IndentHeredoc:
+Layout/HeredocIndentation:
   Exclude:
     - '**/*'
 
@@ -253,7 +253,7 @@ Layout/SpaceInsideParens:
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: final_newline, final_blank_line
-Layout/TrailingBlankLines:
+Layout/TrailingEmptyLines:
   Enabled: false
 
 # Cop supports --auto-correct.
@@ -280,11 +280,15 @@ Lint/DeprecatedClassMethods:
   Exclude:
     - '**/*'
 
-Lint/HandleExceptions:
+Lint/SuppressedException:
   Exclude:
     - '**/*'
 
 Lint/IneffectiveAccessModifier:
+  Exclude:
+    - '**/*'
+
+Lint/NonDeterministicRequireOrder:
   Exclude:
     - '**/*'
 
@@ -297,7 +301,7 @@ Lint/ShadowingOuterLocalVariable:
     - '**/*'
 
 # Cop supports --auto-correct.
-Lint/StringConversionInInterpolation:
+Lint/RedundantStringCoercion:
   Exclude:
     - '**/*'
 
@@ -399,38 +403,7 @@ Naming/PredicateName:
 
 # Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
 # AllowedNames: io, id, to, by, on, in, at, ip, db
-Naming/UncommunicativeMethodParamName:
-  Exclude:
-    - '**/*'
-
-# Cop supports --auto-correct.
-Performance/Casecmp:
-  Exclude:
-    - '**/*'
-
-# Cop supports --auto-correct.
-Performance/InefficientHashSearch:
-  Exclude:
-    - '**/*'
-
-# Cop supports --auto-correct.
-Performance/RedundantMatch:
-  Exclude:
-    - '**/*'
-
-# Cop supports --auto-correct.
-# Configuration parameters: MaxKeyValuePairs.
-Performance/RedundantMerge:
-  Exclude:
-    - '**/*'
-
-# Cop supports --auto-correct.
-Performance/RegexpMatch:
-  Exclude:
-    - '**/*'
-
-# Cop supports --auto-correct.
-Performance/StringReplacement:
+Naming/MethodParameterName:
   Exclude:
     - '**/*'
 
@@ -776,7 +749,7 @@ Style/ZeroLengthPredicate:
 
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
-Metrics/LineLength:
+Layout/LineLength:
   Exclude:
     - '**/*'
   Max: 365
@@ -801,6 +774,6 @@ Naming/RescuedExceptionsVariableName:
   Exclude:
     - '**/*'
 
-Layout/AlignArguments:
+Layout/ArgumentAlignment:
   Exclude:
     - '**/*'
