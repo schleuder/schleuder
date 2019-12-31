@@ -15,7 +15,6 @@ Gem::Specification.new do |s|
   s.executables =  %w[schleuder schleuder-api-daemon]
   s.platform     = Gem::Platform::RUBY
   s.require_path = 'lib'
-  s.rubyforge_project = '[none]'
   # TODO: extend/replace expired cert
   #s.signing_key = "#{ENV['HOME']}/.gem/schleuder-gem-private_key.pem"
   #s.cert_chain  = ['gem-public_cert.pem']
