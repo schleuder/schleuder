@@ -29,7 +29,7 @@ class SchleuderApiDaemon < Sinatra::Base
       rescue ActiveRecord::RecordNotUnique
         logger.error 'Already subscribed'
         status 422
-        json errors: {email: ['is already subscribed']}
+        json error: {email: ['is already subscribed']}
       end
     end
 
@@ -53,7 +53,7 @@ class SchleuderApiDaemon < Sinatra::Base
       required_parameters = subscriptions_controller.get_configurable_attributes
       if attributes.keys.sort != required_parameters.sort
         status 422
-        return json(errors: 'The request is missing a required parameter')
+        return json(error: 'The request is missing a required parameter')
       end
       subscription = subscriptions_controller.update(list_email, email, parsed_body)
       if subscription.valid?

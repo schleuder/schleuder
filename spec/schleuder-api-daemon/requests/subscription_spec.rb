@@ -360,7 +360,7 @@ describe 'subscription via api' do
       put "/lists/#{list.email}/subscriptions/#{subscription.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 422
-      expect(JSON.parse(last_response.body)['errors']).to eq 'The request is missing a required parameter'
+      expect(JSON.parse(last_response.body)['error']).to eq 'The request is missing a required parameter'
     end
 
     it 'raises unauthorized if the account is not associated with the list' do

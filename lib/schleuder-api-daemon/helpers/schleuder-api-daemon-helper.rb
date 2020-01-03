@@ -55,7 +55,7 @@ module SchleuderApiDaemonHelper
                obj_or_msg
              end
       logger.error "Sending error to client: #{text.inspect}"
-      halt(http_code, json(errors: text))
+      halt(http_code, json(error: text))
     end
 
     # poor persons type casting
