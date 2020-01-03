@@ -79,7 +79,7 @@ describe 'lists via api' do
       post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 422
-      expect(JSON.parse(last_response.body)['errors']).to eql ({'email' => ["'' is not a valid email address"]})
+      expect(JSON.parse(last_response.body)['error']).to eql ({'email' => ["'' is not a valid email address"]})
     end
   end
 
@@ -90,7 +90,7 @@ describe 'lists via api' do
       get "lists/#{list.email}.json"
 
       expect(last_response.status).to be 401
-      expect(last_response.body).to eql('Not authenticated')
+      expect(last_response.body).to eql '{"error":"Not authenticated"}'
     end
 
     it "doesn't show a list authorized as unassociated account" do
@@ -102,7 +102,7 @@ describe 'lists via api' do
       get "lists/#{list.email}.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
     end
 
     it "doesn't show a list authorized as subscriber with default config" do
@@ -157,7 +157,7 @@ describe 'lists via api' do
       get "lists/nonexisting@example.com.json"
 
       expect(last_response.status).to be 404
-      expect(last_response.body).to eq 'List not found.'
+      expect(last_response.body).to eq '{"error":"List not found."}'
     end
 
     it 'correctly finds a list by email-address that starts with a number' do
@@ -208,7 +208,16 @@ describe 'lists via api' do
       post "/lists/#{list.email}/send_list_key_to_subscriptions.json", { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
+    end
+
+    it 'returns a 404 when user is authorized and list does not exist' do
+      authorize_as_api_superadmin!
+
+      post "/lists/nonexisting@example.com/send_list_key_to_subscriptions.json", { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 404
+      expect(last_response.body).to eq '{"error":"List not found."}'
     end
   end
 
@@ -242,7 +251,7 @@ describe 'lists via api' do
       put "lists/#{list.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq 400
-      expect(last_response.body['errors']).to eq 'errors'
+      expect(last_response.body['error']).to eq 'error'
     end
 
     it 'returns not authorized when user is not authorized' do
@@ -255,7 +264,7 @@ describe 'lists via api' do
       put "lists/#{list.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
     end
   end
 
@@ -278,7 +287,7 @@ describe 'lists via api' do
       patch "lists/#{list.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq 400
-      expect(last_response.body['errors']).to eq 'errors'
+      expect(last_response.body['error']).to eq 'error'
     end
   end
 
@@ -309,7 +318,7 @@ describe 'lists via api' do
       delete "lists/#{list.email}.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
     end
   end
 end
