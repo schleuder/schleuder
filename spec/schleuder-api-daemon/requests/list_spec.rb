@@ -151,6 +151,15 @@ describe 'lists via api' do
       expect(JSON.parse(last_response.body)['email']).to eq list.email
     end
 
+    it 'returns a 404 when list is not existing' do
+      authorize_as_api_superadmin!
+
+      get "lists/nonexisting@example.com.json"
+
+      expect(last_response.status).to be 404
+      expect(last_response.body).to eq 'List not found.'
+    end
+
     it 'correctly finds a list by email-address that starts with a number' do
       authorize_as_api_superadmin!
       list = create(:list, email: '9list@hostname')
