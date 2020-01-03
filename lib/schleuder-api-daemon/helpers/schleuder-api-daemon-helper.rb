@@ -19,7 +19,7 @@ module SchleuderApiDaemonHelper
       return if request.path_info == '/status.json'
       if ! valid_credentials?
         headers['WWW-Authenticate'] = 'Basic realm="Schleuder API Daemon"'
-        halt 401, "Not authorized\n"
+        halt 401, json({ error: 'Not authorized' })
       end
     end
 

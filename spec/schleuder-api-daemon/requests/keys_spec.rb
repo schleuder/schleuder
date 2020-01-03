@@ -19,7 +19,7 @@ describe 'keys via api' do
       get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
     end
 
     it 'does list keys authorized as subscriber' do
@@ -139,7 +139,7 @@ describe 'keys via api' do
       get "/lists/#{list.email}/keys/check.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
     end
 
     it "doesn't check keys authorized as subscriber" do
@@ -151,7 +151,7 @@ describe 'keys via api' do
       get "/lists/#{list.email}/keys/check.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
     end
 
     it 'does check keys authorized as list-admin' do
@@ -293,7 +293,7 @@ describe 'keys via api' do
       delete "/lists/#{list.email}/keys/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
       expect(list.reload.keys.length).to eql(num_keys)
     end
 
@@ -308,7 +308,7 @@ describe 'keys via api' do
       delete "/lists/#{list.email}/keys/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
       expect(list.reload.keys.length).to eql(num_keys)
     end
 
