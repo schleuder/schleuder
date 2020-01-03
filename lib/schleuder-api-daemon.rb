@@ -39,6 +39,7 @@ class SchleuderApiDaemon < Sinatra::Base
   end
 
   before do
+    content_type :json
     authenticate!
     cast_param_values
   end
@@ -50,22 +51,23 @@ class SchleuderApiDaemon < Sinatra::Base
 
   error Errors::KeyNotFound do
     status 404
-    body 'Key not found.'
+    json({ error:  'Key not found.' })
   end
 
   error Errors::SubscriptionNotFound do
     status 404
-    body 'Subscription not found.'
+    json({ error: 'Subscription not found.' })
   end
 
   error Errors::ListNotFound do
+    content_type :json
     status 404
-    body 'List not found.'
+    json({ error: 'List not found.' })
   end
 
   error Errors::Unauthorized do
     status 403
-    body('Not authorized')
+    json({ error: 'Not authorized' })
   end
 
   error do
@@ -80,15 +82,15 @@ class SchleuderApiDaemon < Sinatra::Base
   end
 
   error 404 do
-    'Not found'
+    json({ error: 'Not found' })
   end
 
   error 401 do
-    'Not authenticated'
+    json({ error: 'Not authenticated' })
   end
 
   error 403 do
-    'Not authorized'
+    json({ error: 'Not authorized' })
   end
 
   def self.run!
