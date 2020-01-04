@@ -78,7 +78,7 @@ describe 'subscription via api' do
       post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
       list.reload
 
-      expect(last_response.status).to be 201
+      expect(last_response.status).to be 200
       expect(list.subscriptions.map(&:email)).to eql(['someone@localhost'])
       expect(list.subscriptions.first.admin?).to be false
       expect(list.subscriptions.first.delivery_enabled).to be true
@@ -94,7 +94,7 @@ describe 'subscription via api' do
       post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
       list.reload
 
-      expect(last_response.status).to be 201
+      expect(last_response.status).to be 200
       expect(list.subscriptions.map(&:email)).to include('someone@localhost')
       expect(list.subscriptions.first.admin?).to be false
       expect(list.subscriptions.first.delivery_enabled).to be true
@@ -107,7 +107,7 @@ describe 'subscription via api' do
 
       post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-      expect(last_response.status).to be 201
+      expect(last_response.status).to be 200
       expect(last_response.body).to match_json_schema('subscription')
     end
 
@@ -152,7 +152,7 @@ describe 'subscription via api' do
       post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
       list.reload
 
-      expect(last_response.status).to be 201
+      expect(last_response.status).to be 200
       expect(list.subscriptions.map(&:email)).to eql(['someone@localhost'])
       expect(list.subscriptions.first.admin?).to be true
       expect(list.subscriptions.first.delivery_enabled).to be true
@@ -168,7 +168,7 @@ describe 'subscription via api' do
       post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
       list.reload
 
-      expect(last_response.status).to be 201
+      expect(last_response.status).to be 200
       expect(list.subscriptions.map(&:email)).to eql(['someone@localhost'])
       expect(list.subscriptions.first.admin?).to be true
       expect(list.subscriptions.first.delivery_enabled).to be true
@@ -184,7 +184,7 @@ describe 'subscription via api' do
       post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
       list.reload
 
-      expect(last_response.status).to be 201
+      expect(last_response.status).to be 200
       expect(list.subscriptions.map(&:email)).to eql(['someone@localhost'])
       expect(list.subscriptions.first.admin?).to be false
       expect(list.subscriptions.first.delivery_enabled).to be false

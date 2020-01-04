@@ -19,7 +19,6 @@ class SchleuderApiDaemon < Sinatra::Base
       logger.debug "subcription: #{subscription.inspect}"
       if subscription.valid?
         logger.debug "Subscribed: #{subscription.inspect}"
-        status 201
         json subscription
       else
         client_error(subscription, 422)
