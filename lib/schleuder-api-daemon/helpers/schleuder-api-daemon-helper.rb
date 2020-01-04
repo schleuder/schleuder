@@ -44,7 +44,6 @@ module SchleuderApiDaemonHelper
       halt(500, json(error: msg))
     end
 
-    # TODO: unify error messages. This method currently sends an old error format. See <https://github.com/rails/activeresource/blob/d6a5186/lib/active_resource/base.rb#L227>.
     def client_error(obj_or_msg, http_code=400)
       text = case obj_or_msg
              when String, Symbol
