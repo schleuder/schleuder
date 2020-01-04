@@ -12,24 +12,17 @@ class SchleuderApiDaemon < Sinatra::Base
       json subscriptions_controller.find_all(list_email, filter)
     end
 
-
     post '/:list_email/subscriptions.json' do |list_email|
-      begin
-        attributes = find_attributes_from_body(%w[email fingerprint admin delivery_enabled])
-        subscription, messages = subscriptions_controller.subscribe(list_email, attributes, find_key_material)
-        set_x_messages(messages)
-        logger.debug "subcription: #{subscription.inspect}"
-        if subscription.valid?
-          logger.debug "Subscribed: #{subscription.inspect}"
-          status 201
-          json subscription
-        else
-          client_error(subscription, 422)
-        end
-      rescue ActiveRecord::RecordNotUnique
-        logger.error 'Already subscribed'
-        status 422
-        json error: {email: ['is already subscribed']}
+      attributes = find_attributes_from_body(%w[email fingerprint admin delivery_enabled])
+      subscription, messages = subscriptions_controller.subscribe(list_email, attributes, find_key_material)
+      set_x_messages(messages)
+      logger.debug "subcription: #{subscription.inspect}"
+      if subscription.valid?
+        logger.debug "Subscribed: #{subscription.inspect}"
+        status 201
+        json subscription
+      else
+        client_error(subscription, 422)
       end
     end
 
