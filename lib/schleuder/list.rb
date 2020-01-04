@@ -146,6 +146,16 @@ module Schleuder
       key.armored
     end
 
+    def key_minimal_base64_encoded(fingerprint=self.fingerprint)
+      key = keys(fingerprint).first
+      
+      if key.blank?
+        return false
+      end
+      
+      Base64.strict_encode64(key.minimal)
+    end
+
     def check_keys
       now = Time.now
       checkdate = now + (60 * 60 * 24 * 14) # two weeks

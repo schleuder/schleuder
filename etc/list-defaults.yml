@@ -93,6 +93,9 @@ bounces_drop_on_headers:
 # Send a notice to the list-admins whenever an email is bounced or dropped?
 bounces_notify_admins: true
 
+# Include Autocrypt header into emails?
+include_autocrypt_header: true
+
 # Include RFC-compliant List-* Headers into emails?
 include_list_headers: true
 
