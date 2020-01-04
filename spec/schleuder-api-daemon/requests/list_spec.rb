@@ -154,7 +154,7 @@ describe 'lists via api' do
     it 'returns a 404 when list is not existing' do
       authorize_as_api_superadmin!
 
-      get "lists/nonexisting@example.com.json"
+      get 'lists/nonexisting@example.com.json'
 
       expect(last_response.status).to be 404
       expect(last_response.body).to eq '{"error":"List not found."}'
@@ -214,7 +214,7 @@ describe 'lists via api' do
     it 'returns a 404 when user is authorized and list does not exist' do
       authorize_as_api_superadmin!
 
-      post "/lists/nonexisting@example.com/send_list_key_to_subscriptions.json", { 'CONTENT_TYPE' => 'application/json' }
+      post '/lists/nonexisting@example.com/send_list_key_to_subscriptions.json', { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 404
       expect(last_response.body).to eq '{"error":"List not found."}'
