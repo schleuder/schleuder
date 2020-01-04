@@ -250,8 +250,8 @@ describe 'lists via api' do
 
       put "lists/#{list.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-      expect(last_response.status).to eq 400
-      expect(last_response.body['error']).to eq 'error'
+      expect(last_response.body).to eq '{"error":["Email is not a valid email address"]}'
+      expect(last_response.status).to eq 422
     end
 
     it 'returns not authorized when user is not authorized' do
@@ -286,8 +286,8 @@ describe 'lists via api' do
 
       patch "lists/#{list.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-      expect(last_response.status).to eq 400
-      expect(last_response.body['error']).to eq 'error'
+      expect(last_response.status).to eq 422
+      expect(last_response.body).to eq '{"error":["Email is not a valid email address"]}'
     end
   end
 
