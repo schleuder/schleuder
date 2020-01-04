@@ -218,6 +218,54 @@ describe Schleuder::Runner do
       end
     end
 
+    context 'mails not encrypted to the list key' do
+      it 'handles a mail which was encrypted to an absent key and returns DecryptionFailed error' do
+        list = create(
+          :list,
+          send_encrypted_only: false
+        )
+        list.subscribe("schleuder@example.org", nil, true)
+        mail = File.read('spec/fixtures/mails/encrypted-to-absent-key.txt')
+
+        result = Schleuder::Runner.new().run(mail, list.email)
+
+
+        expect(result.class).to eql(Schleuder::Errors::DecryptionFailed)
+
+        teardown_list_and_mailer(list)
+      end
+
+      it 'handles a mail which was encrypted to a passphrase and returns DecryptionFailed error' do
+        list = create(
+          :list,
+          send_encrypted_only: false
+        )
+        list.subscribe("schleuder@example.org", nil, true)
+        mail = File.read('spec/fixtures/mails/encrypted-to-passphrase.txt')
+
+        result = Schleuder::Runner.new().run(mail, list.email)
+        
+        expect(result.class).to eql(Schleuder::Errors::DecryptionFailed)
+
+        teardown_list_and_mailer(list)
+      end
+
+      it 'handles a mail containing PGP-garbage and returns DecryptionFailed error' do
+        list = create(
+          :list,
+          send_encrypted_only: false
+        )
+        list.subscribe("schleuder@example.org", nil, true)
+        mail = File.read('spec/fixtures/mails/containing-pgp-garbage.txt')
+
+        result = Schleuder::Runner.new().run(mail, list.email)
+
+        expect(result.class).to eql(Schleuder::Errors::DecryptionFailed)
+
+        teardown_list_and_mailer(list)
+      end
+    end
+
     it "delivers a signed error message if a subscription's key is expired on a encrypted-only list" do
         list = create(:list, send_encrypted_only: true)
         list.subscribe("admin@example.org", nil, true, false)
