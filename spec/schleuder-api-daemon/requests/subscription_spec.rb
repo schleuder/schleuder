@@ -245,6 +245,28 @@ describe 'subscription via api' do
       expect(last_response.status).to be 403
       expect(list.reload.subscriptions.map(&:email)).to include(subscription.email)
     end
+
+    it 'returns a 404 status code when member could not be found' do
+      list = create(:list)
+      authorize_as_api_superadmin!
+
+      delete "/lists/#{list.email}/subscriptions/nonexisting@example.org.json"
+
+      expect(last_response.status).to eq 404
+    end
+
+    it 'returns an error when attempting to unsubscribe the last admin' do
+      list = create(:list)
+      admin_subscription = create(:subscription, list_id: list.id, admin: true)
+      admin_account = create(:account, email: admin_subscription.email)
+      authorize!(admin_account.email, admin_account.set_new_password!)
+
+      delete "/lists/#{list.email}/subscriptions/#{admin_subscription.email}.json"
+
+      expect(last_response.status).to be 403
+      expect(last_response.body).to eq '{"error":"Last admin cannot be unsubscribed"}'
+    end
+
   end
 
   context 'configurable attributes' do
