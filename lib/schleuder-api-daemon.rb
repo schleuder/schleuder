@@ -70,6 +70,11 @@ class SchleuderApiDaemon < Sinatra::Base
     json({ error: 'Not authorized' })
   end
 
+  error Errors::LastAdminNotDeletable do
+    status 403
+    json({ error: 'Last admin cannot be unsubscribed' })
+  end
+
   error do
     exc = env['sinatra.error']
     logger.error "Error: #{env['sinatra.error'].message}"
