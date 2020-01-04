@@ -378,7 +378,7 @@ describe 'subscription via api' do
       patch "/lists/#{list.email}/subscriptions/#{subscription.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq 422
-      expect(JSON.parse(last_response.body)['error']).to eq ["Email is not a valid email address"]
+      expect(JSON.parse(last_response.body)['error']).to eq ['Email is not a valid email address']
     end
   end
 
@@ -429,7 +429,7 @@ describe 'subscription via api' do
       put "/lists/#{list.email}/subscriptions/#{subscription.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq 422
-      expect(JSON.parse(last_response.body)['error']).to eq ["Admin must be true or false"]
+      expect(JSON.parse(last_response.body)['error']).to eq ['Admin must be true or false']
     end
 
     it 'raises unauthorized if the account is not associated with the list' do
