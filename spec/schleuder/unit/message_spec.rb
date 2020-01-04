@@ -66,6 +66,19 @@ describe Mail::Message do
     expect(mail.automated_message?).to be(false)
   end
 
+  # https://0xacab.org/schleuder/schleuder/issues/248
+  it "recognizes a sudo message with 'Auto-Submitted'-header NOT as automated message" do
+    list = create(:list)
+    mail = Mail.new
+    mail.header['Auto-submitted'] = 'auto-generated'
+    mail.subject = '*** SECURITY information for host.example.com ***'
+    # Trigger the setting of mandatory headers.
+    mail.to_s
+    mail = Mail.create_message_to_list(mail.to_s, 'something@localhost', list).setup
+
+    expect(mail.automated_message?).to be(false)
+  end
+
   context '#add_subject_prefix!' do
     it 'adds a configured subject prefix' do
       list = create(:list)
