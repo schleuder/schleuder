@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 * Allow Jenkins job notifications to reach lists. Before, such mails were rejected due to being "auto-submitted".
+* Do not recognize sudo messages as automated message (#248)
 
 ## [3.4.1] / 2019-09-16
 

@@ -213,7 +213,8 @@ module Mail
           ( self['Auto-Submitted'].present? && \
             self['Auto-Submitted'].to_s.downcase != 'no' && \
             !self['X-Cron-Env'].present? && \
-            !self['X-Jenkins-Job'].present?)
+            !self['X-Jenkins-Job'].present? && \
+            self.subject.to_s !~ /\A\*\*\* SECURITY information.*\*\*\*\Z/)
     end
 
     def keywords
