@@ -18,6 +18,7 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     post "/:list_email/keys.json" do |list_email|
+      list = lists_controller.find(list_email)
       input = parsed_body["keymaterial"]
       if !input.match("BEGIN PGP")
         input = Base64.decode64(input)
@@ -35,6 +36,14 @@ class SchleuderApiDaemon < Sinatra::Base
           end
         end
       end
+
+      if keys.size < 1
+        if messages.empty?
+          messages << 'The given key material did not contain any keys!'
+        end
+        client_error(messages.join("\n"), 422)
+      end
+
       set_x_messages(messages)
       # Use a Hash as single response object to stay more REST-like. (also,
       # ActiveResource chokes if we return an array here).
@@ -84,16 +93,20 @@ class SchleuderApiDaemon < Sinatra::Base
     subscription = subscriptions_controller.find_all(list_email, {fingerprint: fingerprint}).first
     subscription ||= nil
   end
-  
+
   def authorized_to_read_subscriptions?(list_email)
-    list = lists_controller.find(list_email) 
+    list = lists_controller.find(list_email)
     authorize!(list, :list_subscriptions)
-    return true
+    true
   rescue Errors::Unauthorized
-    return false
+    false
   end
 
-  def key_to_hash(key, include_keydata=false)
+  def invalid_key_material?(result)
+    result[0].nil?
+  end
+
+  def key_to_hash(key, include_keydata = false)
     hash = {
       fingerprint: key.fingerprint,
       email: key.email,
@@ -101,7 +114,7 @@ class SchleuderApiDaemon < Sinatra::Base
       generated_at: key.generated_at,
       primary_uid: key.primary_uid.uid,
       key_summary: key.summary,
-      trust_issues: key.usability_issue,
+      trust_issues: key.usability_issue
     }
     if include_keydata
       hash[:description] = key.to_s
