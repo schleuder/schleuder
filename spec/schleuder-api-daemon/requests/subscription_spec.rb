@@ -189,6 +189,19 @@ describe 'subscription via api' do
       expect(list.subscriptions.first.admin?).to be false
       expect(list.subscriptions.first.delivery_enabled).to be false
     end
+
+    it 'returns status code 422 and an error message if user is already subscribed' do
+      authorize_as_api_superadmin!
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: false, email: 'someone@localhost')
+      parameters = { email: 'someone@localhost', delivery_enabled: false }
+
+      post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      list.reload
+
+      expect(last_response.status).to be 422
+      expect(last_response.body).to eq '{"error":["Email is already subscribed"]}'
+    end
   end
 
   context 'delete' do
@@ -373,7 +386,7 @@ describe 'subscription via api' do
       expect(last_response.status).to be 200
     end
 
-    it 'returns an error and status code 400 if a required parameter is missing' do
+    it 'returns an error and status code 422 if a required parameter is missing' do
       list = create(:list)
       subscription = create(:subscription, list_id: list.id, admin: false)
       account = create(:account, email: subscription.email)
