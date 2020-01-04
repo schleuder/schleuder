@@ -42,20 +42,20 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     put '/:email.json' do |email|
-      list = lists_controller.find(email)
-      if lists_controller.update(email, parsed_body)
+      list = lists_controller.update(email, parsed_body)
+      if list.valid?
         204
       else
-        client_error(list)
+        client_error(list, 422)
       end
     end
 
     patch '/:email.json' do |email|
-      list = lists_controller.find(email)
-      if lists_controller.update(email, parsed_body)
+      list = lists_controller.update(email, parsed_body)
+      if list.valid?
         204
       else
-        client_error(list)
+        client_error(list, 422)
       end
     end
 
