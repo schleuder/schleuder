@@ -113,7 +113,7 @@ module Schleuder
       gpg.keyimport(importable)
     end
 
-    def import_key_and_find_fingerprint(key_material)
+    def import_key_and_interpret_result(key_material)
       return nil if key_material.blank?
 
       import_result = import_key(key_material)
@@ -253,7 +253,7 @@ module Schleuder
           email: email
       }
       if key_material.present?
-        fingerprint, messages = import_key_and_find_fingerprint(key_material)
+        fingerprint, messages = import_key_and_interpret_result(key_material)
       end
       args[:fingerprint] = fingerprint
       # ActiveRecord does not treat nil as falsy for boolean columns, so we

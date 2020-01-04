@@ -12,7 +12,7 @@ module Schleuder
     def import(list_email, key)
       list = get_list(list_email)
       authorize!(list, :add_keys)
-      list.import_key(key)
+      list.import_key_and_interpret_result(key)
     end
 
     def fetch(list_email, identifier)
