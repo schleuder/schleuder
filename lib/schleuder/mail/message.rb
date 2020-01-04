@@ -348,6 +348,14 @@ module Mail
     end
 
     def add_list_headers(list)
+      if list.include_autocrypt_header
+        # Inject whitespaces, to let Mail break the string at these points
+        # leading to correct wrapping.
+        keydata = list.key_minimal_base64_encoded.gsub(/(.{78})/, '\1 ')
+        
+        self['Autocrypt'] = "addr=#{list.email}; prefer-encrypt=mutual; keydata=#{keydata}"
+      end
+
       if list.include_list_headers
         self['List-Id'] = "<#{list.email.gsub('@', '.')}>"
         self['List-Owner'] = "<mailto:#{list.owner_address}> (Use list's public key)"

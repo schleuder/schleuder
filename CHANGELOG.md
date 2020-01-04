@@ -3,11 +3,16 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.4.x]
+## [3.5.0] / 2020-01-XX
+
+### Added
+
+* New option for lists to include their public keys in the headers of outgoing emails (conforming with Autocrypt, https://autocrypt.org/). Defaults to true. (#335)
 
 ### Fixed
 
 * Allow Jenkins job notifications to reach lists. Before, such mails were rejected due to being "auto-submitted".
+
 
 ## [3.4.1] / 2019-09-16
 

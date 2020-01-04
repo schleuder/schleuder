@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180110203100) do
+ActiveRecord::Schema.define(version: 20190906194820) do
 
   create_table "lists", force: :cascade do |t|
     t.datetime "created_at"
@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 20180110203100) do
     t.boolean  "forward_all_incoming_to_admins",                          default: false
     t.integer  "logfiles_to_keep",                                        default: 2
     t.text     "internal_footer",                                         default: ""
+    t.boolean  "include_autocrypt_header",                                default: true
   end
 
   create_table "subscriptions", force: :cascade do |t|
