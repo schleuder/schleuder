@@ -367,6 +367,19 @@ describe 'subscription via api' do
 
       expect(last_response.status).to be 403
     end
+
+    it 'returns 200 and an error if parameter is invalid' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: true)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      parameters = { email: 'invalid_email_address.org' }
+
+      patch "/lists/#{list.email}/subscriptions/#{subscription.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq 422
+      expect(JSON.parse(last_response.body)['error']).to eq ["Email is not a valid email address"]
+    end
   end
 
   context 'updating a subscription via put (replace the resource in its entirety)' do
@@ -398,8 +411,25 @@ describe 'subscription via api' do
 
       put "/lists/#{list.email}/subscriptions/#{subscription.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-      expect(last_response.status).to be 422
+      expect(last_response.status).to eq 422
       expect(JSON.parse(last_response.body)['error']).to eq 'The request is missing a required parameter'
+    end
+
+    it 'returns an error and status code 422 if a parameter is invalid' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: false)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      parameters = {
+        fingerprint: 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE',
+        admin: '', 
+        delivery_enabled: true
+      }
+
+      put "/lists/#{list.email}/subscriptions/#{subscription.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq 422
+      expect(JSON.parse(last_response.body)['error']).to eq ["Admin must be true or false"]
     end
 
     it 'raises unauthorized if the account is not associated with the list' do
