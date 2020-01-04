@@ -76,8 +76,6 @@ class SchleuderApiDaemon < Sinatra::Base
       subscription = subscriptions_controller.delete(list_email, email)
       if subscription
         200
-      else
-        client_error(subscription)
       end
     end
   end
