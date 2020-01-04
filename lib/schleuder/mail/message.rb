@@ -206,11 +206,14 @@ module Mail
       @recipient.match(/-bounce@/).present? ||
           # Empty Return-Path
           self.return_path.to_s == '<>' ||
-          # Auto-Submitted exists and does not equal 'no' and no cron header
-          # present, as cron emails have the auto-submitted header.
+          # Auto-Submitted exists and does not equal 'no' and:
+          #  - no cron header is present
+          #  - no Jenkins job notification header is present
+          # as these emails have the auto-submitted header.
           ( self['Auto-Submitted'].present? && \
             self['Auto-Submitted'].to_s.downcase != 'no' && \
-            !self['X-Cron-Env'].present?)
+            !self['X-Cron-Env'].present? && \
+            !self['X-Jenkins-Job'].present?)
     end
 
     def keywords
