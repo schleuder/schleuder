@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 * New option for lists to include their public keys in the headers of outgoing emails (conforming with Autocrypt, https://autocrypt.org/). Defaults to true. (#335)
+* Add visual separator (78 dashes) to the end of the 'pseudoheaders' block: This should help users of Apple Mail, which jams this block and the body together. Hopefully, this change makes it easier to dinstiguish both parts from each other. (#348)
 
 ### Fixed
 
