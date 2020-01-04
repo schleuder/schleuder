@@ -227,12 +227,11 @@ describe 'keys via api' do
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
       parameters = {'list_email' => list.email, 'keymaterial' => File.read('spec/fixtures/bla_foo_key.txt') }
-      num_keys = list.keys.length
 
       post "/lists/#{list.email}/keys.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-      expect(list.reload.keys.length).to eql(num_keys + 1)
       expect(last_response.status).to be 200
+      expect(last_response.body).to eq '{"fingerprint":"87E65ED2081AE3D16BE4F0A5EBDBE899251F2412"}'
 
       list.delete_key('0xEBDBE899251F2412')
     end
@@ -265,6 +264,30 @@ describe 'keys via api' do
       expect(last_response.status).to be 200
 
       list.delete_key('0xEBDBE899251F2412')
+    end
+
+    it 'returns 422 and an error message when no keymaterial is provided' do
+      list = create(:list)
+      authorize_as_api_superadmin!
+      parameters = {'list_email' => list.email, 'keymaterial' => '' }
+      num_keys = list.keys.length
+
+      post "/lists/#{list.email}/keys.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq 422
+      expect(last_response.body).to eq '{"error":"The given key material did not contain any keys!"}'
+    end
+
+    it 'returns 422 and an error message when invalid keymaterial is provided' do
+      list = create(:list)
+      authorize_as_api_superadmin!
+      parameters = {'list_email' => list.email, 'keymaterial' => 'Invalid Keymaterial' }
+      num_keys = list.keys.length
+
+      post "/lists/#{list.email}/keys.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq 422
+      expect(last_response.body).to eq '{"error":"The given key material did not contain any keys!"}'
     end
   end
 

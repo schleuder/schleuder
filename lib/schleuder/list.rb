@@ -113,6 +113,10 @@ module Schleuder
       gpg.keyimport(importable)
     end
 
+    def interpret_key_import_result(import_result)
+      gpg.interpret_import_result(import_result)
+    end
+    
     def import_key_and_interpret_result(key_material)
       return nil if key_material.blank?
 
