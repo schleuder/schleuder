@@ -63,8 +63,6 @@ class SchleuderApiDaemon < Sinatra::Base
       list = lists_controller.find(email)
       if lists_controller.delete(email)
         200
-      else
-        client_error(list)
       end
     end
   end
