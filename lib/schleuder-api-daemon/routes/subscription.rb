@@ -51,7 +51,7 @@ class SchleuderApiDaemon < Sinatra::Base
       if subscription.valid?
         200
       else
-        client_error(subscription)
+        client_error(subscription, 422)
       end
     end
 
@@ -60,7 +60,7 @@ class SchleuderApiDaemon < Sinatra::Base
       if subscription.valid?
         200
       else
-        client_error(subscription)
+        client_error(subscription, 422)
       end
     end
 
