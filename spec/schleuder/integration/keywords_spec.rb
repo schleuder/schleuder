@@ -2752,6 +2752,30 @@ EOS
     teardown_list_and_mailer(list)
   end
 
+  it 'x-attach-listkey from Thunderbird with protected headers' do
+    list = create(:list, email: 'testlist@example.net')
+    list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
+    encrypted_mail = File.read('spec/fixtures/mails/attach-list-key-thunderbird.eml')
+
+    res = nil
+    begin
+      res = Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
+
+    expect(message.parts.length).to eql(2)
+    expect(message.parts.last.parts.length).to eql(2)
+    expect(message.parts.last.parts.first.decoded).to eql("Hallo\r\n\r\nkurz mal testen, wie ein resend mail, wo zusätzlich der listkey attached\r\nist bei euch so ankommt.\r\n\r\nich habe das gefühl hier ist as broken.\r\n\r\n\r\n\r\n\r\n")
+    expect(message.parts.last.parts.last.content_type.to_s).to eql('application/pgp-keys')
+    expect(message.parts.last.parts.last.body.decoded).to match(/pub   4096R\/59C71FB38AEE22E091C78259D06350440F759BD3 \d{4}-\d{2}-\d{2}/)
+    expect(message.parts.last.parts.last.body.decoded).to include('-----BEGIN PGP PUBLIC KEY BLOCK-----')
+    expect(message.parts.last.parts.last.body.decoded).to include('mQINBFhGvz0BEADXbbTWo/PStyTznAo/f1UobY0EiVPNKNERvYua2Pnq8BwOQ5bS')
+
+    teardown_list_and_mailer(list)
+  end
+
   it "x-get-version" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)

@@ -1,16 +1,12 @@
 module Schleuder
   module ListPlugins
     def self.attach_listkey(arguments, list, mail)
-      filename = "#{list.fingerprint}.pgpkey"
-      # "Mail" only really converts to multipart if the content-type is blank.
-      mail.content_type = nil
-      mail.add_file({
-        filename: filename,
-        content: list.export_key
-      })
-      mail.attachments[filename].content_type = 'application/pgp-keys'
-      mail.attachments[filename].content_description = "OpenPGP public key of #{list.email}"
-      mail.attachments[filename].content_disposition = "attachment; filename=#{filename}"
+      new_part = Mail::Part.new
+      new_part.body = list.export_key
+      new_part.content_type = 'application/pgp-keys'
+      new_part.content_description = "OpenPGP public key of #{list.email}"
+      new_part.content_disposition = "attachment; filename=#{list.fingerprint}.pgpkey"
+      mail.add_part new_part
       nil
     end
   end
