@@ -13,7 +13,12 @@ module Schleuder
       begin
         # This decrypts, verifies, etc.
         @mail = @mail.setup
-      rescue GPGME::Error::DecryptFailed
+
+      rescue GPGME::Error::BadPassphrase,
+             GPGME::Error::DecryptFailed,
+             GPGME::Error::NoData,
+             GPGME::Error::NoSecretKey
+
         logger.warn "Decryption of incoming message failed."
         return Errors::DecryptionFailed.new(list)
       end

@@ -1,0 +1,38 @@
+Date: Sat, 4 Jan 2020 23:42:49 +0000
+From: <schleuder@example.org>
+To: schleuder@example.org
+Subject: Test
+Message-ID: <20200104234249.GB9231@example.org>
+MIME-Version: 1.0
+Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
+	boundary="eAbsdosE1cNLO4uF"
+Content-Disposition: inline
+
+
+--eAbsdosE1cNLO4uF
+Content-Type: application/pgp-encrypted
+Content-Disposition: attachment
+
+Version: 1
+
+--eAbsdosE1cNLO4uF
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="msg.asc"
+
+-----BEGIN PGP MESSAGE-----
+
+hQGMA+8L5wLeonReAQv/ch+gZBhnP0ikFnkmEXB50e3oWlP7/Gc0hRetb6s5I8u4
+dJOt9FUpaWiKg/OryBafJ889VtE7ujO2d8T+D0xwqiE9JRNzP3DiWiXgNpKw5pmN
+L6R4+skZ9UK009AzxWSivgg6fJIpk8i022n9c5DPK4sMOE2jUYV7C2BMzXcSq8jf
+vr5Wet3lf2yzfU+Pb62s8N1y/qg0PZrJb/0ddnaY4DDMPb4db3H2fuOEzuHnyxOK
+WiphCGWSKqKUUWt/x/01GABWBDCy/5HB5ow1o43u8KDriTVB765dd0aS2QGqhLD8
+yvhEnzjb1DRz5Bml7NOXKeueFL80S0vge1AKT1YOf1bW1YfTEpn0jiLr8zasd41c
+c7cM6SGX6PFV6xGTqMgHLBZaN7Xj4ijgqZfPslYJp4iqjyQ18y1S3zMBDLc3s+9T
+iihTi2Ve2D2nI7Xb1Cl/UAgRDin7pQT39UBsHtrKHbpf0NTKYQKzHk+0K+VZn1Bq
+a89bFZrfiT+iMXovAzx20loBzk6GUrmSRSgngW7ai0se4nEQ7Vj8xJV/awmBq8Oz
+O8UtXiQlIoqOXH07aLxZm819BRNy66XiRUsW0bxN/pzSbOlhivIXYm5ypy5UWEsl
+hGHDxswJibLDdpc=
+=pSCD
+-----END PGP MESSAGE-----
+
+--eAbsdosE1cNLO4uF--
