@@ -2025,7 +2025,7 @@ EOS
     teardown_list_and_mailer(list)
   end
 
-  it "x-resend with two matching keys, one of which is expired" do
+  it "x-resend-encrypted-only with two matching keys, one of which is expired" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     ENV['GNUPGHOME'] = list.listdir
@@ -2103,7 +2103,7 @@ EOS
     teardown_list_and_mailer(list)
   end
 
-  it "x-resend with expired key" do
+  it "x-resend-encrypted-only with expired key" do
     list = create(:list)
     list.subscribe("schleuder@example.org", '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     ENV['GNUPGHOME'] = list.listdir
