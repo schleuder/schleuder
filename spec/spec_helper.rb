@@ -136,6 +136,14 @@ RSpec.configure do |config|
     `SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml bin/schleuder #{command} 2>&1`
   end
 
+  def with_env(env)
+    backup = ENV.to_hash
+    ENV.replace(env)
+    yield
+  ensure
+    ENV.replace(backup)
+  end
+
   def process_mail(msg, recipient)
     output = nil
     begin

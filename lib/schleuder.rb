@@ -1,3 +1,10 @@
+# default to ASCII-8BIT encoding as early as possible for external
+# data.
+#
+# this should ensure we are able to parse most incoming
+# plain text mails in different charsets.
+Encoding.default_external = Encoding::ASCII_8BIT
+
 # Stdlib
 require 'fileutils'
 require 'singleton'
