@@ -149,5 +149,63 @@ describe Mail::Message do
 
     expect(mail.parts.last.body.to_s).to eql(footer)
   end
+
+  context "makes a pseudo header" do
+    it "with key / value" do
+      mail = Mail.new
+      ph = mail.make_pseudoheader('notice','some value')
+      expect(ph).to eql('Notice: some value')
+    end
+
+    it "without value" do
+      mail = Mail.new
+      ph = mail.make_pseudoheader(:key,nil)
+      expect(ph).to eql('Key: ')
+    end
+
+    it "with empty value" do
+      mail = Mail.new
+      ph = mail.make_pseudoheader(:key,'')
+      expect(ph).to eql('Key: ')
+    end
+
+    it "that is getting wrapped" do
+      mail = Mail.new
+      ph = mail.make_pseudoheader('notice','adds list#public_footer as last mime-part without changing its value adds list#public_footer as last mime-part without changing its value')
+      expect(ph).to eql("Notice: adds list#public_footer as last mime-part without changing its value\n  adds list#public_footer as last mime-part without changing its value")
+      expect(ph.split("\n")).to all( satisfy{|l| l.length <= 78 })
+    end
+
+    it "that multiline are getting wrapped" do
+      mail = Mail.new
+      ph = mail.make_pseudoheader('notice',"adds list#public_footer as last mime-part\nwithout changing its value adds list#public_footer as last mime-part without changing its value")
+      expect(ph).to eql("Notice: adds list#public_footer as last mime-part\n  without changing its value adds list#public_footer as last mime-part without\n  changing its value")
+      expect(ph.split("\n")).to all( satisfy{|l| l.length <= 78 })
+    end
+    it "that single multiline are getting indented" do
+      mail = Mail.new
+      ph = mail.make_pseudoheader('notice',"on line 1\non line 2 but indented")
+      expect(ph).to eql("Notice: on line 1\n  on line 2 but indented")
+      expect(ph.split("\n")).to all( satisfy{|l| l.length <= 78 })
+    end
+    it "that a line with less than 76 gets wrapped" do
+      mail = Mail.new
+      ph = mail.make_pseudoheader('keylongerthan8', 'afafa afafaf' * 6) # message is 72 long
+      expect(ph).to eql("Keylongerthan8: afafa afafafafafa afafafafafa afafafafafa afafafafafa\n  afafafafafa afafaf")
+      expect(ph.split("\n")).to all( satisfy{|l| l.length <= 78 })
+    end
+    it "that a multiline with less than 76 get wrapped correctly on the first line" do
+      mail = Mail.new
+      ph = mail.make_pseudoheader('keylongerthan8', ('afafa afafaf' * 6)+"\nbla bla newline")
+      expect(ph).to eql("Keylongerthan8: afafa afafafafafa afafafafafa afafafafafa afafafafafa\n  afafafafafa afafaf\n  bla bla newline")
+      expect(ph.split("\n")).to all( satisfy{|l| l.length <= 78 })
+    end
+    it "that a multiline with less than 76 get wrapped correctly on the first line and the followint lines" do
+      mail = Mail.new
+      ph = mail.make_pseudoheader('keylongerthan8', ('afafa afafaf' * 6)+"\nbla bla newline"+('afafa afafaf' * 6))
+      expect(ph).to eql("Keylongerthan8: afafa afafafafafa afafafafafa afafafafafa afafafafafa\n  afafafafafa afafaf\n  bla bla newlineafafa afafafafafa afafafafafa afafafafafa afafafafafa\n  afafafafafa afafaf")
+      expect(ph.split("\n")).to all( satisfy{|l| l.length <= 78 })
+    end
+  end
 end
 
