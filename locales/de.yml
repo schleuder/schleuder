@@ -121,7 +121,7 @@ de:
         Oder, um einen Schlüssel per HTTP von einem Server zu laden:
         X-FETCH-KEY: https://example.org/keys/mykey.asc
     resend:
-      not_resent_no_keys: Resending an <%{email}> fehlgeschlagen (%{num_keys} Schlüssel gefunden und unverschlüsseltes Senden verboten).
+      not_resent_no_keys: Resending an <%{email}> fehlgeschlagen (%{all_keys} Schlüssel gefunden, davon %{usable_keys} nutzbar. Unverschlüsseltes Senden verboten).
       encrypted_to: Verschlüsselt an
       unencrypted_to: Unverschlüsselt an
       invalid_recipient: "Ungültige Emailadresse für resend: %{address}"

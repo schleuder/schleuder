@@ -22,6 +22,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Add missing List-Id header to notification mails sent to admins. This should help with filtering such messages, which is currently not easy to do in a reliable way.
 * Fix running Schleuder with ruby 2.7.
 * Ensure that GnuPG never asks for a passphrase, even if it wants one. (#448)
+* Be more precise about how many keys are in the keyring and how many are usable, when resending (#429)
 
 
 ## [3.4.1] / 2019-09-16
