@@ -122,6 +122,7 @@ de:
         X-FETCH-KEY: https://example.org/keys/mykey.asc
     resend:
       not_resent_no_keys: Resending an <%{email}> fehlgeschlagen (%{all_keys} Schlüssel gefunden, davon %{usable_keys} nutzbar. Unverschlüsseltes Senden verboten).
+      not_resent_encrypted_no_keys: Verschlüsseltes Resending an <%{email}> fehlgeschlagen (%{all_keys} Schlüssel gefunden, davon %{usable_keys} nutzbar).
       encrypted_to: Verschlüsselt an
       unencrypted_to: Unverschlüsselt an
       invalid_recipient: "Ungültige Emailadresse für resend: %{address}"

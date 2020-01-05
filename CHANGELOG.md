@@ -23,6 +23,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Fix running Schleuder with ruby 2.7.
 * Ensure that GnuPG never asks for a passphrase, even if it wants one. (#448)
 * Be more precise about how many keys are in the keyring and how many are usable, when resending (#429)
+* Make it more clear what happens when resending an encrypted email fails (due to missing or too many matching keys), but falling back to unencrypted resend is allowed. (#343)
 
 
 ## [3.4.1] / 2019-09-16

@@ -125,14 +125,14 @@ module Schleuder
           if encrypted_only
             # Don't add the email to the result to exclude it from the
             # recipients.
-            add_keys_error(mail, email, usable_keys.size, keys.size)
+            add_resend_msg(mail, email, :error, 'not_resent_no_keys', usable_keys.size, keys.size)
           else
             hash[email] = ''
           end
         else
           # Always report this situation, regardless of sending or not. It's
           # bad and should be fixed.
-          add_keys_error(mail, email, usable_keys.size, keys.size)
+          add_resend_msg(mail, email, :notice, 'not_resent_encrypted_no_keys', usable_keys.size, keys.size)
           if ! encrypted_only
             hash[email] = ''
           end
@@ -152,8 +152,8 @@ module Schleuder
       gpg_opts
     end
 
-    def self.add_keys_error(mail, email, usable_keys_size, all_keys_size)
-      mail.add_pseudoheader(:error, I18n.t("plugins.resend.not_resent_no_keys", email: email, usable_keys: usable_keys_size, all_keys: all_keys_size))
+    def self.add_resend_msg(mail, email, severity, msg, usable_keys_size, all_keys_size)
+      mail.add_pseudoheader(severity, I18n.t("plugins.resend.#{msg}", email: email, usable_keys: usable_keys_size, all_keys: all_keys_size))
     end
 
     def self.add_error_header(mail, recipients_map)

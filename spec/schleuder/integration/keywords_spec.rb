@@ -2133,7 +2133,7 @@ EOS
     message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
 
     expect(list.keys('bla@foo').size).to eql(1)
-    expect(message.first_plaintext_part.to_s).to include("Resending to <bla@foo> failed (0 usable of totally 1 keys found")
+    expect(message.first_plaintext_part.to_s).to include("Error: Resending to <bla@foo> failed (1 keys found, of which 0 can be used.\r\n       Unencrypted sending not allowed).")
 
     teardown_list_and_mailer(list)
   end
