@@ -6,3 +6,5 @@ nto
 keyserver
 keyservers
 fpr
+files'
+ist
