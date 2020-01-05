@@ -56,6 +56,9 @@ module Schleuder
 
       # Only continue if all recipients are still here.
       if recip_map.size < arguments.size
+        recip_map.keys.each do |aborted_sender|
+          mail.add_pseudoheader(:error, I18n.t("plugins.resend.aborted", email: aborted_sender))
+        end
         return
       end
 
@@ -163,15 +166,15 @@ module Schleuder
     def self.add_resent_headers(mail, recipients_map, to_or_cc, sent_encrypted)
       if sent_encrypted
         prefix = I18n.t('plugins.resend.encrypted_to')
-        str = recipients_map.map do |email, key|
+        str = "\n" + recipients_map.map do |email, key|
           "#{email} (#{key.fingerprint})"
-        end.join(', ')
+        end.join(",\n")
       else
         prefix = I18n.t('plugins.resend.unencrypted_to')
-        str = recipients_map.keys.join(', ')
+        str = ' ' + recipients_map.keys.join(", ")
       end
       headername = resent_header_name(to_or_cc)
-      mail.add_pseudoheader(headername, "#{prefix} #{str}")
+      mail.add_pseudoheader(headername, "#{prefix}#{str}")
     end
 
     def self.resent_header_name(to_or_cc)
