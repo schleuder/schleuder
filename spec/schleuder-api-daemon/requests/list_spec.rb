@@ -71,7 +71,7 @@ describe 'lists via api' do
       expect(JSON.parse(last_response.body)['fingerprint']).to eql(list.fingerprint)
     end
 
-    it 'returns an error and status code 422 if a required parameter is missing' do
+    it 'returns an error and status code 422 if list name is blank' do
       authorize_as_api_superadmin!
       list = build(:list)
       parameters = { fingerprint: list.fingerprint }
@@ -80,6 +80,17 @@ describe 'lists via api' do
 
       expect(last_response.status).to be 422
       expect(JSON.parse(last_response.body)['error']).to eql ({'email' => ["'' is not a valid email address"]})
+    end
+
+    it 'returns an error and status code 422 if a parameter validation fails' do
+      authorize_as_api_superadmin!
+      list = build(:list)
+      parameters = { email: 'new_testlist@example.com', fingerprint: 'foo' }
+
+      post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 422
+      expect(JSON.parse(last_response.body)['error']).to eq ['Fingerprint is not a valid OpenPGP-fingerprint']
     end
   end
 
