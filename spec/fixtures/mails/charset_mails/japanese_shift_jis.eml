@@ -1,0 +1,15 @@
+Delivered-To: schleuder@example.org
+Date: Wed, 28 May 2014 17:18:19 +0900 (JST)
+From: sender@example.com
+To: schleuder@example.org
+Subject: test
+Message-ID: <xxxxx@docomo.ne.jp>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="Shift_JIS"
+Content-Transfer-Encoding: 8bit
+
+あいうえお
+
+このメールはテスト用のメールです。
+
+今後ともよろしくお願い申し上げます！
