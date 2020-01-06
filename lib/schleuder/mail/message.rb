@@ -219,7 +219,15 @@ module Mail
             !self['X-Jenkins-Job'].present?)
     end
 
-    def keywords(registered_keywords)
+    def keywords_type
+      if request?
+        :request
+      else
+        :list
+      end
+    end
+
+    def keywords
       return @keywords if @keywords
 
       part = first_plaintext_part
@@ -227,11 +235,7 @@ module Mail
         return []
       end
 
-      if registered_keywords.present?
-        @keywords, lines = KeywordExtractor.extract_registered_keywords(registered_keywords, part.decoded.lines)
-      else
-        @keywords, lines = extract_any_keywords(part.decoded.lines)
-      end
+      @keywords, lines = KeywordExtractor.extract_keywords(keywords_type, part.decoded.lines)
       part_body = lines.join
 
       # Work around problems with re-encoding the body. If we delete the
@@ -436,34 +440,6 @@ module Mail
 
     private
 
-
-    # TODO: Use Keyword class that responds to valid_arguments()?
-
-    def extract_any_keywords(content_lines)
-      keywords = []
-      in_keyword_block = false
-      content_lines.each_with_index do |line, i|
-        if match = line.match(/^x-([^:\s]*)[:\s]*(.*)/i)
-          keyword = match[1].strip.downcase
-          arguments = match[2].to_s.strip.downcase.split(/[,; ]{1,}/)
-          keywords << [keyword, arguments]
-          in_keyword_block = true
-
-          # Set this line to nil to have it stripped from the message.
-          content_lines[i] = nil
-
-          if keyword == 'stop'
-            # This stops the parsing.
-            break
-          end
-        elsif in_keyword_block == true
-          # Interpret line as arguments to the previous keyword.
-          keywords[-1][-1] += line.downcase.strip.split(/[,; ]{1,}/)
-          content_lines[i] = nil
-        end
-      end
-      [keywords, content_lines.compact]
-    end
 
     # mail.signed? throws an error if it finds
     # pgp boundaries, so we must use the Mail::Gpg

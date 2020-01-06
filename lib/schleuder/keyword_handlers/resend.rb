@@ -2,17 +2,17 @@ module Schleuder
   module KeywordHandlers
     class Resend < Base
       # TODO: specify regexp of wanted arguments or just the number of them
-      handles_list_keyword 'resend-encrypted-only', with_method: :resend_encrypted_only, has_aliases: 'resend-enc', requires_arguments: [Conf::EMAIL_REGEXP]
+      handles_list_keyword 'resend-encrypted-only', with_method: :resend_encrypted_only, has_aliases: 'resend-enc', wanted_arguments: [Conf::EMAIL_REGEXP]
 
-      handles_list_keyword 'resend', with_method: :resend, requires_arguments: [Conf::EMAIL_REGEXP]
+      handles_list_keyword 'resend', with_method: :resend, wanted_arguments: [Conf::EMAIL_REGEXP]
 
-      handles_list_keyword 'resend-cc', with_method: :resend_cc
+      handles_list_keyword 'resend-cc', with_method: :resend_cc, wanted_arguments: [Conf::EMAIL_REGEXP]
 
-      handles_list_keyword 'resend-cc-encrypted-only', with_method: :resend_cc_encrypted_only, has_aliases: 'resend-cc-enc'
+      handles_list_keyword 'resend-cc-encrypted-only', with_method: :resend_cc_encrypted_only, has_aliases: 'resend-cc-enc', wanted_arguments: [Conf::EMAIL_REGEXP]
 
-      handles_list_keyword 'resend-unencrypted', with_method: :resend_unencrypted
+      handles_list_keyword 'resend-unencrypted', with_method: :resend_unencrypted, wanted_arguments: [Conf::EMAIL_REGEXP]
 
-      handles_list_keyword 'resend-cc-unencrypted', with_method: :resend_cc_unencrypted
+      handles_list_keyword 'resend-cc-unencrypted', with_method: :resend_cc_unencrypted, wanted_arguments: [Conf::EMAIL_REGEXP]
 
 
       def resend

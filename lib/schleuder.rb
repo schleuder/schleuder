@@ -44,10 +44,16 @@ require 'schleuder/logger_notifications'
 require 'schleuder/logger'
 require 'schleuder/listlogger'
 require 'schleuder/keyword_handlers_runner'
+require 'schleuder/keyword_extractor'
+require 'schleuder/extracted_keyword'
 require 'schleuder/keyword_handlers/base'
 Dir["#{libdir}/schleuder/keyword_handlers/*.rb"].each do |file|
   require file
 end
+Dir["#{Schleuder::Conf.keyword_handlers_dir}/*.rb"].each do |file|
+  load file
+end
+
 require 'schleuder/filters_runner'
 Dir["#{libdir}/schleuder/validators/*.rb"].each do |file|
   require file

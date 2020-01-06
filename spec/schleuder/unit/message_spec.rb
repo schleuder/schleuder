@@ -138,39 +138,47 @@ describe Mail::Message do
   end
 
   context '.keywords' do
-    it 'stops looking for keywords when X-STOP is met' do
-      string = "x-something: bla\nx-somethingelse: ok\nx-stop\nx-toolate: tralafiti\n"
+    it 'reads multiple lines as keyword arguments, but only as many as specified by the keyword handler' do
+      string = "x-subscribe: first\nsecond\nthird\n0xblafoo\ntralafiti\n"
       m = Mail.new
       m.body = string
-      m.to_s
+      list = create(:list)
+      m = Mail.create_message_to_list(m, list.request_address, list)
 
       keywords = m.keywords
 
-      expect(keywords).to eql([['something', ['bla']], ['somethingelse', ['ok']], ['stop', []]])
-      expect(m.body.to_s).to eql("x-toolate: tralafiti\n")
-    end
-
-    it 'reads multiple lines as keyword arguments' do
-      string = "x-something: first\nsecond\nthird\nx-somethingelse: ok\nx-stop\ntralafiti\n"
-      m = Mail.new
-      m.body = string
-      m.to_s
-
-      keywords = m.keywords
-
-      expect(keywords).to eql([['something', ['first', 'second', 'third']], ['somethingelse', ['ok']], ['stop', []]])
+      expect(keywords.size).to eql(1)
+      expect(keywords.first.arguments.size).to eql(4)
       expect(m.body.to_s).to eql("tralafiti\n")
     end
 
-    it 'takes the whole rest of the body as keyword argument if no X-STOP is present' do
-      string = "x-something: first\nsecond\nthird\n\n\nok\ntralafiti\n"
+    it 'takes any content as keyword argument if the keyword handler specifies it' do
+      string = "x-add-key: first\nsecond\nthird\n\n\nok\ntralafiti\n"
       m = Mail.new
       m.body = string
-      m.to_s
+      list = create(:list)
+      m = Mail.create_message_to_list(m, list.request_address, list)
 
       keywords = m.keywords
 
-      expect(keywords).to eql([['something', ['first', 'second', 'third', 'ok', 'tralafiti']]])
+      expect(keywords.size).to eql(1)
+      expect(keywords.first.arguments.size).to eql(5)
+      expect(m.body.to_s).to eql('')
+    end
+
+    it 'takes any content — up to the next keyword — as keyword argument if the keyword handler specifies it' do
+      string = "x-add-key: first\nsecond\nthird\n\n\nok\nx-list-keys: tralafiti\n"
+      m = Mail.new
+      m.body = string
+      list = create(:list)
+      m = Mail.create_message_to_list(m, list.request_address, list)
+
+      keywords = m.keywords
+
+      byebug
+      expect(keywords.size).to eql(2)
+      expect(keywords.first.arguments.size).to eql(4)
+      expect(keywords.last.arguments.size).to eql(1)
       expect(m.body.to_s).to eql('')
     end
 

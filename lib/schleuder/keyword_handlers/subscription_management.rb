@@ -1,7 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class SubscriptionManagement < Base
-      handles_request_keyword 'subscribe', with_method: :subscribe
+      handles_request_keyword 'subscribe', with_method: :subscribe, wanted_arguments: [Conf::EMAIL_REGEXP, /(true|false)/, /(true|false)/, Conf::FINGERPRINT_REGEXP]
       handles_request_keyword 'unsubscribe', with_method: :unsubscribe
       handles_request_keyword 'list-subscriptions', with_method: :list_subscriptions
       handles_request_keyword 'set-fingerprint', with_method: :set_fingerprint

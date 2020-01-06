@@ -1,7 +1,11 @@
-class CustomKeyword < Schleuder::KeywordHandlers::Base
-  handles_request_keyword 'custom-keyword', with_method: :custom_keyword
+module Schleuder
+  module KeywordHandlers
+    class CustomKeyword < Base
+      handles_request_keyword 'custom-keyword', with_method: :custom_keyword
 
-  def custom_keyword
-    'Something something'
+      def custom_keyword
+        'Something something'
+      end
+    end
   end
 end
