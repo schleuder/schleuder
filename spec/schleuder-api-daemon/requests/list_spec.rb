@@ -1,6 +1,17 @@
 require 'helpers/api_daemon_spec_helper'
 
 describe 'lists via api' do
+  it 'contains only email addresses in list of lists' do
+    authorize_as_api_superadmin!
+    list1 = create(:list)
+    list2 = create(:list)
+
+    get '/lists.json'
+
+    expect(last_response.status).to be 200
+    expect(last_response.body).to eql([list1.email, list2.email].to_json)
+  end
+
   it "doesn't create a list without authentication" do
     list = build(:list)
     parameters = {
@@ -80,8 +91,20 @@ describe 'lists via api' do
     expect(last_response.body).to eql('Not authorized')
   end
 
-  it "doesn't show a list authorized as subscriber" do
+  it "doesn't show a list authorized as subscriber with default config" do
     list = create(:list)
+    subscription = create(:subscription, list_id: list.id, admin: false)
+    account = create(:account, email: subscription.email)
+    authorize!(account.email, account.set_new_password!)
+
+    get "lists/#{list.email}.json"
+
+    expect(last_response.status).to be 403
+    expect(last_response.body).to eql('Not authorized')
+  end
+
+  it 'does show a list authorized as subscriber with modified config' do
+    list = create(:list, subscriber_permissions: { 'view-list-config': true })
     subscription = create(:subscription, list_id: list.id, admin: false)
     account = create(:account, email: subscription.email)
     authorize!(account.email, account.set_new_password!)
@@ -136,7 +159,7 @@ describe 'lists via api' do
         'language', 'log_level', 'logfiles_to_keep', 'max_message_size_kb', 'openpgp_header_preference',
         'public_footer', 'receive_admin_only', 'receive_authenticated_only', 'receive_encrypted_only',
         'receive_from_subscribed_emailaddresses_only', 'receive_signed_only', 'send_encrypted_only',
-        'subject_prefix', 'subject_prefix_in', 'subject_prefix_out',
+        'subject_prefix', 'subject_prefix_in', 'subject_prefix_out', 'subscriber_permissions'
       ])
     end
   end

@@ -98,9 +98,11 @@ describe 'KeywordHandlersRunner' do
     expect(message.first_plaintext_part.body.to_s).to include(wanted_response)
   end
 
-  it 'returns an error message if keyword is configured as admin-only' do
+  it 'returns an error message if keyword is not permitted for subscribers' do
     mail = Mail.new
-    mail.list = create(:list)
+    mail.list = create(:list, subscriber_permissions: {
+                  'view-subscriptions' => false,
+                })
     mail.list.subscribe('subscription@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
     mail.list.import_key(File.read('spec/fixtures/example_key.txt'))
     mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
@@ -109,7 +111,7 @@ describe 'KeywordHandlersRunner' do
 
     output = KeywordHandlersRunner.run(mail: mail, list: mail.list, type: :request)
 
-    expect(output).to eql(["Unfortunately you are not allowed to do that.\n\nIf you need help please contact\nyour list-admins <#{mail.list.owner_address}>\nor read the documentation <https://schleuder.org/schleuder/docs/>.\n\n\nKind regards,\nYour Schleuder system.\n"])
+    expect(output).to eql(["The keyword 'list-subscriptions' may for this list only be used by admins."])
     expect(Mail::TestMailer.deliveries.count).to be(0)
   end
 end

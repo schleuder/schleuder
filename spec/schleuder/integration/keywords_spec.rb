@@ -664,7 +664,7 @@ describe 'user sends keyword' do
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include('Unfortunately you are not allowed to do that.')
+    expect(message.to_s).to include("The keyword 'set-fingerprint' may for this list only be used by admins.")
 
     expect(subscription).to be_present
     expect(subscription.fingerprint).to eql('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
@@ -1067,7 +1067,7 @@ describe 'user sends keyword' do
     subscription = list.subscriptions.where(email: 'test@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.first_plaintext_part.body.to_s).to eql("Unfortunately you are not allowed to do that.\n\nIf you need help please contact\nyour list-admins <#{list.owner_address}>\nor read the documentation <https://schleuder.org/schleuder/docs/>.\n\n\nKind regards,\nYour Schleuder system.\n")
+    expect(message.first_plaintext_part.body.to_s).to eql("The keyword 'unset-fingerprint' may for this list only be used by admins.")
 
     expect(subscription).to be_present
     expect(subscription.fingerprint).to eql('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
@@ -1991,6 +1991,115 @@ EOS
     expect(delivered_emails.size).to eql(1)
     expect(message.to_s).not_to include('Resent: Unencrypted to someone@example.org')
     expect(message.to_s).to include("Error: Invalid email-address for resending: #{invalid_recipient}")
+
+    teardown_list_and_mailer(list)
+  end
+
+  it 'x-resend denied if configuration disallows it' do
+    list = create(:list, public_footer: "-- \nblablabla", subscriber_permissions: { 'resend-encrypted' => false })
+    list.subscribe('admin@example.org', 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE', true, false)
+    list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = list.subscriptions.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.email => list.fingerprint},
+      sign: true,
+      sign_as: list.subscriptions.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    content_body = "Hello again!\n"
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\nx-stop\n#{content_body}"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
+
+    expect(Mail::TestMailer.deliveries.size).to eql(1)
+    expect(message.first_plaintext_part.to_s).to include("Error: The keyword 'resend' may for this list only be used by admins.")
+
+    teardown_list_and_mailer(list)
+  end
+
+  it 'x-resend unencryptedly denied if configuration disallows it' do
+    list = create(:list, public_footer: "-- \nblablabla", subscriber_permissions: { 'resend-unencrypted' => false })
+    list.subscribe('admin@example.org', 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE', true, false)
+    list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = list.subscriptions.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.email => list.fingerprint},
+      sign: true,
+      sign_as: list.subscriptions.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    content_body = "Hello again!\n"
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\nx-stop\n#{content_body}"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+    rescue SystemExit
+    end
+    raw = Mail::TestMailer.deliveries.first
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
+
+    expect(Mail::TestMailer.deliveries.size).to eql(1)
+    expect(message.first_plaintext_part.to_s).to include("Error: The keyword 'resend' may for this list only be used by admins.")
+
+    teardown_list_and_mailer(list)
+  end
+
+  it 'x-resend encryptedly allowed if configuration disallows resend-unencrypted' do
+    list = create(:list, public_footer: "-- \nblablabla", subscriber_permissions: { 'resend-encrypted' => true, 'resend-unencrypted' => false })
+    list.subscribe('admin@example.org', 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE', true, false)
+    list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+    list.import_key(File.read('spec/fixtures/bla_foo_key.txt'))
+    ENV['GNUPGHOME'] = list.listdir
+    mail = Mail.new
+    mail.to = list.email
+    mail.from = list.subscriptions.first.email
+    gpg_opts = {
+      encrypt: true,
+      keys: {list.email => list.fingerprint},
+      sign: true,
+      sign_as: list.subscriptions.first.fingerprint
+    }
+    mail.gpg(gpg_opts)
+    content_body = "Hello again!\n"
+    mail.body = "x-list-name: #{list.email}\nX-resend: bla@foo\nx-stop\n#{content_body}"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
+
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+    rescue SystemExit
+    end
+    resent_message = Mail::TestMailer.deliveries.first
+    raw = Mail::TestMailer.deliveries.last
+    message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
+
+    expect(Mail::TestMailer.deliveries.size).to eql(2)
+    expect(resent_message.to).to eql(['bla@foo'])
+    expect(resent_message.content_type).to match(/^multipart\/encrypted.*application\/pgp-encrypted/)
+    expect(message.first_plaintext_part.body.to_s).to include('Resent: Encrypted to bla@foo (87E65ED2081AE3D16BE4F0A5EBDBE899251F2412)')
 
     teardown_list_and_mailer(list)
   end

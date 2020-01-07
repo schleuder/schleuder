@@ -51,6 +51,19 @@ headers_to_meta:
 # and a thread of (encrypted) messages can be built by an eavesdropper.
 keep_msgid: true
 
+# What should subscribers (aka non-admins) be allowed to do?
+# (They may always view, change and delete their own subscription.)
+subscriber_permissions:
+  view-subscriptions: true
+  add-subscriptions: false
+  delete-subscriptions: false
+  view-keys: true
+  add-keys: true
+  delete-keys: false
+  view-list-config: false
+  resend-encrypted: true
+  resend-unencrypted: true
+
 # For which keywords should the list-admins receive a notice whenever it
 # triggers a command.
 keywords_admin_notify: 
