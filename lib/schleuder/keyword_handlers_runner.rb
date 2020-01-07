@@ -69,7 +69,7 @@ module Schleuder
       rescue Errors::Unauthorized
         I18n.t('errors.not_permitted_for_subscribers', keyword: keyword)
       rescue Errors::Base => exc
-        exc.to_s
+        exc.to_s + t('errors.signoff')
       rescue => exc
         # Log to system, this information is probably more useful for
         # system-admins than for list-admins.
