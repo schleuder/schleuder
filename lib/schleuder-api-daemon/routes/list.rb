@@ -20,24 +20,24 @@ class SchleuderApiDaemon < Sinatra::Base
       elsif ! list.valid?
         client_error(list, 422)
       else
-        body json(data: list, messages: messages)
+        json_body(list, messages)
       end
     end
 
     get '/configurable_attributes.json' do
-      json(lists_controller.get_configurable_attributes) + "\n"
+      json_body(configurable_attributes: lists_controller.get_configurable_attributes)
     end
 
     post '/:list_email/send_list_key_to_subscriptions.json' do |list_email|
-      json(result: lists_controller.send_list_key_to_subscriptions(list_email))
+      json_body(result: lists_controller.send_list_key_to_subscriptions(list_email))
     end
 
     get '/new.json' do
-      json lists_controller.new_list
+      json_body(lists_controller.new_list)
     end
 
     get '/:email.json' do |email|
-      json lists_controller.find(email)
+      json_body(lists_controller.find(email))
     end
 
     put '/:email.json' do |email|

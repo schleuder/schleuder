@@ -13,8 +13,8 @@ describe 'subscription via api' do
       get "/lists/#{list.email}/subscriptions.json?", { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body).length).to be 1
-      expect(JSON.parse(last_response.body)[0]['email']).to eq subscription.email
+      expect(JSON.parse(last_response.body)['data'].length).to be 1
+      expect(JSON.parse(last_response.body)['data'][0]['email']).to eq subscription.email
     end
 
     it 'returns the subscription of the current account filtered by a given fingerprint' do
@@ -27,8 +27,8 @@ describe 'subscription via api' do
       get "/lists/#{list.email}/subscriptions.json?fingerprint=#{subscription.fingerprint}", { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body).length).to be 1
-      expect(JSON.parse(last_response.body)[0]['email']).to eq subscription.email
+      expect(JSON.parse(last_response.body)['data'].length).to be 1
+      expect(JSON.parse(last_response.body)['data'][0]['email']).to eq subscription.email
     end
 
     it 'returns a 404 when no list with the given email exists' do
@@ -306,7 +306,7 @@ describe 'subscription via api' do
       get "/lists/#{list.email}/subscriptions/configurable_attributes.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)).to eq ['fingerprint', 'admin', 'delivery_enabled']
+      expect(JSON.parse(last_response.body)['data']).to eq ['fingerprint', 'admin', 'delivery_enabled']
     end
   end
 
@@ -318,7 +318,7 @@ describe 'subscription via api' do
       get "/lists/#{list.email}/subscriptions/new.json"
 
       expect(last_response.status).to be 200
-      expect(last_response.body).to eq Subscription.new().to_json
+      expect(JSON.parse(last_response.body)['data']).to eq Subscription.new.as_json
     end
   end
 
@@ -333,7 +333,7 @@ describe 'subscription via api' do
       get "/lists/#{list.email}/subscriptions/#{subscription_email}.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)['email']).to eq subscription_email
+      expect(JSON.parse(last_response.body)['data']['email']).to eq subscription_email
     end
 
     it 'contains a one line representation of the key in the response body' do
@@ -344,7 +344,7 @@ describe 'subscription via api' do
 
       get "/lists/#{list.email}/subscriptions/schleuder@example.org.json"
 
-      expect(JSON.parse(last_response.body)['key_summary']).to eq '0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06'
+      expect(JSON.parse(last_response.body)['data']['key_summary']).to eq '0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06'
     end
 
     it 'raises unauthorized if the account is not associated with the list' do

@@ -31,6 +31,10 @@ module SchleuderApiDaemonHelper
       @current_account
     end
 
+    def json_body(data, messages=nil)
+      json(data: data, messages: messages)
+    end
+
     def parsed_body
       @parsed_body ||= begin
           b = JSON.parse(request.body.read)
