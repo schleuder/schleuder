@@ -121,11 +121,11 @@ describe 'lists via api' do
       subscription = create(:subscription, list_id: list.id, admin: false)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
-
+  
       get "lists/#{list.email}.json"
-
+      
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eq '{"error":"Not authorized"}'
     end
 
     it 'does show a list authorized as subscriber with modified config' do

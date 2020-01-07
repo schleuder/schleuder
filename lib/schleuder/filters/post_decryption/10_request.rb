@@ -16,8 +16,9 @@ module Schleuder
         output = KeywordHandlersRunner.run(type: :request, list: list, mail: mail)
         output = output.flatten.map(&:presence).compact
         if output.blank?
-          output = I18n.t(:no_output_result)
+          output = [I18n.t(:no_output_result)]
         end
+        output + [t('errors.signoff')]
       end
       mail.reply_to_signer(output)
       exit
