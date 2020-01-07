@@ -97,4 +97,16 @@ describe Schleuder::LoggerNotifications do
     expect(message.parts.size).to be(2)
     expect(message.parts.first.parts.first.body.to_s).to eql('Something')
   end
+
+  it 'includes a List-Id header in notification mails sent to admins' do
+    list = create(:list, send_encrypted_only: false)
+    list.subscribe("schleuder@example.org", nil, true)
+
+    mail = Mail.new
+    list.logger.notify_admin("Something", mail.to_s, I18n.t('notice'))
+
+    message = Mail::TestMailer.deliveries.first
+
+    expect(message.header['List-Id'].to_s).to eql("<#{list.email.gsub('@', '.')}>")
+  end
 end
