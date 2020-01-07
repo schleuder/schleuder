@@ -9,7 +9,7 @@ class SchleuderApiDaemon < Sinatra::Base
       end
       logger.debug "Subscription filter: #{filter.inspect}"
 
-      json subscriptions_controller.find_all(list_email, filter)
+      json_body(subscriptions_controller.find_all(list_email, filter))
     end
 
     post '/:list_email/subscriptions.json' do |list_email|
@@ -18,25 +18,25 @@ class SchleuderApiDaemon < Sinatra::Base
       logger.debug "subcription: #{subscription.inspect}"
       if subscription.valid?
         logger.debug "Subscribed: #{subscription.inspect}"
-        json(data: subscription, messages: messages)
+        json_body(subscription, messages)
       else
         client_error(subscription, 422)
       end
     end
 
     get '/:list_email/subscriptions/configurable_attributes.json' do
-      json(subscriptions_controller.get_configurable_attributes) + "\n"
+      json_body(subscriptions_controller.get_configurable_attributes)
     end
 
     get '/:list_email/subscriptions/new.json' do
-      json subscriptions_controller.new_subscription
+      json_body(subscriptions_controller.new_subscription)
     end
 
     get '/:list_email/subscriptions/:email.json' do |list_email, email|
       subscription = subscriptions_controller.find(list_email, email)
       key_summary = subscription.key.summary
 
-      json subscription.attributes.merge(key_summary: key_summary)
+      json_body(subscription.attributes.merge(key_summary: key_summary))
     end
 
     put '/:list_email/subscriptions/:email.json' do |list_email, email|

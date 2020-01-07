@@ -165,7 +165,7 @@ describe 'lists via api' do
       get "lists/#{list.email}.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)['email']).to eq list.email
+      expect(JSON.parse(last_response.body)['data']['email']).to eq list.email
     end
 
     it 'does show a list authorized as list-admin' do
@@ -177,7 +177,7 @@ describe 'lists via api' do
       get "lists/#{list.email}.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)['email']).to eq list.email
+      expect(JSON.parse(last_response.body)['data']['email']).to eq list.email
     end
 
     it 'does show a list authorized as api_superadmin' do
@@ -187,7 +187,7 @@ describe 'lists via api' do
       get "lists/#{list.email}.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)['email']).to eq list.email
+      expect(JSON.parse(last_response.body)['data']['email']).to eq list.email
     end
 
     it 'returns a 404 when list is not existing' do
@@ -204,7 +204,7 @@ describe 'lists via api' do
       list = create(:list, email: '9list@hostname')
       get "lists/#{list.email}.json"
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)['email']).to eq list.email
+      expect(JSON.parse(last_response.body)['data']['email']).to eq list.email
     end
   end
 
@@ -215,7 +215,7 @@ describe 'lists via api' do
       get 'lists/configurable_attributes.json'
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)).to eq([
+      expect(JSON.parse(last_response.body)['data']['configurable_attributes']).to eq([
         'bounces_drop_all', 'bounces_drop_on_headers', 'bounces_notify_admins',
         'forward_all_incoming_to_admins', 'headers_to_meta', 'include_list_headers',
         'include_openpgp_header', 'internal_footer', 'keep_msgid', 'keywords_admin_notify',
@@ -235,7 +235,7 @@ describe 'lists via api' do
       post "/lists/#{list.email}/send_list_key_to_subscriptions.json", { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)['result']).to eq true
+      expect(JSON.parse(last_response.body)['data']['result']).to eq true
     end
 
     it 'returns not authorized when user is not authorized' do
@@ -267,7 +267,7 @@ describe 'lists via api' do
       get 'lists/new.json'
 
       expect(last_response.status).to be 200
-      expect(last_response.body).to eq List.new.to_json
+      expect(JSON.parse(last_response.body)['data']).to eq List.new.as_json
     end
   end
 
