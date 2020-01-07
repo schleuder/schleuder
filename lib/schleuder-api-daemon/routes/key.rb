@@ -14,7 +14,7 @@ class SchleuderApiDaemon < Sinatra::Base
         end
         key_hash
       end
-      json keys_hash
+      json_body(keys_hash)
     end
 
     post "/:list_email/keys.json" do |list_email|
@@ -44,18 +44,17 @@ class SchleuderApiDaemon < Sinatra::Base
         client_error(messages.join("\n"), 422)
       end
 
-      set_x_messages(messages)
       # Use a Hash as single response object to stay more REST-like. (also,
       # ActiveResource chokes if we return an array here).
       # The 'type' attribute is only necessary to keep ActiveResource from
       # complaining about "expected attributes to be able to convert to Hash",
       # which for some reason is raised without it (or some other, similar
       # attribute).
-      json({type: "keys", keys: keys})
+      json_body({type: "keys", keys: keys}, messages)
     end
 
     get "/:list_email/keys/check.json" do |list_email|
-      json result: keys_controller.check(list_email)
+      json_body(result: keys_controller.check(list_email))
     end
 
     get "/:list_email/keys/:fingerprint.json" do |list_email, fingerprint|
@@ -67,7 +66,7 @@ class SchleuderApiDaemon < Sinatra::Base
           key_hash.merge!(subscription: subscription.email)
         end
       end
-      json key_hash
+      json_body(key_hash)
     end
 
     delete "/:list_email/keys/:fingerprint.json" do |list_email, fingerprint|
