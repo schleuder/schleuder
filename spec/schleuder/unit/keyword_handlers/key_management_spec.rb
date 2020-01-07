@@ -153,7 +153,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
 
       output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: ['0x0x0x']).delete_key
 
-      expect(output).to eql("Error: No key found with this fingerprint: '0x0x0x'.\n\nKind regards,\nYour Schleuder system.\n")
+      expect(output).to eql("Error: No key found with this fingerprint: '0x0x0x'.")
       expect(mail.list.keys.size).to eql(list_keys.size)
     end
 
