@@ -1,4 +1,5 @@
 require "helpers/api_daemon_spec_helper"
+require "support/matchers/match_json_schema"
 
 describe "keys via api" do
   context "list" do
@@ -118,6 +119,17 @@ describe "keys via api" do
       get "/lists/#{list.email}/keys/59C71FB38AEE22E091C78259D06350440F759BD3.json"
 
       expect(JSON.parse(last_response.body)['data']['subscription']).to eq nil
+    end
+
+    it 'returns the key in the expected json schema' do
+      list = create(:list)
+      list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      account = create(:account, email: 'schleuder@example.org')
+      authorize!(account.email, account.set_new_password!)
+
+      get "/lists/#{list.email}/keys/59C71FB38AEE22E091C78259D06350440F759BD3.json"
+
+      expect(JSON.parse(last_response.body)['data']).to match_json_schema('key')
     end
   end
 
