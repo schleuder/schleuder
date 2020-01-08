@@ -18,13 +18,12 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     post '/:list_email/keys.json' do |list_email|
-      list = lists_controller.find(list_email)
       input = parsed_body['keymaterial']
       if !input.match('BEGIN PGP')
         input = Base64.decode64(input)
       end
       import_result = keys_controller.import(list_email, input)
-      interpreted_result = list.interpret_key_import_result(import_result)
+      interpreted_result = interpret_key_import_result(import_result)
       if invalid_key_material?(interpreted_result)
         client_error(interpreted_result[1], 422)
       end
