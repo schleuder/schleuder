@@ -1,4 +1,5 @@
 require 'helpers/api_daemon_spec_helper'
+require 'support/matchers/match_json_schema'
 
 describe 'lists via api' do
   context 'create list' do
@@ -69,6 +70,16 @@ describe 'lists via api' do
       expect(last_response.status).to be 200
       expect(List.count).to eql(num_lists + 1)
       expect(JSON.parse(last_response.body)['data']['fingerprint']).to eql(list.fingerprint)
+    end
+
+    it 'returns the list in the expected json schema' do
+      authorize_as_api_superadmin!
+      list = build(:list)
+      parameters = { email: 'new_testlist@example.com', fingerprint: list.fingerprint }
+
+      post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(JSON.parse(last_response.body)['data']).to match_json_schema('list')
     end
 
     it 'returns an error and status code 422 if list name is blank' do
