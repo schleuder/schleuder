@@ -20,8 +20,7 @@ class SchleuderApiDaemon < Sinatra::Base
       elsif ! list.valid?
         client_error(list, 422)
       else
-        set_x_messages(messages)
-        body json(list)
+        body json(data: list, messages: messages)
       end
     end
 

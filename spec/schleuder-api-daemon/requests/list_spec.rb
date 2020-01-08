@@ -68,7 +68,7 @@ describe 'lists via api' do
 
       expect(last_response.status).to be 200
       expect(List.count).to eql(num_lists + 1)
-      expect(JSON.parse(last_response.body)['fingerprint']).to eql(list.fingerprint)
+      expect(JSON.parse(last_response.body)['data']['fingerprint']).to eql(list.fingerprint)
     end
 
     it 'returns an error and status code 422 if list name is blank' do
@@ -105,6 +105,21 @@ describe 'lists via api' do
       expect(JSON.parse(last_response.body)['error']).to eq "Generating the OpenPGP key pair for listname failed for unknown reasons. Please check the list-directory ('list_dir') and the log-files."
     end
 
+    it 'returns status 200 and a messages if list was created but admin key was invalid' do
+      authorize_as_api_superadmin!
+      parameters = { 
+        email: 'new_testlist@example.com', 
+        adminaddress: 'admin@example.org',
+        adminfingerprint: '0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3',
+        adminkey: 'invalid'
+      }
+
+      post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      
+      expect(last_response.status).to be 200
+      expect(JSON.parse(last_response.body)['data']['email']).to eq 'new_testlist@example.com'
+      expect(JSON.parse(last_response.body)['messages']).to eq 'The given key material did not contain any keys!'
+    end
   end
 
   context 'get list' do
