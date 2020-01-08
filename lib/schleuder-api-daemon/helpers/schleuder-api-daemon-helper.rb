@@ -71,12 +71,6 @@ module SchleuderApiDaemonHelper
       end
     end
 
-    def set_x_messages(messages)
-      if messages.present?
-        headers 'X-Messages' => Array(messages).join(' // ').gsub(/\n/, ' // ')
-      end
-    end
-    
     def interpret_key_import_result(import_result)
       (GPGME::Ctx.new armor: true).interpret_import_result(import_result)
     end

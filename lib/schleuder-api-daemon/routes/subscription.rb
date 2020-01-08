@@ -15,11 +15,10 @@ class SchleuderApiDaemon < Sinatra::Base
     post '/:list_email/subscriptions.json' do |list_email|
       attributes = find_attributes_from_body(%w[email fingerprint admin delivery_enabled])
       subscription, messages = subscriptions_controller.subscribe(list_email, attributes, find_key_material)
-      set_x_messages(messages)
       logger.debug "subcription: #{subscription.inspect}"
       if subscription.valid?
         logger.debug "Subscribed: #{subscription.inspect}"
-        json subscription
+        json(data: subscription, messages: messages)
       else
         client_error(subscription, 422)
       end
