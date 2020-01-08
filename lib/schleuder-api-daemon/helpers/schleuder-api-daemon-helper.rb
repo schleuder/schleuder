@@ -77,6 +77,10 @@ module SchleuderApiDaemonHelper
         headers 'X-Messages' => Array(messages).join(' // ').gsub(/\n/, ' // ')
       end
     end
+    
+    def interpret_key_import_result(import_result)
+      (GPGME::Ctx.new armor: true).interpret_import_result(import_result)
+    end
 
     def find_key_material
       key_material = parsed_body['key_material'].presence
