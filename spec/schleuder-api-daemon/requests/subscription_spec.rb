@@ -100,7 +100,7 @@ describe 'subscription via api' do
       expect(list.subscriptions.first.delivery_enabled).to be true
     end
 
-    it 'returns the subscription as json if update was successful' do
+    it 'returns the subscription as json if creation was successful' do
       list = create(:list)
       authorize_as_api_superadmin!
       parameters = { list_email: list.email, email: 'someone@localhost' }
@@ -108,7 +108,23 @@ describe 'subscription via api' do
       post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 200
-      expect(last_response.body).to match_json_schema('subscription')
+      expect(JSON.parse(last_response.body)['data']).to match_json_schema('subscription')
+    end
+
+    it 'returns the subscription and a message if creation was successful but key_material was not valid' do
+      list = create(:list)
+      authorize_as_api_superadmin!
+      parameters = { 
+        list_email: list.email, 
+        email: 'someone@localhost',
+        key_material: 'foo'
+      }
+
+      post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 200
+      expect(JSON.parse(last_response.body)['data']['email']).to eq 'someone@localhost'
+      expect(JSON.parse(last_response.body)['messages']).to eq 'The given key material did not contain any keys!'
     end
 
     it "doesn't subscribe a new member to a list as subscriber" do
