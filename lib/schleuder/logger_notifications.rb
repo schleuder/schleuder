@@ -42,6 +42,8 @@ module Schleuder
             gpg_opts.merge!(encrypt: true, keys: { address => key.fingerprint })
           end
           mail.gpg gpg_opts
+
+          mail.header['List-Id'] = "<#{@list.email.gsub('@', '.')}>"
         end
         mail.deliver
       end
