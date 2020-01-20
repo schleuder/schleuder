@@ -51,7 +51,7 @@ module Schleuder
       # Subscriptions
       logger.debug "Creating clean copy of message"
       copy = @mail.clean_copy(list.headers_to_meta.any?)
-      list.send_to_subscriptions(copy)
+      list.send_to_subscriptions(copy, @mail)
       nil
     end
 
