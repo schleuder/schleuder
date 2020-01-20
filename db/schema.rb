@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(version: 20190906194820) do
     t.boolean  "keep_msgid",                                              default: true
     t.boolean  "bounces_drop_all",                                        default: false
     t.boolean  "bounces_notify_admins",                                   default: true
+    t.boolean  "deliver_selfsent",                                        default: true
     t.boolean  "include_list_headers",                                    default: true
     t.boolean  "include_openpgp_header",                                  default: true
     t.integer  "max_message_size_kb",                                     default: 10240

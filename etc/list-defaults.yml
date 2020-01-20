@@ -126,3 +126,8 @@ language: en
 # Forward a raw copy of all incoming emails to the list-admins?
 # Mainly useful for debugging.
 forward_all_incoming_to_admins: false
+
+# Should e-mails be delivered to the original subscribed sender?
+# Disabling this only works for signed e-mails; any e-mail that is unsigned
+# sent to the list is treated as coming from an unknown source
+deliver_selfsent: true

@@ -63,6 +63,7 @@ describe 'cli' do
       expect(list.keep_msgid).to eq true
       expect(list.bounces_drop_all).to eq false
       expect(list.bounces_notify_admins).to eq true
+      expect(list.deliver_selfsent).to eq true
       expect(list.include_list_headers).to eq true
       expect(list.include_openpgp_header).to eq true
       expect(list.openpgp_header_preference).to eq 'signencrypt'
