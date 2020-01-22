@@ -29,6 +29,11 @@ Gem::Specification.new do |s|
     "mailing_list_uri"  => "https://lists.nadir.org/mailman/listinfo/schleuder-announce/",
   }
   s.required_ruby_version = ">= 2.1.0"
+  # Explicitly depend on BigDecimal 1.4, because later versions are
+  # incompatible with activesupport 4.2, which is a dependency of activerecord 4.2.
+  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.7.0')
+    s.add_runtime_dependency 'bigdecimal', '~> 1.4'
+  end
   s.add_runtime_dependency 'gpgme', '~> 2.0', '>= 2.0.19' # Explicitly include to force a version.
   s.add_runtime_dependency 'mail', '~> 2.7.1'
   s.add_runtime_dependency 'mail-gpg', '~> 0.3', '>= 0.3.3'
