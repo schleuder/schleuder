@@ -19,6 +19,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Ensure ASCII-8BIT as external encoding, this should ensure that plain text emails in different charsets can be parsed (#409)
 * Handle incoming mails encrypted to an absent key, using symmetric encryption or containing PGP-garbage in a more graceful manner: Don't throw an exception, don't notify (and annoy) the admins, instead inform the sender of the mail how to do better. (#337)
 * Add missing List-Id header to notification mails sent to admins. This should help with filtering such messages, which is currently not easy to do in a reliable way.
+* Fix running Schleuder with ruby 2.7.
 
 
 ## [3.4.1] / 2019-09-16
