@@ -51,6 +51,9 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'factory_bot'
   s.add_development_dependency 'database_cleaner'
   s.add_development_dependency 'simplecov-console'
+  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6.0')
+    s.add_development_dependency 'irb'
+  end
   s.post_install_message = "
 
     Please consider additionally installing schleuder-cli (allows to
