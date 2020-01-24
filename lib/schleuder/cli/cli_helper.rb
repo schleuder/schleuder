@@ -3,7 +3,7 @@ module Schleuder
     def self.included(base)
       base.no_commands do
         def fatal(msg, exitcode = 1)
-          error("Error: #{msg}")
+          error("Error: #{msg}" + t('errors.signoff'))
           exit exitcode
         end
       end

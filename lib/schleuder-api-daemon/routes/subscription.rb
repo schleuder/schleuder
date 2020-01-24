@@ -9,43 +9,34 @@ class SchleuderApiDaemon < Sinatra::Base
       end
       logger.debug "Subscription filter: #{filter.inspect}"
 
-      json subscriptions_controller.find_all(list_email, filter)
+      json_body(subscriptions_controller.find_all(list_email, filter))
     end
 
-
     post '/:list_email/subscriptions.json' do |list_email|
-      begin
-        attributes = find_attributes_from_body(%w[email fingerprint admin delivery_enabled])
-        subscription, messages = subscriptions_controller.subscribe(list_email, attributes, find_key_material)
-        set_x_messages(messages)
-        logger.debug "subcription: #{subscription.inspect}"
-        if subscription.valid?
-          logger.debug "Subscribed: #{subscription.inspect}"
-          status 201
-          json subscription
-        else
-          client_error(subscription, 422)
-        end
-      rescue ActiveRecord::RecordNotUnique
-        logger.error 'Already subscribed'
-        status 422
-        json errors: {email: ['is already subscribed']}
+      attributes = find_attributes_from_body(%w[email fingerprint admin delivery_enabled])
+      subscription, messages = subscriptions_controller.subscribe(list_email, attributes, find_key_material)
+      logger.debug "subcription: #{subscription.inspect}"
+      if subscription.valid?
+        logger.debug "Subscribed: #{subscription.inspect}"
+        json_body(subscription, messages)
+      else
+        client_error(subscription, 422)
       end
     end
 
     get '/:list_email/subscriptions/configurable_attributes.json' do
-      json(subscriptions_controller.get_configurable_attributes) + "\n"
+      json_body(subscriptions_controller.get_configurable_attributes)
     end
 
     get '/:list_email/subscriptions/new.json' do
-      json subscriptions_controller.new_subscription
+      json_body(subscriptions_controller.new_subscription)
     end
 
     get '/:list_email/subscriptions/:email.json' do |list_email, email|
       subscription = subscriptions_controller.find(list_email, email)
       key_summary = subscription.key.summary
 
-      json subscription.attributes.merge(key_summary: key_summary)
+      json_body(subscription.attributes.merge(key_summary: key_summary))
     end
 
     put '/:list_email/subscriptions/:email.json' do |list_email, email|
@@ -53,13 +44,13 @@ class SchleuderApiDaemon < Sinatra::Base
       required_parameters = subscriptions_controller.get_configurable_attributes
       if attributes.keys.sort != required_parameters.sort
         status 422
-        return json(errors: 'The request is missing a required parameter')
+        return json(error: 'The request is missing a required parameter')
       end
       subscription = subscriptions_controller.update(list_email, email, parsed_body)
       if subscription.valid?
         200
       else
-        client_error(subscription)
+        client_error(subscription, 422)
       end
     end
 
@@ -68,7 +59,7 @@ class SchleuderApiDaemon < Sinatra::Base
       if subscription.valid?
         200
       else
-        client_error(subscription)
+        client_error(subscription, 422)
       end
     end
 
@@ -76,8 +67,6 @@ class SchleuderApiDaemon < Sinatra::Base
       subscription = subscriptions_controller.delete(list_email, email)
       if subscription
         200
-      else
-        client_error(subscription)
       end
     end
   end

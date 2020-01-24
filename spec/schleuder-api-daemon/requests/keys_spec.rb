@@ -1,4 +1,5 @@
 require 'helpers/api_daemon_spec_helper'
+require 'support/matchers/match_json_schema'
 
 describe 'keys via api' do
   context 'list' do
@@ -19,7 +20,7 @@ describe 'keys via api' do
       get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
     end
 
     it 'does list keys authorized as subscriber' do
@@ -31,7 +32,7 @@ describe 'keys via api' do
       get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body).length).to be 1
+      expect(JSON.parse(last_response.body)['data'].length).to be 1
     end
 
     it 'does list keys authorized as list-admin' do
@@ -43,7 +44,7 @@ describe 'keys via api' do
       get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body).length).to be 1
+      expect(JSON.parse(last_response.body)['data'].length).to be 1
     end
 
     it 'does list keys authorized as api_superadmin' do
@@ -53,7 +54,7 @@ describe 'keys via api' do
       get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body).length).to be 1
+      expect(JSON.parse(last_response.body)['data'].length).to be 1
     end
 
     it 'contains the subscription email in the response authorized as list-admin' do
@@ -64,7 +65,7 @@ describe 'keys via api' do
 
       get "/lists/#{list.email}/keys.json"
 
-      expect(JSON.parse(last_response.body).first['subscription']).to eq 'schleuder@example.org'
+      expect(JSON.parse(last_response.body)['data'].first['subscription']).to eq 'schleuder@example.org'
     end
 
     it 'does not contain the subscription key in the response json if user is authorized but no subscription exists' do
@@ -73,7 +74,7 @@ describe 'keys via api' do
 
       get "/lists/#{list.email}/keys.json"
 
-      expect(JSON.parse(last_response.body).first['subscription']).to eq nil
+      expect(JSON.parse(last_response.body)['data'].first['subscription']).to eq nil
     end
 
     it 'does not contain the subscription email in the response if user is not an admin' do
@@ -84,7 +85,7 @@ describe 'keys via api' do
 
       get "/lists/#{list.email}/keys.json"
       
-      expect(JSON.parse(last_response.body).first['subscription']).to eq nil
+      expect(JSON.parse(last_response.body)['data'].first['subscription']).to eq nil
     end
   end
 
@@ -97,7 +98,7 @@ describe 'keys via api' do
 
       get "/lists/#{list.email}/keys/59C71FB38AEE22E091C78259D06350440F759BD3.json"
 
-      expect(JSON.parse(last_response.body)['subscription']).to eq 'schleuder@example.org'
+      expect(JSON.parse(last_response.body)['data']['subscription']).to eq 'schleuder@example.org'
     end
 
     it 'does not contain the subscription key in the response json if user is authorized but no subscription exists' do
@@ -106,7 +107,7 @@ describe 'keys via api' do
 
       get "/lists/#{list.email}/keys/59C71FB38AEE22E091C78259D06350440F759BD3.json"
 
-      expect(JSON.parse(last_response.body)['subscription']).to eq nil
+      expect(JSON.parse(last_response.body)['data']['subscription']).to eq nil
     end
 
     it 'does not contain the subscription email in the response if user is not an admin' do
@@ -117,7 +118,18 @@ describe 'keys via api' do
 
       get "/lists/#{list.email}/keys/59C71FB38AEE22E091C78259D06350440F759BD3.json"
 
-      expect(JSON.parse(last_response.body)['subscription']).to eq nil
+      expect(JSON.parse(last_response.body)['data']['subscription']).to eq nil
+    end
+
+    it 'returns the key in the expected json schema' do
+      list = create(:list)
+      list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      account = create(:account, email: 'schleuder@example.org')
+      authorize!(account.email, account.set_new_password!)
+
+      get "/lists/#{list.email}/keys/59C71FB38AEE22E091C78259D06350440F759BD3.json"
+
+      expect(JSON.parse(last_response.body)['data']).to match_json_schema('key')
     end
   end
 
@@ -139,7 +151,7 @@ describe 'keys via api' do
       get "/lists/#{list.email}/keys/check.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
     end
 
     it "doesn't check keys authorized as subscriber" do
@@ -151,7 +163,7 @@ describe 'keys via api' do
       get "/lists/#{list.email}/keys/check.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
     end
 
     it 'does check keys authorized as list-admin' do
@@ -166,7 +178,7 @@ describe 'keys via api' do
       get "/lists/#{list.email}/keys/check.json"
 
       expect(last_response.status).to be 200
-      result = JSON.parse(last_response.body)['result']
+      result = JSON.parse(last_response.body)['data']['result']
       expect(result).to include("This key is expired:\n0x98769E8A1091F36BD88403ECF71A3F8412D83889")
       expect(result).to include("This key is revoked:\n0x7E783CDE6D1EFE6D2409739C098AC83A4C0028E9")
       expect(result).to include("This key is not capable of encryption:\n0xB1CD8BB15C2673C6BFD8FA4B70B2CF29E01AD53E")
@@ -186,7 +198,7 @@ describe 'keys via api' do
       get "/lists/#{list.email}/keys/check.json"
 
       expect(last_response.status).to be 200
-      result = JSON.parse(last_response.body)['result']
+      result = JSON.parse(last_response.body)['data']['result']
       expect(result).to include("This key is expired:\n0x98769E8A1091F36BD88403ECF71A3F8412D83889")
       expect(result).to include("This key is revoked:\n0x7E783CDE6D1EFE6D2409739C098AC83A4C0028E9")
       expect(result).to include("This key is not capable of encryption:\n0xB1CD8BB15C2673C6BFD8FA4B70B2CF29E01AD53E")
@@ -227,12 +239,11 @@ describe 'keys via api' do
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
       parameters = {'list_email' => list.email, 'keymaterial' => File.read('spec/fixtures/bla_foo_key.txt') }
-      num_keys = list.keys.length
 
       post "/lists/#{list.email}/keys.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-      expect(list.reload.keys.length).to eql(num_keys + 1)
       expect(last_response.status).to be 200
+      expect(JSON.parse(last_response.body)['data']['fingerprint']).to eq '87E65ED2081AE3D16BE4F0A5EBDBE899251F2412'
 
       list.delete_key('0xEBDBE899251F2412')
     end
@@ -266,6 +277,30 @@ describe 'keys via api' do
 
       list.delete_key('0xEBDBE899251F2412')
     end
+
+    it 'returns 422 and an error message when no keymaterial is provided' do
+      list = create(:list)
+      authorize_as_api_superadmin!
+      parameters = {'list_email' => list.email, 'keymaterial' => '' }
+      num_keys = list.keys.length
+
+      post "/lists/#{list.email}/keys.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq 422
+      expect(last_response.body).to eq '{"error":"The given key material did not contain any keys!"}'
+    end
+
+    it 'returns 422 and an error message when invalid keymaterial is provided' do
+      list = create(:list)
+      authorize_as_api_superadmin!
+      parameters = {'list_email' => list.email, 'keymaterial' => 'Invalid Keymaterial' }
+      num_keys = list.keys.length
+
+      post "/lists/#{list.email}/keys.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq 422
+      expect(last_response.body).to eq '{"error":"The given key material did not contain any keys!"}'
+    end
   end
 
   context 'delete' do
@@ -293,7 +328,7 @@ describe 'keys via api' do
       delete "/lists/#{list.email}/keys/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
       expect(list.reload.keys.length).to eql(num_keys)
     end
 
@@ -308,7 +343,7 @@ describe 'keys via api' do
       delete "/lists/#{list.email}/keys/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql('Not authorized')
+      expect(last_response.body).to eql '{"error":"Not authorized"}'
       expect(list.reload.keys.length).to eql(num_keys)
     end
 
@@ -349,7 +384,7 @@ describe 'keys via api' do
         get "/lists/#{list.email}/keys.json"
 
         expect(last_response.status).to be 200
-        expect(JSON.parse(last_response.body).length).to be 2
+        expect(JSON.parse(last_response.body)['data'].length).to be 2
 
         list.delete_key('0x1242F6E13D8EBE4A')
       end
@@ -362,7 +397,7 @@ describe 'keys via api' do
         get "/lists/#{list.email}/keys/3102B29989BEE703AE5ED62E1242F6E13D8EBE4A.json"
 
         expect(last_response.status).to be 200
-        expect(JSON.parse(last_response.body)['fingerprint']).to eq('3102B29989BEE703AE5ED62E1242F6E13D8EBE4A')
+        expect(JSON.parse(last_response.body)['data']['fingerprint']).to eq('3102B29989BEE703AE5ED62E1242F6E13D8EBE4A')
 
         list.delete_key('0x1242F6E13D8EBE4A')
       end

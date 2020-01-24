@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "title": "Key",
+  "properties": {
+    "fingerprint": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "expiry": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "primary_uid": {
+      "type": "string"
+    },
+    "key_summary": {
+      "type": "string"
+    },
+    "trust_issues": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "ascii": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "email",
+    "fingerprint"
+  ]
+}

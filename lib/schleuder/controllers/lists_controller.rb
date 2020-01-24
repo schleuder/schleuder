@@ -25,6 +25,7 @@ module Schleuder
       list = get_list(email)
       authorize!(list, :update)
       list.update(attributes)
+      list
     end
 
     def delete(email)

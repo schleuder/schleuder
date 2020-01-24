@@ -13,8 +13,8 @@ describe 'subscription via api' do
       get "/lists/#{list.email}/subscriptions.json?", { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body).length).to be 1
-      expect(JSON.parse(last_response.body)[0]['email']).to eq subscription.email
+      expect(JSON.parse(last_response.body)['data'].length).to be 1
+      expect(JSON.parse(last_response.body)['data'][0]['email']).to eq subscription.email
     end
 
     it 'returns the subscription of the current account filtered by a given fingerprint' do
@@ -27,8 +27,8 @@ describe 'subscription via api' do
       get "/lists/#{list.email}/subscriptions.json?fingerprint=#{subscription.fingerprint}", { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body).length).to be 1
-      expect(JSON.parse(last_response.body)[0]['email']).to eq subscription.email
+      expect(JSON.parse(last_response.body)['data'].length).to be 1
+      expect(JSON.parse(last_response.body)['data'][0]['email']).to eq subscription.email
     end
 
     it 'returns a 404 when no list with the given email exists' do
@@ -40,7 +40,7 @@ describe 'subscription via api' do
       get '/lists/non_existing@example.org/subscriptions.json', { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 404
-      expect(last_response.body).to eq 'List not found.'
+      expect(last_response.body).to eq '{"error":"List not found."}'
     end
 
     it 'returns a 403 if no subscription is associated with the account' do
@@ -51,196 +51,251 @@ describe 'subscription via api' do
       get "/lists/#{list.email}/subscriptions.json", { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq 403
-      expect(last_response.body).to eq 'Not authorized'
+      expect(last_response.body).to eq '{"error":"Not authorized"}'
     end
   end
 
-  it 'doesn\'t subscribe new member without authentication' do
-    list = create(:list)
-    parameters = { email: 'someone@localhost' }
+  context 'creating a subscription' do
+    it 'doesn\'t subscribe new member without authentication' do
+      list = create(:list)
+      parameters = { email: 'someone@localhost' }
 
-    expect(list.subscriptions.size).to be(0)
+      expect(list.subscriptions.size).to be(0)
 
-    post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-    expect(last_response.status).to be 401
-    expect(list.reload.subscriptions.size).to be(0)
+      expect(last_response.status).to be 401
+      expect(list.reload.subscriptions.size).to be(0)
+    end
+
+    it 'subscribes new member to a list as api_superadmin' do
+      list = create(:list)
+      authorize_as_api_superadmin!
+      parameters = {  email: 'someone@localhost' }
+
+      expect(list.subscriptions.size).to be(0)
+
+      post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      list.reload
+
+      expect(last_response.status).to be 200
+      expect(list.subscriptions.map(&:email)).to eql(['someone@localhost'])
+      expect(list.subscriptions.first.admin?).to be false
+      expect(list.subscriptions.first.delivery_enabled).to be true
+    end
+
+    it 'subscribes new member to a list as list-admin' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: true)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      parameters = { email: 'someone@localhost' }
+
+      post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      list.reload
+
+      expect(last_response.status).to be 200
+      expect(list.subscriptions.map(&:email)).to include('someone@localhost')
+      expect(list.subscriptions.first.admin?).to be false
+      expect(list.subscriptions.first.delivery_enabled).to be true
+    end
+
+    it 'returns the subscription as json if creation was successful' do
+      list = create(:list)
+      authorize_as_api_superadmin!
+      parameters = { list_email: list.email, email: 'someone@localhost' }
+
+      post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 200
+      expect(JSON.parse(last_response.body)['data']).to match_json_schema('subscription')
+    end
+
+    it 'returns the subscription and a message if creation was successful but key_material was not valid' do
+      list = create(:list)
+      authorize_as_api_superadmin!
+      parameters = { 
+        list_email: list.email, 
+        email: 'someone@localhost',
+        key_material: 'foo'
+      }
+
+      post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 200
+      expect(JSON.parse(last_response.body)['data']['email']).to eq 'someone@localhost'
+      expect(JSON.parse(last_response.body)['messages']).to eq 'The given key material did not contain any keys!'
+    end
+
+    it "doesn't subscribe a new member to a list as subscriber" do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: false)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      parameters = { email: 'someone@localhost' }
+
+      expect(list.subscriptions.size).to be(1)
+      list.reload
+
+      post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 403
+      expect(list.reload.subscriptions.size).to be(1)
+    end
+
+    it "doesn't subscribe a new member to a list as unassociated account" do
+      list = create(:list)
+      account = create(:account)
+      authorize!(account.email, account.set_new_password!)
+      parameters = { email: 'someone@localhost' }
+
+      expect(list.subscriptions.size).to be(0)
+      list.reload
+
+      post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 403
+      expect(list.reload.subscriptions.size).to be(0)
+    end
+
+    it 'subscribes an admin user as api_superadmin' do
+      authorize_as_api_superadmin!
+      list = create(:list)
+      parameters = { email: 'someone@localhost', admin: true }
+
+      expect(list.subscriptions.size).to be(0)
+
+      post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      list.reload
+
+      expect(last_response.status).to be 200
+      expect(list.subscriptions.map(&:email)).to eql(['someone@localhost'])
+      expect(list.subscriptions.first.admin?).to be true
+      expect(list.subscriptions.first.delivery_enabled).to be true
+    end
+
+    it 'subscribes an admin user with a truthy value as api_superadmin' do
+      authorize_as_api_superadmin!
+      list = create(:list)
+      parameters = { email: 'someone@localhost', admin: 1 }
+
+      expect(list.subscriptions.size).to be(0)
+
+      post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      list.reload
+
+      expect(last_response.status).to be 200
+      expect(list.subscriptions.map(&:email)).to eql(['someone@localhost'])
+      expect(list.subscriptions.first.admin?).to be true
+      expect(list.subscriptions.first.delivery_enabled).to be true
+    end
+
+    it 'subscribes an user and unsets delivery flag as api_superadmin' do
+      authorize_as_api_superadmin!
+      list = create(:list)
+      parameters = { email: 'someone@localhost', delivery_enabled: false }
+
+      expect(list.subscriptions.size).to be(0)
+
+      post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      list.reload
+
+      expect(last_response.status).to be 200
+      expect(list.subscriptions.map(&:email)).to eql(['someone@localhost'])
+      expect(list.subscriptions.first.admin?).to be false
+      expect(list.subscriptions.first.delivery_enabled).to be false
+    end
+
+    it 'returns status code 422 and an error message if user is already subscribed' do
+      authorize_as_api_superadmin!
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: false, email: 'someone@localhost')
+      parameters = { email: 'someone@localhost', delivery_enabled: false }
+
+      post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      list.reload
+
+      expect(last_response.status).to be 422
+      expect(last_response.body).to eq '{"error":["Email is already subscribed"]}'
+    end
   end
 
-  it 'subscribes new member to a list as api_superadmin' do
-    list = create(:list)
-    authorize_as_api_superadmin!
-    parameters = {  email: 'someone@localhost' }
+  context 'delete' do
+    it 'unsubscribes members as api_superadmin' do
+      list = create(:list)
+      subscription = create(:subscription, :list_id => list.id, admin: false)
+      authorize_as_api_superadmin!
 
-    expect(list.subscriptions.size).to be(0)
+      expect(list.subscriptions.map(&:email)).to eql([subscription.email])
 
-    post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
-    list.reload
+      delete "/lists/#{list.email}/subscriptions/#{subscription.email}.json"
 
-    expect(last_response.status).to be 201
-    expect(list.subscriptions.map(&:email)).to eql(['someone@localhost'])
-    expect(list.subscriptions.first.admin?).to be false
-    expect(list.subscriptions.first.delivery_enabled).to be true
-  end
+      expect(last_response.status).to be 200
+      expect(list.reload.subscriptions.map(&:email)).to eql([])
+    end
 
-  it 'subscribes new member to a list as list-admin' do
-    list = create(:list)
-    subscription = create(:subscription, list_id: list.id, admin: true)
-    account = create(:account, email: subscription.email)
-    authorize!(account.email, account.set_new_password!)
-    parameters = { email: 'someone@localhost' }
+    it 'unsubscribes members as list-admin' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: false)
+      admin_subscription = create(:subscription, list_id: list.id, admin: true)
+      account = create(:account, email: admin_subscription.email)
+      authorize!(account.email, account.set_new_password!)
 
-    post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
-    list.reload
+      expect(list.subscriptions.map(&:email)).to include(subscription.email)
 
-    expect(last_response.status).to be 201
-    expect(list.subscriptions.map(&:email)).to include('someone@localhost')
-    expect(list.subscriptions.first.admin?).to be false
-    expect(list.subscriptions.first.delivery_enabled).to be true
-  end
+      delete "/lists/#{list.email}/subscriptions/#{subscription.email}.json"
 
-  it 'returns the subscription as json if update was successful' do
-    list = create(:list)
-    authorize_as_api_superadmin!
-    parameters = { list_email: list.email, email: 'someone@localhost' }
+      expect(last_response.status).to be 200
+      expect(list.reload.subscriptions.map(&:email)).to eql([admin_subscription.email])
+    end
 
-    post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+    it "doesn't unsubscribes members as subscriber" do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: false)
+      subscription2 = create(:subscription, list_id: list.id, admin: false)
+      account = create(:account, email: subscription2.email)
+      authorize!(account.email, account.set_new_password!)
 
-    expect(last_response.status).to be 201
-    expect(last_response.body).to match_json_schema('subscription')
-  end
+      delete "/lists/#{list.email}/subscriptions/#{subscription.email}.json"
 
-  it "doesn't subscribe a new member to a list as subscriber" do
-    list = create(:list)
-    subscription = create(:subscription, list_id: list.id, admin: false)
-    account = create(:account, email: subscription.email)
-    authorize!(account.email, account.set_new_password!)
-    parameters = { email: 'someone@localhost' }
+      expect(last_response.status).to be 403
+      expect(list.reload.subscriptions.map(&:email)).to include(subscription.email)
+    end
 
-    expect(list.subscriptions.size).to be(1)
-    list.reload
+    it "doesn't unsubscribes members as unassociated account" do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: false)
+      subscription2 = create(:subscription, admin: true)
+      account = create(:account, email: subscription2.email)
+      authorize!(account.email, account.set_new_password!)
 
-    post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      delete "/lists/#{list.email}/subscriptions/#{subscription.email}.json"
 
-    expect(last_response.status).to be 403
-    expect(list.reload.subscriptions.size).to be(1)
-  end
+      expect(last_response.status).to be 403
+      expect(list.reload.subscriptions.map(&:email)).to include(subscription.email)
+    end
 
-  it "doesn't subscribe a new member to a list as unassociated account" do
-    list = create(:list)
-    account = create(:account)
-    authorize!(account.email, account.set_new_password!)
-    parameters = { email: 'someone@localhost' }
+    it 'returns a 404 status code when member could not be found' do
+      list = create(:list)
+      authorize_as_api_superadmin!
 
-    expect(list.subscriptions.size).to be(0)
-    list.reload
+      delete "/lists/#{list.email}/subscriptions/nonexisting@example.org.json"
 
-    post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      expect(last_response.status).to eq 404
+    end
 
-    expect(last_response.status).to be 403
-    expect(list.reload.subscriptions.size).to be(0)
-  end
+    it 'returns an error when attempting to unsubscribe the last admin' do
+      list = create(:list)
+      admin_subscription = create(:subscription, list_id: list.id, admin: true)
+      admin_account = create(:account, email: admin_subscription.email)
+      authorize!(admin_account.email, admin_account.set_new_password!)
 
-  it 'subscribes an admin user as api_superadmin' do
-    authorize_as_api_superadmin!
-    list = create(:list)
-    parameters = { email: 'someone@localhost', admin: true }
+      delete "/lists/#{list.email}/subscriptions/#{admin_subscription.email}.json"
 
-    expect(list.subscriptions.size).to be(0)
+      expect(last_response.status).to be 403
+      expect(last_response.body).to eq '{"error":"Last admin cannot be unsubscribed"}'
+    end
 
-    post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
-    list.reload
-
-    expect(last_response.status).to be 201
-    expect(list.subscriptions.map(&:email)).to eql(['someone@localhost'])
-    expect(list.subscriptions.first.admin?).to be true
-    expect(list.subscriptions.first.delivery_enabled).to be true
-  end
-
-  it 'subscribes an admin user with a truthy value as api_superadmin' do
-    authorize_as_api_superadmin!
-    list = create(:list)
-    parameters = { email: 'someone@localhost', admin: 1 }
-
-    expect(list.subscriptions.size).to be(0)
-
-    post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
-    list.reload
-
-    expect(last_response.status).to be 201
-    expect(list.subscriptions.map(&:email)).to eql(['someone@localhost'])
-    expect(list.subscriptions.first.admin?).to be true
-    expect(list.subscriptions.first.delivery_enabled).to be true
-  end
-
-  it 'subscribes an user and unsets delivery flag as api_superadmin' do
-    authorize_as_api_superadmin!
-    list = create(:list)
-    parameters = { email: 'someone@localhost', delivery_enabled: false }
-
-    expect(list.subscriptions.size).to be(0)
-
-    post "/lists/#{list.email}/subscriptions.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
-    list.reload
-
-    expect(last_response.status).to be 201
-    expect(list.subscriptions.map(&:email)).to eql(['someone@localhost'])
-    expect(list.subscriptions.first.admin?).to be false
-    expect(list.subscriptions.first.delivery_enabled).to be false
-  end
-
-  it 'unsubscribes members as api_superadmin' do
-    list = create(:list)
-    subscription = create(:subscription, :list_id => list.id, admin: false)
-    authorize_as_api_superadmin!
-
-    expect(list.subscriptions.map(&:email)).to eql([subscription.email])
-
-    delete "/lists/#{list.email}/subscriptions/#{subscription.email}.json"
-
-    expect(last_response.status).to be 200
-    expect(list.reload.subscriptions.map(&:email)).to eql([])
-  end
-
-  it 'unsubscribes members as list-admin' do
-    list = create(:list)
-    subscription = create(:subscription, list_id: list.id, admin: false)
-    admin_subscription = create(:subscription, list_id: list.id, admin: true)
-    account = create(:account, email: admin_subscription.email)
-    authorize!(account.email, account.set_new_password!)
-
-    expect(list.subscriptions.map(&:email)).to include(subscription.email)
-
-    delete "/lists/#{list.email}/subscriptions/#{subscription.email}.json"
-
-    expect(last_response.status).to be 200
-    expect(list.reload.subscriptions.map(&:email)).to eql([admin_subscription.email])
-  end
-
-  it "doesn't unsubscribes members as subscriber" do
-    list = create(:list)
-    subscription = create(:subscription, list_id: list.id, admin: false)
-    subscription2 = create(:subscription, list_id: list.id, admin: false)
-    account = create(:account, email: subscription2.email)
-    authorize!(account.email, account.set_new_password!)
-
-    delete "/lists/#{list.email}/subscriptions/#{subscription.email}.json"
-
-    expect(last_response.status).to be 403
-    expect(list.reload.subscriptions.map(&:email)).to include(subscription.email)
-  end
-
-  it "doesn't unsubscribes members as unassociated account" do
-    list = create(:list)
-    subscription = create(:subscription, list_id: list.id, admin: false)
-    subscription2 = create(:subscription, admin: true)
-    account = create(:account, email: subscription2.email)
-    authorize!(account.email, account.set_new_password!)
-
-    delete "/lists/#{list.email}/subscriptions/#{subscription.email}.json"
-
-    expect(last_response.status).to be 403
-    expect(list.reload.subscriptions.map(&:email)).to include(subscription.email)
   end
 
   context 'configurable attributes' do
@@ -251,7 +306,7 @@ describe 'subscription via api' do
       get "/lists/#{list.email}/subscriptions/configurable_attributes.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)).to eq ['fingerprint', 'admin', 'delivery_enabled']
+      expect(JSON.parse(last_response.body)['data']).to eq ['fingerprint', 'admin', 'delivery_enabled']
     end
   end
 
@@ -263,7 +318,7 @@ describe 'subscription via api' do
       get "/lists/#{list.email}/subscriptions/new.json"
 
       expect(last_response.status).to be 200
-      expect(last_response.body).to eq Subscription.new().to_json
+      expect(JSON.parse(last_response.body)['data']).to eq Subscription.new.as_json
     end
   end
 
@@ -278,7 +333,7 @@ describe 'subscription via api' do
       get "/lists/#{list.email}/subscriptions/#{subscription_email}.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)['email']).to eq subscription_email
+      expect(JSON.parse(last_response.body)['data']['email']).to eq subscription_email
     end
 
     it 'contains a one line representation of the key in the response body' do
@@ -289,7 +344,7 @@ describe 'subscription via api' do
 
       get "/lists/#{list.email}/subscriptions/schleuder@example.org.json"
 
-      expect(JSON.parse(last_response.body)['key_summary']).to eq '0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06'
+      expect(JSON.parse(last_response.body)['data']['key_summary']).to eq '0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06'
     end
 
     it 'raises unauthorized if the account is not associated with the list' do
@@ -328,6 +383,19 @@ describe 'subscription via api' do
 
       expect(last_response.status).to be 403
     end
+
+    it 'returns 200 and an error if parameter is invalid' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: true)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      parameters = { email: 'invalid_email_address.org' }
+
+      patch "/lists/#{list.email}/subscriptions/#{subscription.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq 422
+      expect(JSON.parse(last_response.body)['error']).to eq ['Email is not a valid email address']
+    end
   end
 
   context 'updating a subscription via put (replace the resource in its entirety)' do
@@ -347,7 +415,7 @@ describe 'subscription via api' do
       expect(last_response.status).to be 200
     end
 
-    it 'returns an error and status code 400 if a required parameter is missing' do
+    it 'returns an error and status code 422 if a required parameter is missing' do
       list = create(:list)
       subscription = create(:subscription, list_id: list.id, admin: false)
       account = create(:account, email: subscription.email)
@@ -359,8 +427,25 @@ describe 'subscription via api' do
 
       put "/lists/#{list.email}/subscriptions/#{subscription.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-      expect(last_response.status).to be 422
-      expect(JSON.parse(last_response.body)['errors']).to eq 'The request is missing a required parameter'
+      expect(last_response.status).to eq 422
+      expect(JSON.parse(last_response.body)['error']).to eq 'The request is missing a required parameter'
+    end
+
+    it 'returns an error and status code 422 if a parameter is invalid' do
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: false)
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
+      parameters = {
+        fingerprint: 'C4D60F8833789C7CAA44496FD3FFA6613AB10ECE',
+        admin: '', 
+        delivery_enabled: true
+      }
+
+      put "/lists/#{list.email}/subscriptions/#{subscription.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to eq 422
+      expect(JSON.parse(last_response.body)['error']).to eq ['Admin must be true or false']
     end
 
     it 'raises unauthorized if the account is not associated with the list' do

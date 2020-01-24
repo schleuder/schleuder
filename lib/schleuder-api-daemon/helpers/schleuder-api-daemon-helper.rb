@@ -19,7 +19,7 @@ module SchleuderApiDaemonHelper
       return if request.path_info == '/status.json'
       if ! valid_credentials?
         headers['WWW-Authenticate'] = 'Basic realm="Schleuder API Daemon"'
-        halt 401, "Not authorized\n"
+        halt 401, json({ error: 'Not authorized' })
       end
     end
 
@@ -29,6 +29,10 @@ module SchleuderApiDaemonHelper
 
     def current_account
       @current_account
+    end
+
+    def json_body(data, messages=nil)
+      json(data: data, messages: messages)
     end
 
     def parsed_body
@@ -44,7 +48,6 @@ module SchleuderApiDaemonHelper
       halt(500, json(error: msg))
     end
 
-    # TODO: unify error messages. This method currently sends an old error format. See <https://github.com/rails/activeresource/blob/d6a5186/lib/active_resource/base.rb#L227>.
     def client_error(obj_or_msg, http_code=400)
       text = case obj_or_msg
              when String, Symbol
@@ -55,7 +58,7 @@ module SchleuderApiDaemonHelper
                obj_or_msg
              end
       logger.error "Sending error to client: #{text.inspect}"
-      halt(http_code, json(errors: text))
+      halt(http_code, json(error: text))
     end
 
     # poor persons type casting
@@ -72,10 +75,8 @@ module SchleuderApiDaemonHelper
       end
     end
 
-    def set_x_messages(messages)
-      if messages.present?
-        headers 'X-Messages' => Array(messages).join(' // ').gsub(/\n/, ' // ')
-      end
+    def interpret_key_import_result(import_result)
+      (GPGME::Ctx.new armor: true).interpret_import_result(import_result)
     end
 
     def find_key_material
