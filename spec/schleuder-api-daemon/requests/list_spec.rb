@@ -107,13 +107,11 @@ describe 'lists via api' do
     it 'returns status 400 and an error if key generation fails' do
       authorize_as_api_superadmin!
       parameters = { email: 'new_testlist@example.com' }
-      list_builder = double('ListBuilder')
+      #list_builder = double('ListBuilder')
       expect_any_instance_of(ListBuilder).to receive(:create_key).with(any_args).and_raise(Errors::KeyGenerationFailed.new('list_dir', 'listname'))
 
       resp = post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
       
-      puts resp.inspect
-      puts last_response.inspect
       expect(last_response.status).to eql 400
       expect(JSON.parse(last_response.body)['error']).to eq "Generating the OpenPGP key pair for listname failed for unknown reasons. Please check the list-directory ('list_dir') and the log-files."
     end
