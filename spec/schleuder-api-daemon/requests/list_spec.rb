@@ -110,8 +110,10 @@ describe 'lists via api' do
       list_builder = double('ListBuilder')
       expect_any_instance_of(ListBuilder).to receive(:create_key).with(any_args).and_raise(Errors::KeyGenerationFailed.new('list_dir', 'listname'))
 
-      post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+      resp = post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
       
+      puts resp.inspect
+      puts last_response.inspect
       expect(last_response.status).to eql 400
       expect(JSON.parse(last_response.body)['error']).to eq "Generating the OpenPGP key pair for listname failed for unknown reasons. Please check the list-directory ('list_dir') and the log-files."
     end
