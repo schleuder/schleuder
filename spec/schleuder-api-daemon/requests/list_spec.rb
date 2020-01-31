@@ -93,6 +93,17 @@ describe 'lists via api' do
       expect(JSON.parse(last_response.body)['error']).to eql ({'email' => ["'' is not a valid email address"]})
     end
 
+    it 'returns an error and status code 422 if list name is invalid' do
+      authorize_as_api_superadmin!
+      list = build(:list)
+      parameters = { email: 'invalid' }
+
+      post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 422
+      expect(JSON.parse(last_response.body)['error']).to eql ({'email' => ["'invalid' is not a valid email address"]})
+    end
+
     it 'returns an error and status code 422 if a parameter validation fails' do
       authorize_as_api_superadmin!
       list = build(:list)
@@ -107,13 +118,12 @@ describe 'lists via api' do
     it 'returns status 400 and an error if key generation fails' do
       authorize_as_api_superadmin!
       parameters = { email: 'new_testlist@example.com' }
-      list_builder = double('ListBuilder')
-      expect_any_instance_of(ListBuilder).to receive(:create_key).with(any_args).and_raise(Errors::KeyGenerationFailed.new('list_dir', 'listname'))
-
+      allow_any_instance_of(ListBuilder).to receive(:run).with(any_args).and_raise(Errors::KeyGenerationFailed.new('list_dir', 'new_testlist@example.com'))
+      
       post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
       
-      expect(last_response.status).to be 400
-      expect(JSON.parse(last_response.body)['error']).to eq "Generating the OpenPGP key pair for listname failed for unknown reasons. Please check the list-directory ('list_dir') and the log-files."
+      expect(last_response.status).to eq 400
+      expect(JSON.parse(last_response.body)['error']).to eq "Generating the OpenPGP key pair for new_testlist@example.com failed for unknown reasons. Please check the list-directory ('list_dir') and the log-files."
     end
 
     it 'returns status 200 and a messages if list was created but admin key was invalid' do
