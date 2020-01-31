@@ -93,6 +93,17 @@ describe 'lists via api' do
       expect(JSON.parse(last_response.body)['error']).to eql ({'email' => ["'' is not a valid email address"]})
     end
 
+    it 'returns an error and status code 422 if list name is invalid' do
+      authorize_as_api_superadmin!
+      list = build(:list)
+      parameters = { email: 'invalid' }
+
+      post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
+
+      expect(last_response.status).to be 422
+      expect(JSON.parse(last_response.body)['error']).to eql ({'email' => ["'invalid' is not a valid email address"]})
+    end
+
     it 'returns an error and status code 422 if a parameter validation fails' do
       authorize_as_api_superadmin!
       list = build(:list)
