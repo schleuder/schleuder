@@ -126,6 +126,17 @@ spec-filenames:
       - spec/schleuder-api-daemon/**/*
   <<: *limit_non_release_branches
 
+schema-up-to-date:
+  image: $IMAGE_REGISTRY:debian-generic
+  script:
+    - ruby utils/ci/rails_schema_up_to_date.rb
+  stage: static
+  allow_failure: true
+  only:
+    changes:
+      - db/*
+  <<: *limit_non_release_branches
+
 bundler:audit:
   image: ruby:2.5
   only:
