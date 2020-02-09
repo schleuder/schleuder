@@ -17,6 +17,7 @@ module Mail
     attr_accessor :original_message
     attr_accessor :list
     attr_accessor :protected_headers_subject
+    attr_writer :dynamic_pseudoheaders
 
     # TODO: This should be in initialize(), but I couldn't understand the
     # strange errors about wrong number of arguments when overriding
@@ -44,9 +45,7 @@ module Mail
       # might be gone (e.g. request-keywords that delete subscriptions or
       # keys).
       new.signer
-      self.dynamic_pseudoheaders.each do |str|
-        new.add_pseudoheader(str)
-      end
+      new.dynamic_pseudoheaders = self.dynamic_pseudoheaders.dup
 
       # Store previously protected subject for later access.
       # mail-gpg pulls headers from the decrypted mime parts "up" into the main
@@ -270,20 +269,17 @@ module Mail
     end
 
     def add_pseudoheader(string_or_key, value=nil)
-      @dynamic_pseudoheaders ||= []
-      if value.present?
-        @dynamic_pseudoheaders << make_pseudoheader(string_or_key, value)
-      else
-        @dynamic_pseudoheaders << string_or_key.to_s
-      end
+      dynamic_pseudoheaders << make_pseudoheader(string_or_key, value)
     end
 
     def make_pseudoheader(key, value)
-      "#{key.to_s.camelize}: #{value.to_s}"
+      output = "#{key.to_s.camelize}: #{value.to_s}"
+      # wrap lines after 76 with 2 indents
+      output.gsub(/(.{1,76})( +|$)\n?/, "  \\1\n").chomp.lstrip
     end
 
     def dynamic_pseudoheaders
-      @dynamic_pseudoheaders || []
+      @dynamic_pseudoheaders ||= []
     end
 
     def signature_state

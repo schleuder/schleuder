@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * New option for lists to include their public keys in the headers of outgoing emails (conforming with Autocrypt, https://autocrypt.org/). Defaults to true. (#335)
 * Add visual separator (78 dashes) to the end of the 'pseudoheaders' block: This should help users of Apple Mail, which jams this block and the body together. Hopefully, this change makes it easier to dinstiguish both parts from each other. (#348)
 * `deliver_selfsent` per-list option to control whether subscribers get a copy of mail they sent themselves. (#365)
+* Wrap pseudo headers if longer than 78 characters.
 
 ### Fixed
 
@@ -21,6 +22,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Add missing List-Id header to notification mails sent to admins. This should help with filtering such messages, which is currently not easy to do in a reliable way.
 * Fix running Schleuder with ruby 2.7.
 * Ensure that GnuPG never asks for a passphrase, even if it wants one. (#448)
+* Be more precise about how many keys are in the keyring and how many are usable, when resending (#429)
+* Make it more clear what happens when resending an encrypted email fails (due to missing or too many matching keys), but falling back to unencrypted resend is allowed. (#343)
+* Be more explicit that resending to other CC recipients has been aborted (#265)
 
 
 ## [3.4.1] / 2019-09-16
