@@ -10,9 +10,6 @@ cache:
   paths:
     - vendor
 
-variables:
-  IMAGE_REGISTRY: $CI_REGISTRY/schleuder/schleuder-ci-images
-
 # Jobs that start with a period are disabled
 # This is just a template, to be used further below in the individual job definitions
 .install_build_depends: &install_build_depends |
@@ -113,10 +110,10 @@ ruby:2.5:
   image: ruby:2.5
   <<: *test_ruby
 ruby:2.6:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.6
+  image: ruby:2.6
   <<: *test_ruby
 ruby:2.7:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.7
+  image: ruby:2.7
   <<: *test_ruby
 
 bundler:audit:
