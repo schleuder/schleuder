@@ -13,3 +13,9 @@ Layout/EmptyLineBetweenDefs:
 
 Layout/SpaceAfterComma:
   Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
