@@ -16,9 +16,9 @@ class SchleuderApiDaemon < Sinatra::Base
       adminkey = parsed_body['adminkey']
       list, messages = lists_controller.create(list_email, fingerprint, adminaddress, adminfingerprint, adminkey)
       if list.nil?
-        client_error(messages, 422)
+        client_error(messages, 422, :validation_error)
       elsif ! list.valid?
-        client_error(list, 422)
+        client_error(list, 422, :validation_error)
       else
         json_body(list, messages)
       end
@@ -45,7 +45,7 @@ class SchleuderApiDaemon < Sinatra::Base
       if list.valid?
         204
       else
-        client_error(list, 422)
+        client_error(list, 422, :validation_error)
       end
     end
 
@@ -54,7 +54,7 @@ class SchleuderApiDaemon < Sinatra::Base
       if list.valid?
         204
       else
-        client_error(list, 422)
+        client_error(list, 422, :validation_error)
       end
     end
 

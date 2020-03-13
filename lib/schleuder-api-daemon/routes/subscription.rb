@@ -20,7 +20,7 @@ class SchleuderApiDaemon < Sinatra::Base
         logger.debug "Subscribed: #{subscription.inspect}"
         json_body(subscription, messages)
       else
-        client_error(subscription, 422)
+        client_error(subscription, 422, :validation_error)
       end
     end
 
@@ -44,13 +44,13 @@ class SchleuderApiDaemon < Sinatra::Base
       required_parameters = subscriptions_controller.get_configurable_attributes
       if attributes.keys.sort != required_parameters.sort
         status 422
-        return json(error: 'The request is missing a required parameter')
+        return json(error: 'The request is missing a required parameter', error_code: :parameter_missing)
       end
       subscription = subscriptions_controller.update(list_email, email, parsed_body)
       if subscription.valid?
         200
       else
-        client_error(subscription, 422)
+        client_error(subscription, 422, :validation_error)
       end
     end
 
@@ -59,7 +59,7 @@ class SchleuderApiDaemon < Sinatra::Base
       if subscription.valid?
         200
       else
-        client_error(subscription, 422)
+        client_error(subscription, 422, :validation_error)
       end
     end
 

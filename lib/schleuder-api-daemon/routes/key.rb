@@ -41,7 +41,7 @@ class SchleuderApiDaemon < Sinatra::Base
         if messages.empty?
           messages << 'The given key material did not contain any keys!'
         end
-        client_error(messages.join("\n"), 422)
+        client_error(messages.join("\n"), 422, :invalid_key_material)
       end
 
       # Use a Hash as single response object to stay more REST-like. (also,

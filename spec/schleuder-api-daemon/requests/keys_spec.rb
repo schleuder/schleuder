@@ -20,7 +20,7 @@ describe "keys via api" do
       get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql '{"error":"Not authorized"}'
+      expect(last_response.body).to eql '{"error":"Not authorized","error_code":"not_authorized"}'
     end
 
     it "does list keys authorized as subscriber" do
@@ -151,7 +151,7 @@ describe "keys via api" do
       get "/lists/#{list.email}/keys/check.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql '{"error":"Not authorized"}'
+      expect(last_response.body).to eql '{"error":"Not authorized","error_code":"not_authorized"}'
     end
 
     it "doesn't check keys authorized as subscriber" do
@@ -163,7 +163,7 @@ describe "keys via api" do
       get "/lists/#{list.email}/keys/check.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql '{"error":"Not authorized"}'
+      expect(last_response.body).to eql '{"error":"Not authorized","error_code":"not_authorized"}'
     end
 
     it "does check keys authorized as list-admin" do
@@ -377,7 +377,7 @@ describe "keys via api" do
       post "/lists/#{list.email}/keys.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq 422
-      expect(last_response.body).to eq '{"error":"The given key material did not contain any keys!"}'
+      expect(last_response.body).to eq '{"error":"The given key material did not contain any keys!","error_code":"invalid_key_material"}'
     end
 
     it 'returns 422 and an error message when invalid keymaterial is provided' do
@@ -389,7 +389,7 @@ describe "keys via api" do
       post "/lists/#{list.email}/keys.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq 422
-      expect(last_response.body).to eq '{"error":"The given key material did not contain any keys!"}'
+      expect(last_response.body).to eq '{"error":"The given key material did not contain any keys!","error_code":"invalid_key_material"}'
     end
   end
 
@@ -418,7 +418,7 @@ describe "keys via api" do
       delete "/lists/#{list.email}/keys/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql '{"error":"Not authorized"}'
+      expect(last_response.body).to eql '{"error":"Not authorized","error_code":"not_authorized"}'
       expect(list.reload.keys.length).to eql(num_keys)
     end
 
@@ -433,7 +433,7 @@ describe "keys via api" do
       delete "/lists/#{list.email}/keys/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql '{"error":"Not authorized"}'
+      expect(last_response.body).to eql '{"error":"Not authorized","error_code":"not_authorized"}'
       expect(list.reload.keys.length).to eql(num_keys)
     end
 
