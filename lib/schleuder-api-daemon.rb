@@ -52,28 +52,28 @@ class SchleuderApiDaemon < Sinatra::Base
 
   error Errors::KeyNotFound do
     status 404
-    json({ error:  'Key not found.' })
+    json({ error: 'Key not found.', error_code: :key_not_found })
   end
 
   error Errors::SubscriptionNotFound do
     status 404
-    json({ error: 'Subscription not found.' })
+    json({ error: 'Subscription not found.', error_code: :subscription_not_found  })
   end
 
   error Errors::ListNotFound do
     content_type :json
     status 404
-    json({ error: 'List not found.' })
+    json({ error: 'List not found.', error_code: :list_not_found })
   end
 
   error Errors::Unauthorized do
     status 403
-    json({ error: 'Not authorized' })
+    json({ error: 'Not authorized', error_code: :not_authorized })
   end
 
   error Errors::LastAdminNotDeletable do
     status 403
-    json({ error: 'Last admin cannot be unsubscribed' })
+    json({ error: 'Last admin cannot be unsubscribed', error_code: :last_admin })
   end
 
   error do
@@ -88,15 +88,15 @@ class SchleuderApiDaemon < Sinatra::Base
   end
 
   error 404 do
-    json({ error: 'Not found' })
+    json({ error: 'Not found', error_code: :not_found })
   end
 
   error 401 do
-    json({ error: 'Not authenticated' })
+    json({ error: 'Not authenticated', error_code: :not_authenticated })
   end
 
   error 403 do
-    json({ error: 'Not authorized' })
+    json({ error: 'Not authorized', error_code: :not_authorized })
   end
 
   def self.run!

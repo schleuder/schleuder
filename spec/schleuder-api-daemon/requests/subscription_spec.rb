@@ -40,7 +40,7 @@ describe 'subscription via api' do
       get '/lists/non_existing@example.org/subscriptions.json', { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 404
-      expect(last_response.body).to eq '{"error":"List not found."}'
+      expect(last_response.body).to eq '{"error":"List not found.","error_code":"list_not_found"}'
     end
 
     it 'returns a 403 if no subscription is associated with the account' do
@@ -51,7 +51,7 @@ describe 'subscription via api' do
       get "/lists/#{list.email}/subscriptions.json", { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq 403
-      expect(last_response.body).to eq '{"error":"Not authorized"}'
+      expect(last_response.body).to eq '{"error":"Not authorized","error_code":"not_authorized"}'
     end
   end
 
@@ -216,7 +216,7 @@ describe 'subscription via api' do
       list.reload
 
       expect(last_response.status).to be 422
-      expect(last_response.body).to eq '{"error":["Email is already subscribed"]}'
+      expect(last_response.body).to eq '{"error":["Email is already subscribed"],"error_code":"validation_error"}'
     end
   end
 
@@ -293,7 +293,7 @@ describe 'subscription via api' do
       delete "/lists/#{list.email}/subscriptions/#{admin_subscription.email}.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eq '{"error":"Last admin cannot be unsubscribed"}'
+      expect(last_response.body).to eq '{"error":"Last admin cannot be unsubscribed","error_code":"last_admin"}'
     end
 
   end
@@ -394,7 +394,8 @@ describe 'subscription via api' do
       patch "/lists/#{list.email}/subscriptions/#{subscription.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq 422
-      expect(JSON.parse(last_response.body)['error']).to eq ["Email is not a valid email address"]
+      expect(JSON.parse(last_response.body)['error_code']).to eq 'validation_error'
+      expect(JSON.parse(last_response.body)['error']).to eq ['Email is not a valid email address']
     end
   end
 
@@ -429,6 +430,7 @@ describe 'subscription via api' do
 
       expect(last_response.status).to eq 422
       expect(JSON.parse(last_response.body)['error']).to eq 'The request is missing a required parameter'
+      expect(JSON.parse(last_response.body)['error_code']).to eq 'parameter_missing'
     end
 
     it 'returns an error and status code 422 if a parameter is invalid' do
@@ -445,7 +447,8 @@ describe 'subscription via api' do
       put "/lists/#{list.email}/subscriptions/#{subscription.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq 422
-      expect(JSON.parse(last_response.body)['error']).to eq ["Admin must be true or false"]
+      expect(JSON.parse(last_response.body)['error']).to eq ['Admin must be true or false']
+      expect(JSON.parse(last_response.body)['error_code']).to eq 'validation_error'
     end
 
     it 'raises unauthorized if the account is not associated with the list' do
