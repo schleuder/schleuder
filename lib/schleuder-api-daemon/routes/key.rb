@@ -25,8 +25,8 @@ class SchleuderApiDaemon < Sinatra::Base
       import_result = keys_controller.import(list_email, input)
       interpreted_result = interpret_key_import_result(import_result)
       if invalid_key_material?(interpreted_result)
-        client_error(interpreted_result[1], 422)
-      end
+        client_error(interpreted_result[1], 422, :invalid_key_material)
+      end 
       json_body({fingerprint: import_result.imports.first.fpr})
     end
 
