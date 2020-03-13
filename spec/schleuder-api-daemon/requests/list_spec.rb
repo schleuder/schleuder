@@ -91,6 +91,7 @@ describe 'lists via api' do
 
       expect(last_response.status).to be 422
       expect(JSON.parse(last_response.body)['error']).to eql ({'email' => ["'' is not a valid email address"]})
+      expect(JSON.parse(last_response.body)['error_code']).to eq 'validation_error'
     end
 
     it 'returns an error and status code 422 if list name is invalid' do
@@ -101,7 +102,9 @@ describe 'lists via api' do
       post '/lists.json', parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 422
-      expect(JSON.parse(last_response.body)['error']).to eql ({'email' => ["'invalid' is not a valid email address"]})
+      expect(JSON.parse(last_response.body)['error']).to eql (
+        {'email' => ["'invalid' is not a valid email address"]})
+      expect(JSON.parse(last_response.body)['error_code']).to eq 'validation_error'
     end
 
     it 'returns an error and status code 422 if a parameter validation fails' do
@@ -113,6 +116,7 @@ describe 'lists via api' do
 
       expect(last_response.status).to be 422
       expect(JSON.parse(last_response.body)['error']).to eq ['Fingerprint is not a valid OpenPGP-fingerprint']
+      expect(JSON.parse(last_response.body)['error_code']).to eq 'validation_error'
     end
 
     it 'returns status 400 and an error if key generation fails' do
@@ -124,6 +128,7 @@ describe 'lists via api' do
       
       expect(last_response.status).to eq 400
       expect(JSON.parse(last_response.body)['error']).to eq "Generating the OpenPGP key pair for new_testlist@example.com failed for unknown reasons. Please check the list-directory ('list_dir') and the log-files."
+      expect(JSON.parse(last_response.body)['error_code']).to eq 'unexpected_error'
     end
 
     it 'returns status 200 and a messages if list was created but admin key was invalid' do
@@ -150,7 +155,7 @@ describe 'lists via api' do
       get "lists/#{list.email}.json"
 
       expect(last_response.status).to be 401
-      expect(last_response.body).to eql '{"error":"Not authenticated"}'
+      expect(last_response.body).to eql '{"error":"Not authenticated","error_code":"not_authenticated"}'
     end
 
     it "doesn't show a list authorized as unassociated account" do
@@ -162,7 +167,7 @@ describe 'lists via api' do
       get "lists/#{list.email}.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql '{"error":"Not authorized"}'
+      expect(last_response.body).to eql '{"error":"Not authorized","error_code":"not_authorized"}'
     end
 
     it "doesn't show a list authorized as subscriber with default config" do
@@ -174,7 +179,7 @@ describe 'lists via api' do
       get "lists/#{list.email}.json"
       
       expect(last_response.status).to be 403
-      expect(last_response.body).to eq '{"error":"Not authorized"}'
+      expect(last_response.body).to eq '{"error":"Not authorized","error_code":"not_authorized"}'
     end
 
     it 'does show a list authorized as subscriber with modified config' do
@@ -217,7 +222,7 @@ describe 'lists via api' do
       get 'lists/nonexisting@example.com.json'
 
       expect(last_response.status).to be 404
-      expect(last_response.body).to eq '{"error":"List not found."}'
+      expect(last_response.body).to eq '{"error":"List not found.","error_code":"list_not_found"}'
     end
 
     it 'correctly finds a list by email-address that starts with a number' do
@@ -268,7 +273,7 @@ describe 'lists via api' do
       post "/lists/#{list.email}/send_list_key_to_subscriptions.json", { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql '{"error":"Not authorized"}'
+      expect(last_response.body).to eql '{"error":"Not authorized","error_code":"not_authorized"}'
     end
 
     it 'returns a 404 when user is authorized and list does not exist' do
@@ -277,7 +282,7 @@ describe 'lists via api' do
       post '/lists/nonexisting@example.com/send_list_key_to_subscriptions.json', { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 404
-      expect(last_response.body).to eq '{"error":"List not found."}'
+      expect(last_response.body).to eq '{"error":"List not found.","error_code":"list_not_found"}'
     end
   end
 
@@ -310,7 +315,7 @@ describe 'lists via api' do
 
       put "lists/#{list.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
-      expect(last_response.body).to eq '{"error":["Email is not a valid email address"]}'
+      expect(last_response.body).to eq '{"error":["Email is not a valid email address"],"error_code":"validation_error"}'
       expect(last_response.status).to eq 422
     end
 
@@ -324,7 +329,7 @@ describe 'lists via api' do
       put "lists/#{list.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql '{"error":"Not authorized"}'
+      expect(last_response.body).to eql '{"error":"Not authorized","error_code":"not_authorized"}'
     end
   end
 
@@ -347,7 +352,7 @@ describe 'lists via api' do
       patch "lists/#{list.email}.json", parameters.to_json, { 'CONTENT_TYPE' => 'application/json' }
 
       expect(last_response.status).to eq 422
-      expect(last_response.body).to eq '{"error":["Email is not a valid email address"]}'
+      expect(last_response.body).to eq '{"error":["Email is not a valid email address"],"error_code":"validation_error"}'
     end
   end
 
@@ -378,7 +383,7 @@ describe 'lists via api' do
       delete "lists/#{list.email}.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql '{"error":"Not authorized"}'
+      expect(last_response.body).to eql '{"error":"Not authorized","error_code":"not_authorized"}'
     end
   end
 end
