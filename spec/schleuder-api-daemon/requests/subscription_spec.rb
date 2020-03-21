@@ -306,7 +306,7 @@ describe 'subscription via api' do
       get "/lists/#{list.email}/subscriptions/configurable_attributes.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)['data']).to eq ['fingerprint', 'admin', 'delivery_enabled']
+      expect(JSON.parse(last_response.body)['data']['configurable_attributes']).to eq ['fingerprint', 'admin', 'delivery_enabled']
     end
   end
 
