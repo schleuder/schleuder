@@ -252,6 +252,7 @@ de:
   fetch_key:
     invalid_input: "Ungültige Angabe. Gültig sind: URLs, OpenPGP-Fingerabdrücke, oder Emailadressen."
   pseudoheaders:
+    scrubbed_message: Diese Email enthielt ungültige Zeichen, die aus Verarbeitungsgründen möglicherweise entfernt wurden.
     stripped_html_from_multialt: Diese Email enthielt einen alternativen HTML-Teil, der PGP-Daten beinhaltete. Der HTML-Teil wurde entfernt, um die Email sauberer analysieren zu können.
     stripped_html_from_multialt_with_keywords: Diese Email enthielt Schlüsselwörter und einen alternativen HTML-Teil. Der HTML-Teil wurde entfernt, um zu verhindern dass diese Schlüsselwörter Aussenstehenden bekannt werden.
   signature_states:

@@ -256,6 +256,7 @@ en:
   fetch_key:
     invalid_input: "Invalid input. Allowed are: URLs, OpenPGP-fingerprints, or email-addresses."
   pseudoheaders:
+    scrubbed_message: This message included invalid characters, which might have been removed to be able to process the message properly.
     stripped_html_from_multialt: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.
     stripped_html_from_multialt_with_keywords: This message included keywords and an alternating HTML-part. The HTML-part was removed to prevent the disclosure of these keywords to third parties.
   signature_states:

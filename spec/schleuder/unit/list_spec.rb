@@ -657,7 +657,7 @@ describe Schleuder::List do
       mail.subject = 'Something'
       mail.body = "Some content"
 
-      Schleuder::Runner.new().run(mail, list.email)
+      Schleuder::Runner.new().run(mail.to_s, list.email)
       messages = Mail::TestMailer.deliveries
       recipients = messages.map { |m| m.to.first }.sort
 
@@ -685,7 +685,7 @@ describe Schleuder::List do
       mail.subject = 'Something'
       mail.body = "Some content"
 
-      Schleuder::Runner.new().run(mail, list.email)
+      Schleuder::Runner.new().run(mail.to_s, list.email)
       messages = Mail::TestMailer.deliveries
       recipients = messages.map { |m| m.to.first }.sort
 
@@ -712,7 +712,7 @@ describe Schleuder::List do
       mail.subject = 'Something'
       mail.body = "Some content"
 
-      Schleuder::Runner.new().run(mail, list.email)
+      Schleuder::Runner.new().run(mail.to_s, list.email)
       messages = Mail::TestMailer.deliveries
       recipients = messages.map { |m| m.to.first }.sort
 
@@ -741,7 +741,7 @@ describe Schleuder::List do
       mail.subject = 'Something'
       mail.body = "Some content"
 
-      Schleuder::Runner.new().run(mail, list.email)
+      Schleuder::Runner.new().run(mail.to_s, list.email)
       messages = Mail::TestMailer.deliveries
       recipients = messages.map { |m| m.to.first }.sort
 
@@ -841,7 +841,7 @@ describe Schleuder::List do
       mail.subject = 'Something'
       mail.body = "Some content"
 
-      Schleuder::Runner.new().run(mail, list.email)
+      Schleuder::Runner.new().run(mail.to_s, list.email)
       messages = Mail::TestMailer.deliveries
       recipients = messages.map { |m| m.to.first }.sort
 

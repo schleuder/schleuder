@@ -3,7 +3,7 @@
 #
 # this should ensure we are able to parse most incoming
 # plain text mails in different charsets.
-Encoding.default_external = Encoding::ASCII_8BIT
+Encoding.default_external = Encoding::UTF_8
 
 # Stdlib
 require 'fileutils'

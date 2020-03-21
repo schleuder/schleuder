@@ -1,0 +1,110 @@
+Return-Path: <example@example.org>
+Delivered-To: input@example.org
+Received: from mx-a.example.org (mx-a.example.org [10.11.12.13])
+	by mx-b.example.org (Postfix) with ESMTPS id B783D9
+	for <support@example.org>; Wed, 06 Mar 2020 16:11:03 +0000 (UTC)
+MIME-Version: 1.0
+Date: Wed, 06 Mar 2020 16:11:03 +0000
+From: example@example.org
+To: input@example.org
+Subject: foobar
+Message-ID: <foobar@example.org>
+Content-Type: multipart/signed;
+ protocol="application/pgp-signature";
+ boundary="=_3af29082653c11eaa9c874e5f9e4031";
+ micalg=pgp-sha256
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+
+--=_3af29082653c11eaa9c874e5f9e4031
+Content-Type: multipart/mixed;
+ boundary="=_7A9795606B8711EAA9CA74E5F9E4031"
+
+--=_7A9795606B8711EAA9CA74E5F9E4031
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+
+Hi,
+
+Wie geht es dir?
+
+Danke und liebe Grüße!
+
+Input von example.org
+--=_7A9795606B8711EAA9CA74E5F9E4031
+Content-Transfer-Encoding: 7bit
+Content-Type: application/pgp-keys;
+ name=0x4DCFFC92.asc
+Content-Disposition: attachment;
+ filename=0x4DCFFC92.asc;
+ size=3813
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----                                                                         
+ 
+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
+LBrw
+=8kNQ
+-----END PGP PUBLIC KEY BLOCK-----
+
+--=_7A9795606B8711EAA9CA74E5F9E4031
+
+--=_3af29082653c11eaa9c874e5f9e4031
+Content-Type: application/pgp-signature;
+ name=signature.asc
+Content-Disposition: attachment;
+ filename=signature.asc;
+ size=833
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGzBAABCgAdFiEEutGcDyP9I0JgSi5RsAgBRQs6K6QFAl5rnV0ACgkQsAgBRQs6
+K6Rwawv9H1cIwmmwmJJq4xSXNHBcx1uoE38+0UNb4QrwvDZ4qTPxljrtzHecp0Jh
+ZGB1NrEyDA0ZX298eXQwyHbiGZ8BJAxG1akLmLKGpQ2CRsuy96G4Ot3nfdsVCwPD
+YHyxEH8YGk85BSpjl+RZpI7EUTLF3k9NB8szKEhqY8ZgdC4H2n4mCeXNLATO/6GP
+qFevJtFK8LAUy1S0lQQ/Y5zWpdT/GJs6MLURhtGGEiv4TLyzcRXpu04h2TBeDlT6
+Tn5YfYn1sz55rbLtQo5jmD8PwNwcsElbNQiXPdL22JyinxRz6hBAVgPVMm/bWze6
+K3RvzpQ0UoZrdhCgR3PZfe8cyJPvHMyy5g2IkvlN2BbdrqknCMkSyUlo/nmpMf3Z
+78RP2TLOeG+JNaEmmF5LuhVRp86A3ItaMjUy1RRdqjRxoXdbqUjjcMiBMPg317Oj
+9v/CJytsOXo0LHRQXdNkxPOzosUVDTPuafaqNwT1IwBpc5nKLTV2K3PS55tQ6566
+EdSR1zEh
+=/aB0
+-----END PGP SIGNATURE-----
+
+--=_3af29082653c11eaa9c874e5f9e4031--
