@@ -1,30 +1,47 @@
 module Schleuder
   class ExtractedKeyword
     attr_reader :name
-    attr_accessor :argument_string
+    attr_accessor :arguments
 
-    def initialize(name, wanted_arguments_regexp)
+    def initialize(name, arguments, wanted_arguments)
       @name = name
-      @wanted_arguments_regexp = wanted_arguments_regexp
-      @argument_string = ''
+      @arguments = arguments
+      @wanted_arguments = wanted_arguments
     end
 
-    def append_if_valid_arguments?(argument_string)
-      testable_string = "#{@argument_string} #{argument_string.to_s.strip.downcase}".strip
-      if testable_string.match(@wanted_arguments_regexp)
-        @argument_string = testable_string
-        true
-      else
-        false
+    # TODO: consume arguments one by one, and if one doesn't match the requirement, return false so the calling code knows that no additional arguments are wanted.
+    # TODO: provide method that checks if consumed arguments fulfill the requirements.
+
+    def add_arguments(arguments)
+      @arguments += arguments
+    end
+
+    def test_arguments
+      @arguments.each_with_index.map do |arg, index|
+        if @wanted_arguments[index]
+          arg.match(@wanted_arguments[index])
+        else
+          ''
+        end
       end
     end
 
-    def arguments_valid?
-      !!@argument_string.match(@wanted_arguments_regexp)
+    def all_arguments_met?
+      test_arguments.map do |thing|
+        thing.to_s.present?
+      end.index(false).blank? && @arguments.size == @wanted_arguments.size
     end
 
-    def arguments
-      @arguments ||= @argument_string.split(/[;, ]+/)
+    def mandatory_arguments_met?
+      test_arguments.index(nil).blank?
+    end
+
+    def wants_more?
+      if @arguments.size == 0
+        true
+      else
+        test_arguments.last.to_s.present? && @arguments.size < @wanted_arguments.size
+      end
     end
   end
 end

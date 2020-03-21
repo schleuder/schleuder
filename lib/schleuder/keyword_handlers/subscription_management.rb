@@ -3,8 +3,7 @@ module Schleuder
     class SubscriptionManagement < Base
       #handles_request_keyword 'subscribe', with_method: :subscribe, wanted_arguments: /\A#{Conf::EMAIL_REGEXP_EMBED}#{SEPARATORS}+(true|false)#{SEPARATORS}+(true|false)#{SEPARATORS}*(#{Conf::FINGERPRINT_REGEXP_EMBED})?\z/
 
-      # How to tell apart the mandatory from the optional arguments?
-      handles_request_keyword 'subscribe', with_method: :subscribe, wanted_arguments: Array.new(99, /\A#{Conf::EMAIL_REGEXP_EMBED}#\z/)
+      handles_request_keyword 'subscribe', with_method: :subscribe, wanted_arguments: [Conf::EMAIL_REGEXP, /(true|false)?/, /(true|false)?/, /(#{Conf::FINGERPRINT_REGEXP})?/]
 
       #handles_request_keyword 'subscribe', with_method: :subscribe,
       #                                     wanted_arguments: [
