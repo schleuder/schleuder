@@ -1,0 +1,84 @@
+From: foo bar <foo@example.org>
+To: input@example.org
+Subject: =?UTF-8?Q?input_f=c3=bcr_Test?=
+Message-ID: <435093879857398573985735@example.org>
+Date: Fr, 12 Mar 2020 09:49:01 +0500
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.1
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="------------421BD2D66A2A11EAB33E74E5F9E4031"
+
+This is a multi-part message in MIME format.
+--------------421BD2D66A2A11EAB33E74E5F9E4031
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+liebes example.org team,
+
+Wie geht es euch? 
+
+Wir haben uns schon Gedanken gemacht: 
+example.org
+
+danke für euren Support! 
+
+gr=C3=BC=C3=9Fe
+
+foo bar
+
+--------------421BD2D66A2A11EAB33E74E5F9E4031
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <p>liebes example.org team,</p>
+    <p>Wie geht es euch? <br>
+    </p>
+    <p>Wir haben uns schon Gedanken gemacht: <span
+        style="caret-color: rgb(77, 69, 69); color: rgb(77, 69, 69);
+        font-family: Roboto; font-size: 15px; font-style: normal;
+        font-variant-caps: normal; font-weight: normal; letter-spacing:
+        0.5px; orphans: auto; text-align: start; text-indent: 0px;
+        text-transform: none; white-space: normal; widows: auto;
+        word-spacing: 0px; -webkit-text-size-adjust: auto;
+        -webkit-text-stroke-width: 0px; background-color: rgb(255, 255,
+        255); text-decoration: none; display: inline !important; float:
+        none;">example.org</span></p>
+    <p><span style="caret-color: rgb(77, 69, 69); color: rgb(77, 69,
+        69); font-family: Roboto; font-size: 15px; font-style: normal;
+        font-variant-caps: normal; font-weight: normal; letter-spacing:
+        0.5px; orphans: auto; text-align: start; text-indent: 0px;
+        text-transform: none; white-space: normal; widows: auto;
+        word-spacing: 0px; -webkit-text-size-adjust: auto;
+        -webkit-text-stroke-width: 0px; background-color: rgb(255, 255,
+        255); text-decoration: none; display: inline !important; float:
+        none;">danke für euren Support! </span></p>
+    <p><span style="caret-color: rgb(77, 69, 69); color: rgb(77, 69,
+        69); font-family: Roboto; font-size: 15px; font-style: normal;
+        font-variant-caps: normal; font-weight: normal; letter-spacing:
+        0.5px; orphans: auto; text-align: start; text-indent: 0px;
+        text-transform: none; white-space: normal; widows: auto;
+        word-spacing: 0px; -webkit-text-size-adjust: auto;
+        -webkit-text-stroke-width: 0px; background-color: rgb(255, 255,
+        255); text-decoration: none; display: inline !important; float:
+        none;">grüße</span></p>
+    <p><span style="caret-color: rgb(77, 69, 69); color: rgb(77, 69,
+        69); font-family: Roboto; font-size: 15px; font-style: normal;
+        font-variant-caps: normal; font-weight: normal; letter-spacing:
+        0.5px; orphans: auto; text-align: start; text-indent: 0px;
+        text-transform: none; white-space: normal; widows: auto;
+        word-spacing: 0px; -webkit-text-size-adjust: auto;
+        -webkit-text-stroke-width: 0px; background-color: rgb(255, 255,
+        255); text-decoration: none; display: inline !important; float:
+        none;">foo bar<br>
+      </span></p>
+  </body>
+</html>
+
+--------------421BD2D66A2A11EAB33E74E5F9E4031--
