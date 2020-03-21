@@ -25,7 +25,7 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     get '/:list_email/subscriptions/configurable_attributes.json' do
-      json_body(subscriptions_controller.get_configurable_attributes)
+      json_body(configurable_attributes: subscriptions_controller.get_configurable_attributes)
     end
 
     get '/:list_email/subscriptions/new.json' do
