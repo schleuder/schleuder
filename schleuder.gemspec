@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.5.0'
   s.add_runtime_dependency 'gpgme', '~> 2.0', '>= 2.0.13' # Explicitly include to force a version.
   s.add_runtime_dependency 'mail', '~> 2.6.0'
-  s.add_runtime_dependency 'mail-gpg', '~> 0.3', '>= 0.3.3'
+  s.add_runtime_dependency 'mail-gpg', '0.4.2'
   s.add_runtime_dependency 'activerecord', '~> 5.2'
   s.add_runtime_dependency 'bcrypt-ruby', '~> 3.1.2'
   s.add_runtime_dependency 'rake', '>= 10.5.0'
