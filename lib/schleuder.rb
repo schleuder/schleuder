@@ -21,6 +21,12 @@ libdir = Pathname.new(__FILE__).dirname.realpath
 rootdir = libdir.dirname
 $:.unshift libdir
 
+# Setup. Must happen before Schleuder::Conf is called.
+ENV['SCHLEUDER_CONFIG'] ||= '/etc/schleuder/schleuder.yml'
+ENV['SCHLEUDER_LIST_DEFAULTS'] ||= '/etc/schleuder/list-defaults.yml'
+ENV['SCHLEUDER_ENV'] ||= 'production'
+ENV['SCHLEUDER_ROOT'] = rootdir.to_s
+
 # Monkeypatches
 require 'schleuder/mail/parts_list.rb'
 require 'schleuder/mail/message.rb'
@@ -74,12 +80,6 @@ require 'schleuder/controllers/base_controller'
 require 'schleuder/controllers/keys_controller'
 require 'schleuder/controllers/lists_controller'
 require 'schleuder/controllers/subscriptions_controller'
-
-# Setup
-ENV['SCHLEUDER_CONFIG'] ||= '/etc/schleuder/schleuder.yml'
-ENV['SCHLEUDER_LIST_DEFAULTS'] ||= '/etc/schleuder/list-defaults.yml'
-ENV['SCHLEUDER_ENV'] ||= 'production'
-ENV['SCHLEUDER_ROOT'] = rootdir.to_s
 
 GPGME::Ctx.set_gpg_path_from_env
 GPGME::Ctx.check_gpg_version
