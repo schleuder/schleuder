@@ -2,9 +2,9 @@ module Schleuder
   module KeywordHandlers
     class Resend < Base
       # TODO: specify regexp of wanted arguments or just the number of them
-      handles_list_keyword 'resend-encrypted-only', with_method: :resend_encrypted_only, has_aliases: 'resend-enc', wanted_arguments: [Conf::EMAIL_REGEXP]
+      handles_list_keyword 'resend-encrypted-only', with_method: :resend_encrypted_only, has_aliases: 'resend-enc', wanted_arguments: /\A([^ ]+@[[:alnum:]_.-]+\s?)+\z/i
 
-      handles_list_keyword 'resend', with_method: :resend, wanted_arguments: [Conf::EMAIL_REGEXP]
+      handles_list_keyword 'resend', with_method: :resend, wanted_arguments: /\A(#{Conf::EMAIL_REGEXP_EMBED}#{SEPARATORS}*)+\z/i
 
       handles_list_keyword 'resend-cc', with_method: :resend_cc, wanted_arguments: [Conf::EMAIL_REGEXP]
 

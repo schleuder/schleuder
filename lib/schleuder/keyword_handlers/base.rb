@@ -1,6 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class Base
+      SEPARATORS = /[,;\s]/
       class << self
         # TODO: make wanted_arguments a mandatory argument
         def handles_request_keyword(keyword, with_method:, wanted_arguments: [], has_aliases: [])

@@ -7,32 +7,39 @@ module Schleuder
         extracted_keywords = []
         in_keyword_block = false
         content_lines.each_with_index do |line, i|
-          if match = line.match(/^x-([^:\s]*)[:\s]*(.*)/i)
-            # TODO: raise exception if keyword is not known
+          if match = line.match(/^x-([-a-z]+)([:\s]+(.*)|$)/i)
             # TODO: beware: known_keywords contains e.g. x-list-name, which is not registered but implicitly defined.
-            keyword = match[1].strip.downcase
-            # TODO: validate  arguments with the registered regexp?
-            # TODO: Use Keyword class that responds to valid_arguments()?
-            arguments = match[2].to_s.strip.downcase.split(/[,; ]{1,}/)
-            if known_keywords[keyword].blank?
-              raise Errors::UnknownKeyword.new(keyword)
+            current_keyword = match[1].strip.downcase
+            if known_keywords[current_keyword].blank?
+              raise Errors::UnknownKeyword.new(current_keyword)
             end
-            if arguments.size < known_keywords[keyword][:wanted_arguments].size
-              # Less arguments given than specified (maybe due to a line break): take the next line into consideration.
+            # match[2] is an artefact of the regexp used above, we don't need it.
+            argument_string = match[3]
+            keyword_arguments_regexp = known_keywords[current_keyword][:wanted_arguments]
+            extracted_keyword = ExtractedKeyword.new(current_keyword, keyword_arguments_regexp)
+            # Also include the next line if the current argument_string is
+            # empty: maybe the next word was very long and was already wrapped
+            # onto the next line.
+            if argument_string == '' || extracted_keyword.append_if_valid_arguments?(argument_string)
               in_keyword_block = true
+              extracted_keywords << extracted_keyword
+            else
+              raise "Error: Missing arguments to keyword '#{current_keyword}'"
             end
-            extracted_keywords << ExtractedKeyword.new(keyword, arguments)
+            # Always strip this line from the content, regardless of whether
+            # the arguments are valid: we don't want to leak data.
             content_lines[i] = nil
           elsif in_keyword_block == true
-            # Interpret line as arguments to the previous keyword.
-            extracted_keywords[-1].arguments += line.downcase.strip.split(/[,; ]{1,}/)
-            content_lines[i] = nil
-            # Stop considering the next line as arguments if enough arguments have been collected.
-            if extracted_keywords[-1].arguments.size == known_keywords[extracted_keywords[-1].name][:wanted_arguments].size
-              in_keyword_block = false
-            elsif extracted_keywords[-1].arguments.size > known_keywords[extracted_keywords[-1].name][:wanted_arguments].size
-              # TODO: properly raise or return error
-              raise "Error: wrong number of arguments to keyword"
+            # Try to interpret this line as arguments to the keyword from the previous line.
+            if extracted_keywords[-1].append_if_valid_arguments?(line)
+              content_lines[i] = nil
+            else
+              if !extracted_keywords[-1].arguments_valid?
+                raise "Error: Missing arguments to keyword '#{extracted_keywords[-1].name}'"
+              else
+                in_keyword_block = false
+                keyword_arguments_regexp = nil
+              end
             end
           end
         end

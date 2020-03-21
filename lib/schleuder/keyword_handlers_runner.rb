@@ -110,7 +110,7 @@ module Schleuder
         assert_valid_keyword!(keyword)
         assert_valid_handler_class!(handler_class)
         assert_valid_handler_method!(handler_method)
-        assert_valid_wanted_arguments!(wanted_arguments)
+        #assert_valid_wanted_arguments!(wanted_arguments)
       end
 
       def assert_valid_type!(type)

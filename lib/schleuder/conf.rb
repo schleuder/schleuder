@@ -4,9 +4,11 @@ module Schleuder
   class Conf
     include Singleton
 
-    EMAIL_REGEXP = /\A.+@[[:alnum:]_.-]+\z/i
+    EMAIL_REGEXP_EMBED = /[^ ]+@[\w.-]+/i
+    EMAIL_REGEXP = /\A#{EMAIL_REGEXP_EMBED}\z/i
     # TODO: drop v3 keys and only accept length of 40
-    FINGERPRINT_REGEXP = /\A(0x)?[a-f0-9]{32}([a-f0-9]{8})?\z/i
+    FINGERPRINT_REGEXP_EMBED = /(0x)?[a-f0-9]{32}([a-f0-9]{8})?/i
+    FINGERPRINT_REGEXP = /\A#{FINGERPRINT_REGEXP_EMBED}\z/i
 
     DEFAULTS = {
       'lists_dir' => '/var/lib/schleuder/lists',
