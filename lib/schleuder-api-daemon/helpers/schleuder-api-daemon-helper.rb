@@ -48,7 +48,7 @@ module SchleuderApiDaemonHelper
       halt(500, json(error: msg))
     end
 
-    def client_error(obj_or_msg, http_code=400)
+    def client_error(obj_or_msg, http_code=400, error_code='unexpected_error')
       text = case obj_or_msg
              when String, Symbol
                obj_or_msg.to_s
@@ -58,7 +58,7 @@ module SchleuderApiDaemonHelper
                obj_or_msg
              end
       logger.error "Sending error to client: #{text.inspect}"
-      halt(http_code, json(error: text))
+      halt(http_code, json(error: text, error_code: error_code))
     end
 
     # poor persons type casting
