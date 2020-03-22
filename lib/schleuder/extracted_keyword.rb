@@ -3,45 +3,46 @@ module Schleuder
     attr_reader :name
     attr_accessor :arguments
 
-    def initialize(name, arguments, wanted_arguments)
+    def initialize(name:, argument_regexps:)
       @name = name
-      @arguments = arguments
-      @wanted_arguments = wanted_arguments
+      @argument_regexps = argument_regexps
+      @arguments = []
     end
 
-    # TODO: consume arguments one by one, and if one doesn't match the requirement, return false so the calling code knows that no additional arguments are wanted.
-    # TODO: provide method that checks if consumed arguments fulfill the requirements.
-
-    def add_arguments(arguments)
-      @arguments += arguments
-    end
-
-    def test_arguments
-      @arguments.each_with_index.map do |arg, index|
-        if @wanted_arguments[index]
-          arg.match(@wanted_arguments[index])
+    def consume_arguments(input)
+      new_arguments = into_arguments(input)
+      args_to_check = @arguments + new_arguments
+      result = args_to_check.each_with_index.map do |arg, index|
+        if index >= @argument_regexps.size
+          false
         else
-          ''
+          match_data = arg.match(@argument_regexps[index])
+          if match_data == nil
+            # This means that a mandatory argument wasn't met, which is an
+            # error.
+            # TODO: proper error that explains the wanted arguments.
+            raise "Error: Missing mandatory argument to keyword '#{name}'"
+          end
+          match_data.to_s
         end
       end
-    end
 
-    def all_arguments_met?
-      test_arguments.map do |thing|
-        thing.to_s.present?
-      end.index(false).blank? && @arguments.size == @wanted_arguments.size
-    end
-
-    def mandatory_arguments_met?
-      test_arguments.index(nil).blank?
-    end
-
-    def wants_more?
-      if @arguments.size == 0
-        true
+      # Return true if there's room for more arguments, false if there isn't.
+      # Excessive data beyond the list of possible arguments result in false.
+      # Optional argument-regexps result in an empty string if the compared
+      # string doesn't match.
+      if result.index(false).blank? && result.index('').blank?
+        # Only store the new arguments if they matched.
+        @arguments += new_arguments
+        return true
       else
-        test_arguments.last.to_s.present? && @arguments.size < @wanted_arguments.size
+        return false
       end
     end
+
+    def into_arguments(string)
+      string.to_s.strip.downcase.split(/[,;\s]+/)
+    end
+
   end
 end

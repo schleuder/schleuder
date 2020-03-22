@@ -1,18 +1,20 @@
 module Schleuder
   module KeywordHandlers
     class Resend < Base
-      # TODO: specify regexp of wanted arguments or just the number of them
-      handles_list_keyword 'resend-encrypted-only', with_method: :resend_encrypted_only, has_aliases: 'resend-enc', wanted_arguments: [Conf::EMAIL_REGEXP, Array.new(99, /(#{Conf::EMAIL_REGEXP_EMBED})?/)].flatten
+      # Require one email address, allow up to 99 additional ones.
+      COMMON_ARGS = [Conf::EMAIL_REGEXP, Array.new(99, /(#{Conf::EMAIL_REGEXP_EMBED})?/)].flatten
 
-      handles_list_keyword 'resend', with_method: :resend, wanted_arguments: [Conf::EMAIL_REGEXP, Array.new(99, /(#{Conf::EMAIL_REGEXP_EMBED})?/)].flatten
+      handles_list_keyword 'resend-encrypted-only', with_method: :resend_encrypted_only, has_aliases: 'resend-enc', wanted_arguments: COMMON_ARGS
 
-      handles_list_keyword 'resend-cc', with_method: :resend_cc, wanted_arguments: [Conf::EMAIL_REGEXP]
+      handles_list_keyword 'resend', with_method: :resend, wanted_arguments: COMMON_ARGS
 
-      handles_list_keyword 'resend-cc-encrypted-only', with_method: :resend_cc_encrypted_only, has_aliases: 'resend-cc-enc', wanted_arguments: [Conf::EMAIL_REGEXP]
+      handles_list_keyword 'resend-cc', with_method: :resend_cc, wanted_arguments: COMMON_ARGS
 
-      handles_list_keyword 'resend-unencrypted', with_method: :resend_unencrypted, wanted_arguments: [Conf::EMAIL_REGEXP]
+      handles_list_keyword 'resend-cc-encrypted-only', with_method: :resend_cc_encrypted_only, has_aliases: 'resend-cc-enc', wanted_arguments: COMMON_ARGS
 
-      handles_list_keyword 'resend-cc-unencrypted', with_method: :resend_cc_unencrypted, wanted_arguments: [Conf::EMAIL_REGEXP]
+      handles_list_keyword 'resend-unencrypted', with_method: :resend_unencrypted, wanted_arguments: COMMON_ARGS
+
+      handles_list_keyword 'resend-cc-unencrypted', with_method: :resend_cc_unencrypted, wanted_arguments: COMMON_ARGS
 
 
       def resend

@@ -1,22 +1,11 @@
 module Schleuder
   module KeywordHandlers
     class SubscriptionManagement < Base
-      #handles_request_keyword 'subscribe', with_method: :subscribe, wanted_arguments: /\A#{Conf::EMAIL_REGEXP_EMBED}#{SEPARATORS}+(true|false)#{SEPARATORS}+(true|false)#{SEPARATORS}*(#{Conf::FINGERPRINT_REGEXP_EMBED})?\z/
-
-      handles_request_keyword 'subscribe', with_method: :subscribe, wanted_arguments: [Conf::EMAIL_REGEXP, /(true|false)?/, /(true|false)?/, /(#{Conf::FINGERPRINT_REGEXP})?/]
-
-      #handles_request_keyword 'subscribe', with_method: :subscribe,
-      #                                     wanted_arguments: [
-      #                                           [Conf::EMAIL_REGEXP],
-      #                                           ['true', 'false', nil],
-      #                                           ['true', 'false', nil],
-      #                                           [Conf::FINGERPRINT_REGEXP, nil]
-      #                                          ]
-
-      handles_request_keyword 'unsubscribe', with_method: :unsubscribe
-      handles_request_keyword 'list-subscriptions', with_method: :list_subscriptions
-      handles_request_keyword 'set-fingerprint', with_method: :set_fingerprint
-      handles_request_keyword 'unset-fingerprint', with_method: :unset_fingerprint
+      handles_request_keyword 'subscribe', with_method: :subscribe, wanted_arguments: [Conf::EMAIL_REGEXP, /(true|false)?/, /(true|false)?/, /(#{Conf::FINGERPRINT_REGEXP_EMBED})?/]
+      handles_request_keyword 'unsubscribe', with_method: :unsubscribe, wanted_arguments: [/(#{Conf::EMAIL_REGEXP_EMBED})?/]
+      handles_request_keyword 'list-subscriptions', with_method: :list_subscriptions, wanted_arguments: [/.*/]
+      handles_request_keyword 'set-fingerprint', with_method: :set_fingerprint, wanted_arguments: [/(#{Conf::EMAIL_REGEXP_EMBED}|#{Conf::FINGERPRINT_REGEXP_EMBED})/, /(#{Conf::FINGERPRINT_REGEXP_EMBED})?/]
+      handles_request_keyword 'unset-fingerprint', with_method: :unset_fingerprint, wanted_arguments: [Conf::EMAIL_REGEXP]
 
       def subscribe
         if @arguments.blank?
