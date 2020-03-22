@@ -27,6 +27,7 @@ describe Schleuder::Filters do
     it "strips HTML-part from multipart/alternative-message that contains ascii-armored PGP-data" do
       list = create(:list)
       mail = Mail.new
+      mail.list = list
       mail.to = list.email
       mail.from = 'outside@example.org'
       content = encrypt_string(list, "blabla")
@@ -79,6 +80,7 @@ describe Schleuder::Filters do
     it 'strips HTML-part from multipart/alternative-message that contains keywords' do
       list = create(:list)
       mail = Mail.new
+      mail.list = list
       mail.to = list.email
       mail.from = 'outside@example.org'
       mail.text_part = content = 'x-resend: someone@example.org\n\nblabla'
@@ -97,6 +99,7 @@ describe Schleuder::Filters do
     it 'does NOT strip HTML-part from multipart/alternative-message that does NOT contain keywords' do
       list = create(:list)
       mail = Mail.new
+      mail.list = list
       mail.to = 'schleuder@example.org'
       mail.from = 'outside@example.org'
       mail.text_part = content = 'Hello someone@example.org,\n\nblabla'

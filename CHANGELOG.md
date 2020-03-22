@@ -14,7 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-* Ensure UTF-8 as external encoding, convert any non-utf8 email to utf-8 or drop invalid characters. This should ensure that plain text emails in different charsets can be parsed (#409, #458, #460) Introduces a new dependency `charlock_holms`.
+* Ensure UTF-8 as external encoding, convert any non-utf8 email to utf-8 or drop invalid characters. This should ensure that plain text emails in different charsets can be parsed (#409, #458, #460). Also we apply that conversion to the first text part after we parsed it for keywords, if no charset is set. This fixes #457. These changes introduce a new dependency `charlock_holms`.
 * Allow Jenkins job notifications to reach lists. Before, such mails were rejected due to being "auto-submitted".
 * Do not recognize sudo messages as automated message (#248)
 * Fixed using x-attach-listkey with emails from Thunderbird that include protected headers.
