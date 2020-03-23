@@ -3,40 +3,27 @@ module Schleuder
     attr_reader :name
     attr_accessor :arguments
 
-    def initialize(name:, argument_regexps:)
+    def initialize(name:, arguments_matcher:)
       @name = name
-      @argument_regexps = argument_regexps
+      @arguments_matcher = arguments_matcher
       @arguments = []
     end
+
+    # TODO: Use the extended KeywordHandler directly, eliminate this class.
 
     def consume_arguments(input)
       new_arguments = into_arguments(input)
       args_to_check = @arguments + new_arguments
-      result = args_to_check.each_with_index.map do |arg, index|
-        if index >= @argument_regexps.size
-          false
-        else
-          match_data = arg.match(@argument_regexps[index])
-          if match_data == nil
-            # This means that a mandatory argument wasn't met, which is an
-            # error.
-            # TODO: proper error that explains the wanted arguments.
-            raise "Error: Missing mandatory argument to keyword '#{name}'"
-          end
-          match_data.to_s
-        end
-      end
-
-      # Return true if there's room for more arguments, false if there isn't.
-      # Excessive data beyond the list of possible arguments result in false.
-      # Optional argument-regexps result in an empty string if the compared
-      # string doesn't match.
-      if result.index(false).blank? && result.index('').blank?
-        # Only store the new arguments if they matched.
+      case @arguments_matcher.call(args_to_check)
+      when :more
+        # TODO: Maybe only ask for more content if the current line was longer than X characters?
         @arguments += new_arguments
-        return true
-      else
-        return false
+        :more
+      when :invalid
+        :invalid
+      when :end
+        @arguments += new_arguments
+        :end
       end
     end
 

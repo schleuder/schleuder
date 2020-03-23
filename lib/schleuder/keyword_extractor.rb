@@ -27,10 +27,10 @@ module Schleuder
 
             extracted_keywords << ExtractedKeyword.new(
                                       name: current_keyword,
-                                      argument_regexps: known_keywords[current_keyword][:wanted_arguments]
+                                      arguments_matcher: known_keywords[current_keyword][:wanted_arguments]
                                   )
 
-            if extracted_keyword[-1].consume_arguments(match[:argstring])
+            if extracted_keywords[-1].consume_arguments(match[:argstring]) == :more
               in_keyword_block = true
             end
 
@@ -40,13 +40,16 @@ module Schleuder
             # Stop parsing completely at blank lines.
             break if line.blank?
 
-            if extracted_keywords[-1].consume_arguments(line)
-              # The line was fully consumed, store the duplicated copy of the
-              # extracted_keyword, and continue to look for keyword arguments.
+            case extracted_keywords[-1].consume_arguments(line)
+            when :more
+              # Remove this line from the content and continue to look for more arguments for the current keyword.
               content_lines[i] = nil
-            else
-              # The line wasn't (fully) consumed, stop looking for arguments
-              # for the current keyword.
+            when :invalid
+              # Keep this line in the content and stop looking for more arguments for the current keyword.
+              in_keyword_block = false
+            when :end
+              # Remove line from content but also stop looking for more arguments for the current keyword.
+              content_lines[i] = nil
               in_keyword_block = false
             end
           end

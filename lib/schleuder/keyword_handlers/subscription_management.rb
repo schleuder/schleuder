@@ -1,10 +1,55 @@
 module Schleuder
   module KeywordHandlers
     class SubscriptionManagement < Base
-      handles_request_keyword 'subscribe', with_method: :subscribe, wanted_arguments: [Conf::EMAIL_REGEXP, /(true|false)?/, /(true|false)?/, /(#{Conf::FINGERPRINT_REGEXP_EMBED})?/]
+      #handles_request_keyword 'subscribe', with_method: :subscribe, wanted_arguments: [Conf::EMAIL_REGEXP, /(true|false)?/, /(true|false)?/, /(#{Conf::FINGERPRINT_REGEXP_EMBED})?/]
+
+      handles_request_keyword 'subscribe',
+                              with_method: :subscribe,
+                              wanted_arguments: lambda { |arguments|
+                                # TODO: save arguments here, otherwise we'd need to collect the parts of the fingerprint again later.
+                                return :more if arguments.blank?
+
+                                email = arguments.shift.downcase
+                                if ! email.match(Conf::EMAIL_REGEXP)
+                                  raise "Error: Keyword 'subscribe' needs a valid email address as first argument."
+                                end
+
+                                return :more if arguments.blank?
+
+                                # Collect all arguments that look like fingerprint-material
+                                fingerprint = ''
+                                while arguments.first.present? && arguments.first.match(/^(0x)?[a-f0-9]+$/i)
+                                  fingerprint << arguments.shift.downcase
+                                end
+
+                                if ! fingerprint.match(Conf::FINGERPRINT_REGEXP)
+                                  return :invalid
+                                end
+
+                                return :more if arguments.blank?
+
+                                adminflag = arguments.shift.downcase.presence
+                                if ! %[true false].include?(adminflag)
+                                  return :invalid
+                                end
+
+                                return :more if arguments.blank?
+
+                                delivery_enabled = arguments.shift.downcase.presence
+                                if ! %[true false].include?(delivery_enabled)
+                                  return :invalid
+                                end
+
+                                return :end
+                              }
+                                
+
       handles_request_keyword 'unsubscribe', with_method: :unsubscribe, wanted_arguments: [/(#{Conf::EMAIL_REGEXP_EMBED})?/]
+
       handles_request_keyword 'list-subscriptions', with_method: :list_subscriptions, wanted_arguments: [/.*/]
+
       handles_request_keyword 'set-fingerprint', with_method: :set_fingerprint, wanted_arguments: [/(#{Conf::EMAIL_REGEXP_EMBED}|#{Conf::FINGERPRINT_REGEXP_EMBED})/, /(#{Conf::FINGERPRINT_REGEXP_EMBED})?/]
+
       handles_request_keyword 'unset-fingerprint', with_method: :unset_fingerprint, wanted_arguments: [Conf::EMAIL_REGEXP]
 
       def subscribe
