@@ -45,6 +45,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'sinatra-contrib', '~> 1'
   s.add_runtime_dependency 'thor', '~> 0'
   s.add_runtime_dependency 'thin', '~> 1'
+  s.add_runtime_dependency 'charlock_holmes', '~> 0.7.6'
   s.add_development_dependency 'rspec', '~> 3.5.0'
   s.add_development_dependency 'hirb'
   s.add_development_dependency 'factory_bot'

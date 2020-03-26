@@ -557,6 +557,43 @@ describe Schleuder::Runner do
 
       teardown_list_and_mailer(list)
     end
+
+    it 'falling back works also with non-ascii content' do
+      list = create(:list, send_encrypted_only: false)
+      list.subscribe("admin@example.org", "59C71FB38AEE22E091C78259D06350440F759BD3", true)
+
+      # manually build a specific mail structure that comes without a charset
+      mail = Mail.new
+      mail.from = "admin@example.org"
+      mail.to = list.request_address
+      ENV['GNUPGHOME'] = list.listdir
+      cipher_data = GPGME::Data.new
+      GPGME::Ctx.new({armor: true}) do |ctx|
+        ctx.add_signer(*GPGME::Key.find(:secret, "59C71FB38AEE22E091C78259D06350440F759BD3", :sign))
+        ctx.encrypt_sign(
+          GPGME::Key.find(:public,list.fingerprint, :encrypt),
+          GPGME::Data.new("Content-Type: text/plain\n\nNür ein test\n"),
+          cipher_data, 0
+        )
+        cipher_data.seek(0)
+      end
+
+      mail.content_type "multipart/encrypted; boundary=\"#{mail.boundary}\"; protocol=\"application/pgp-encrypted\""
+      ver_part = Mail::Part.new do
+        body "Version: 1"
+        content_type "application/pgp-encrypted"
+      end
+      mail.add_part ver_part
+      enc_part = Mail::Part.new do
+        body cipher_data.to_s
+        content_type "application/octet-stream"
+      end
+      mail.add_part enc_part
+      output = process_mail(mail.to_s, list.email)
+      expect(output).to be nil
+
+      teardown_list_and_mailer(list)
+    end
   end
 
 end

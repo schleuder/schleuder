@@ -49,7 +49,7 @@ cache:
 
 .test_ruby: &test_ruby
   variables:
-    APT_INSTALL_PACKAGES: gnupg2 libgpgme11-dev libsqlite3-dev eatmydata
+    APT_INSTALL_PACKAGES: gnupg2 libgpgme11-dev libsqlite3-dev eatmydata libicu-dev
     # Use quotes so the following does get recognized as a string, not as a bool
     CHECK_CODE_COVERAGE: "true"
   <<: *setup_prerequisites

@@ -247,11 +247,11 @@ module Mail
       # decide itself how to encode, it works. If we don't, some
       # character-sequences are not properly re-encoded.
       part.content_transfer_encoding = nil
-      # Make the converted strings (now UTF-8) match what mime-part's headers say,
-      # fall back to US-ASCII if none is set.
-      # https://tools.ietf.org/html/rfc2046#section-4.1.2
-      # -> Default charset is US-ASCII
-      part.body = lines.compact.join.encode(part.charset||'US-ASCII')
+
+      # Set the right charset on the now parsed body
+      new_body = lines.compact.join
+      part.charset = new_body.encoding.to_s
+      part.body = new_body
 
       @keywords
     end
