@@ -18,7 +18,7 @@ module Schleuder
           # so we scrub the invalid characters to be able to
           # at least parse the message somehow. Though this might
           # result in data loss.
-          logger.warn "Scrubing message due to invalid characters"
+          logger.warn "Scrubbing message due to invalid characters"
           msg = msg.scrub
           msg_scrubbed = true
         end
