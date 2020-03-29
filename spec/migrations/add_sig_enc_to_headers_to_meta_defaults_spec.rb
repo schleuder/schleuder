@@ -21,7 +21,7 @@ describe 'AddSigEncToHeadersToMetaDefaults' do
       expect(list_klass.column_defaults['headers_to_meta']).to eql(["from", "to", "cc", "date", "sig", "enc"])
     end
 
-    it 'adds sig and enc to headers_to_meta for lists wihtout the attributes' do
+    it 'adds sig and enc to headers_to_meta for lists without the attributes' do
       ActiveRecord::Migrator.migrate(migrations_paths, previous_migration)
       list_klass = create_list_klass
       list = create(:list, headers_to_meta: list_klass.column_defaults['headers_to_meta'])
