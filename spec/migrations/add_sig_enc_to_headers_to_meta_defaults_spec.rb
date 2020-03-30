@@ -7,6 +7,7 @@ describe 'AddSigEncToHeadersToMetaDefaults' do
 
   after(:each) do
     ActiveRecord::Migrator.migrate(migrations_paths)
+    List.reset_column_information
   end
 
   describe 'up' do
