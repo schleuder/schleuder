@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180110203100) do
+ActiveRecord::Schema.define(version: 20190906194820) do
 
   create_table "lists", force: :cascade do |t|
     t.datetime "created_at"
@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(version: 20180110203100) do
     t.boolean  "keep_msgid",                                              default: true
     t.boolean  "bounces_drop_all",                                        default: false
     t.boolean  "bounces_notify_admins",                                   default: true
+    t.boolean  "deliver_selfsent",                                        default: true
     t.boolean  "include_list_headers",                                    default: true
     t.boolean  "include_openpgp_header",                                  default: true
     t.integer  "max_message_size_kb",                                     default: 10240
@@ -44,6 +45,7 @@ ActiveRecord::Schema.define(version: 20180110203100) do
     t.boolean  "forward_all_incoming_to_admins",                          default: false
     t.integer  "logfiles_to_keep",                                        default: 2
     t.text     "internal_footer",                                         default: ""
+    t.boolean  "include_autocrypt_header",                                default: true
   end
 
   create_table "subscriptions", force: :cascade do |t|

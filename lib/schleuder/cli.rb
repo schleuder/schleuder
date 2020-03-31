@@ -1,6 +1,7 @@
 require 'thor'
 require 'yaml'
 require 'gpgme'
+require 'charlock_holmes'
 
 require_relative '../schleuder'
 require 'schleuder/cli/subcommand_fix'

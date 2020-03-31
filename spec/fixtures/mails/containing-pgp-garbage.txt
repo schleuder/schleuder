@@ -1,0 +1,28 @@
+Date: Sat, 4 Jan 2020 23:42:49 +0000
+From: <schleuder@example.org>
+To: schleuder@example.org
+Subject: Test
+Message-ID: <20200104234249.GB9231@example.org>
+MIME-Version: 1.0
+Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
+	boundary="eAbsdosE1cNLO4uF"
+Content-Disposition: inline
+
+
+--eAbsdosE1cNLO4uF
+Content-Type: application/pgp-encrypted
+Content-Disposition: attachment
+
+Version: 1
+
+--eAbsdosE1cNLO4uF
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="msg.asc"
+
+-----BEGIN PGP MESSAGE-----
+
+hF4DTO8GH8gtgSMSAQdAjiYMTVwKw70Z3H8NwyZeHpPopnE1BB2L8Cs0MF95AXYw
+=xJbn
+-----END PGP MESSAGE-----
+
+--eAbsdosE1cNLO4uF--

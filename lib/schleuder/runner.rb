@@ -5,7 +5,30 @@ module Schleuder
       return error if error
 
       logger.info "Parsing incoming email."
+
+      # is it valid utf-8?
+      msg_scrubbed = false
+      unless msg.valid_encoding?
+        logger.warn "Converting message due to invalid characters"
+        detection = CharlockHolmes::EncodingDetector.detect(msg)
+        begin
+          msg = CharlockHolmes::Converter.convert(msg, detection[:encoding], 'UTF-8')
+        rescue ArgumentError
+          # it looks like even icu wasn't able to convert
+          # so we scrub the invalid characters to be able to
+          # at least parse the message somehow. Though this might
+          # result in data loss.
+          logger.warn "Scrubbing message due to invalid characters"
+          msg = msg.scrub
+          msg_scrubbed = true
+        end
+      end
+
       @mail = Mail.create_message_to_list(msg, recipient, list)
+
+      if msg_scrubbed
+        @mail.add_pseudoheader(:note, I18n.t("pseudoheaders.scrubbed_message"))
+      end
 
       error = run_filters('pre')
       return error if error
@@ -13,7 +36,12 @@ module Schleuder
       begin
         # This decrypts, verifies, etc.
         @mail = @mail.setup
-      rescue GPGME::Error::DecryptFailed
+
+      rescue GPGME::Error::BadPassphrase,
+             GPGME::Error::DecryptFailed,
+             GPGME::Error::NoData,
+             GPGME::Error::NoSecretKey
+
         logger.warn "Decryption of incoming message failed."
         return Errors::DecryptionFailed.new(list)
       end
@@ -46,7 +74,7 @@ module Schleuder
       # Subscriptions
       logger.debug "Creating clean copy of message"
       copy = @mail.clean_copy(list.headers_to_meta.any?)
-      list.send_to_subscriptions(copy)
+      list.send_to_subscriptions(copy, @mail)
       nil
     end
 

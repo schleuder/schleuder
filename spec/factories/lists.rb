@@ -22,6 +22,8 @@ FactoryBot.define do
     keep_msgid { true }
     bounces_drop_all { false }
     bounces_notify_admins { true }
+    deliver_selfsent { true }
+    include_autocrypt_header { true }
     include_list_headers { true }
     include_openpgp_header { true }
     max_message_size_kb { 10240 }

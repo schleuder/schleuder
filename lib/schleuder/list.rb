@@ -19,6 +19,7 @@ module Schleuder
         :receive_admin_only,
         :keep_msgid,
         :bounces_drop_all,
+        :deliver_selfsent,
         :bounces_notify_admins,
         :include_list_headers,
         :include_openpgp_header,
@@ -144,6 +145,16 @@ module Schleuder
         return false
       end
       key.armored
+    end
+
+    def key_minimal_base64_encoded(fingerprint=self.fingerprint)
+      key = keys(fingerprint).first
+      
+      if key.blank?
+        return false
+      end
+      
+      Base64.strict_encode64(key.minimal)
     end
 
     def check_keys
@@ -340,16 +351,24 @@ module Schleuder
       true
     end
 
-    def send_to_subscriptions(mail)
+    def send_to_subscriptions(mail, incoming_mail=nil)
       logger.debug "Sending to subscriptions."
       mail.add_internal_footer!
       self.subscriptions.each do |subscription|
         begin
-          if subscription.delivery_enabled
-            subscription.send_mail(mail)
-          else
+          
+          if ! subscription.delivery_enabled
             logger.info "Not sending to #{subscription.email}: delivery is disabled."
+            next
           end
+          
+          if ! self.deliver_selfsent && incoming_mail.was_validly_signed? && ( subscription == incoming_mail.signer )
+            logger.info "Not sending to #{subscription.email}: delivery of self sent is disabled."
+            next
+          end
+          
+          subscription.send_mail(mail)
+          
         rescue => exc
           msg = I18n.t('errors.delivery_error',
                        { email: subscription.email, error: exc.to_s })

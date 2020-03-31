@@ -27,6 +27,7 @@ describe Schleuder::Filters do
     it "strips HTML-part from multipart/alternative-message that contains ascii-armored PGP-data" do
       list = create(:list)
       mail = Mail.new
+      mail.list = list
       mail.to = list.email
       mail.from = 'outside@example.org'
       content = encrypt_string(list, "blabla")
@@ -39,7 +40,7 @@ describe Schleuder::Filters do
       expect(mail[:content_type].content_type).to eql("multipart/mixed")
       expect(mail.parts.size).to be(1)
       expect(mail.parts.first[:content_type].content_type).to eql("text/plain")
-      expect(mail.dynamic_pseudoheaders).to include("Note: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.")
+      expect(mail.dynamic_pseudoheaders).to include("Note: This message included an alternating HTML-part that contained\n  PGP-data. The HTML-part was removed to enable parsing the message more\n  properly.")
     end
 
     it "does NOT strip HTML-part from multipart/alternative-message that does NOT contain ascii-armored PGP-data" do
@@ -79,6 +80,7 @@ describe Schleuder::Filters do
     it 'strips HTML-part from multipart/alternative-message that contains keywords' do
       list = create(:list)
       mail = Mail.new
+      mail.list = list
       mail.to = list.email
       mail.from = 'outside@example.org'
       mail.text_part = content = 'x-resend: someone@example.org\n\nblabla'
@@ -91,12 +93,13 @@ describe Schleuder::Filters do
       expect(mail[:content_type].content_type).to eql('multipart/mixed')
       expect(mail.parts.size).to be(1)
       expect(mail.parts.first[:content_type].content_type).to eql('text/plain')
-      expect(mail.dynamic_pseudoheaders).to include('Note: This message included keywords and an alternating HTML-part. The HTML-part was removed to prevent the disclosure of these keywords to third parties.')
+      expect(mail.dynamic_pseudoheaders).to include("Note: This message included keywords and an alternating HTML-part. The\n  HTML-part was removed to prevent the disclosure of these keywords to third\n  parties.")
     end
 
     it 'does NOT strip HTML-part from multipart/alternative-message that does NOT contain keywords' do
       list = create(:list)
       mail = Mail.new
+      mail.list = list
       mail.to = 'schleuder@example.org'
       mail.from = 'outside@example.org'
       mail.text_part = content = 'Hello someone@example.org,\n\nblabla'
