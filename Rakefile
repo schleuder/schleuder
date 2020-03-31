@@ -3,7 +3,7 @@ require_relative "lib/#{project}.rb"
 
 @version = Schleuder::VERSION
 @tagname = "#{project}-#{@version}"
-@gpguid = 'team@schleuder.org'
+@gpguid = 'B3D190D5235C74E1907EACFE898F2C91E2E6E1F3'
 @filename_gem = "#{@tagname}.gem"
 @filename_tarball = "#{@tagname}.tar.gz"
 
