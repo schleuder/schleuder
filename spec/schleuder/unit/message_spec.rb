@@ -200,7 +200,7 @@ describe Mail::Message do
       expect(ph).to eql("Keylongerthan8: afafa afafafafafa afafafafafa afafafafafa afafafafafa\n  afafafafafa afafaf\n  bla bla newline")
       expect(ph.split("\n")).to all( satisfy{|l| l.length <= 78 })
     end
-    it "that a multiline with less than 76 get wrapped correctly on the first line and the followint lines" do
+    it "that a multiline with less than 76 get wrapped correctly on the first line and the following lines" do
       mail = Mail.new
       ph = mail.make_pseudoheader('keylongerthan8', ('afafa afafaf' * 6)+"\nbla bla newline"+('afafa afafaf' * 6))
       expect(ph).to eql("Keylongerthan8: afafa afafafafafa afafafafafa afafafafafa afafafafafa\n  afafafafafa afafaf\n  bla bla newlineafafa afafafafafa afafafafafa afafafafafa afafafafafa\n  afafafafafa afafaf")
