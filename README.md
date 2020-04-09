@@ -16,11 +16,11 @@ Requirements
 * sqlite3
 * openssl
 
-*If you use Debian stretch or CentOS 7, please have a look at the [installation docs](https://schleuder.org/docs/#installation). We do provide packages for those platforms, which simplify the installation a lot.*
+*If you use Debian buster or CentOS 7, please have a look at the [installation docs](https://schleuder.org/schleuder/docs/server-admins.html#installation). We do provide packages for those platforms, which simplify the installation a lot.*
 
 *🛈 A note regarding Ubuntu: All Ubuntu versions up to and including 17.10 don't meet the requirements with their packaged versions of gnupg! To run Schleuder on Ubuntu you currently have to install a more recent version of gnupg manually. Only Ubuntu 18.04 ("bionic") provides modern enough versions of Schleuder's requirements.*
 
-On systems that base on Debian 9 ("stretch"), install the dependencies via
+On systems that base on Debian 10 ("buster"), install the dependencies via
 
     apt-get install ruby-dev gnupg2 libgpgme-dev libsqlite3-dev libssl-dev build-essential
 
@@ -112,7 +112,7 @@ To execute the test suite run:
 
     bundle exec rspec
 
-Please note: Some of the specs use 'pgrep'. On systems that base on Debian 9 ("stretch") install it via 
+Please note: Some of the specs use 'pgrep'. On systems that base on Debian 10 ("buster") install it via 
 
     apt-get install procps
 
