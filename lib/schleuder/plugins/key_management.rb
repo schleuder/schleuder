@@ -105,10 +105,10 @@ module Schleuder
     private
 
     def self.is_armored_key?(material)
-      return false unless /^-----BEGIN PGP PUBLIC KEY BLOCK-----$/ =~ material
-      return false unless /^-----END PGP PUBLIC KEY BLOCK-----$/ =~ material
+      return false unless /^-----BEGIN PGP PUBLIC KEY BLOCK-----\r?$/ =~ material
+      return false unless /^-----END PGP PUBLIC KEY BLOCK-----\r?$/ =~ material
 
-      lines = material.split("\n").reject(&:empty?)
+      lines = material.split(/\r?\n/).reject(&:empty?)
       # remove header
       lines.shift
       # remove tail
