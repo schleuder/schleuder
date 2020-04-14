@@ -483,24 +483,18 @@ components:
         messages: 
           type: string
         data:
-          type: object
-          properties:
-            configurable_attributes:
-              type: array
-              items: 
-                type: string
+          type: array
+          items: 
+            type: string
     subscriptionConfigurableAttributes:
       type: object
       properties:
         messages: 
           type: string
         data:
-          type: object
-          properties:
-            configurableAttributes:
-              type: array
-              items: 
-                type: string
+          type: array
+          items: 
+            type: string
     Key: 
       type: object
       properties:
