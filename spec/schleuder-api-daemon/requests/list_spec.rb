@@ -242,7 +242,7 @@ describe 'lists via api' do
       get 'lists/configurable_attributes.json'
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)['data']['configurable_attributes']).to eq([
+      expect(JSON.parse(last_response.body)['data']).to eq([
         'bounces_drop_all', 'bounces_drop_on_headers', 'bounces_notify_admins',
         'forward_all_incoming_to_admins', 'headers_to_meta', 'include_list_headers',
         'include_openpgp_header', 'internal_footer', 'keep_msgid', 'keywords_admin_notify',
