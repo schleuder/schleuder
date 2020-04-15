@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-* `x-add-key` is able to handle mails with attached, quoted-printable encoded keys. Such mails might be produced by Thunderbird. (#466)
+* `x-add-key` is able to handle mails with attached, quoted-printable encoded keys. Such mails might be produced by Thunderbird. (#467)
 
 
 ## [3.5.0] / 2020-03-30
