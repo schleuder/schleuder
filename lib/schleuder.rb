@@ -1,4 +1,4 @@
-# default to ASCII-8BIT encoding as early as possible for external
+# default to UTF-8 encoding as early as possible for external
 # data.
 #
 # this should ensure we are able to parse most incoming
