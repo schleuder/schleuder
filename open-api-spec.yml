@@ -1,0 +1,816 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Schleuder API
+  license:
+    name: GNU General Public License v3.0
+paths:
+  /lists:
+    get:
+      summary: List all lists that belong to the current account
+      operationId: listLists
+      responses:
+        '200':
+          description: Array of list emails
+          content:
+            application/json:
+              schema:
+                properties:
+                  messages: 
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: string
+    post:
+      summary: Create a list
+      operationId: createList
+      requestBody:
+        description: List to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewList'
+      responses:
+        '200':
+          description: Successfully created a new list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WrappedList"
+        '422':
+          description: validation error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /lists/configurable_attributes:
+    get: 
+      summary: Retrieve the configurable attributes of the list
+      operationId: listConfigurableAttributes
+      responses:
+        '200':
+          description: An array of configurable attributes
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/listConfigurableAttributes"
+  /lists/{listEmail}/send_list_key_to_subscriptions:
+    post:
+      summary: Send the list key to the subscribers
+      operationId: sendListKey
+      parameters:
+        - name: listEmail
+          in: path
+          required: true
+          description: The email address of the list
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendListKey"
+  /lists/{listEmail}:
+    get:
+      summary: Returns a list based on the listEmail
+      operationId: getList
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List response
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/List"
+    put:
+      summary: Update the a list based on the listEmail
+      operationId: updateList
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updates to the list
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewList'
+      responses:
+        '200':
+          description: List response
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/List"
+        '422':
+          description: validation error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      summary: Update the a list based on the listEmail
+      operationId: patchList
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updates to the list
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewList'
+      responses:
+        '200':
+          description: List response
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/List"
+        '422':
+          description: validation error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete the list based on the listEmail
+      operationId: deleteList
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List deleted
+  /lists/new:
+    get:
+      summary: Get a new list
+      operationId: getNewList
+      responses:
+        '200':
+          description: Returns the subscriptions of the current account 
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/WrappedList"
+  /lists/{listEmail}/subscriptions:
+    get: 
+      summary: Get all subscriptions of the list
+      operationId: getSubscriptions
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list to retrieve the subscriptions for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: subscriptions
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Subscriptions"
+    post: 
+      summary: Create a subscription
+      operationId: createSubscription
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list to create the subscriptions for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: subscription that was created
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/WrappedSubscription"
+        '422':
+          description: validation error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /lists/{listEmail}/subscriptions/configurable_attributes:
+    get: 
+      summary: Retrieve the configurable attributes of the subscription
+      operationId: subscriptionConfigurableAttributes
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list to create the subscriptions for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: An array of configurable attributes
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/subscriptionConfigurableAttributes"
+  /lists/{listEmail}/subscriptions/new:
+    get:  
+      summary: Get a new subscription
+      operationId: newSubscription
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list to create the subscriptions for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: New subscription
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/WrappedSubscription"
+  /lists/{listEmail}/subscriptions/{subscriptionEmail}:
+    get:  
+      summary: Get a subscription
+      operationId: getSubscription
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list
+          required: true
+          schema:
+            type: string
+        - name: subscriptionEmail
+          in: path
+          description: Email of the subscription
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Subscription
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/WrappedSubscription"
+        '422':
+          description: validation error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:  
+      summary: Update a subscription via put
+      operationId: putSubscription
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list
+          required: true
+          schema:
+            type: string
+        - name: subscriptionEmail
+          in: path
+          description: Email of the subscription
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updates to the subscription
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateSubscription'
+      responses:
+        '200':
+          description: Subscription
+        '422':
+          description: validation error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:  
+      summary: Update a subscription via patch
+      operationId: patchSubscription
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list
+          required: true
+          schema:
+            type: string
+        - name: subscriptionEmail
+          in: path
+          description: Email of the subscription
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updates to the subscription
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateSubscription'
+      responses:
+        '200':
+          description: Subscription
+    delete:  
+      summary: Delete a subscription 
+      operationId: deleteSubscription
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list
+          required: true
+          schema:
+            type: string
+        - name: subscriptionEmail
+          in: path
+          description: Email of the subscription
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Subscription deleted
+  /lists/{listEmail}/keys: 
+    get:  
+      summary: List keys of the list
+      operationId: listKeys
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Keys
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Keys"
+    post:  
+      summary: Import a key
+      operationId: importKey
+      parameters:
+        - name: listEmail
+          in: path
+          description: Email of the list
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Key to import
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KeyImport'
+      responses:
+        '200':
+          description: Keys
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/WrappedKey"
+        '422':
+          description: validation error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /lists/{listEmail}/keys/check:
+    get:
+      summary: Check all keys
+      operationId: checkKeys
+      parameters:
+        - name: listEmail
+          in: path
+          required: true
+          description: The email address of the list
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Result of the keys check
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeysCheck"
+  /lists/{listEmail}/keys/{fingerprint}:
+    get: 
+      summary: Get Key
+      operationId: getKey
+      parameters:
+        - name: listEmail
+          in: path
+          required: true
+          description: The email address of the list
+          schema:
+            type: string
+        - name: fingerprint
+          in: path
+          required: true
+          description: The fingerprint of the key to get
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WrappedKey"
+    delete: 
+      summary: Delete Key
+      operationId: deleteKey
+      parameters:
+        - name: listEmail
+          in: path
+          required: true
+          description: The email address of the list
+          schema:
+            type: string
+        - name: fingerprint
+          in: path
+          required: true
+          description: The fingerprint of the key to delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Key deleted
+components:
+  schemas:
+    listConfigurableAttributes:
+      type: object
+      properties:
+        messages: 
+          type: string
+        data:
+          type: array
+          items: 
+            type: string
+    subscriptionConfigurableAttributes:
+      type: object
+      properties:
+        messages: 
+          type: string
+        data:
+          type: array
+          items: 
+            type: string
+    Key: 
+      type: object
+      properties:
+        fingerprint:
+          type: string
+        email:
+          type: string
+        expiry:
+          type: string
+        generated_at:
+          type: string
+        primary_uid:
+          type: string
+        key_summary:
+          type: string
+        trust_issues:
+          type: string
+        subscription:
+          type: string
+    WrappedKey:
+      type: object
+      properties:
+        messages: 
+          type: string
+        data:
+          type: object
+          properties:
+            fingerprint:
+              type: string
+            email:
+              type: string
+            expiry:
+              type: string
+            generated_at:
+              type: string
+            primary_uid:
+              type: string
+            key_summary:
+              type: string
+            trust_issues:
+              type: string
+            subscription:
+              type: string
+    Keys:
+      type: object
+      properties:
+        messages: 
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Key"
+    KeysCheck:
+      type: object
+      properties:
+        messages: 
+          type: string
+        data:
+          type: object
+          properties:
+            result:
+              type: string
+    KeyImport:
+      type: 
+        object
+      properties:
+        list_email:
+          type: string
+        keymaterial:
+          type: string
+    WrappedList:
+      type: object
+      required:
+        - email
+        - fingerprint
+      properties:
+        messages: 
+          type: string
+        data:
+          type: object
+          properties:
+            created_at:
+              type: string
+            updated_at:
+              type: string
+            email: 
+              type: string
+              maxLength: 255
+            fingerprint: 
+              type: string
+              maxLength: 255
+            loglevel: 
+              type: string
+              maxLength: 255
+            subject_prefix: 
+              type: string
+              maxLength: 255
+            subject_prefix_in: 
+              type: string
+              maxLength: 255
+            subject_prefix_out: 
+              type: string
+              maxLength: 255
+            openpgp_header_preference: 
+              type: string
+              maxLength: 255
+            public_footer: 
+              type: string
+            headers_to_meta: 
+              type: string
+            bounces_drop_on_headers: 
+              type: string
+            keywords_admin_notify: 
+              type: string
+            send_encrypted_only:
+              type: boolean
+            receive_encrypted_only:
+              type: boolean
+            receive_signed_only:
+              type: boolean
+            receive_authenticated_only:
+              type: boolean
+            receive_from_subscribed_emailaddresses_only:
+              type: boolean
+            receive_admin_only:
+              type: boolean
+            keep_msgid:
+              type: boolean
+            bounces_drop_all:
+              type: boolean
+            bounces_notify_admins:
+              type: boolean
+            include_list_headers:
+              type: boolean
+            include_openpgp_header:
+              type: boolean
+            max_message_size_kb:
+              type: integer
+            language:
+              type: string
+              maxLength: 255
+            forward_all_incoming_to_admins: 
+              type: boolean
+            logfiles_to_keep: 
+              type: integer
+            internal_footer:
+              type: string
+    List:
+      type: object
+      required:
+        - email
+        - fingerprint
+      properties:
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        email: 
+          type: string
+          maxLength: 255
+        fingerprint: 
+          type: string
+          maxLength: 255
+        loglevel: 
+          type: string
+          maxLength: 255
+        subject_prefix: 
+          type: string
+          maxLength: 255
+        subject_prefix_in: 
+          type: string
+          maxLength: 255
+        subject_prefix_out: 
+          type: string
+          maxLength: 255
+        openpgp_header_preference: 
+          type: string
+          maxLength: 255
+        public_footer: 
+          type: string
+        headers_to_meta: 
+          type: string
+        bounces_drop_on_headers: 
+          type: string
+        keywords_admin_notify: 
+          type: string
+        send_encrypted_only:
+          type: boolean
+        receive_encrypted_only:
+          type: boolean
+        receive_signed_only:
+          type: boolean
+        receive_authenticated_only:
+          type: boolean
+        receive_from_subscribed_emailaddresses_only:
+          type: boolean
+        receive_admin_only:
+          type: boolean
+        keep_msgid:
+          type: boolean
+        bounces_drop_all:
+          type: boolean
+        bounces_notify_admins:
+          type: boolean
+        include_list_headers:
+          type: boolean
+        include_openpgp_header:
+          type: boolean
+        max_message_size_kb:
+          type: integer
+        language:
+          type: string
+          maxLength: 255
+        forward_all_incoming_to_admins: 
+          type: boolean
+        logfiles_to_keep: 
+          type: integer
+        internal_footer:
+          type: string
+    NewList:
+      type: object
+      required:
+        - email
+        - fingerprint
+      properties:
+        email: 
+          type: string
+          maxLength: 255
+        fingerprint: 
+          type: string
+          maxLength: 255
+        adminaddress:
+          type: string
+        adminfingerprint:
+          type: string
+        adminkey:          
+          type: string
+    Subscription:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          maxLength: 255
+        fingerprint:
+          type: string
+          maxLength: 255
+        admin:
+          type: boolean
+        delivery_enabled:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        key_summary:
+          type: string
+    WrappedSubscription: 
+      type: object
+      required:
+        - email
+        - fingerprint
+      properties:
+        messages: 
+          type: string
+        data:
+          type: object
+          properties:
+            email:
+              type: string
+              maxLength: 255
+            fingerprint:
+              type: string
+              maxLength: 255
+            admin:
+              type: boolean
+            delivery_enabled:
+              type: boolean
+            created_at:
+              type: string
+            updated_at:
+              type: string
+            key_summary:
+              type: string
+    Subscriptions:
+      properties:
+        messages: 
+          type: string
+        data:
+          type: array
+          items:
+          $ref: "#/components/schemas/Subscription"
+    updateSubscription:
+      type: object
+      properties:
+        fingerprint:
+          type: string
+        admin:
+          type: string
+        delivery_enabled:
+          type: string
+    SendListKey:
+      type: object
+      properties:
+        messages: 
+          type: string
+        data:
+          type: object
+          properties:
+            result:
+              type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        error_code:
+          type: string

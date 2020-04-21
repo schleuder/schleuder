@@ -5,7 +5,7 @@ class SchleuderApiDaemon < Sinatra::Base
     get '.json' do
       # Do *not* show any further details about a list unless
       # lists_controller.find(list.email) returns the list-object!
-      json(lists_controller.find_all.map(&:email))
+      json_body(lists_controller.find_all.map(&:email))
     end
 
     post '.json' do
@@ -25,7 +25,7 @@ class SchleuderApiDaemon < Sinatra::Base
     end
 
     get '/configurable_attributes.json' do
-      json_body(configurable_attributes: lists_controller.get_configurable_attributes)
+      json_body(lists_controller.get_configurable_attributes)
     end
 
     post '/:list_email/send_list_key_to_subscriptions.json' do |list_email|

@@ -3,17 +3,6 @@ require 'support/matchers/match_json_schema'
 
 describe 'lists via api' do
   context 'create list' do
-    it 'contains only email addresses in list of lists' do
-      authorize_as_api_superadmin!
-      list1 = create(:list)
-      list2 = create(:list)
-  
-      get '/lists.json'
-  
-      expect(last_response.status).to be 200
-      expect(last_response.body).to eql([list1.email, list2.email].to_json)
-    end
-  
     it "doesn't create a list without authentication" do
       list = build(:list)
       parameters = {
@@ -148,12 +137,24 @@ describe 'lists via api' do
     end
   end
 
+  context 'get lists' do
+    it 'contains only email addresses in list of lists' do
+      authorize_as_api_superadmin!
+      list1 = create(:list)
+      list2 = create(:list)
+  
+      get '/lists.json'
+
+      expect(last_response.status).to be 200
+      expect(JSON.parse(last_response.body)['data']).to eql([list1.email, list2.email])
+    end
+  end
+
   context 'get list' do
     it "doesn't show a list without authentication" do
       list = create(:list)
 
       get "lists/#{list.email}.json"
-
       expect(last_response.status).to be 401
       expect(last_response.body).to eql '{"error":"Not authenticated","error_code":"not_authenticated"}'
     end
@@ -241,7 +242,7 @@ describe 'lists via api' do
       get 'lists/configurable_attributes.json'
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)['data']['configurable_attributes']).to eq([
+      expect(JSON.parse(last_response.body)['data']).to eq([
         'bounces_drop_all', 'bounces_drop_on_headers', 'bounces_notify_admins',
         'forward_all_incoming_to_admins', 'headers_to_meta', 'include_list_headers',
         'include_openpgp_header', 'internal_footer', 'keep_msgid', 'keywords_admin_notify',
