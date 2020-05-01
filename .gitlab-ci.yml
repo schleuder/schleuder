@@ -4,7 +4,6 @@ stages:
   - test
   - debian:build
   - debian:qa
-  - docker
 
 cache:
   paths:
@@ -125,27 +124,6 @@ bundler:audit:
     - bundle install --jobs $(nproc) --path vendor
     - bundle-audit update
     - bundle-audit check
-
-build_docker_image:
-  stage: docker
-  # Only build packages for https://0xacab.org/schleuder/schleuder, not
-  # for forks
-  only:
-    - master@schleuder/schleuder
-    - tags@schleuder/schleuder
-  tags:
-    - docker-in-docker
-  image: docker:latest
-  services:
-    - docker:dind
-  variables:
-    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-  script:
-    - docker build -t $IMAGE_TAG .
-    # Disable bash history to prevent the $CI_JOB_TOKEN to be recorded and saved
-    - unset HISTFILE
-    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    - docker push $IMAGE_TAG
 
 debian:build:
   stage: debian:build
