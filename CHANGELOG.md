@@ -3,6 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.5.2] / 2020-05-XX
+
+### Fixed
+
+* `x-add-key` is able to handle inline key material, followed by non-key material, like a signature included in the body. (#460)
+
+
 ## [3.5.1] / 2020-04-15
 
 ### Fixed
