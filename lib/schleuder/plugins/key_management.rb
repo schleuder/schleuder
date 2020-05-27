@@ -104,35 +104,18 @@ module Schleuder
     # helper methods
     private
 
-    def self.is_armored_key?(material)
-      return false unless /^-----BEGIN PGP PUBLIC KEY BLOCK-----\r?$/ =~ material
-      return false unless /^-----END PGP PUBLIC KEY BLOCK-----\r?$/ =~ material
-
-      lines = material.split(/\r?\n/).reject(&:empty?)
-      # remove header
-      lines.shift
-      # remove tail
-      lines.pop
-      # verify the rest
-      # TODO: verify length except for lasts lines?
-      # headers according to https://tools.ietf.org/html/rfc4880#section-6.2
-      lines.map do |line|
-        /\A((comment|version|messageid|hash|charset):.*|[0-9a-z\/=+]+)\Z/i =~ line
-      end.all?
-    end
-
     def self.import_keys_from_attachments(list, mail)
       mail.attachments.map do |attachment|
         material = attachment.body.to_s
 
-        list.import_key(material) if self.is_armored_key?(material)
+        list.import_key(material)
       end
     end
 
     def self.import_key_from_body(list, mail)
       key_material = mail.first_plaintext_part.body.to_s
 
-      list.import_key(key_material) if self.is_armored_key?(key_material)
+      list.import_key(key_material)
     end
   end
 end
