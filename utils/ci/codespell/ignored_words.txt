@@ -1,8 +1,11 @@
 # Words to be ignored by codespell.
-# Put one word per line.
+#
+# Put one lower case word per line.
 
 # That's actually \nto, which codespell is not able to parse correctly
 nto
+# That's actually \nWe, which codespell is not able to parse correctly
+nwe
 keyserver
 keyservers
 fpr
