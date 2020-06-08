@@ -123,7 +123,7 @@ bundler:audit:
     - gem install bundler-audit --no-document
     - bundle install --jobs $(nproc) --path vendor
     - bundle-audit update
-    - bundle-audit check
+    - bundle-audit check --ignore CVE-2020-8161 CVE-2020-8165
 
 debian:build:
   stage: debian:build
