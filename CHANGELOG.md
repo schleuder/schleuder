@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-* `x-add-key` is able to handle inline key material, followed by non-key material, like a signature included in the body. (#460)
+* `x-add-key` is able to handle inline key material, followed by non-key material, like a signature included in the body. (#470)
 
 
 ## [3.5.1] / 2020-04-15
