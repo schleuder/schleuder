@@ -155,7 +155,7 @@ describe 'cli' do
       list.import_key(File.read("spec/fixtures/expired_key.txt"))
       list.import_key(File.read("spec/fixtures/olduid_key.txt"))
 
-      with_sks_mock do
+      with_sks_mock(list.listdir) do
         Cli.new.refresh_keys
         dirmngr_pid = `pgrep -a dirmngr | grep #{list.listdir}`.split(' ',2).first
         expect(dirmngr_pid).to be_nil
@@ -178,7 +178,7 @@ describe 'cli' do
         list.import_key(File.read("spec/fixtures/olduid_key.txt"))
       end
 
-      with_sks_mock do
+      with_sks_mock(list1.listdir) do
         Cli.new.refresh_keys list1.email
       end
       mail = Mail::TestMailer.deliveries.find { |message| message.to == [list1.admins.first.email] }
@@ -202,7 +202,7 @@ describe 'cli' do
 
       expect(mail.to_s).to include("Refreshing all keys from the keyring of list #{list.email} resulted in this")
       if GPGME::Ctx.sufficient_gpg_version?('2.1')
-        expect(mail.to_s).to include("keyserver refresh failed: No keyserver available")
+        expect(mail.to_s).to include("keyserver refresh failed:")
       else
         # The wording differs slightly among versions.
         expect(mail.to_s).to match(/gpgkeys: .* error .* connect/)
