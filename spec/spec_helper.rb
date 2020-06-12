@@ -23,6 +23,7 @@ require 'database_cleaner'
 require 'factory_bot'
 require 'net/http'
 require 'fileutils'
+require 'socket'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -50,8 +51,8 @@ RSpec.configure do |config|
 
   config.after(:each) do |example|
     FileUtils.rm_rf(Dir["spec/gnupg/pubring.gpg~"])
-    `gpgconf --kill dirmngr > /dev/null 2>&1`
-    `gpgconf --kill gpg-agent > /dev/null 2>&1`
+    # gpgconf --kill might hang indefinitely in IPv6-only environments.
+    `pkill -f "#{Conf.lists_dir}" || true`
   end
 
   config.after(:suite) do
@@ -78,12 +79,19 @@ RSpec.configure do |config|
     File.join(Conf.lists_dir, 'smtp-daemon-output')
   end
 
-  def with_sks_mock
+  def with_sks_mock(listdir)
+    # Do we deal with an IPv6-only environment?
+    # If so, handle dirmngr specifically so it's able to cope with it.
+    # No idea what's the relation in regards to 'no-use-tor', but it helps.
+    if ! Socket.ip_address_list.find { |ai| ai.ipv4? && ai.ipv4_loopback? }
+      `printf "disable-ipv4\nno-use-tor" > "#{listdir}/dirmngr.conf"`
+    end
+
     pid = Process.spawn('spec/sks-mock.rb', [:out, :err] => ["/tmp/sks-mock.log", 'w'])
-    uri = URI.parse("http://127.0.0.1:9999/status")
+    uri = URI.parse("http://localhost:9999/status")
     attempts = 25
     # Use the following env var to increase the time to sleep between
-    # each attempt, for example if building the Debian package 
+    # each attempt, for example if building the Debian package
     ENV['SKS_MOCK_SLEEP'] ||= '1'
     begin
       sleep ENV['SKS_MOCK_SLEEP'].to_i

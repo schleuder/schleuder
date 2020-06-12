@@ -3,6 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.5.3] / 2020-06-15
+
+### Fixed
+
+* Fix running specs on IPv6-only machines. (#472)
+
+
 ## [3.5.2] / 2020-06-09
 
 ### Fixed

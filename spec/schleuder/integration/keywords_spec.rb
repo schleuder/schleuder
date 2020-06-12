@@ -1500,7 +1500,7 @@ describe "user sends keyword" do
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock do
+    with_sks_mock(list.listdir) do
       begin
         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
       rescue SystemExit
@@ -1536,7 +1536,7 @@ describe "user sends keyword" do
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock do
+    with_sks_mock(list.listdir) do
       begin
         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
       rescue SystemExit
@@ -1566,13 +1566,13 @@ describe "user sends keyword" do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: http://127.0.0.1:9999/keys/example.asc"
+    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: http://localhost:9999/keys/example.asc"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock do
+    with_sks_mock(list.listdir) do
       begin
         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
       rescue SystemExit
@@ -1602,14 +1602,14 @@ describe "user sends keyword" do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    url = "http://127.0.0.1:9999/foo"
+    url = "http://localhost:9999/foo"
     mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: #{url}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock do
+    with_sks_mock(list.listdir) do
       begin
         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
       rescue SystemExit
@@ -1645,7 +1645,7 @@ describe "user sends keyword" do
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock do
+    with_sks_mock(list.listdir) do
       begin
         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
       rescue SystemExit
@@ -1681,7 +1681,7 @@ describe "user sends keyword" do
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock do
+    with_sks_mock(list.listdir) do
       begin
         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
       rescue SystemExit
@@ -1717,7 +1717,7 @@ describe "user sends keyword" do
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock do
+    with_sks_mock(list.listdir) do
       begin
         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
       rescue SystemExit
@@ -1753,7 +1753,7 @@ describe "user sends keyword" do
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock do
+    with_sks_mock(list.listdir) do
       begin
         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
       rescue SystemExit

@@ -504,7 +504,7 @@ describe Schleuder::List do
       list.subscribe("admin@example.org", nil, true)
       output = ''
 
-      with_sks_mock do
+      with_sks_mock(list.listdir) do
         output = list.fetch_keys('98769E8A1091F36BD88403ECF71A3F8412D83889')
       end
 
@@ -518,8 +518,8 @@ describe Schleuder::List do
       list.subscribe("admin@example.org", nil, true)
       output = ''
 
-      with_sks_mock do
-        output = list.fetch_keys('http://127.0.0.1:9999/keys/example.asc')
+      with_sks_mock(list.listdir) do
+        output = list.fetch_keys('http://localhost:9999/keys/example.asc')
       end
 
       expect(output).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
@@ -532,7 +532,7 @@ describe Schleuder::List do
       list.subscribe("admin@example.org", nil, true)
       output = ''
 
-      with_sks_mock do
+      with_sks_mock(list.listdir) do
         output = list.fetch_keys('admin@example.org')
       end
 
@@ -547,7 +547,7 @@ describe Schleuder::List do
       list.subscribe('admin@example.org', nil, true)
       output = ''
 
-      with_sks_mock do
+      with_sks_mock(list.listdir) do
         output = list.fetch_keys('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
       end
 
