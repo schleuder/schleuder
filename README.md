@@ -47,15 +47,15 @@ Additionally these **rubygems** are required (will be installed automatically un
 Installing Schleuder
 ------------
 
-1. Download [the gem](https://schleuder.org/download/schleuder-3.5.2.gem) and [the OpenPGP-signature](https://schleuder.org/download/schleuder-3.5.2.gem.sig) and verify:
+1. Download [the gem](https://schleuder.org/download/schleuder-3.5.3.gem) and [the OpenPGP-signature](https://schleuder.org/download/schleuder-3.5.3.gem.sig) and verify:
    ```
    gpg --recv-key 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
-   gpg --verify schleuder-3.5.2.gem.sig
+   gpg --verify schleuder-3.5.3.gem.sig
    ```
 
 2. If all went well install the gem:
    ```
-   gem install schleuder-3.5.2.gem
+   gem install schleuder-3.5.3.gem
    ```
 
 3. Set up schleuder:
@@ -145,4 +145,4 @@ GNU GPL 3.0. Please see [LICENSE.txt](LICENSE.txt).
 Alternative Download
 --------------------
 
-Alternatively to the gem-files you can download the latest release as [a tarball](https://schleuder.org/download/schleuder-3.5.2.tar.gz) and [its OpenPGP-signature](https://schleuder.org/download/schleuder-3.5.2.tar.gz.sig).
+Alternatively to the gem-files you can download the latest release as [a tarball](https://schleuder.org/download/schleuder-3.5.3.tar.gz) and [its OpenPGP-signature](https://schleuder.org/download/schleuder-3.5.3.tar.gz.sig).
