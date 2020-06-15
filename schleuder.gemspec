@@ -12,14 +12,14 @@ Gem::Specification.new do |s|
   s.summary      = 'Schleuder is an encrypting mailing list manager with remailing-capabilities.'
   s.description  = "Schleuder is a group's email-gateway: subscribers can exchange encrypted emails among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.\n\n(Please note: For some platforms there's a better way of installing Schleuder than `gem install`. See <https://schleuder.org/schleuder/docs/server-admins.html#installation> for details.)"
   s.files        = `git ls-files lib locales etc db README.md Rakefile`.split
-  s.executables =  %w[schleuder schleuder-api-daemon]
+  s.executables  =  %w[schleuder schleuder-api-daemon]
   s.platform     = Gem::Platform::RUBY
   s.require_path = 'lib'
   # TODO: extend/replace expired cert
   #s.signing_key = "#{ENV['HOME']}/.gem/schleuder-gem-private_key.pem"
   #s.cert_chain  = ['gem-public_cert.pem']
-  s.license = 'GPL-3.0'
-  s.metadata = {
+  s.license      = 'GPL-3.0'
+  s.metadata     = {
     'homepage_uri'      => 'https://schleuder.org/',
     'documentation_uri' => 'https://schleuder.org/docs/',
     'changelog_uri'     => 'https://0xacab.org/schleuder/schleuder/blob/master/CHANGELOG.md',
