@@ -108,7 +108,7 @@ describe 'running filters' do
 
       expect(htmlmail.to).to eql(['admin@example.org'])
       signed_parts = htmlmail.parts[0].parts
-      expect(signed_parts[0].body.to_s).to include('Note: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.')
+      expect(signed_parts[0].body.to_s).to include("Note: This message included an alternating HTML-part that contained\n  PGP-data. The HTML-part was removed to enable parsing the message more\n  properly.")
       # why is this double wrapped?
       expect(signed_parts[1].parts[0][:content_type].content_type).to eql('text/plain')
       expect(signed_parts[1].parts[0].body.to_s).to eql("blabla\n")

@@ -4,7 +4,6 @@ stages:
   - static
   - debian:build
   - debian:qa
-  - docker
 
 variables:
   IMAGE_REGISTRY: $CI_REGISTRY/schleuder/schleuder-ci-images
@@ -145,32 +144,7 @@ bundler:audit:
     - gem install bundler-audit --no-document
     - bundle install --jobs $(nproc) --path vendor
     - bundle-audit update
-    - bundle-audit check
-
-build_docker_image:
-  stage: docker
-  # Only build packages for https://0xacab.org/schleuder/schleuder, not
-  # for forks
-  only:
-    - master@schleuder/schleuder
-    - tags@schleuder/schleuder
-  tags:
-    - docker-in-docker
-  image: docker:latest
-  services:
-    - docker:dind
-  variables:
-    DOCKER_DRIVER: overlay2
-    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-  script:
-    - docker pull $IMAGE_TAG || /bin/true
-    - docker build --cache-from $IMAGE_TAG --t $IMAGE_TAG .
-    # Disable bash history to prevent the $CI_JOB_TOKEN to be recorded and saved
-    - unset HISTFILE
-    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    - docker push $IMAGE_TAG
-    # Docker stores the above used password in cleartext in this config
-    - rm /root/.docker/config.json
+    - bundle-audit check --ignore CVE-2020-8161 CVE-2020-8165
 
 debian:build:
   stage: debian:build

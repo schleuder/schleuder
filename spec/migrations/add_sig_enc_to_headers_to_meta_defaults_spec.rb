@@ -7,6 +7,7 @@ describe 'AddSigEncToHeadersToMetaDefaults' do
 
   after(:each) do
     ActiveRecord::Migrator.new(:up, migrations).migrate
+    List.reset_column_information
   end
 
   describe 'up' do
@@ -29,7 +30,6 @@ describe 'AddSigEncToHeadersToMetaDefaults' do
       # the point in time at which this migration happens.
       list = list_klass.new(email: 'list1@example.org', fingerprint: '59C71FB38AEE22E091C78259D06350440F759BD3', headers_to_meta: list_klass.column_defaults['headers_to_meta'])
       list.save(validate: false)
-
       expect(list.headers_to_meta).not_to include('enc', 'sig')
 
       ActiveRecord::Migrator.new(:up, migrations, migration_under_test).migrate

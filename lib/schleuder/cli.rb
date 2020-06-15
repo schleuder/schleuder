@@ -1,6 +1,7 @@
 require 'thor'
 require 'yaml'
 require 'gpgme'
+require 'charlock_holmes'
 
 require_relative '../schleuder'
 require 'schleuder/cli/subcommand_fix'
@@ -75,6 +76,7 @@ module Schleuder
 
     desc 'refresh_keys [list1@example.com]', 'Refresh all keys of all list from the keyservers sequentially (one by one or on the passed list). (This is supposed to be run from cron or systemd weekly.)'
     def refresh_keys(list=nil)
+      GPGME::Ctx.send_notice_if_gpg_does_not_know_import_filter
       work_on_lists(:refresh_keys, list)
       permission_notice
     end
@@ -145,11 +147,15 @@ module Schleuder
     private
 
     def work_on_lists(subj, list=nil)
-      selected_lists = if list.nil?
-        List.all
+      if list.nil?
+        selected_lists = List.all
       else
-        List.where(email: list)
+        selected_lists = List.where(email: list)
+        if selected_lists.blank?
+          error("No list with this address exists: #{list.inspect}")
+        end
       end
+
       selected_lists.each do |list|
         I18n.locale = list.language
         output = list.send(subj)

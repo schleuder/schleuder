@@ -17,6 +17,7 @@ module Mail
     attr_accessor :original_message
     attr_accessor :list
     attr_accessor :protected_headers_subject
+    attr_writer :dynamic_pseudoheaders
 
     # TODO: This should be in initialize(), but I couldn't understand the
     # strange errors about wrong number of arguments when overriding
@@ -44,22 +45,19 @@ module Mail
       # might be gone (e.g. request-keywords that delete subscriptions or
       # keys).
       new.signer
-      self.dynamic_pseudoheaders.each do |str|
-        new.add_pseudoheader(str)
-      end
+      new.dynamic_pseudoheaders = self.dynamic_pseudoheaders.dup
 
       # Store previously protected subject for later access.
       # mail-gpg pulls headers from the decrypted mime parts "up" into the main
       # headers, which reveals protected subjects.
       if self.subject != new.subject
         new.protected_headers_subject = self.subject.dup
-
-        # Delete the protected headers which might leak information.
-        if new.parts.first.content_type == 'text/rfc822-headers; protected-headers=v1'
-          new.parts.shift
-        end
       end
 
+      # Delete the protected headers which might leak information.
+      if new.parts.first && new.parts.first.content_type == 'text/rfc822-headers; protected-headers=v1'
+        new.parts.shift
+      end
 
       new
     end
@@ -216,7 +214,8 @@ module Mail
           ( self['Auto-Submitted'].present? && \
             self['Auto-Submitted'].to_s.downcase != 'no' && \
             !self['X-Cron-Env'].present? && \
-            !self['X-Jenkins-Job'].present?)
+            !self['X-Jenkins-Job'].present? && \
+            self.subject.to_s !~ /\A\*\*\* SECURITY information.*\*\*\*\Z/)
     end
 
     def keywords
@@ -235,11 +234,11 @@ module Mail
       # decide itself how to encode, it works. If we don't, some
       # character-sequences are not properly re-encoded.
       part.content_transfer_encoding = nil
-      # Make the converted strings (now UTF-8) match what mime-part's headers say,
-      # fall back to US-ASCII if none is set.
-      # https://tools.ietf.org/html/rfc2046#section-4.1.2
-      # -> Default charset is US-ASCII
-      part.body = part_body.encode(part.charset||'US-ASCII')
+
+      # Set the right charset on the now parsed body
+      new_body = lines.compact.join
+      part.charset = new_body.encoding.to_s
+      part.body = new_body
 
       @keywords
     end
@@ -257,20 +256,17 @@ module Mail
     end
 
     def add_pseudoheader(string_or_key, value=nil)
-      @dynamic_pseudoheaders ||= []
-      if value.present?
-        @dynamic_pseudoheaders << make_pseudoheader(string_or_key, value)
-      else
-        @dynamic_pseudoheaders << string_or_key.to_s
-      end
+      dynamic_pseudoheaders << make_pseudoheader(string_or_key, value)
     end
 
     def make_pseudoheader(key, value)
-      "#{key.to_s.camelize}: #{value.to_s}"
+      output = "#{key.to_s.camelize}: #{value.to_s}"
+      # wrap lines after 76 with 2 indents
+      output.gsub(/(.{1,76})( +|$)\n?/, "  \\1\n").chomp.lstrip
     end
 
     def dynamic_pseudoheaders
-      @dynamic_pseudoheaders || []
+      @dynamic_pseudoheaders ||= []
     end
 
     def signature_state
@@ -321,7 +317,8 @@ module Mail
     end
 
     def pseudoheaders(list)
-      (standard_pseudoheaders(list) + dynamic_pseudoheaders).flatten.join("\n") + "\n"
+      separator = '------------------------------------------------------------------------------'
+      (standard_pseudoheaders(list) + dynamic_pseudoheaders).flatten.join("\n") + "\n" + separator + "\n"
     end
 
     def add_msgids(list, orig)
@@ -336,6 +333,14 @@ module Mail
     end
 
     def add_list_headers(list)
+      if list.include_autocrypt_header
+        # Inject whitespaces, to let Mail break the string at these points
+        # leading to correct wrapping.
+        keydata = list.key_minimal_base64_encoded.gsub(/(.{78})/, '\1 ')
+        
+        self['Autocrypt'] = "addr=#{list.email}; prefer-encrypt=mutual; keydata=#{keydata}"
+      end
+
       if list.include_list_headers
         self['List-Id'] = "<#{list.email.gsub('@', '.')}>"
         self['List-Owner'] = "<mailto:#{list.owner_address}> (Use list's public key)"

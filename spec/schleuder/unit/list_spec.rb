@@ -6,8 +6,8 @@ describe Schleuder::List do
       :send_encrypted_only, :receive_encrypted_only, :receive_signed_only,
       :receive_authenticated_only, :receive_from_subscribed_emailaddresses_only,
       :receive_admin_only, :keep_msgid, :bounces_drop_all,
-      :bounces_notify_admins, :include_list_headers, :include_list_headers,
-      :include_openpgp_header, :forward_all_incoming_to_admins
+      :bounces_notify_admins, :deliver_selfsent, :include_list_headers,
+      :include_list_headers, :include_openpgp_header, :forward_all_incoming_to_admins
   ].freeze
 
   it 'has a valid factory' do
@@ -39,6 +39,7 @@ describe Schleuder::List do
   it { is_expected.to respond_to :keep_msgid }
   it { is_expected.to respond_to :bounces_drop_all }
   it { is_expected.to respond_to :bounces_notify_admins }
+  it { is_expected.to respond_to :deliver_selfsent }
   it { is_expected.to respond_to :include_list_headers }
   it { is_expected.to respond_to :include_openpgp_header }
   it { is_expected.to respond_to :max_message_size_kb }
@@ -198,13 +199,14 @@ describe Schleuder::List do
   describe '.configurable_attributes' do
     it 'returns an array that contains the configurable attributes' do
       expect(Schleuder::List.configurable_attributes).to eq [
-       :bounces_drop_all, :bounces_drop_on_headers, :bounces_notify_admins,
-       :forward_all_incoming_to_admins, :headers_to_meta, :include_list_headers,
-       :include_openpgp_header, :internal_footer, :keep_msgid, :keywords_admin_notify,
-       :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :openpgp_header_preference,
-       :public_footer, :receive_admin_only, :receive_authenticated_only, :receive_encrypted_only,
-       :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,
-       :subject_prefix, :subject_prefix_in, :subject_prefix_out, :subscriber_permissions,
+       :bounces_drop_all, :bounces_drop_on_headers, :bounces_notify_admins, :deliver_selfsent,
+       :forward_all_incoming_to_admins, :headers_to_meta, :include_autocrypt_header,
+       :include_list_headers, :include_openpgp_header, :internal_footer, :keep_msgid,
+       :keywords_admin_notify, :language, :log_level, :logfiles_to_keep, :max_message_size_kb,
+       :openpgp_header_preference, :public_footer, :receive_admin_only, :receive_authenticated_only,
+       :receive_encrypted_only, :receive_from_subscribed_emailaddresses_only, :receive_signed_only,
+       :send_encrypted_only, :subject_prefix, :subject_prefix_in, :subject_prefix_out,
+       :subscriber_permissions,
       ]
     end
 
@@ -373,6 +375,20 @@ describe Schleuder::List do
       expect(list.export_key()).to include expected_public_key
     end
   end
+  
+  describe '#key_minimal_base64_encoded' do
+    it 'returns the key with the fingerprint of the list if no argument is given in an Autocrypt-compatible format' do
+      list = create(:list)
+      
+      expect(list.key_minimal_base64_encoded()).to eq(File.read('spec/fixtures/schleuder_at_example_public_key_minimal_base64.txt'))
+    end
+
+    it 'does not return the key with the fingerprint in an Autocrypt-compatible format if the argument given does not correspond to a key' do
+      list = create(:list)
+      
+      expect(list.key_minimal_base64_encoded('this fpr does not exist')).to be(false)
+    end
+  end
 
   it 'exports the key with the given fingerprint' do
     list = create(:list, email: 'schleuder@example.org')
@@ -491,7 +507,7 @@ describe Schleuder::List do
       list.subscribe('admin@example.org', nil, true)
       output = ''
 
-      with_sks_mock do
+      with_sks_mock(list.listdir) do
         output = list.fetch_keys('98769E8A1091F36BD88403ECF71A3F8412D83889')
       end
 
@@ -505,8 +521,8 @@ describe Schleuder::List do
       list.subscribe('admin@example.org', nil, true)
       output = ''
 
-      with_sks_mock do
-        output = list.fetch_keys('http://127.0.0.1:9999/keys/example.asc')
+      with_sks_mock(list.listdir) do
+        output = list.fetch_keys('http://localhost:9999/keys/example.asc')
       end
 
       expect(output).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
@@ -519,11 +535,37 @@ describe Schleuder::List do
       list.subscribe('admin@example.org', nil, true)
       output = ''
 
-      with_sks_mock do
+      with_sks_mock(list.listdir) do
         output = list.fetch_keys('admin@example.org')
       end
 
       expect(output).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
+
+      teardown_list_and_mailer(list)
+    end
+
+    it 'does not import non-self-signatures if gpg >= 2.1.15; or else sends a warning' do
+      list = create(:list)
+      list.delete_key('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
+      list.subscribe('admin@example.org', nil, true)
+      output = ''
+
+      with_sks_mock(list.listdir) do
+        output = list.fetch_keys('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
+      end
+
+      # GPGME apparently does not show signatures correctly in some cases, so we better use gpgcli.
+      signature_output = list.gpg.class.gpgcli(['--list-sigs', '87E65ED2081AE3D16BE4F0A5EBDBE899251F2412'])[1].grep(/0F759BD3.*schleuder@example.org/)
+
+      expect(output).to include("This key was fetched (new key):\n0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412 bla@foo")
+      if GPGME::Ctx.gpg_knows_import_filter?
+        expect(signature_output).to be_empty
+      else
+        message = Mail::TestMailer.deliveries.first
+        expect(message.to).to eql([Conf.superadmin])
+        expect(message.subject).to eql('Schleuder installation problem')
+        expect(signature_output).not_to be_empty
+      end
 
       teardown_list_and_mailer(list)
     end
@@ -618,7 +660,7 @@ describe Schleuder::List do
       mail.subject = 'Something'
       mail.body = 'Some content'
 
-      Schleuder::Runner.new().run(mail, list.email)
+      Schleuder::Runner.new().run(mail.to_s, list.email)
       messages = Mail::TestMailer.deliveries
       recipients = messages.map { |m| m.to.first }.sort
 
@@ -646,7 +688,7 @@ describe Schleuder::List do
       mail.subject = 'Something'
       mail.body = 'Some content'
 
-      Schleuder::Runner.new().run(mail, list.email)
+      Schleuder::Runner.new().run(mail.to_s, list.email)
       messages = Mail::TestMailer.deliveries
       recipients = messages.map { |m| m.to.first }.sort
 
@@ -673,7 +715,7 @@ describe Schleuder::List do
       mail.subject = 'Something'
       mail.body = 'Some content'
 
-      Schleuder::Runner.new().run(mail, list.email)
+      Schleuder::Runner.new().run(mail.to_s, list.email)
       messages = Mail::TestMailer.deliveries
       recipients = messages.map { |m| m.to.first }.sort
 
@@ -702,7 +744,7 @@ describe Schleuder::List do
       mail.subject = 'Something'
       mail.body = 'Some content'
 
-      Schleuder::Runner.new().run(mail, list.email)
+      Schleuder::Runner.new().run(mail.to_s, list.email)
       messages = Mail::TestMailer.deliveries
       recipients = messages.map { |m| m.to.first }.sort
 
@@ -714,6 +756,103 @@ describe Schleuder::List do
       expect(messages[1].subject).to eql('Notice')
       expect(messages[2].parts.last.body.to_s).to include('-----BEGIN PGP MESSAGE-----')
       expect(messages[2].subject).to eql('Something')
+
+      teardown_list_and_mailer(list)
+    end
+
+    it 'sends the message to all subscribers including the sender, if deliver_selfsent is true and the mail is correctly signed' do
+      list = create(:list, send_encrypted_only: false, deliver_selfsent: true)
+      key_material = File.read('spec/fixtures/default_list_key.txt')
+      sub, msgs = list.subscribe('admin@example.org', nil, true, true, key_material)
+      key_material = File.read('spec/fixtures/example_key.txt')
+      sub, msgs = list.subscribe('user1@example.org', nil, false, true, key_material)
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'user1@example.org'
+      mail.subject = 'Something'
+      mail.body = 'Some content'
+      gpg_opts = {
+        sign: true,
+        sign_as: '59C71FB38AEE22E091C78259D06350440F759BD3'
+      }
+      mail.gpg(gpg_opts)
+
+      mail.deliver
+
+      signed_mail = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+      Schleuder::Runner.new().run(signed_mail.to_s, list.email)
+
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+
+      expect(list.deliver_selfsent).to be(true)
+      expect(messages.size).to be(2)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org'])
+      expect(messages[0].parts.last.body.to_s).to include('-----BEGIN PGP MESSAGE-----')
+      expect(messages[0].subject).to eql('Something')
+      expect(messages[1].parts.last.body.to_s).to include('-----BEGIN PGP MESSAGE-----')
+      expect(messages[1].subject).to eql('Something')
+
+      teardown_list_and_mailer(list)
+    end
+
+    it 'sends the message to all subscribers but not the sender, if deliver_selfsent is false and the mail is correctly signed' do
+      list = create(:list, send_encrypted_only: false, deliver_selfsent: false)
+      key_material = File.read('spec/fixtures/default_list_key.txt')
+      sub, msgs = list.subscribe('admin@example.org', nil, true, true, key_material)
+      key_material = File.read('spec/fixtures/example_key.txt')
+      sub, msgs = list.subscribe('user1@example.org', nil, false, true, key_material)
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'admin@example.org'
+      mail.subject = 'Something'
+      mail.body = 'Some content'
+      gpg_opts = {
+        sign: true,
+        sign_as: '59C71FB38AEE22E091C78259D06350440F759BD3'
+      }
+      mail.gpg(gpg_opts)
+
+      mail.deliver
+
+      signed_mail = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+      Schleuder::Runner.new().run(signed_mail.to_s, list.email)
+
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+
+      expect(list.deliver_selfsent).to be(false)
+      expect(messages.size).to be(1)
+      expect(recipients).to eql(['user1@example.org'])
+      expect(messages[0].parts.last.body.to_s).to include('-----BEGIN PGP MESSAGE-----')
+      expect(messages[0].subject).to eql('Something')
+
+      teardown_list_and_mailer(list)
+    end
+
+    it 'sends the message to all subscribers including the sender, if deliver_selfsent is false but the mail is not correctly signed' do
+      list = create(:list, send_encrypted_only: false, deliver_selfsent: false)
+      key_material = File.read('spec/fixtures/default_list_key.txt')
+      sub, msgs = list.subscribe('admin@example.org', nil, true, true, key_material)
+      key_material = File.read('spec/fixtures/example_key.txt')
+      sub, msgs = list.subscribe('user1@example.org', nil, false, true, key_material)
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'admin@example.org'
+      mail.subject = 'Something'
+      mail.body = 'Some content'
+
+      Schleuder::Runner.new().run(mail.to_s, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+
+      expect(list.deliver_selfsent).to be(false)
+      expect(messages.size).to be(2)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org'])
+      expect(messages[0].parts.last.body.to_s).to include('-----BEGIN PGP MESSAGE-----')
+      expect(messages[0].subject).to eql('Something')
 
       teardown_list_and_mailer(list)
     end

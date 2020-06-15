@@ -9,7 +9,7 @@ FactoryBot.define do
     openpgp_header_preference { 'signencrypt' }
     internal_footer { nil }
     public_footer { nil }
-    headers_to_meta { ['from', 'to', 'cc', 'date'] }
+    headers_to_meta { ['from', 'to', 'cc', 'date', 'sig', 'enc'] }
     bounces_drop_on_headers { { 'x-spam-flag' => true } }
     subscriber_permissions { 
         {
@@ -34,6 +34,8 @@ FactoryBot.define do
     keep_msgid { true }
     bounces_drop_all { false }
     bounces_notify_admins { true }
+    deliver_selfsent { true }
+    include_autocrypt_header { true }
     include_list_headers { true }
     include_openpgp_header { true }
     max_message_size_kb { 10240 }

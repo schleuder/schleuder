@@ -67,6 +67,9 @@ module Schleuder
 
         # Only continue if all recipients are still here.
         if recip_map.size < @arguments.size
+          recip_map.keys.each do |aborted_sender|
+            mail.add_pseudoheader(:error, I18n.t('keyword_handlers.resend.aborted', email: aborted_sender))
+          end
           return
         end
 
@@ -140,22 +143,22 @@ module Schleuder
         Array(@arguments).inject({}) do |hash, email|
           keys = @list.keys(email)
           # Exclude unusable keys.
-          keys.select! { |key| key.usable_for?(:encrypt) }
-          case keys.size
+          usable_keys = keys.select { |key| key.usable_for?(:encrypt) }
+          case usable_keys.size
           when 1
-            hash[email] = keys.first
+            hash[email] = usable_keys.first
           when 0
             if encrypted_only
               # Don't add the email to the result to exclude it from the
               # recipients.
-              add_keys_error(email, keys.size)
+              add_resend_msg(mail, email, :error, 'not_resent_no_keys', usable_keys.size, keys.size)
             else
               hash[email] = ''
             end
           else
             # Always report this situation, regardless of sending or not. It's
             # bad and should be fixed.
-            add_keys_error(email, keys.size)
+            add_resend_msg(mail, email, :notice, 'not_resent_encrypted_no_keys', usable_keys.size, keys.size)
             if ! encrypted_only
               hash[email] = ''
             end
@@ -175,8 +178,8 @@ module Schleuder
         gpg_opts
       end
 
-      def add_keys_error(address, keys_size)
-        @mail.add_pseudoheader(:error, I18n.t('keyword_handlers.resend.not_resent_no_keys', email: address, num_keys: keys_size))
+      def add_resend_msg(mail, email, severity, msg, usable_keys_size, all_keys_size)
+        @mail.add_pseudoheader(severity, I18n.t("keyword_handlers.resend.#{msg}", email: email, usable_keys: usable_keys_size, all_keys: all_keys_size))
       end
 
       def add_error_header(recipients_map)
@@ -186,15 +189,15 @@ module Schleuder
       def add_resent_headers(recipients_map, to_or_cc, sent_encrypted)
         if sent_encrypted
           prefix = I18n.t('keyword_handlers.resend.encrypted_to')
-          str = recipients_map.map do |email, key|
+          str = "\n" + recipients_map.map do |email, key|
             "#{email} (#{key.fingerprint})"
-          end.join(', ')
+          end.join(",\n")
         else
           prefix = I18n.t('keyword_handlers.resend.unencrypted_to')
-          str = recipients_map.keys.join(', ')
+          str = ' ' + recipients_map.keys.join(', ')
         end
         headername = resent_header_name(to_or_cc)
-        @mail.add_pseudoheader(headername, "#{prefix} #{str}")
+        @mail.add_pseudoheader(headername, "#{prefix}#{str}")
       end
 
       def resent_header_name(to_or_cc)
