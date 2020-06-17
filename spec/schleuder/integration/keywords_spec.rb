@@ -1237,7 +1237,6 @@ describe 'user sends keyword' do
     mail.gpg(gpg_opts)
     keymaterial1 = File.read('spec/fixtures/example_key.txt')
     keymaterial2 = File.read('spec/fixtures/bla_foo_key.txt')
-    # TODO: x-stop in combination with x-add-key
     mail.body = "x-list-name: #{list.email}\nX-ADD-KEY:\nx-stop\n#{keymaterial1}\nsome text\n#{keymaterial2}\n--\nthis is a signature"
     mail.deliver
 
