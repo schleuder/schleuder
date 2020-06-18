@@ -68,7 +68,7 @@ codespell:
     # words, skipping files (German translations) and the code coverage dir
     # leading to false positives, ignoring warnings about binary files and,
     # finally, checking file names as well.
-    - codespell -I utils/ci/codespell/ignored_words.txt -S ./coverage,de.yml -q 2 -f
+    - codespell -I utils/ci/codespell/ignored_words.txt -S ./.git,coverage,de.yml,fixtures -q 2 -f
   stage: static
   <<: *limit_non_release_branches
 
