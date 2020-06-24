@@ -190,7 +190,7 @@ describe GPGME::Ctx do
       list.import_key(File.read('spec/fixtures/olduid_key.txt'))
 
       res = ''
-      with_sks_mock do
+      with_sks_mock(list.listdir) do
         res = list.gpg.refresh_keys(list.keys)
       end
       expect(res).to match(/This key was updated \(new signatures\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
@@ -204,7 +204,33 @@ describe GPGME::Ctx do
 
       res = list.gpg.refresh_keys(list.keys)
 
-      expect(res).to match(/keyserver refresh failed: No keyserver available/)
+      expect(res).to match(/keyserver refresh failed:/)
     end
+
+    it 'does not import non-self-signatures if gpg >= 2.1.15; or else sends a warning' do
+      list = create(:list)
+      list.delete_key('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
+      list.subscribe('admin@example.org', nil, true)
+      list.import_key(File.read('spec/fixtures/bla_foo_key.txt'))
+
+      res = ''
+      with_sks_mock(list.listdir) do
+        res = list.gpg.refresh_keys(list.keys)
+      end
+      # GPGME apparently does not show signatures correctly in some cases, so we better use gpgcli.
+      signature_output = list.gpg.class.gpgcli(['--list-sigs', '87E65ED2081AE3D16BE4F0A5EBDBE899251F2412'])[1].grep(/0F759BD3.*schleuder@example.org/)
+
+      if GPGME::Ctx.sufficient_gpg_version?('2.1.15')
+        expect(res).to be_empty
+        expect(signature_output).to be_empty
+      else
+        message = Mail::TestMailer.deliveries.first
+        expect(message.to).to eql([Conf.superadmin])
+        expect(message.subject).to eql('Schleuder installation problem')
+        expect(res).not_to be_empty
+        expect(signature_output).not_to be_empty
+      end
+    end
+
   end
 end

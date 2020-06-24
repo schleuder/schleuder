@@ -1,10 +1,12 @@
 require 'spec_helper'
 
-# make sure we have the filters loaded, as they will be loaded lazily within the code
-Dir[File.join(File.dirname(__FILE__), '../../../lib/schleuder/filters/*/*.rb')].each do |file|
-  require file
-end
 describe Schleuder::Filters do
+  before do
+    # Make sure we have the filters loaded, as they will be loaded lazily within the code.
+    list = create(:list)
+    Schleuder::Filters::Runner.new(list, 'pre').filters
+    Schleuder::Filters::Runner.new(list, 'post').filters
+  end
 
   context '.fix_exchange_messages' do
     it 'fixes pgp/mime-messages that were mangled by Exchange' do
@@ -25,6 +27,7 @@ describe Schleuder::Filters do
     it 'strips HTML-part from multipart/alternative-message that contains ascii-armored PGP-data' do
       list = create(:list)
       mail = Mail.new
+      mail.list = list
       mail.to = list.email
       mail.from = 'outside@example.org'
       content = encrypt_string(list, 'blabla')
@@ -37,7 +40,8 @@ describe Schleuder::Filters do
       expect(mail[:content_type].content_type).to eql('multipart/mixed')
       expect(mail.parts.size).to be(1)
       expect(mail.parts.first[:content_type].content_type).to eql('text/plain')
-      expect(mail.dynamic_pseudoheaders).to include('Note: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.')
+      expect(mail.dynamic_pseudoheaders).to include("Note: This message included an alternating HTML-part that contained\n  PGP-data. The HTML-part was removed to enable parsing the message more\n  properly.")
+
     end
 
     it 'does NOT strip HTML-part from multipart/alternative-message that does NOT contain ascii-armored PGP-data' do
@@ -55,7 +59,8 @@ describe Schleuder::Filters do
       expect(mail.parts.size).to be(2)
       expect(mail.parts.first[:content_type].content_type).to eql('text/plain')
       expect(mail.parts.last[:content_type].content_type).to eql('text/html')
-      expect(mail.dynamic_pseudoheaders).not_to include('Note: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.')
+      expect(mail.dynamic_pseudoheaders).not_to include("Note: This message included an alternating HTML-part that contained\n  PGP-data. The HTML-part was removed to enable parsing the message more\n  properly.")
+
     end
 
     it 'does not choke on nor change a message without Content-Type-header' do
@@ -69,7 +74,8 @@ describe Schleuder::Filters do
 
       expect(mail[:content_type]).to be_nil
       expect(mail.parts.size).to be(0)
-      expect(mail.dynamic_pseudoheaders).not_to include('Note: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.')
+      expect(mail.dynamic_pseudoheaders).not_to include("Note: This message included an alternating HTML-part that contained\n  PGP-data. The HTML-part was removed to enable parsing the message more\n  properly.")
+
     end
   end
 
@@ -89,7 +95,8 @@ describe Schleuder::Filters do
       expect(mail[:content_type].content_type).to eql('multipart/mixed')
       expect(mail.parts.size).to be(1)
       expect(mail.parts.first[:content_type].content_type).to eql('text/plain')
-      expect(mail.dynamic_pseudoheaders).to include('Note: This message included keywords and an alternating HTML-part. The HTML-part was removed to prevent the disclosure of these keywords to third parties.')
+      expect(mail.dynamic_pseudoheaders).to include("Note: This message included keywords and an alternating HTML-part. The\n  HTML-part was removed to prevent the disclosure of these keywords to third\n  parties.")
+
     end
 
     it 'does NOT strip HTML-part from multipart/alternative-message that does NOT contain keywords' do

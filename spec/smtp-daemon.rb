@@ -34,7 +34,7 @@ end
 
 begin
   # run the server
-  server = TCPServer.new('127.0.0.1', port)
+  server = TCPServer.new('localhost', port)
 
   # receive input
   while (connection = server.accept)

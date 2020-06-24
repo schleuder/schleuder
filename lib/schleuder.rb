@@ -1,3 +1,10 @@
+# default to UTF-8 encoding as early as possible for external
+# data.
+#
+# this should ensure we are able to parse most incoming
+# plain text mails in different charsets.
+Encoding.default_external = Encoding::UTF_8
+
 # Stdlib
 require 'fileutils'
 require 'singleton'
@@ -74,6 +81,9 @@ ENV['SCHLEUDER_CONFIG'] ||= '/etc/schleuder/schleuder.yml'
 ENV['SCHLEUDER_LIST_DEFAULTS'] ||= '/etc/schleuder/list-defaults.yml'
 ENV['SCHLEUDER_ENV'] ||= 'production'
 ENV['SCHLEUDER_ROOT'] = rootdir.to_s
+# Ensure that gnupg never-ever tries to ask for a passphrase.
+ENV['GPG_TTY'] = "/nonexistant-#{rand}"
+ENV['DISPLAY'] = nil
 
 GPGME::Ctx.set_gpg_path_from_env
 GPGME::Ctx.check_gpg_version

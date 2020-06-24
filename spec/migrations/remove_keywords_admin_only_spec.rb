@@ -7,6 +7,7 @@ describe 'RemoveKeywordsAdminOnly ' do
 
   after(:each) do
     ActiveRecord::Migrator.new(:up, migrations).migrate
+    List.reset_column_information
   end
 
   describe 'up' do

@@ -88,6 +88,12 @@
     "bounces_notify_admins": {
       "type": "boolean"
     },
+    "deliver_selfsent": {
+      "type": "boolean"
+    },
+    "include_autocrypt_header": {
+      "type": "boolean"
+    },
     "include_list_headers": {
       "type": "boolean"
     },

@@ -11,6 +11,10 @@ Gemspec/RequiredRubyVersion:
   Exclude:
     - '**/*'
 
+Gemspec/RubyVersionGlobalsUsage:
+  Exclude:
+    - '**/*'
+
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedHashRocketStyle, EnforcedColonStyle, EnforcedLastArgumentHashStyle.
 # SupportedHashRocketStyles: key, separator, table

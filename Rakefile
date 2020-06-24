@@ -3,7 +3,7 @@ require_relative "lib/#{project}.rb"
 
 @version = Schleuder::VERSION
 @tagname = "#{project}-#{@version}"
-@gpguid = 'team@schleuder.org'
+@gpguid = 'B3D190D5235C74E1907EACFE898F2C91E2E6E1F3'
 @filename_gem = "#{@tagname}.gem"
 @filename_tarball = "#{@tagname}.tar.gz"
 
@@ -110,7 +110,7 @@ end
 desc 'Publish gem-file to rubygems.org'
 task :publish_gem do
   puts "Really push #{@filename_gem} to rubygems.org? [yN]"
-  if gets.match(/^y/i)
+  if $stdin.gets.match(/^y/i)
     puts 'Pushing...'
     `gem push #{@filename_gem}`
   else
@@ -132,7 +132,7 @@ desc 'Check if version-tag already exists'
 task :check_version do
   # Check if Schleuder::VERSION has been updated since last release
   if `git tag`.match?(/^#{@tagname}$/)
-    $stderr.puts "Warning: Tag '#{@tagname}' already exists. Did you forget to update #{project}/version.rb?"
+    $stderr.puts "Warning: Tag '#{@tagname}' already exists. Did you forget to update lib/#{project}/version.rb?"
     $stderr.print 'Delete tag to continue? [yN] '
     if $stdin.gets.match(/^y/i)
       `git tag -d #{@tagname}`
