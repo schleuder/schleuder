@@ -2,8 +2,6 @@
 stages:
   - test
   - static
-  - debian:build
-  - debian:qa
 
 variables:
   IMAGE_REGISTRY: $CI_REGISTRY/schleuder/schleuder-ci-images
@@ -16,15 +14,6 @@ variables:
     - /^release.*/
     - tags 
   
-.install_build_depends: &install_build_depends |
-  # Get all required build dependencies.
-  export APT_BUILD_DEPENDS=`perl -ne 'next if /^#/; $p=(s/^Build-Depends:\s*/ / or (/^ / and $p)); s/,|\n|\([^)]+\)//mg; print if $p' < debian/control`
-  # Install the required build dependencies.
-  apt-get -qqy update
-  apt-get install -qq -y $APT_BUILD_DEPENDS
-  # Check if we're good to go regarding the build dependencies.
-  dpkg-checkbuilddeps
-
 .test_ruby: &test_ruby
   script:
     - eatmydata bundle install --jobs $(nproc)
@@ -145,63 +134,3 @@ bundler:audit:
     - bundle install --jobs $(nproc) --path vendor
     - bundle-audit update
     - bundle-audit check --ignore CVE-2020-8161 CVE-2020-8165
-
-debian:build:
-  stage: debian:build
-  image: $IMAGE_REGISTRY:debian-packaging
-  script:
-    # Ensure we work with the latest state pushed to the git repository.
-    - git fetch --quiet origin debian/unstable:debian/unstable
-    # Setting the git user email is needed, otherwise, merging fails.
-    - git config user.email team@schleuder.org
-    # We're keeping the current Debian packaging state in a separate branch. Therefore, we need to pull in this.
-    - git merge --allow-unrelated-histories --no-edit --quiet origin/debian/unstable
-    - *install_build_depends
-    # Get the latest upstream version from the Debian changelog. This is needed to ensure the tarball we'll create
-    # is found by gbp, the tool we're using to build the Debian package.
-    - export UPSTREAM_VERSION=`dpkg-parsechangelog --show-field Version | cut -d- -f1`
-    # We're relying on .gitattribute to exclude files and directories if creating the upstream release tarball
-    # via git archive.
-    # While this makes sense normally, doing so here leads to dpkg-source (which is called from gbp) being unhappy,
-    # due to "local changes detected, the modified files are ..." as there are some files, which don't exist in the
-    # tarball, but which do exist in our current working directory. Therefore, create the tarball manually (which
-    # ignores the existing .gitattributes file), to ensure it contains all (without the .git/ directory) content of
-    # the current working directory.
-    - tar --exclude='./.git' -czf /tmp/schleuder_$UPSTREAM_VERSION.orig.tar.gz .
-    # Normally, we're checking the signature of the upstream release, to ensure the code we're pulling into Debian
-    # wasn't tampered with along the way. However, as we're creating the tarball on our own, there is no signature.
-    # During the check for packaging errors later on via lintian this would lead to a warning. Therefore, create a
-    # "dummy" signature file.
-    - touch /tmp/schleuder_$UPSTREAM_VERSION.orig.tar.gz.asc
-    # TODO: Use sbuild to be closer to the common Debian package build environment. This needs chroot creation upfront,
-    # though. Creating the chroot needs a mounted /proc filesystem. This works if running a privileged container,
-    # however, in our case it fails due to "mount(2) system call failed: Too many levels of symbolic links".
-    # I'm not sure why is that, currently, or how to solve it.
-    - gbp buildpackage --git-ignore-branch --git-ignore-new --git-tarball-dir=/tmp --git-upstream-branch="$CI_COMMIT_REF_NAME" --git-upstream-tree=BRANCH -us -uc
-    # Store and upload the artifacts to make them available for the subsequent jobs.
-    - mkdir debian/output
-    - cp ../{*.buildinfo,*.changes,*.deb,*.dsc,*.xz} /tmp/schleuder_* debian/output
-  allow_failure: true
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - debian/output
-
-include: /utils/ci/gitlab/salsa-ci.yml
-
-debian:autopkgtest:
-    extends: .test-autopkgtest
-    stage: debian:qa
-    allow_failure: true
-
-debian:lintian:
-    extends: .test-lintian
-    stage: debian:qa
-    allow_failure: true
-
-debian:piuparts:
-    extends: .test-piuparts
-    stage: debian:qa
-    allow_failure: true
-
-# TODO: Introduce job to check package for reproducibility.
