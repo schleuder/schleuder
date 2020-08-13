@@ -4,17 +4,9 @@ module Schleuder
     RESERVED_KEYWORDS = %w[list-name]
 
     class << self
-      def register_keyword(type:, keyword:, handler_class:, handler_method:, aliases:, wanted_arguments:)
-        assert_valid_input!(type: type, keyword: keyword, handler_class: handler_class, handler_method: handler_method, wanted_arguments: wanted_arguments)
-
-        identifiers = [keyword] + Array(aliases)
-        identifiers.each do |identifier|
-          REGISTERED_KEYWORDS[type.to_sym][identifier.to_s.dasherize] = {
-              klass: handler_class,
-              method: handler_method.to_sym,
-              wanted_arguments: wanted_arguments
-            }
-        end
+      def register_keyword(type:, keyword:, handler_class:)
+        assert_valid_input!(type: type, keyword: keyword, handler_class: handler_class)
+        REGISTERED_KEYWORDS[type.to_sym][keyword.to_s.dasherize] = handler_class
       end
 
       def known_keywords(type)
@@ -26,7 +18,7 @@ module Schleuder
         assert_valid_type!(type)
 
         # TODO: raise exceptions, not return errors, in order to make this work for list-keywords.
-        error = check_mandatory_keywords(mail, list)
+        error = check_mandatory_keywords(mail)
         return [error] if error.present?
 
         output = mail.keywords.map do |extracted_keyword|
@@ -58,8 +50,7 @@ module Schleuder
 
         keyword_data = REGISTERED_KEYWORDS[type.to_sym][extracted_keyword.name]
         handler_class = keyword_data[:klass]
-        handler_method = keyword_data[:method]
-        output = handler_class.new(mail: mail, arguments: extracted_keyword.arguments).send(handler_method)
+        output = handler_class.new(mail: mail, arguments: extracted_keyword.arguments).run
 
         if list.keywords_admin_notify.include?(extracted_keyword.name)
           notify_admins(type, mail, list, extracted_keyword.name, extracted_keyword.arguments, output)
@@ -86,30 +77,31 @@ module Schleuder
         list.logger.notify_admin(msg, nil, 'Notice')
       end
 
-      def check_mandatory_keywords(mail, list)
-        return nil if mail.keywords.blank?
-
-        listname_keyword = mail.keywords.find do |extracted_keyword|
-          extracted_keyword.name == 'list-name'
-        end
-        if listname_keyword.blank?
-          return I18n.t(:missing_listname_keyword_error)
+      def check_mandatory_keywords(mail)
+        # If no keyword is present, then the mandatory ones don't need to be
+        # present, either.
+        if mail.keywords.present? && ! list_name_keyword_present?(mail)
+          I18n.t(:missing_listname_keyword_error)
         else
-          if ! [list.email, list.request_address].include?(listname_keyword.arguments.first)
-            return I18n.t(:wrong_listname_keyword_error)
-          end
+          nil
         end
+      end
+
+      def list_name_keyword_present?(mail)
+        # Check for the keyword handler class instead of the keyword strings,
+        # so we don't have to repeat the spelling variants of the keyword.
+        mail.keywords.map(&:class).include?(Schleuder::KeywordHandlers::ListName)
       end
 
       def is_reserved_keyword?(extracted_keyword)
         RESERVED_KEYWORDS.include?(extracted_keyword.name)
       end
 
-      def assert_valid_input!(type:, keyword:, handler_class:, handler_method:, wanted_arguments:)
+      def assert_valid_input!(type:, keyword:, handler_class:)
         assert_valid_type!(type)
         assert_valid_keyword!(keyword)
         assert_valid_handler_class!(handler_class)
-        assert_valid_handler_method!(handler_method)
+        #assert_valid_handler_method!(handler_method)
         #assert_valid_wanted_arguments!(wanted_arguments)
       end
 
@@ -152,7 +144,5 @@ module Schleuder
         end
       end
     end
-    self.register_keyword type: :list, keyword: 'list-name', handler_class: self, handler_method: :foo, wanted_arguments: [Conf::EMAIL_REGEXP], aliases: []
-    self.register_keyword type: :request, keyword: 'list-name', handler_class: self, handler_method: :foo, wanted_arguments: [Conf::EMAIL_REGEXP], aliases: []
   end
 end

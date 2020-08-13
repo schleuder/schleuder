@@ -25,10 +25,7 @@ module Schleuder
               raise Errors::UnknownKeyword.new(current_keyword)
             end
 
-            extracted_keywords << ExtractedKeyword.new(
-                                      name: current_keyword,
-                                      arguments_matcher: known_keywords[current_keyword][:wanted_arguments]
-                                  )
+            extracted_keywords << known_keywords[current_keyword].new(current_keyword)
 
             if extracted_keywords[-1].consume_arguments(match[:argstring]) == :more
               in_keyword_block = true
