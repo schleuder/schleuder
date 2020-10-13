@@ -1,9 +1,11 @@
 module Schleuder
   module KeywordHandlers
     class GetVersion < Base
-      handles_request_keyword 'get-version', with_method: :get_version
+      handles_request_keyword 'get-version'
 
-      def get_version
+      WANTED_ARGUMENTS = []
+
+      def run(mail)
         Schleuder::VERSION
       end
     end
