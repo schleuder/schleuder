@@ -1,14 +1,14 @@
 module Schleuder
   module KeywordHandlers
-    class Resend < Base
+    class ResendCc < Base
       include ResendingMixins
 
-      handles_list_keyword 'resend'
+      handles_list_keyword 'resend-cc'
 
       WANTED_ARGUMENTS = ONE_OR_MANY_EMAIL_ADDRS
 
       def run(mail)
-        resend_it(mail: mail, encrypted_only: false)
+        resend_it_cc(mail: mail, encrypted_only: false)
       end
     end
   end
