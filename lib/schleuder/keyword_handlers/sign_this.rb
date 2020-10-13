@@ -1,21 +1,23 @@
 module Schleuder
   module KeywordHandlers
     class SignThis < Base
-      handles_request_keyword 'sign-this', with_method: :sign_this
+      handles_request_keyword 'sign-this'
 
-      def sign_this
-        if @mail.has_attachments?
-          @list.logger.debug "Signing each attachment's body"
+      WANTED_ARGUMENTS = []
+
+      def run(mail)
+        if mail.has_attachments?
+          mail.list.logger.debug "Signing each attachment's body"
           intro = I18n.t('keyword_handlers.sign_this.signatures_attached')
-          parts = @mail.attachments.map do |attachment|
+          parts = mail.attachments.map do |attachment|
             make_signature_part(attachment)
           end
           [intro, parts].flatten
-        elsif @mail.first_plaintext_part.body.to_s.present?
-          @list.logger.debug 'Clear-signing first available text/plain part'
-          clearsign(@mail.first_plaintext_part.body.to_s)
+        elsif mail.first_plaintext_part.body.to_s.present?
+          mail.list.logger.debug 'Clear-signing first available text/plain part'
+          clearsign(mail.first_plaintext_part.body.to_s)
         else
-          @list.logger.debug 'Found no attachments and an empty body - sending error message'
+          mail.list.logger.debug 'Found no attachments and an empty body - sending error message'
           I18n.t('keyword_handlers.sign_this.no_content_found')
         end
       end
@@ -28,7 +30,6 @@ module Schleuder
         material = attachment.body.to_s
         return nil if material.strip.blank?
         file_basename = attachment.filename.presence || Digest::SHA256.hexdigest(material)
-        @list.logger.debug "Signing #{file_basename}"
         filename = "#{file_basename}.sig"
         part = Mail::Part.new
         part.body = detachsign(material)
