@@ -46,11 +46,9 @@ module Schleuder
       end
 
       def run_handler(mail, list, type, extracted_keyword)
-        list.logger.debug "run_handler() with keyword '#{extracted_keyword}'"
+        list.logger.debug "run_handler() with keyword '#{extracted_keyword.inspect}'"
 
-        keyword_data = REGISTERED_KEYWORDS[type.to_sym][extracted_keyword.name]
-        handler_class = keyword_data[:klass]
-        output = handler_class.new(mail: mail, arguments: extracted_keyword.arguments).run
+        output = extracted_keyword.execute(mail)
 
         if list.keywords_admin_notify.include?(extracted_keyword.name)
           notify_admins(type, mail, list, extracted_keyword.name, extracted_keyword.arguments, output)

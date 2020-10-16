@@ -1,7 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class ResendCcEncryptedOnly < Base
-      include ResendingMixins
+      include ResendingMixin
 
       handles_list_keyword 'resend-cc-encrypted-only'
 

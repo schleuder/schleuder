@@ -5,9 +5,9 @@ module Schleuder
 
       WANTED_ARGUMENTS = [Conf::EMAIL_REGEXP]
 
-      def run(mail)
+      def run
         # Beware: the account might not exist yet.
-        if ! mail.signer.admin? && ! mail.signer.account.try(:api_superadmin?)
+        if ! @mail.signer.admin? && ! @mail.signer.account.try(:api_superadmin?)
           return t('admins_only')
         end
 
@@ -20,7 +20,7 @@ module Schleuder
 
         # This raises an exception if the subscription is not present. That
         # exception is caught by the KeywordHandlersRunner.
-        subscriptions_controller.find(@list.email, email)
+        subscriptions_controller.find(@mail.list.email, email)
 
         account = Account.find_or_create_by(email: email)
         new_password = account.set_new_password!

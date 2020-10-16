@@ -1,6 +1,6 @@
 module Schleuder
   module KeywordHandlers
-    module ResendingMixins
+    module ResendingMixin
       ONE_OR_MANY_EMAIL_ADDRS = [Conf::EMAIL_REGEXP, Array.new(99, /(#{Conf::EMAIL_REGEXP_EMBED})?/)].flatten
 
       def do_resend_unencrypted(mail:, to_or_cc:)

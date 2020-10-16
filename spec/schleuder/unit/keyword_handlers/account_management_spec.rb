@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe KeywordHandlers::AccountManagement do
+describe KeywordHandlers::GetNewPassword do
   describe '.get_new_password' do
     it 'sets a new password for an account' do
       mail = Mail.new
@@ -11,13 +11,17 @@ describe KeywordHandlers::AccountManagement do
       account = create(:account, email: subscription.email)
       password_digest = account.password_digest
 
-      output = KeywordHandlers::AccountManagement.new(mail: mail, arguments: []).get_new_password
+      kw = KeywordHandlers::GetNewPassword.new('get-new-password')
+      kw.consume_arguments('')
+      output = kw.execute(mail)
 
       expect(output).to match("This is the new password for the account of #{subscription.email}: .*")
       expect(password_digest).not_to eql(account.reload.password_digest)
     end
   end
 
+end
+describe KeywordHandlers::GetNewPasswordFor do
   describe '.get_new_password_for' do
     it 'rejects message from non-admins, without changing the password of the account' do
       mail = Mail.new
@@ -28,7 +32,9 @@ describe KeywordHandlers::AccountManagement do
       account = create(:account, email: subscription.email)
       password_digest = account.password_digest
 
-      output = KeywordHandlers::AccountManagement.new(mail: mail, arguments: [subscription.email]).get_new_password_for
+      kw = KeywordHandlers::GetNewPasswordFor.new('get-new-password-for')
+      kw.consume_arguments(subscription.email)
+      output = kw.execute(mail)
 
       expect(output).to eql("Error: Only admins may use this keyword.\n\nTo request setting a new password for your own account use X-GET-NEW-PASSWORD.\n")
       expect(password_digest).to eql(account.reload.password_digest)
@@ -43,10 +49,12 @@ describe KeywordHandlers::AccountManagement do
       account = create(:account, email: subscription.email)
       password_digest = account.password_digest
 
-      output = KeywordHandlers::AccountManagement.new(mail: mail, arguments: []).get_new_password_for
+      kw = KeywordHandlers::GetNewPasswordFor.new('get-new-password-for')
+      kw.consume_arguments(subscription.email)
+      output = kw.execute(mail)
 
-      expect(output).to match('Error: this keyword requires exactly one argument: The email address for which the new password should be set.')
-      expect(password_digest).to eql(account.reload.password_digest)
+      expect(output).to match("This is the new password for the account of #{subscription.email}: ")
+      expect(password_digest).not_to eql(account.reload.password_digest)
     end
 
     it 'rejects messages without keyword arguments, without changing the password of the account' do

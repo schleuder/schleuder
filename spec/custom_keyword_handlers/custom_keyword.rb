@@ -1,9 +1,11 @@
 module Schleuder
   module KeywordHandlers
     class CustomKeyword < Base
-      handles_request_keyword 'custom-keyword', with_method: :custom_keyword
+      handles_request_keyword 'custom-keyword'
 
-      def custom_keyword
+      WANTED_ARGUMENTS = []
+
+      def run(mail)
         'Something something'
       end
     end

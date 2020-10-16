@@ -1,7 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class ResendCc < Base
-      include ResendingMixins
+      include ResendingMixin
 
       handles_list_keyword 'resend-cc'
 

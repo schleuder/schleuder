@@ -48,25 +48,32 @@ module Schleuder
       end
 
       def validate_arguments(arguments)
-        if ! Kernel.const_defined?(WANTED_ARGUMENTS)
+        if ! self.class.const_defined?('WANTED_ARGUMENTS')
           raise RuntimeError.new("Error: WANTED_ARGUMENTS is not set. Each keyword-handler must either define the constant WANTED_ARGUMENTS, or re-implement the method validate_arguments().")
         end
 
-        if arguments.size > WANTED_ARGUMENTS.size
+        # TODO: this is ugly. Maybe find another way to specify the wanted arguments?
+        if arguments.size > self.class::WANTED_ARGUMENTS.size
           return :invalid
         end
 
         arguments.each_with_index do |argument, index|
-          if ! argument.match(WANTED_ARGUMENTS[index])
+          if ! argument.match(self.class::WANTED_ARGUMENTS[index])
             return :invalid
           end
         end
 
-        if arguments.size < WANTED_ARGUMENTS.size
+        if arguments.size < self.class::WANTED_ARGUMENTS.size
           return :more
         else
           return :end
         end
+      end
+
+      def execute(mail)
+        @mail = mail
+        # TODO: check if run() is defined and raise error if not
+        run
       end
 
       private
@@ -76,15 +83,15 @@ module Schleuder
       end
 
       def lists_controller
-        @lists_controller ||= ListsController.new(mail.signer.account)
+        @lists_controller ||= ListsController.new(@mail.signer.account)
       end
 
       def subscriptions_controller
-        @subscriptions_controller ||= SubscriptionsController.new(mail.signer.account)
+        @subscriptions_controller ||= SubscriptionsController.new(@mail.signer.account)
       end
 
       def keys_controller
-        @keys_controller ||= KeysController.new(mail.signer.account)
+        @keys_controller ||= KeysController.new(@mail.signer.account)
       end
 
       def authorize!(resource, action)

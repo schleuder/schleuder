@@ -53,7 +53,7 @@ require 'schleuder/keyword_handlers_runner'
 require 'schleuder/keyword_extractor'
 require 'schleuder/extracted_keyword'
 require 'schleuder/keyword_handlers/base'
-Dir["#{libdir}/schleuder/keyword_handlers/*.rb"].each do |file|
+Dir["#{libdir}/schleuder/keyword_handlers/*.rb"].sort.each do |file|
   require file
 end
 Dir["#{Schleuder::Conf.keyword_handlers_dir}/*.rb"].each do |file|
