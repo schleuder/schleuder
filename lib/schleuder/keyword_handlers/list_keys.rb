@@ -1,7 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class ListKeys < Base
-      handles_request_keyword 'list-key', with_arguments: [/\S*/]
+      handles_request_keyword 'list-keys', with_arguments: [/\S*/]
 
       def run(mail)
         argument = Array(@arguments.first.presence || '')
