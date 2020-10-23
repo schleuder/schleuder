@@ -3,7 +3,7 @@ module Schleuder
     class CustomKeyword < Base
       handles_request_keyword 'custom-keyword', with_arguments: []
 
-      def run(mail)
+      def run
         'Something something'
       end
     end
