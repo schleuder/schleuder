@@ -240,7 +240,7 @@ de:
       no_logfile: Keine Log-Datei für %{listname} gefunden. (Das kann an einem hohem Log-Level und der Abwesenheit von Fehlern liegen.)
       logfile_attached: Die Log-Datei für %{listname} hängt an.
     get_new_password:
-      new_password: 'Dies ist das neue Passwort für %{email}: %{password}'
+      new_password: &new_password 'Dies ist das neue Passwort für %{email}: %{password}'
     get_new_password_for:
       admins_only: |
         Fehler: dieses Schlüsselwort dürfen nur Admins benutzen.
