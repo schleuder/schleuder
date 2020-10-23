@@ -70,8 +70,10 @@ module Schleuder
       end
 
       def execute(mail)
+        if ! self.respond_to?(:run)
+          raise "run() is not implemented for this class, cannot execute!"
+        end
         @mail = mail
-        # TODO: check if run() is defined and raise error if not
         run
       end
 
