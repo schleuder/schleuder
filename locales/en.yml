@@ -98,13 +98,24 @@ en:
         %{sender} sent this keyword to the list:
 
         %{keyword}: %{arguments}
-    key_management:
+    delete_key:
       deleted: |
         This key was deleted:
         %{key_string}
       not_deletable: |
         This key may not be deleted:
           %{error}
+      delete_key_requires_arguments: |
+        Error: You did not send any arguments for the keyword 'DELETE-KEY'.
+
+        One is required, more are optional, e.g.:
+        X-DELETE-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        Or, to delete multiple keys at once:
+        X-DELETE-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 a-subscription@hostname
+
+        The matching keys will be deleted only if the argument matches them distinctly.
+    add_key:
       no_imports: In the message you sent us, no keys could be found. :(
       key_import_status:
         imported: |
@@ -122,18 +133,13 @@ en:
       too_many_matching_keys: |
         Too many matching keys for '%{input}':
         %{key_strings}
+      no_content_found: Your message did not contain any attachments nor text content. Therefore no key could be imported.
+    list_keys:
+      no_matching_keys: No keys match '%{input}'.
+    get_key:
       no_matching_keys: No keys match '%{input}'.
       matching_keys_intro: All keys from the list's keyring matching '%{input}' are attached to this message.
-      delete_key_requires_arguments: |
-        Error: You did not send any arguments for the keyword 'DELETE-KEY'.
-
-        One is required, more are optional, e.g.:
-        X-DELETE-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
-
-        Or, to delete multiple keys at once:
-        X-DELETE-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 a-subscription@hostname
-
-        The matching keys will be deleted only if the argument matches them distinctly.
+    fetch_key:
       fetch_key_requires_arguments: |
         Error: You did not send any arguments for the keyword 'FETCH-KEY'.
 
@@ -146,7 +152,6 @@ en:
 
         Or, to fetch a key keys by URL:
         X-FETCH-KEY: https://example.org/keys/mykey.asc
-      no_content_found: Your message did not contain any attachments nor text content. Therefore no key could be imported.
     resend:
       not_resent_no_keys: Resending to <%{email}> failed (%{num_keys} keys found and unencrypted sending disallowed).
       encrypted_to: Encrypted to
@@ -155,10 +160,12 @@ en:
     subscription_management:
       forbidden: "Error: You're not allowed to unsubscribe %{email}."
       is_not_subscribed: "%{email} is not subscribed."
+    unsubscribe:
       unsubscribed: "%{email} has been unsubscribed."
       unsubscribing_failed: |
         Unsubscribing %{email} failed:
         %{errors}
+    subscribe:
       subscribed: |
         %{email} has been subscribed with these attributes:
 
@@ -169,7 +176,25 @@ en:
         Subscribing %{email} failed:
 
         %{errors}.
+      subscribe_requires_arguments: |
+        Error: You did not send any arguments for the keyword 'SUBSCRIBE'.
+
+        At least one argument is required, three more are optional. E.g.:
+        X-SUBSCRIBE: new-subscription@hostname
+
+        Or, defining the key to use for the new subscription:
+        X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
+
+        Or, defining the key to use, and setting this subscription to be an admin:
+        X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 true
+
+        Or, defining the key to use, setting this subscription as admin, and disabling the delivery of list-emails to this subscription:
+        X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 true false
+
+        If you omit the optional arguments, the subscription has no key assigned, is not an admin, and has the delivery of list-emails enabled.
+    list_subscriptions:
       list_of_subscriptions: "Subscriptions:\n"
+    set_fingerprint:
       set_fingerprint_only_self: Only admins may set fingerprints of subscriptions other than their own.
       fingerprint_set: Fingerprint for %{email} set to %{fingerprint}.
       setting_fingerprint_failed: |
@@ -199,6 +224,7 @@ en:
         X-SET-FINGERPRINT: subscription2@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
 
         To remove a fingerprint you can use the keyword 'UNSET-FINGERPRINT'
+    unset_fingerprint:
       unset_fingerprint_only_self: Only admins may remove fingerprints of subscriptions other than their own.
       fingerprint_unset: Fingerprint for %{email} removed.
       unsetting_fingerprint_failed: |
@@ -212,26 +238,10 @@ en:
 
         As an admin to unset your own fingerprint you must additionally pass the argument force. E.g.:
         X-UNSET-FINGERPRINT: adminsubscription2@hostname force
-      subscribe_requires_arguments: |
-        Error: You did not send any arguments for the keyword 'SUBSCRIBE'.
-
-        At least one argument is required, three more are optional. E.g.:
-        X-SUBSCRIBE: new-subscription@hostname
-
-        Or, defining the key to use for the new subscription:
-        X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
-
-        Or, defining the key to use, and setting this subscription to be an admin:
-        X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 true
-
-        Or, defining the key to use, setting this subscription as admin, and disabling the delivery of list-emails to this subscription:
-        X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 true false
-
-        If you omit the optional arguments, the subscription has no key assigned, is not an admin, and has the delivery of list-emails enabled.
     sign_this:
       signatures_attached: Find the signatures attached.
       no_content_found: Your message did not contain any attachments nor text content. Therefore nothing could be signed.
-    list_management:
+    get_logfile:
       no_logfile: No logfile could be found for %{listname}. (This might be caused by a high log-level and the absence of errors.)
       logfile_attached: The logfile for %{listname} is attached.
     get_new_password:
