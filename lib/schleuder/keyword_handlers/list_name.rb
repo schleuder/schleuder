@@ -8,7 +8,7 @@ module Schleuder
 
       def run
         if ! [@list.email, @list.request_address].include?(@arguments.first)
-          raise I18n.t(:wrong_listname_keyword_error)
+          raise Errors::ListNameWrong.new
         end
       end
     end
