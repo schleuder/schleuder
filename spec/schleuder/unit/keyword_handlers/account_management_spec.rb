@@ -21,6 +21,7 @@ describe KeywordHandlers::GetNewPassword do
   end
 
 end
+
 describe KeywordHandlers::GetNewPasswordFor do
   describe '.get_new_password_for' do
     it 'rejects message from non-admins, without changing the password of the account' do
@@ -66,7 +67,9 @@ describe KeywordHandlers::GetNewPasswordFor do
       account = create(:account, email: subscription.email)
       password_digest = account.password_digest
 
-      output = KeywordHandlers::AccountManagement.new(mail: mail, arguments: []).get_new_password_for
+      kw = KeywordHandlers::GetNewPasswordFor.new('get-new-password-for')
+      kw.consume_arguments('')
+      output = kw.execute(mail)
 
       expect(output).to match('Error: this keyword requires exactly one argument: The email address for which the new password should be set.')
       expect(password_digest).to eql(account.reload.password_digest)
@@ -83,7 +86,9 @@ describe KeywordHandlers::GetNewPasswordFor do
       subscription_account = create(:account, email: subscription.email)
       subscription_password_digest = subscription_account.password_digest
 
-      output = KeywordHandlers::AccountManagement.new(mail: mail, arguments: [subscription.email]).get_new_password_for
+      kw = KeywordHandlers::GetNewPasswordFor.new('get-new-password-for')
+      kw.consume_arguments(subscription.email)
+      output = kw.execute(mail)
 
       expect(output).to match(/^This is the new password for the account of #{subscription.email}: .{10,12}$/)
       expect(subscription_password_digest).not_to eql(subscription_account.reload.password_digest)
@@ -102,7 +107,9 @@ describe KeywordHandlers::GetNewPasswordFor do
       mail.list.import_key(File.read('spec/fixtures/example_key.txt'))
       mail.instance_variable_set('@signing_key', mail.list.key('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE'))
 
-      output = KeywordHandlers::AccountManagement.new(mail: mail, arguments: [subscription2.email]).get_new_password_for
+      kw = KeywordHandlers::GetNewPasswordFor.new('get-new-password-for')
+      kw.consume_arguments(subscription2.email)
+      output = kw.execute(mail)
 
       expect(output).to match(/^This is the new password for the account of #{subscription2.email}: .{10,12}$/)
       expect(subscription_password_digest).not_to eql(subscription_account.reload.password_digest)
@@ -120,7 +127,9 @@ describe KeywordHandlers::GetNewPasswordFor do
 
       error = nil
       begin
-        output = KeywordHandlers::AccountManagement.new(mail: mail, arguments: ['notsubscribed@example.net']).get_new_password_for
+        kw = KeywordHandlers::GetNewPasswordFor.new('get-new-password-for')
+        kw.consume_arguments('notsubscribed@example.net')
+        output = kw.execute(mail)
       rescue => exc
         error = exc
       end
