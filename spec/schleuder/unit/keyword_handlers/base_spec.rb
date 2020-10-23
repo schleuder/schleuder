@@ -18,6 +18,7 @@ describe KeywordHandlers::Base do
     instance.execute(mail)
 
     expect(instance.instance_variable_get('@mail')).to eql(mail)
+    expect(instance.instance_variable_get('@list')).to eql(mail.list)
   end
 
   it 'provides methods to register keywords' do
