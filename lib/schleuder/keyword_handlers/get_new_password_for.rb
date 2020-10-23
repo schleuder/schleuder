@@ -18,7 +18,7 @@ module Schleuder
 
         # This raises an exception if the subscription is not present. That
         # exception is caught by the KeywordHandlersRunner.
-        subscriptions_controller.find(@mail.list.email, email)
+        subscriptions_controller.find(@list.email, email)
 
         account = Account.find_or_create_by(email: email)
         new_password = account.set_new_password!

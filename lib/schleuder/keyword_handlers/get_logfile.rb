@@ -3,16 +3,16 @@ module Schleuder
     class GetLogfile < Base
       handles_request_keyword 'get-logfile', with_arguments: []
 
-      def run(mail)
-        logfile = lists_controller.get_logfile(mail.list.email)
+      def run
+        logfile = lists_controller.get_logfile(@list.email)
         if logfile.present?
           attachment = Mail::Part.new
           attachment.body = File.read(logfile)
-          attachment.content_disposition = "inline; filename=#{mail.list.email}.log"
-          intro = I18n.t('keyword_handlers.list_management.logfile_attached', listname: mail.list.email)
+          attachment.content_disposition = "inline; filename=#{@list.email}.log"
+          intro = I18n.t('keyword_handlers.list_management.logfile_attached', listname: @list.email)
           [intro, attachment]
         else
-          I18n.t('keyword_handlers.list_management.no_logfile', listname: mail.list.email)
+          I18n.t('keyword_handlers.list_management.no_logfile', listname: @list.email)
         end
       end
     end

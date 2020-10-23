@@ -3,7 +3,7 @@ module Schleuder
     class GetKey < Base
       handles_request_keyword 'get-key', with_arguments: [/\S+/]
 
-      def run(mail)
+      def run
         argument = @arguments.first
         keys = keys_controller.find_all(@list.email, argument)
 

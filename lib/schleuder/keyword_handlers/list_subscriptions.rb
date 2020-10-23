@@ -3,8 +3,8 @@ module Schleuder
     class ListSubscriptions < Base
       handles_request_keyword 'list-subscriptions', with_arguments: [/\S*/]
 
-      def run(mail)
-        subscriptions = subscriptions_controller.find_all(mail.list.email).to_a
+      def run
+        subscriptions = subscriptions_controller.find_all(@list.email).to_a
 
         if @arguments.present?
           regexp = Regexp.new(@arguments)

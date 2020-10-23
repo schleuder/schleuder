@@ -55,7 +55,7 @@ module Schleuder
         return :end, [email, fingerprint, adminflag, delivery_enabled]
       end
 
-      def run(mail)
+      def run
         if @arguments.blank?
           return t('subscribe_requires_arguments')
         end

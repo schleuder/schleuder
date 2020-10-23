@@ -3,7 +3,7 @@ module Schleuder
     class ListKeys < Base
       handles_request_keyword 'list-keys', with_arguments: [/\S*/]
 
-      def run(mail)
+      def run
         argument = Array(@arguments.first.presence || '')
         keys = keys_controller.find_all(@list.email, argument)
 

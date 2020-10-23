@@ -3,7 +3,7 @@ module Schleuder
     class DeleteKey < Base
       handles_request_keyword 'delete-key', with_arguments: [/\S+/]
 
-      def run(mail)
+      def run
         # TODO: Do we still need this check?
         if @arguments.blank?
           return t('delete_key_requires_arguments')
@@ -11,7 +11,7 @@ module Schleuder
 
         argument = arguments.first
         begin
-          key = keys_controller.delete(mail.list.email, argument)
+          key = keys_controller.delete(@list.email, argument)
           t('deleted', key_string: key.summary)
         rescue GPGME::Error::Conflict => exc
           t('not_deletable', error: exc.message)

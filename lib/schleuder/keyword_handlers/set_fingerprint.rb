@@ -7,7 +7,7 @@ module Schleuder
           /(#{Conf::FINGERPRINT_REGEXP_EMBED})?/
         ]
 
-      def run(mail)
+      def run
         if @arguments.blank?
           return t('set_fingerprint_requires_arguments')
         end
@@ -15,7 +15,7 @@ module Schleuder
         if @arguments.first.match(/@/)
           email = @arguments.shift.downcase
         else
-          email = mail.signer.email
+          email = @mail.signer.email
         end
 
         fingerprint = @arguments.join
@@ -23,7 +23,7 @@ module Schleuder
           return t('set_fingerprint_requires_valid_fingerprint', fingerprint: fingerprint)
         end
 
-        subscription = subscriptions_controller.update(mail.list.email, email, {fingerprint: fingerprint})
+        subscription = subscriptions_controller.update(@list.email, email, {fingerprint: fingerprint})
 
         # TODO: Nicer error message for subscriptions that wrongly tried to set someone elses fingerprint?
         # I18n key: 'keyword_handlers.subscription_management.set_fingerprint_only_self'

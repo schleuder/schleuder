@@ -74,6 +74,7 @@ module Schleuder
           raise "run() is not implemented for this class, cannot execute!"
         end
         @mail = mail
+        @list = mail.list
         run
       end
 

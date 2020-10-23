@@ -3,7 +3,7 @@ module Schleuder
     class UnsetFingerprint < Base
       handles_request_keyword 'unset-fingerprint', with_arguments: [Conf::EMAIL_REGEXP]
 
-      def run(mail)
+      def run
         # TODO: Do we still need this check?
         if @arguments.blank?
           return t('unset_fingerprint_requires_arguments')
@@ -13,14 +13,14 @@ module Schleuder
 
         # Admins degrade themselves to subscribers if they unset they
         # fingerprint. We allow that only with an additional argument.
-        if email == mail.signer.email && mail.list.from_admin?(mail) && @arguments.last.to_s.downcase != 'force'
+        if email == @mail.signer.email && @list.from_admin?(@mail) && @arguments.last.to_s.downcase != 'force'
           return t('unset_fingerprint_requires_arguments')
         end
 
         # TODO: Nicer error message for subscriptions that wrongly tried to unset someone elses fingerprint?
         # I18n key: 'keyword_handlers.subscription_management.unset_fingerprint_only_self'
 
-        subscription = subscriptions_controller.update(mail.list.email, email, {fingerprint: ''})
+        subscription = subscriptions_controller.update(@list.email, email, {fingerprint: ''})
 
         if subscription.valid?
           t('fingerprint_unset', {email: subscription.email})

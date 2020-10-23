@@ -3,19 +3,19 @@ module Schleuder
     class SignThis < Base
       handles_request_keyword 'sign-this', with_arguments: []
 
-      def run(mail)
-        if mail.has_attachments?
-          mail.list.logger.debug "Signing each attachment's body"
+      def run
+        if @mail.has_attachments?
+          @list.logger.debug "Signing each attachment's body"
           intro = I18n.t('keyword_handlers.sign_this.signatures_attached')
-          parts = mail.attachments.map do |attachment|
+          parts = @mail.attachments.map do |attachment|
             make_signature_part(attachment)
           end
           [intro, parts].flatten
-        elsif mail.first_plaintext_part.body.to_s.present?
-          mail.list.logger.debug 'Clear-signing first available text/plain part'
-          clearsign(mail.first_plaintext_part.body.to_s)
+        elsif @mail.first_plaintext_part.body.to_s.present?
+          @list.logger.debug 'Clear-signing first available text/plain part'
+          clearsign(@mail.first_plaintext_part.body.to_s)
         else
-          mail.list.logger.debug 'Found no attachments and an empty body - sending error message'
+          @list.logger.debug 'Found no attachments and an empty body - sending error message'
           I18n.t('keyword_handlers.sign_this.no_content_found')
         end
       end

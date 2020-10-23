@@ -3,7 +3,7 @@ module Schleuder
     class GetVersion < Base
       handles_request_keyword 'get-version', with_arguments:  []
 
-      def run(mail)
+      def run
         Schleuder::VERSION
       end
     end
