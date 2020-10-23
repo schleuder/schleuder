@@ -1,7 +1,6 @@
 module Schleuder
   class KeywordHandlersRunner
     REGISTERED_KEYWORDS = {list: {}, request: {}}
-    RESERVED_KEYWORDS = %w[list-name]
 
     class << self
       def register_keyword(type:, keyword:, handler_class:)
@@ -22,9 +21,7 @@ module Schleuder
         return [error] if error.present?
 
         output = mail.keywords.map do |extracted_keyword|
-          if ! is_reserved_keyword?(extracted_keyword)
-            run_handler(mail, list, type, extracted_keyword)
-          end
+          run_handler(mail, list, type, extracted_keyword)
         end
 
         output.flatten.compact
@@ -89,10 +86,6 @@ module Schleuder
         # Check for the keyword handler class instead of the keyword strings,
         # so we don't have to repeat the spelling variants of the keyword.
         mail.keywords.map(&:class).include?(Schleuder::KeywordHandlers::ListName)
-      end
-
-      def is_reserved_keyword?(extracted_keyword)
-        RESERVED_KEYWORDS.include?(extracted_keyword.name)
       end
 
       def assert_valid_input!(type:, keyword:, handler_class:)
