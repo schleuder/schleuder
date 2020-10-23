@@ -5,11 +5,6 @@ describe Schleuder::KeywordHandlers::SignThis do
   before(:each) do
   end
 
-  it 'responds to the configured keyword method' do
-    instance = KeywordHandlers::SignThis.new(mail: Mail.new, arguments: [])
-    expect(instance).to respond_to(keyword_method)
-  end
-
   it 'signs body content if no attachments are present' do
     content = "something\nsomething\nsomething"
     mail = Mail.new
@@ -18,9 +13,10 @@ describe Schleuder::KeywordHandlers::SignThis do
     mail.body = content
     # Force mail to build its internal structure.
     mail.to_s
-    instance = KeywordHandlers::SignThis.new(mail: mail, arguments: [])
+    kw = KeywordHandlers::SignThis.new('sign-this')
+    kw.consume_arguments('')
+    signed_text = kw.execute(mail)
 
-    signed_text = instance.send(keyword_method)
     match_string = "BEGIN PGP SIGNED MESSAGE-----\nHash: SHA(256|512)\n\n#{content}\n-----BEGIN PGP SIGNATURE"
 
     # list.gpg.verify() results in a "Bad Signature".  The sign-this keyword-handler
@@ -48,9 +44,10 @@ describe Schleuder::KeywordHandlers::SignThis do
     mail.body = 'body is not relevant'
     # Force mail to build its internal structure.
     mail.to_s
-    instance = KeywordHandlers::SignThis.new(mail: mail, arguments: ['arguments', 'are', 'not', 'relevant'])
+    kw = KeywordHandlers::SignThis.new('sign-this')
+    kw.consume_arguments('arguments are not relevant')
 
-    parts = instance.send(keyword_method)
+    parts = kw.execute(mail)
 
     # list.gpg.verify() results in a "Bad Signature".  The sign-this keyword-handler
     # also uses GPGME::Crypto, apparently that makes a difference.
