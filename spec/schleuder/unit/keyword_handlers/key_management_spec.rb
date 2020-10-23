@@ -1,14 +1,14 @@
 require 'spec_helper'
 
-describe Schleuder::KeywordHandlers::KeyManagement do
+describe Schleuder::KeywordHandlers::AddKey do
   it 'registers keywords' do
-    found_keywords = KeywordHandlersRunner::REGISTERED_KEYWORDS.values.map do |hash|
-      hash.select do |keyword, attributes|
-        attributes[:klass] == Schleuder::KeywordHandlers::KeyManagement
-      end.keys
-    end.flatten
+    kw_list = KeywordHandlersRunner::REGISTERED_KEYWORDS.values.reduce(&:merge)
     
-    expect(found_keywords).to eql(%w[add-key delete-key list-keys get-key fetch-key])
+    expect(kw_list['add-key']).to eql(Schleuder::KeywordHandlers::AddKey)
+    expect(kw_list['delete-key']).to eql(Schleuder::KeywordHandlers::DeleteKey)
+    expect(kw_list['list-keys']).to eql(Schleuder::KeywordHandlers::ListKeys)
+    expect(kw_list['get-key']).to eql(Schleuder::KeywordHandlers::GetKey)
+    expect(kw_list['fetch-key']).to eql(Schleuder::KeywordHandlers::FetchKey)
   end
 
   context '.add_key' do
@@ -21,7 +21,9 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       mail.to_s
 
       list_keys = mail.list.keys
-      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+      kw = KeywordHandlers::AddKey.new('add-key')
+      kw.consume_arguments('')
+      output = kw.execute(mail)
 
       expect(output).to eql("This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n")
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
@@ -36,7 +38,9 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       mail.to_s
 
       list_keys = mail.list.keys
-      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+      kw = KeywordHandlers::AddKey.new('add-key')
+      kw.consume_arguments('')
+      output = kw.execute(mail)
 
       expect(output).to eql("This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n")
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
@@ -52,7 +56,9 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       mail.to_s
 
       list_keys = mail.list.keys
-      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+      kw = KeywordHandlers::AddKey.new('add-key')
+      kw.consume_arguments('')
+      output = kw.execute(mail)
 
       expect(output).to eql("This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n")
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
@@ -68,7 +74,9 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       list_keys = mail.list.keys
       key_material = File.read('spec/fixtures/example_key.txt').lines
 
-      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: key_material).add_key
+      kw = KeywordHandlers::AddKey.new('add-key')
+      kw.consume_arguments(key_material)
+      output = kw.execute(mail)
 
       expect(output).to eql('In the message you sent us, no keys could be found. :(')
       expect(mail.list.keys.size).to eql(list_keys.size)
@@ -85,7 +93,9 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       mail.list.import_key(File.read('spec/fixtures/expired_key.txt'))
       list_keys = mail.list.keys
 
-      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+      kw = KeywordHandlers::AddKey.new('add-key')
+      kw.consume_arguments('')
+      output = kw.execute(mail)
 
       expect(output).to eql("This key was updated:\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
       expect(mail.list.keys.size).to eql(list_keys.size)
@@ -100,7 +110,9 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       mail.to_s
       list_keys = mail.list.keys
 
-      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+      kw = KeywordHandlers::AddKey.new('add-key')
+      kw.consume_arguments('')
+      output = kw.execute(mail)
 
       expect(output).to eql('In the message you sent us, no keys could be found. :(')
       expect(mail.list.keys.size).to eql(list_keys.size)
@@ -118,7 +130,9 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       mail.to_s
       list_keys = mail.list.keys
 
-      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: ['C4D60F8833789C7CAA44496FD3FFA6613AB10ECE']).delete_key
+      kw = KeywordHandlers::DeleteKey.new('delete-key')
+      kw.consume_arguments('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
+      output = kw.execute(mail)
 
       expect(output).to eql("This key was deleted:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n")
       expect(mail.list.keys.size).to eql(list_keys.size - 1)
@@ -135,9 +149,11 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       mail.to_s
       list_keys = mail.list.keys
 
-      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: ['C4D60F8833789C7CAA44496FD3FFA6613AB10ECE', '98769E8A1091F36BD88403ECF71A3F8412D83889']).delete_key
+      kw = KeywordHandlers::DeleteKey.new('delete-key')
+      kw.consume_arguments('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE 98769E8A1091F36BD88403ECF71A3F8412D83889')
+      output = kw.execute(mail)
 
-      expect(output).to eql("This key was deleted:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n\n\nThis key was deleted:\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
+      expect(output).to eql("This key was deleted:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n\nThis key was deleted:\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
       expect(mail.list.keys.size).to eql(list_keys.size - 2)
     end
 
@@ -151,7 +167,9 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       mail.to_s
       list_keys = mail.list.keys
 
-      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: ['0x0x0x']).delete_key
+      kw = KeywordHandlers::DeleteKey.new('delete-key')
+      kw.consume_arguments('0x0x0x')
+      output = kw.execute(mail)
 
       expect(output).to eql("Error: No key found with this fingerprint: '0x0x0x'.")
       expect(mail.list.keys.size).to eql(list_keys.size)
@@ -165,7 +183,9 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       mail.to_s
       list_keys = mail.list.keys
 
-      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).delete_key
+      kw = KeywordHandlers::DeleteKey.new('delete-key')
+      kw.consume_arguments('')
+      output = kw.execute(mail)
 
       expect(output).to eql("Error: You did not send any arguments for the keyword 'DELETE-KEY'.\n\nOne is required, more are optional, e.g.:\nX-DELETE-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3\n\nOr, to delete multiple keys at once:\nX-DELETE-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 a-subscription@hostname\n\nThe matching keys will be deleted only if the argument matches them distinctly.\n")
       expect(mail.list.keys.size).to eql(list_keys.size)
