@@ -3,8 +3,8 @@ module Schleuder
     class Base
       SEPARATORS = /[,;\s]/
       class << self
-        # TODO: make wanted_arguments a mandatory argument
-        def handles_request_keyword(keyword)
+        def handles_request_keyword(keyword, with_arguments:)
+          @wanted_arguments = with_arguments
           KeywordHandlersRunner.register_keyword(
             type: :request,
             keyword: keyword,
@@ -12,13 +12,17 @@ module Schleuder
           )
         end
 
-        # TODO: make wanted_arguments a mandatory argument
-        def handles_list_keyword(keyword)
+        def handles_list_keyword(keyword, with_arguments:)
+          @wanted_arguments = with_arguments
           KeywordHandlersRunner.register_keyword(
             type: :list,
             keyword: keyword,
             handler_class: self
           )
+        end
+
+        def wanted_arguments
+          @wanted_arguments
         end
       end
 
@@ -48,22 +52,17 @@ module Schleuder
       end
 
       def validate_arguments(arguments)
-        if ! self.class.const_defined?('WANTED_ARGUMENTS')
-          raise RuntimeError.new("Error: WANTED_ARGUMENTS is not set. Each keyword-handler must either define the constant WANTED_ARGUMENTS, or re-implement the method validate_arguments().")
-        end
-
-        # TODO: this is ugly. Maybe find another way to specify the wanted arguments?
-        if arguments.size > self.class::WANTED_ARGUMENTS.size
+        if arguments.size > self.class.wanted_arguments.size
           return :invalid
         end
 
         arguments.each_with_index do |argument, index|
-          if ! argument.match(self.class::WANTED_ARGUMENTS[index])
+          if ! argument.match(self.class.wanted_arguments[index])
             return :invalid
           end
         end
 
-        if arguments.size < self.class::WANTED_ARGUMENTS.size
+        if arguments.size < self.class.wanted_arguments.size
           return :more
         else
           return :end

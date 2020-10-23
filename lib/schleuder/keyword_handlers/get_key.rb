@@ -1,9 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class GetKey < Base
-      handles_request_keyword 'get-key'
-
-      WANTED_ARGUMENTS = [/\S+/]
+      handles_request_keyword 'get-key', with_arguments: [/\S+/]
 
       def run(mail)
         argument = @arguments.first

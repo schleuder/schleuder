@@ -1,8 +1,9 @@
 module Schleuder
   module KeywordHandlers
     class Subscribe < Base
-      handles_request_keyword :subscribe
-      handles_request_keyword 'add-member' # Example of an alias
+      # This class parses its keyword arguments itself, but the method argument keyword must be given nonetheless.
+      handles_request_keyword :subscribe, with_arguments: []
+      handles_request_keyword 'add-member', with_arguments: [] # Example of an alias
 
       # This method returns the collected arguments as second return value so
       # the actual method doesn't have to check for a space-delimited

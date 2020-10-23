@@ -1,9 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class GetLogfile < Base
-      handles_request_keyword 'get-logfile'
-
-      WANTED_ARGUMENTS = []
+      handles_request_keyword 'get-logfile', with_arguments: []
 
       def run(mail)
         logfile = lists_controller.get_logfile(mail.list.email)

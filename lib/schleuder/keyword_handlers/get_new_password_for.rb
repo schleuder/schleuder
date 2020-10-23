@@ -1,9 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class GetNewPasswordFor < Base
-      handles_request_keyword 'get-new-password-for'
-
-      WANTED_ARGUMENTS = [Conf::EMAIL_REGEXP]
+      handles_request_keyword 'get-new-password-for', with_arguments: [Conf::EMAIL_REGEXP]
 
       def run
         # Beware: the account might not exist yet.

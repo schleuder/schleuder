@@ -1,9 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class Unsubscribe < Base
-      handles_request_keyword :unsubscribe
-
-      WANTED_ARGUMENTS = [Conf::EMAIL_REGEXP]
+      handles_request_keyword :unsubscribe, with_arguments: [Conf::EMAIL_REGEXP]
 
       def run(mail)
         # If no address was given we unsubscribe the sender.

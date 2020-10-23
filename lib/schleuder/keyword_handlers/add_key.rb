@@ -1,9 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class AddKey < Base
-      handles_request_keyword 'add-key'
-
-      WANTED_ARGUMENTS = []
+      handles_request_keyword 'add-key', with_arguments: []
 
       def run(mail)
         key_material = if mail.has_attachments?

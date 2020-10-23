@@ -1,9 +1,11 @@
 module Schleuder
   module KeywordHandlers
     class SetFingerprint < Base
-      handles_request_keyword 'set-fingerprint'
-
-      WANTED_ARGUMENTS = [/(#{Conf::EMAIL_REGEXP_EMBED}|#{Conf::FINGERPRINT_REGEXP_EMBED})/, /(#{Conf::FINGERPRINT_REGEXP_EMBED})?/]
+      handles_request_keyword 'set-fingerprint',
+        with_arguments: [
+          /(#{Conf::EMAIL_REGEXP_EMBED}|#{Conf::FINGERPRINT_REGEXP_EMBED})/,
+          /(#{Conf::FINGERPRINT_REGEXP_EMBED})?/
+        ]
 
       def run(mail)
         if @arguments.blank?

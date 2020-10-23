@@ -1,9 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class DeleteKey < Base
-      handles_request_keyword 'delete-key'
-
-      WANTED_ARGUMENTS = [/\S+/]
+      handles_request_keyword 'delete-key', with_arguments: [/\S+/]
 
       def run(mail)
         # TODO: Do we still need this check?

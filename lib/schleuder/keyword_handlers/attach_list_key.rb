@@ -1,10 +1,8 @@
 module Schleuder
   module KeywordHandlers
     class AttachListKey < Base
-      handles_list_keyword 'attach-listkey'
-      handles_list_keyword 'attach-list-key'
-
-      WANTED_ARGUMENTS = []
+      handles_list_keyword 'attach-listkey', with_arguments: []
+      handles_list_keyword 'attach-list-key', with_arguments: []
 
       # No need to authorize: there is no way to block a list from answering to
       # emails addressed to listname-sendkey@hostname, so we don't need a way

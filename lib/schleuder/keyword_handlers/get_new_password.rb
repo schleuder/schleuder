@@ -1,9 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class GetNewPassword < Base
-      handles_request_keyword 'get-new-password'
-
-      WANTED_ARGUMENTS = []
+      handles_request_keyword 'get-new-password', with_arguments: []
 
       def run
         account = Account.find_or_create_by(email: @mail.signer.email)

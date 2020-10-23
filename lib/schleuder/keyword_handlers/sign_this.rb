@@ -1,9 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class SignThis < Base
-      handles_request_keyword 'sign-this'
-
-      WANTED_ARGUMENTS = []
+      handles_request_keyword 'sign-this', with_arguments: []
 
       def run(mail)
         if mail.has_attachments?

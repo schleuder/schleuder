@@ -1,9 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class UnsetFingerprint < Base
-      handles_request_keyword 'unset-fingerprint'
-
-      WANTED_ARGUMENTS = [Conf::EMAIL_REGEXP]
+      handles_request_keyword 'unset-fingerprint', with_arguments: [Conf::EMAIL_REGEXP]
 
       def run(mail)
         # TODO: Do we still need this check?

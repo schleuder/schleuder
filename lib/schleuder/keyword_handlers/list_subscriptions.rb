@@ -1,10 +1,7 @@
 module Schleuder
   module KeywordHandlers
     class ListSubscriptions < Base
-      handles_request_keyword 'list-subscriptions'
-
-      WANTED_ARGUMENTS = [/\S*/]
-
+      handles_request_keyword 'list-subscriptions', with_arguments: [/\S*/]
 
       def run(mail)
         subscriptions = subscriptions_controller.find_all(mail.list.email).to_a
