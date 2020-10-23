@@ -1,15 +1,23 @@
 require 'spec_helper'
 
 describe KeywordHandlers::Base do
-  it 'stores mail, list and arguments as instance variables' do
+  it '#new stores the called keyword as instance variable' do
     mail = Mail.new
     mail.list = create(:list)
-    arguments = %w[1 2 3]
-    instance = KeywordHandlers::Base.new(mail: mail, arguments: arguments)
+    instance = KeywordHandlers::Base.new('something')
+
+    expect(instance.instance_variable_get('@called_keyword')).to eql('something')
+  end
+
+  it '#execute stores mail as instance variable' do
+    # Mock implementation of run() so we can call execute()
+    class KeywordHandlers::Base; def run; end; end
+    mail = Mail.new
+    mail.list = create(:list)
+    instance = KeywordHandlers::Base.new('something')
+    instance.execute(mail)
 
     expect(instance.instance_variable_get('@mail')).to eql(mail)
-    expect(instance.instance_variable_get('@list')).to eql(mail.list)
-    expect(instance.instance_variable_get('@arguments')).to eql(arguments)
   end
 
   it 'provides methods to register keywords' do
