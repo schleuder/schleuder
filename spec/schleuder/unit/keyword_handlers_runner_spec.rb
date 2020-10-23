@@ -4,15 +4,26 @@ describe 'KeywordHandlersRunner' do
   it 'stores a keyword that was registered' do
     KeywordHandlersRunner.register_keyword(
       type: :request,
-      keyword: 'a-keyword',
-      handler_class: Object,
-      handler_method: 'a_method',
-      aliases: 'an-alias',
-      wanted_arguments: []
+      keyword: 'a_keyword',
+      handler_class: Object
     )
 
-    expect(KeywordHandlersRunner::REGISTERED_KEYWORDS[:request]['a-keyword']).to be_a(Hash)
-    expect(KeywordHandlersRunner::REGISTERED_KEYWORDS[:request]['an-alias']).to eql(KeywordHandlersRunner::REGISTERED_KEYWORDS[:request]['a-keyword'])
+    expect(KeywordHandlersRunner::REGISTERED_KEYWORDS[:request]['a-keyword']).to be_a(Class)
+  end
+
+  it 'stores a second registered keyword identically to the first' do
+    KeywordHandlersRunner.register_keyword(
+      type: :request,
+      keyword: 'a_keyword',
+      handler_class: Object
+    )
+    KeywordHandlersRunner.register_keyword(
+      type: :request,
+      keyword: 'another_keyword',
+      handler_class: Object
+    )
+
+    expect(KeywordHandlersRunner::REGISTERED_KEYWORDS[:request]['a-keyword']).to eql(KeywordHandlersRunner::REGISTERED_KEYWORDS[:request]['another-keyword'])
   end
 
   it 'requires X-LIST-NAME' do
@@ -34,7 +45,7 @@ describe 'KeywordHandlersRunner' do
 
     output = KeywordHandlersRunner.run(mail: mail, list: create(:list), type: :request)
 
-    expect(output).to eql(['Your message contained an incorrect "X-LIST-NAME" keyword. The keyword argument must match the email address of this list.'])
+    expect(output).to eql([%{Your message contained an incorrect "X-LIST-NAME" keyword. The keyword argument must match the email address of this list.\n\nKind regards,\nYour Schleuder system.\n}])
   end
 
   it 'rejects unknown keywords' do
