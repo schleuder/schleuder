@@ -35,6 +35,10 @@ module Schleuder
         @called_keyword
       end
 
+      def arguments
+        @arguments
+      end
+
       def consume_arguments(input)
         args_to_check = @arguments + into_arguments(input)
         action, args_to_save = validate_arguments(args_to_check)
