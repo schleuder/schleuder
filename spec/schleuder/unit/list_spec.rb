@@ -420,7 +420,7 @@ describe Schleuder::List do
       datefmt = '%Y-%m-%d'
       generation_date = generation_time.strftime(datefmt)
       expiry_date = expiry_time.strftime(datefmt)
-      expect(list.check_keys).to eq "This key expires in 6 days:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org #{generation_date} [expires: #{expiry_date}]\n\n"
+      expect(list.check_keys).to eq "This key expires in 7 days:\n0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org #{generation_date} [expires: #{expiry_date}]\n\n"
     end
 
     it 'adds a message if a key is revoked' do
