@@ -67,6 +67,16 @@ module Schleuder
                 with: /\A[[:graph:]\s]*\z/i,
               }
 
+    # This is a usability vs security consideration. Some users find it quite
+    # confusing when they click "reply-to" and the mail client doesn't reply to the
+    # sender of the mail but the whole mailing list. For those lists it can be
+    # considered to set this value to true. The recipients will then receive e-mails
+    # where the "From" and the "Reply-To" header will contain the unencrypted address
+    # of the sender and thus reply to the sender when clicking "reply-to" in a client.
+    # The default is off.
+    validates :use_unencrypted_sender_addresses_in_header, boolean: true
+
+
     default_scope { order(:email) }
 
     def self.configurable_attributes
@@ -367,7 +377,7 @@ module Schleuder
             next
           end
           
-          subscription.send_mail(mail)
+          subscription.send_mail(mail, incoming_mail)
           
         rescue => exc
           msg = I18n.t('errors.delivery_error',

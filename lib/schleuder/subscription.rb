@@ -41,10 +41,10 @@ module Schleuder
       list.keys("0x#{self.fingerprint}").first
     end
 
-    def send_mail(mail)
+    def send_mail(mail, incoming_mail=nil)
       list.logger.debug "Preparing sending to #{self.inspect}"
 
-      mail = ensure_headers(mail)
+      mail = ensure_headers(mail, incoming_mail)
       gpg_opts = self.list.gpg_sign_options
 
       if self.key.blank?
@@ -70,9 +70,18 @@ module Schleuder
       mail.deliver
     end
 
-    def ensure_headers(mail)
+    def ensure_headers(mail, incoming_mail=nil)
       mail.to = self.email
-      mail.from = self.list.email
+      if self.list.use_unencrypted_sender_addresses_in_header? && ! incoming_mail.nil?
+        # If the option is set to true, we will set the from-header
+        # and the reply-to header to the original senders email.
+        # WARNING: setting this option will send the original senders email UNENCRYPTED in the headers.
+        # We munch the from-header to avoid issues with DMARC.
+        mail.from = I18n.t("header_munching", from: incoming_mail.from.first, list: self.list.email, list_address: self.list.email)
+        mail.reply_to = incoming_mail.from
+      else
+        mail.from = self.list.email
+      end
       mail.sender = self.list.bounce_address
       mail
     end

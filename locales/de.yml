@@ -261,6 +261,7 @@ de:
   encryption_states:
     encrypted: "Verschlüsselt"
     unencrypted: "Unverschlüsselt"
+  header_munching: "%{from} über %{list} <%{list_address}>"
 
   activerecord:
     errors:
