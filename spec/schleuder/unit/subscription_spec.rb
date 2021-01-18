@@ -50,6 +50,14 @@ describe Schleuder::Subscription do
     expect(subscription.errors.messages[:email]).to include("is not a valid email address")
   end
 
+  it "is invalid when email begins with a space" do
+    list = create(:list)
+    subscription = build(:subscription, list_id: list.id, email: " foo@bar.org")
+
+    expect(subscription).not_to be_valid
+    expect(subscription.errors.messages[:email]).to include("is not a valid email address")
+  end
+
   it "is valid when fingerprint is empty" do
     list = create(:list)
     subscription = build(:subscription, list_id: list.id, fingerprint: "")
