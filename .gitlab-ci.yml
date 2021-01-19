@@ -90,7 +90,7 @@ codespell:
     # Run codespell to check for spelling errors, using a config with ignored words, skipping files 
     # (German translations, v2 list configs and code of installed dependencies) leading to false positives,
     # ignoring warnings about binary files and, finally, checking file names as well.
-    - codespell -I utils/ci/codespell/ignored_words.txt -S de.yml,list.conf,vendor -q 2 -f
+    - codespell -I utils/ci/codespell/ignored_words.txt -S de.yml,list.conf,vendor,.git -q 2 -f
   stage: static
 
 ruby:2.1:
