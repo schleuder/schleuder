@@ -10,6 +10,10 @@ module Schleuder
     validates :fingerprint, allow_blank: true, fingerprint: true
     validates :delivery_enabled, :admin, boolean: true
 
+    before_validation {
+      self.email = Mail::Address.new(self.email).address
+    }
+
     default_scope { order(:email) }
 
     scope :without_fingerprint, -> { where(fingerprint: [nil,'']) }
