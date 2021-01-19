@@ -31,15 +31,23 @@ describe Mail::Message do
     expect(mail.automated_message?).to be(true)
   end
 
-  it "recognizes a message with 'Auto-Submitted'-header as automated message" do
+  it "recognizes bounce message subject using the bounce_email gem" do
     list = create(:list)
     mail = Mail.new
-    mail.header['Auto-Submitted'] = 'yes'
-    # Trigger the setting of mandatory headers.
-    mail.to_s
+    mail.subject = "Undelivered Mail Returned to Sender"
     mail = Mail.create_message_to_list(mail.to_s, 'something@localhost', list).setup
 
     expect(mail.automated_message?).to be(true)
+  end
+  
+  Dir.glob('spec/fixtures/mails/not_bounces/*.eml') do |filename|
+    it "does not misclassify normal messages as bounces" do
+      list = create(:list)
+      mail = Mail.new(File.read(filename))
+      mail = Mail.create_message_to_list(mail.to_s, 'something@localhost', list).setup
+    
+      expect(mail.automated_message?).to be(false)
+    end
   end
 
   it "recognizes a cron message with 'Auto-Submitted'-header NOT as automated message" do
