@@ -3,6 +3,12 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.5.4] / xxx
+
+### Fixed
+
+* Properly validate email addresses for subscriptions. (#483)
+
 ## [3.5.3] / 2020-06-13
 
 ### Fixed
