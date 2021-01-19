@@ -17,6 +17,7 @@ require 'open3'
 # Require mandatory libs. The database-layer-lib is required below.
 require 'mail-gpg'
 require 'active_record'
+require 'bounce_email'
 
 # An extra from mail-gpg
 require 'hkp'
