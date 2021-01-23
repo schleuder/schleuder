@@ -44,7 +44,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'simplecov', '~> 0'
   s.add_development_dependency 'simplecov-html', '~> 0'
   s.add_development_dependency 'rack-test', '~> 1'
-  s.add_development_dependency 'rubocop', '~> 0'
+  s.add_development_dependency 'rubocop', '~> 1'
   s.add_development_dependency 'byebug', '~> 10'
   s.add_development_dependency 'json-schema', '~> 2'
   if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6.0')
