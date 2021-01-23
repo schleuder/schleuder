@@ -40,7 +40,8 @@ module Schleuder
       rescue GPGME::Error::BadPassphrase,
              GPGME::Error::DecryptFailed,
              GPGME::Error::NoData,
-             GPGME::Error::NoSecretKey
+             GPGME::Error::NoSecretKey,
+             GPGME::Error::Canceled
 
         logger.warn 'Decryption of incoming message failed.'
         return Errors::DecryptionFailed.new(list)
