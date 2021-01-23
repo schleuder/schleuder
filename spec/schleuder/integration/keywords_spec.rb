@@ -16,7 +16,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -59,7 +59,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint} true false\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint} true false"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -101,7 +101,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint.dup.insert(4, ' ')} true\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint.dup.insert(4, ' ')} true"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -144,7 +144,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint.dup.insert(4, ' ')}\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint.dup.insert(4, ' ')}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -186,7 +186,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint.dup.insert(4, ' ')} true false\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint.dup.insert(4, ' ')} true false"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -228,7 +228,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint.dup.insert(4, ' ')} false false\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint.dup.insert(4, ' ')} false false"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -270,7 +270,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint.dup.insert(4, ' ')} false true\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE: test@example.org 0x#{list.fingerprint.dup.insert(4, ' ')} false true"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -312,7 +312,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE:\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-SUBSCRIBE:"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -328,7 +328,7 @@ describe 'user sends keyword' do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).not_to include('translation missing')
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.subscription_management.subscribe_requires_arguments'))
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.subscribe.subscribe_requires_arguments'))
 
     expect(subscription).to be_blank
 
@@ -351,7 +351,7 @@ describe 'user sends keyword' do
       sign_as: '59C71FB38AEE22E091C78259D06350440F759BD3'
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-UNSUBSCRIBE:\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-UNSUBSCRIBE:"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -387,7 +387,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-UNSUBSCRIBE: test@example.org\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-UNSUBSCRIBE: test@example.org"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -421,7 +421,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-UNSUBSCRIBE: test@example.org\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-UNSUBSCRIBE: test@example.org"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -458,7 +458,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-UNSUBSCRIBE: schleuder@example.org\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-UNSUBSCRIBE: schleuder@example.org"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -493,7 +493,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: schleuder@example.org C4D60F8833789C7CAA44496FD3FFA6613AB10ECE\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: schleuder@example.org C4D60F8833789C7CAA44496FD3FFA6613AB10ECE"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -532,7 +532,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: schleuder@example.org C4D6 0F88 3378 9C7C  AA44 496F D3FF A661 3AB1 0ECE\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: schleuder@example.org C4D6 0F88 3378 9C7C  AA44 496F D3FF A661 3AB1 0ECE"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -571,7 +571,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: C4D60F8833789C7CAA44496FD3FFA6613AB10ECE\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: C4D60F8833789C7CAA44496FD3FFA6613AB10ECE"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -610,7 +610,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: test@example.org C4D60F8833789C7CAA44496FD3FFA6613AB10ECE\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: test@example.org C4D60F8833789C7CAA44496FD3FFA6613AB10ECE"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -649,7 +649,7 @@ describe 'user sends keyword' do
       sign_as: '59C71FB38AEE22E091C78259D06350440F759BD3'
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: test@example.org 59C71FB38AEE22E091C78259D06350440F759BD3\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: test@example.org 59C71FB38AEE22E091C78259D06350440F759BD3"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -687,7 +687,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: schleuder@example.org \nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: schleuder@example.org"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -703,8 +703,8 @@ describe 'user sends keyword' do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.first_plaintext_part.body.to_s).to eql(I18n.t(
-      'keyword_handlers.subscription_management.set_fingerprint_requires_valid_fingerprint',
-      fingerprint: ''
+      'keyword_handlers.set_fingerprint.set_fingerprint_requires_valid_fingerprint',
+      fingerprint: 'schleuder@example.org'
     ))
 
     expect(subscription).to be_present
@@ -728,7 +728,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: schleuder@example.org 59C71FB38AEE22E091C78259D0\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: schleuder@example.org 59C71FB38AEE22E091C78259D0"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -743,7 +743,7 @@ describe 'user sends keyword' do
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.first_plaintext_part.body.to_s).to include("You did not send a valid fingerprint for the keyword 'SET-FINGERPRINT'\n\nThe following value was detected: 59c71fb38aee22e091c78259d0")
+    expect(message.first_plaintext_part.body.to_s).to include("You did not send a valid fingerprint for the keyword 'SET-FINGERPRINT'\n\nThe following value was detected: schleuder@example.org 59c71fb38aee22e091c78259d0")
     expect(subscription).to be_present
     expect(subscription.fingerprint).to eql('59C71FB38AEE22E091C78259D06350440F759BD3')
 
@@ -764,7 +764,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: blabla\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: blabla"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -780,7 +780,7 @@ describe 'user sends keyword' do
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.first_plaintext_part.body.to_s).to eql(I18n.t(
-      'keyword_handlers.subscription_management.set_fingerprint_requires_valid_fingerprint',
+      'keyword_handlers.set_fingerprint.set_fingerprint_requires_valid_fingerprint',
       fingerprint: 'blabla'
     ))
 
@@ -803,7 +803,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: bla@example.org C4D60F8833789C7CAA44496FD3FFA6613AB10ECE\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: bla@example.org C4D60F8833789C7CAA44496FD3FFA6613AB10ECE"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -836,7 +836,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: \nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-set-fingerprint: "
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -850,7 +850,7 @@ describe 'user sends keyword' do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.subscription_management.set_fingerprint_requires_arguments'))
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.set_fingerprint.set_fingerprint_requires_arguments'))
 
     teardown_list_and_mailer(list)
   end
@@ -869,7 +869,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-unset-fingerprint: \nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-unset-fingerprint: "
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -883,7 +883,7 @@ describe 'user sends keyword' do
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.subscription_management.unset_fingerprint_requires_arguments'))
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.unset_fingerprint.unset_fingerprint_requires_arguments'))
 
     teardown_list_and_mailer(list)
   end
@@ -904,7 +904,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-unset-fingerprint: test@example.org\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-unset-fingerprint: test@example.org"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -942,7 +942,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-unset-fingerprint: schleuder@example.org\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-unset-fingerprint: schleuder@example.org"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -957,7 +957,7 @@ describe 'user sends keyword' do
     subscription = list.subscriptions.where(email: 'schleuder@example.org').first
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.subscription_management.unset_fingerprint_requires_arguments'))
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.unset_fingerprint.unset_fingerprint_requires_arguments'))
 
     expect(subscription).to be_present
     expect(subscription.fingerprint).to eql('59C71FB38AEE22E091C78259D06350440F759BD3')
@@ -980,7 +980,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-unset-fingerprint: schleuder@example.org force\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-unset-fingerprint: schleuder@example.org force"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1017,7 +1017,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-unset-fingerprint: bla@example.org\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-unset-fingerprint: bla@example.org"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1052,7 +1052,7 @@ describe 'user sends keyword' do
       sign_as: '59C71FB38AEE22E091C78259D06350440F759BD3'
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-unset-fingerprint: test@example.org\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-unset-fingerprint: test@example.org"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1090,7 +1090,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-list-subscriptions\nx-stop:"
+    mail.body = "x-list-name: #{list.email}\nX-list-subscriptions:"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1125,7 +1125,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-list-subscriptions:\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-list-subscriptions:"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1166,7 +1166,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-list-subscriptions: example.org\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-list-subscriptions: example.org"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1200,7 +1200,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-list-subscriptions: blabla\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-list-subscriptions: blabla"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1235,7 +1235,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: lala!\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: lala!"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1269,7 +1269,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: admin@example.org\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: admin@example.org"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1305,7 +1305,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: something@localhost\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: something@localhost"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1341,7 +1341,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: http://127.0.0.1:9999/keys/example.asc\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: http://127.0.0.1:9999/keys/example.asc"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1378,7 +1378,7 @@ describe 'user sends keyword' do
     }
     mail.gpg(gpg_opts)
     url = 'http://127.0.0.1:9999/foo'
-    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: #{url}\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: #{url}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1414,7 +1414,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: 0x0000000000000000000000000000000000000000\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: 0x0000000000000000000000000000000000000000"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1450,7 +1450,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: 0x98769E8A1091F36BD88403ECF71A3F8412D83889\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: 0x98769E8A1091F36BD88403ECF71A3F8412D83889"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1486,7 +1486,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: 0x59C71FB38AEE22E091C78259D06350440F759BD3\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: 0x59C71FB38AEE22E091C78259D06350440F759BD3"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1522,7 +1522,7 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: \nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: "
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1539,7 +1539,7 @@ describe 'user sends keyword' do
 
     expect(list.keys.size).to eql(list_keys_num)
     expect(message.to_s).not_to include('translation missing')
-    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.key_management.fetch_key_requires_arguments'))
+    expect(message.first_plaintext_part.body.to_s).to eql(I18n.t('keyword_handlers.fetch_key.fetch_key_requires_arguments'))
 
     teardown_list_and_mailer(list)
   end
@@ -1559,7 +1559,7 @@ describe 'user sends keyword' do
     }
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
-    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1613,7 +1613,7 @@ Otherwise it won't be sent out. What a nice trick!
 
 Best
 EOS
-    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1658,7 +1658,7 @@ EOS
     }
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
-    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1695,7 +1695,7 @@ EOS
     mail.gpg(gpg_opts)
     content_body = "Hello again! ¡Hola!\n"
     mail.charset = 'iso-8859-1'
-    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\nx-stop\n#{content_body}".encode('iso-8859-1')
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n#{content_body}".encode('iso-8859-1')
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1737,7 +1737,7 @@ EOS
     mail.gpg(gpg_opts)
     content_body = "This is a test\nAnd here are some umlauts:ÄäÖöÜüß"
     mail.charset = 'utf-8'
-    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\nx-stop\n#{content_body}".encode('utf-8')
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n#{content_body}".encode('utf-8')
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1777,7 +1777,7 @@ EOS
     }
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
-    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1819,7 +1819,7 @@ EOS
     }
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
-    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1862,7 +1862,7 @@ EOS
     }
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
-    mail.body = "x-list-name: #{list.email}\nX-resend-encrypted-only: bla@foo\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend-encrypted-only: bla@foo\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1900,7 +1900,7 @@ EOS
     }
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
-    mail.body = "x-list-name: #{list.email}\nX-resend-unencrypted: bla@foo\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend-unencrypted: bla@foo\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1939,7 +1939,7 @@ EOS
     }
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
-    mail.body = "x-list-name: #{list.email}\nX-resend-encrypted-only: bla@foo\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend-encrypted-only: bla@foo\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -1974,7 +1974,7 @@ EOS
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
     invalid_recipient = '`ls`bla'
-    mail.body = "x-list-name: #{list.email}\nX-resend: #{invalid_recipient}\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend: #{invalid_recipient}\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2011,7 +2011,7 @@ EOS
     }
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
-    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2046,19 +2046,21 @@ EOS
     }
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
-    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
+    runner_result = nil
     begin
-      Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
+      runner_result = Schleuder::Runner.new().run(encrypted_mail.to_s, list.email)
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.email, list).setup
 
+    expect(runner_result).to be_nil
     expect(Mail::TestMailer.deliveries.size).to eql(1)
     expect(message.first_plaintext_part.to_s).to include("Error: The keyword 'resend' may for this list only be used by admins.")
 
@@ -2082,7 +2084,7 @@ EOS
     }
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
-    mail.body = "x-list-name: #{list.email}\nX-resend: bla@foo\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend: bla@foo\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2119,7 +2121,7 @@ EOS
     }
     mail.gpg(gpg_opts)
     signed_text = "signed\nsigned\nsigned\n\n"
-    mail.body = "x-list-name: #{list.email}\nx-sign-this:\nx-stop\n#{signed_text}"
+    mail.body = "x-list-name: #{list.email}\nx-sign-this:\n#{signed_text}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2152,7 +2154,7 @@ EOS
     }
     mail.gpg(gpg_opts)
     keywords = Mail::Part.new
-    keywords.body = "\n\nx-list-name: #{list.email}\nx-sign-this:\nx-stop"
+    keywords.body = "\n\nx-list-name: #{list.email}\nx-sign-this:"
     mail.parts << keywords
     signed_content = File.read('spec/fixtures/example_key.txt')
     mail.attachments['example_key.txt'] = { mime_type: 'application/pgp-key',
@@ -2199,7 +2201,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-list-KEYs: der@ex\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-list-KEYs: der@ex"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2233,7 +2235,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-list-KEYs: @schleuder\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-list-KEYs: @schleuder"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2267,7 +2269,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-list-KEYs: 0x59C71FB38AEE22E091C78259D06350440F759BD3\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-list-KEYs: 0x59C71FB38AEE22E091C78259D06350440F759BD3"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2302,7 +2304,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-GET-KEY: 0x59C71FB38AEE22E091C78259D06350440F759BD3\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-GET-KEY: 0x59C71FB38AEE22E091C78259D06350440F759BD3"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2336,7 +2338,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-get-KEY: blabla\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-get-KEY: blabla"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2370,7 +2372,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-get-KEY:\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-get-KEY:"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2384,8 +2386,9 @@ EOS
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(message.to).to eql(['schleuder@example.org'])
-    expect(message.to_s).to include('Your message resulted in no output')
-    expect(message.to_s).not_to include('-----BEGIN PGP PUBLIC KEY')
+    expect(message.to_s).to include("All keys from the list's keyring matching '' are attached to this message.")
+    expect(message.to_s).to include('pub   4096R/59C71FB38AEE22E091C78259D06350440F759BD3')
+    expect(message.to_s).to include('-----BEGIN PGP PUBLIC KEY')
 
     teardown_list_and_mailer(list)
   end
@@ -2405,7 +2408,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-get-logfile\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-get-logfile"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2441,7 +2444,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-get-logfile\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-get-logfile"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2476,7 +2479,7 @@ EOS
     }
     mail.gpg(gpg_opts)
     content_body = 'something something list-key'
-    mail.body = "x-list-name: #{list.email}\nX-attach-listkey\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-attach-listkey\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2514,7 +2517,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-get-version\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-get-version"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2548,7 +2551,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-get-version\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-get-version"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2584,7 +2587,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-list-keys\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-list-keys"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2621,7 +2624,7 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-list-keys schleuder2\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-list-keys schleuder2"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2658,19 +2661,21 @@ EOS
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-list-keys schleuder2 bla\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nX-list-keys schleuder2 bla"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
+    runner_result = nil
     begin
-      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+      runner_result = Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
     rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.first
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
+    expect(runner_result).to be_nil
     expect(message.first_plaintext_part.body.to_s.lines.size).to eql(10)
     expect(message.first_plaintext_part.body.to_s).not_to include('59C71FB38AEE22E091C78259D06350440F759BD3')
     expect(message.first_plaintext_part.body.to_s).to include('C4D60F8833789C7CAA44496FD3FFA6613AB10ECE')
@@ -2696,7 +2701,7 @@ EOS
         sign_as: list.admins.first.fingerprint
       }
       mail.gpg(gpg_opts)
-      mail.body = "x-list-name: #{list.email}\nX-list-keys\nx-stop"
+      mail.body = "x-list-name: #{list.email}\nX-list-keys"
       mail.deliver
 
       encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2732,7 +2737,7 @@ EOS
       }
       mail.gpg(gpg_opts)
       keymaterial = File.read('spec/fixtures/broken_utf8_uid_key.txt')
-      mail.body = "x-list-name: #{list.email}\nX-ADD-KEY:\nx-stop\n#{keymaterial}"
+      mail.body = "x-list-name: #{list.email}\nX-ADD-KEY:\n#{keymaterial}"
       mail.deliver
 
       encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2767,7 +2772,7 @@ EOS
         sign_as: list.admins.first.fingerprint
       }
       mail.gpg(gpg_opts)
-      mail.body = "x-list-name: #{list.email}\nX-GET-KEY: 0x3102B29989BEE703AE5ED62E1242F6E13D8EBE4A\nx-stop"
+      mail.body = "x-list-name: #{list.email}\nX-GET-KEY: 0x3102B29989BEE703AE5ED62E1242F6E13D8EBE4A"
       mail.deliver
 
       encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2785,39 +2790,6 @@ EOS
 
       teardown_list_and_mailer(list)
     end
-  end
-
-  it 'rejects messages to request-address without x-stop keyword' do
-    list = create(:list)
-    list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
-    ENV['GNUPGHOME'] = list.listdir
-    mail = Mail.new
-    mail.to = list.request_address
-    mail.from = list.admins.first.email
-    gpg_opts = {
-      encrypt: true,
-      keys: {list.request_address => list.fingerprint},
-      sign: true,
-      sign_as: list.admins.first.fingerprint
-    }
-    mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-LIST-KEYS"
-    mail.deliver
-
-    encrypted_mail = Mail::TestMailer.deliveries.first
-    Mail::TestMailer.deliveries.clear
-
-    begin
-      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-    rescue SystemExit
-    end
-    raw = Mail::TestMailer.deliveries.first
-    message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
-
-    expect(Mail::TestMailer.deliveries.size).to eql(1)
-    expect(message.first_plaintext_part.body.to_s).to include("Your message lacked the keyword 'X-STOP'")
-
-    teardown_list_and_mailer(list)
   end
 
 end

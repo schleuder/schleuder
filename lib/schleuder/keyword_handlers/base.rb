@@ -26,28 +26,28 @@ module Schleuder
         end
       end
 
+      attr_reader :arguments, :invalid_arguments
+
       def initialize(called_keyword)
         @called_keyword = called_keyword
         @arguments = []
+        @invalid_arguments = []
       end
 
       def name
         @called_keyword
       end
 
-      def arguments
-        @arguments
-      end
-
       def consume_arguments(input)
         args_to_check = @arguments + into_arguments(input)
-        action, args_to_save = validate_arguments(args_to_check)
+        action, args_to_save = validate_arguments(args_to_check.dup)
         case action
         when :more
-          # TODO: Maybe only ask for more content if the current line was longer than X characters?
           @arguments = args_to_save || args_to_check
           :more
         when :invalid
+          # Save invalid arguments to enable run() to produce sensible error messages.
+          @invalid_arguments = args_to_check
           :invalid
         when :end
           @arguments = args_to_save || args_to_check
@@ -61,7 +61,10 @@ module Schleuder
         end
 
         arguments.each_with_index do |argument, index|
-          if ! argument.match(self.class.wanted_arguments[index])
+          match_data = argument.match(self.class.wanted_arguments[index])
+          # TODO: does this work for keywords that allow the first argument to be blank?
+          # Reject also empty matches, which are produced by optional arguments.
+          if match_data.blank? || match_data[0].blank?
             return :invalid
           end
         end
@@ -75,7 +78,7 @@ module Schleuder
 
       def execute(mail)
         if ! self.respond_to?(:run)
-          raise "run() is not implemented for this class, cannot execute!"
+          raise 'run() is not implemented for this class, cannot execute!'
         end
         @mail = mail
         @list = mail.list

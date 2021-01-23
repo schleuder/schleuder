@@ -26,6 +26,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Drop deprecated X-LISTNAME keyword. (#374)
 * Downcase email addresses: Email addresses are downcased before saving.
 * Allow Jenkins job notifications to reach lists. Before, such mails were rejected due to being "auto-submitted".
+* `X-GET-KEY` again can send you all keys if you don't give it an argument.
 
 
 ## [3.3.0] / 2018-09-04

@@ -49,6 +49,11 @@ module Schleuder
               content_lines[i] = nil
               in_keyword_block = false
             end
+          elsif line.present?
+            # Break if we are not in a keyword-block, and the line is not empty
+            # and doesn't start with "x-".
+            # E.g. when the Message doesn't contain any keywords.
+            break
           end
         end
         [extracted_keywords, content_lines.compact]

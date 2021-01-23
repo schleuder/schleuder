@@ -7,9 +7,10 @@ module Schleuder
         subscriptions = subscriptions_controller.find_all(@list.email).to_a
 
         if @arguments.present?
-          regexp = Regexp.new(@arguments)
           subscriptions.select! do |subscription|
-            subscription.email.match(regexp)
+            @arguments.reduce(false) do |sum, arg|
+              sum ||= subscription.email.match?(arg)
+            end
           end
         end
 

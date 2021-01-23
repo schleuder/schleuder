@@ -175,7 +175,6 @@ describe Mail::Message do
 
       keywords = m.keywords
 
-      byebug
       expect(keywords.size).to eql(2)
       expect(keywords.first.arguments.size).to eql(4)
       expect(keywords.last.arguments.size).to eql(1)

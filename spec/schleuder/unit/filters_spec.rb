@@ -83,6 +83,7 @@ describe Schleuder::Filters do
       mail.html_part = '<p>x-resend: someone@example.org</p><p>blabla</p>'
       mail.subject = 'test'
       mail.to_s
+      mail = Mail.create_message_to_list(mail, list.email, list)
 
       Schleuder::Filters.strip_html_from_alternative_if_keywords_present(list, mail)
 
@@ -100,6 +101,7 @@ describe Schleuder::Filters do
       mail.text_part = content = 'Hello someone@example.org,\n\nblabla'
       mail.html_part = '<p>Hello someone@example.org,</p><p>blabla</p>'
       mail.subject = 'test'
+      mail = Mail.create_message_to_list(mail, list.email, list)
 
       Schleuder::Filters.strip_html_from_alternative_if_keywords_present(list, mail)
 

@@ -48,7 +48,7 @@ module Schleuder
         recip_map = map_with_keys(mail, encrypted_only)
 
         if recip_map.keys.size != @arguments.size
-          return if ! may_resend_unencrypted?
+          return if ! may_resend_unencrypted?(mail)
         else
           return if ! may_resend_encrypted?(mail)
         end

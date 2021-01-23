@@ -153,6 +153,24 @@ en:
         Or, to fetch a key keys by URL:
         X-FETCH-KEY: https://example.org/keys/mykey.asc
     resend:
+      invalid_arguments: |
+        Error: You did not send any arguments for the keyword 'RESEND'.
+
+        The following value was detected: %{invalid_arguments}
+
+        One email-address is mandatory, more are optional. E.g..:
+        X-RESEND: someoneelse@hostname.org
+
+        Or, in order to send the message independently to multiple addresses:
+        X-SUBSCRIBE: someoneelse@hostname.org anotheraddress@anotherhost.net
+      requires_arguments: |
+        Error: You sent invalid arguments for the keyword 'RESEND'.
+
+        One email-address is mandatory, more are optional. E.g..:
+        X-RESEND: someoneelse@hostname.org
+
+        Or, in order to send the message independently to multiple addresses:
+        X-SUBSCRIBE: someoneelse@hostname.org anotheraddress@anotherhost.net
       not_resent_no_keys: Resending to <%{email}> failed (%{num_keys} keys found and unencrypted sending disallowed).
       encrypted_to: Encrypted to
       unencrypted_to: Unencrypted to

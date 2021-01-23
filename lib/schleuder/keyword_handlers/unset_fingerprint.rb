@@ -1,10 +1,13 @@
 module Schleuder
   module KeywordHandlers
     class UnsetFingerprint < Base
-      handles_request_keyword 'unset-fingerprint', with_arguments: [Conf::EMAIL_REGEXP]
+      handles_request_keyword 'unset-fingerprint', with_arguments: [Conf::EMAIL_REGEXP, /(force)?/]
+
+      handles_request_keyword 'unset-fingerprint', with_arguments: [:emailaddr, 'force?']
+
+      handles_request_keyword 'unset-fingerprint', with_arguments: [ARG_EMAIL, /(force)?/]
 
       def run
-        # TODO: Do we still need this check?
         if @arguments.blank?
           return t('unset_fingerprint_requires_arguments')
         end

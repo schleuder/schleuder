@@ -1,11 +1,16 @@
 module Schleuder
   module KeywordHandlers
     class ListKeys < Base
-      handles_request_keyword 'list-keys', with_arguments: [/\S*/]
+      handles_request_keyword 'list-keys', with_arguments: [/\S?/, /\S?/, /\S?/]
 
       def run
-        argument = Array(@arguments.first.presence || '')
-        keys = keys_controller.find_all(@list.email, argument)
+        if @arguments.blank?
+          keys = keys_controller.find_all(@list.email, '')
+        else
+          keys = @arguments.map do |arg|
+            keys_controller.find_all(@list.email, arg)
+          end.flatten
+        end
 
         if keys.size > 0
           keys.each do |key|
