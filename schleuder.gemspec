@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'charlock_holmes', '~> 0.7.6'
   s.add_runtime_dependency 'bcrypt-ruby', '~> 3.1.2'
   s.add_runtime_dependency 'rake', '>= 10.5.0'
-  s.add_runtime_dependency 'sqlite3', '~> 1.3.6'
+  s.add_runtime_dependency 'sqlite3', '~> 1.4.2'
   s.add_runtime_dependency 'sinatra', '~> 2'
   s.add_runtime_dependency 'sinatra-contrib', '~> 2'
   s.add_runtime_dependency 'thor', '~> 0'
