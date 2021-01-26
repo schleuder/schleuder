@@ -40,13 +40,23 @@ describe Mail::Message do
     expect(mail.automated_message?).to be(true)
   end
   
-  Dir.glob('spec/fixtures/mails/not_bounces/*.eml') do |filename|
+  Dir.glob('spec/fixtures/mails/not_bounces/*') do |filename|
     it "does not misclassify normal messages as bounces" do
       list = create(:list)
       mail = Mail.new(File.read(filename))
       mail = Mail.create_message_to_list(mail.to_s, 'something@localhost', list).setup
     
       expect(mail.automated_message?).to be(false)
+    end
+  end
+
+  Dir.glob('spec/fixtures/mails/bounces/*') do |filename|
+    it "does not misclassify bounces as normal messages" do
+      list = create(:list)
+      mail = Mail.new(File.read(filename))
+      mail = Mail.create_message_to_list(mail.to_s, 'something@localhost', list).setup
+    
+      expect(mail.automated_message?).to be(true)
     end
   end
 
