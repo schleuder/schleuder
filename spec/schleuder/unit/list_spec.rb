@@ -7,7 +7,8 @@ describe Schleuder::List do
       :receive_authenticated_only, :receive_from_subscribed_emailaddresses_only,
       :receive_admin_only, :keep_msgid, :bounces_drop_all,
       :bounces_notify_admins, :deliver_selfsent, :include_list_headers,
-      :include_list_headers, :include_openpgp_header, :forward_all_incoming_to_admins
+      :include_list_headers, :include_openpgp_header, :forward_all_incoming_to_admins,
+      :use_unencrypted_sender_addresses_in_header
   ].freeze
 
   it "has a valid factory" do
@@ -46,6 +47,7 @@ describe Schleuder::List do
   it { is_expected.to respond_to :language }
   it { is_expected.to respond_to :forward_all_incoming_to_admins }
   it { is_expected.to respond_to :logfiles_to_keep }
+  it { is_expected.to respond_to :use_unencrypted_sender_addresses_in_header }
 
   it "is invalid when email is nil" do
     # Don't use factory here because we'd run into List.listdir expecting email to not be nil.
@@ -210,7 +212,7 @@ describe Schleuder::List do
        :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :openpgp_header_preference,
        :public_footer, :receive_admin_only, :receive_authenticated_only, :receive_encrypted_only,
        :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,
-       :subject_prefix, :subject_prefix_in, :subject_prefix_out,
+       :subject_prefix, :subject_prefix_in, :subject_prefix_out, :use_unencrypted_sender_addresses_in_header
       ]
     end
 
@@ -858,6 +860,70 @@ describe Schleuder::List do
       expect(messages[0].parts.last.body.to_s).to include("-----BEGIN PGP MESSAGE-----")
       expect(messages[0].subject).to eql("Something")
 
+      teardown_list_and_mailer(list)
+    end
+  end
+
+  describe "#use_unencrypted_sender_addresses_in_header" do
+    it "is disabled by default" do
+      list = create(:list)
+      expect(list.use_unencrypted_sender_addresses_in_header).to be(false)
+      teardown_list_and_mailer(list)
+    end
+  
+    it "does not leak any mail address when disabled" do
+      list = create(:list, use_unencrypted_sender_addresses_in_header: false)
+      key_material = File.read("spec/fixtures/default_list_key.txt")
+      sub, msgs = list.subscribe("admin@example.org", nil, true, true, key_material)
+      sub, msgs = list.subscribe("user1@example.org", nil, false, true, key_material)
+      sub, msgs = list.subscribe("user2@example.org", nil, false, true, key_material)
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'something@localhost'
+      mail.subject = 'Something'
+      mail.body = "Some content"
+  
+      Schleuder::Runner.new().run(mail.to_s, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+  
+      expect(messages.size).to be(3)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
+      expect(messages[0].from).to eql([list.email])
+      expect(messages[0].reply_to).to be_nil
+      expect(messages[1].from).to eql([list.email])
+      expect(messages[1].reply_to).to be_nil
+      expect(messages[2].from).to eql([list.email])
+      expect(messages[2].reply_to).to be_nil
+  
+      teardown_list_and_mailer(list)
+    end
+  
+    it "sets reply-to to senders address and from to munched version when enabled" do
+      list = create(:list, use_unencrypted_sender_addresses_in_header: true)
+      key_material = File.read("spec/fixtures/default_list_key.txt")
+      sub, msgs = list.subscribe("admin@example.org", nil, true, true, key_material)
+      sub, msgs = list.subscribe("user1@example.org", nil, false, true, key_material)
+      sub, msgs = list.subscribe("user2@example.org", nil, false, true, key_material)
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'something@localhost'
+      mail.subject = 'Something'
+      mail.body = "Some content"
+  
+      Schleuder::Runner.new().run(mail.to_s, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+  
+      expect(messages.size).to be(3)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
+      expect(messages[0].from).to eql([list.email])
+      expect(messages[0].reply_to).to eql(mail.from)
+      expect(messages[1].from).to eql([list.email])
+      expect(messages[1].reply_to).to eql(mail.from)
+      expect(messages[2].from).to eql([list.email])
+      expect(messages[2].reply_to).to eql(mail.from)
+  
       teardown_list_and_mailer(list)
     end
   end
