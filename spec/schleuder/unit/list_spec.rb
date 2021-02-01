@@ -69,6 +69,13 @@ describe Schleuder::List do
     expect(list.errors.messages[:email]).to include("is not a valid email address")
   end
 
+  it "is invalid when email contains a space" do
+    list = build(:list, email: "foo bu@bar.org")
+
+    expect(list).not_to be_valid
+    expect(list.errors.messages[:email]).to include("is not a valid email address")
+  end
+
   it "is invalid when fingerprint is blank" do
     list = build(:list, fingerprint: "")
 
