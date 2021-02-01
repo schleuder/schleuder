@@ -209,7 +209,7 @@ module Mail
     end
 
     def bounced?
-      @bounced ||= detect_bounce(self) || (error_status != "unknown")
+      @bounced ||= bounce_detected? || (error_status != "unknown")
     end
 
     def diagnostic_code
@@ -217,7 +217,7 @@ module Mail
     end
 
     def error_status
-      @error_status ||= detect_error_code(self)
+      @error_status ||= detect_error_code
     end
  
     def keywords
@@ -531,12 +531,12 @@ module Mail
       end.join(' ')
     end
 
-    def detect_error_code(mail)
+    def detect_error_code
       # Detects the error code of an email with different heuristics
       # from: https://github.com/mailtop/bounce_email
       
       # Custom status codes
-      unicode_subject = mail.subject.to_s
+      unicode_subject = self.subject.to_s
       unicode_subject = unicode_subject.encode('utf-8') if unicode_subject.respond_to?(:encode)
  
       return '97' if unicode_subject.match(/delayed/i)
@@ -544,30 +544,30 @@ module Mail
       return '99' if unicode_subject.match(/auto.*reply|férias|ferias|Estarei ausente|estou ausente|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
 
       # Feedback-Type: abuse
-      return '96' if mail.to_s.match(/Feedback-Type\: abuse/i)
+      return '96' if self.to_s.match(/Feedback-Type\: abuse/i)
 
-      if mail.parts[1]
-        match_parts = mail.parts[1].body.match(/(Status:.|550 |#)([245]\.[0-9]{1,3}\.[0-9]{1,3})/)
+      if self.parts[1]
+        match_parts = self.parts[1].body.match(/(Status:.|550 |#)([245]\.[0-9]{1,3}\.[0-9]{1,3})/)
         code = match_parts[2] if match_parts
         return code if code
       end
 
       # Now try getting it from correct part of tmail
-      code = detect_bounce_status_code_from_text(mail.body)
+      code = detect_bounce_status_code_from_text(self.body)
       return code if code
 
       # OK getting desperate so try getting code from entire email
-      code = detect_bounce_status_code_from_text(mail.to_s)
+      code = detect_bounce_status_code_from_text(self.to_s)
       code || 'unknown'
     end
 
-    def detect_bounce(mail)
+    def bounce_detected?
       # Detects bounces from different parts of the email without error status codes
       # from: https://github.com/mailtop/bounce_email
-      return true if mail.subject.to_s.match(/(returned|undelivered) mail|mail delivery( failed)?|(delivery )(status notification|failure)|failure notice|undeliver(able|ed)( mail)?|return(ing message|ed) to sender/i)
-      return true if mail.subject.to_s.match(/auto.*reply|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
-      return true if mail['precedence'].to_s.match(/auto.*(reply|responder|antwort)/i)
-      return true if mail.from.to_s.match(/^(MAILER-DAEMON|POSTMASTER)\@/i)
+      return true if self.subject.to_s.match(/(returned|undelivered) mail|mail delivery( failed)?|(delivery )(status notification|failure)|failure notice|undeliver(able|ed)( mail)?|return(ing message|ed) to sender/i)
+      return true if self.subject.to_s.match(/auto.*reply|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
+      return true if self['precedence'].to_s.match(/auto.*(reply|responder|antwort)/i)
+      return true if self.from.to_s.match(/^(MAILER-DAEMON|POSTMASTER)\@/i)
       false
     end
 
