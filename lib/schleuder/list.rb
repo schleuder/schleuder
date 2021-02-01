@@ -70,8 +70,9 @@ module Schleuder
     # Some users find it quite confusing when they click "reply-to" and the mail client 
     # doesn't reply to the sender of the mail but the whole mailing list. For those lists it can be
     # considered to set this value to true. The recipients will then receive e-mails
-    # where the "reply-to" header will contain the unencrypted address
+    # where the "reply-to" header will contain the reply-to address
     # of the sender and thus reply to the sender when clicking "reply-to" in a client.
+    # If no "reply-to" is set, the "from"-header of the original sender will be used.
     # The default is off.
     validates :set_reply_to_to_sender, boolean: true
 

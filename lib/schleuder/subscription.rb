@@ -74,7 +74,9 @@ module Schleuder
       mail.to = self.email
       
       if self.list.set_reply_to_to_sender? && ! incoming_mail.nil?
-        # If the option is set to true, we will set the reply-to header to the original senders email.
+        # If the option "set_reply_to_to_sender" is set to true, we will set the reply-to header 
+        # to the reply-to header given by the original email. If no reply-to header exists in the original email,
+        # the original senders email will be used as reply-to.
         if ! incoming_mail.reply_to.nil?
           mail.reply_to = incoming_mail.reply_to
         else
@@ -83,6 +85,7 @@ module Schleuder
       end
 
       if self.list.munge_from? && ! incoming_mail.nil? 
+        # If the option "munge_from" is set to true, we will add the original senders' from-header to ours.
         # We munch the from-header to avoid issues with DMARC.
         mail.from = I18n.t("header_munching", from: incoming_mail.from.first, list: self.list.email, list_address: self.list.email)
       else
