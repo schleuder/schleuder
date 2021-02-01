@@ -72,16 +72,23 @@ module Schleuder
 
     def ensure_headers(mail, incoming_mail=nil)
       mail.to = self.email
-      if self.list.use_unencrypted_sender_addresses_in_header? && ! incoming_mail.nil?
-        # If the option is set to true, we will set the from-header
-        # and the reply-to header to the original senders email.
-        # WARNING: setting this option will send the original senders email UNENCRYPTED in the headers.
+      
+      if self.list.set_reply_to_to_sender? && ! incoming_mail.nil?
+        # If the option is set to true, we will set the reply-to header to the original senders email.
+        if ! incoming_mail.reply_to.nil?
+          mail.reply_to = incoming_mail.reply_to
+        else
+          mail.reply_to = incoming_mail.from
+        end
+      end
+
+      if self.list.munge_from? && ! incoming_mail.nil? 
         # We munch the from-header to avoid issues with DMARC.
         mail.from = I18n.t("header_munching", from: incoming_mail.from.first, list: self.list.email, list_address: self.list.email)
-        mail.reply_to = incoming_mail.from
       else
         mail.from = self.list.email
       end
+
       mail.sender = self.list.bounce_address
       mail
     end

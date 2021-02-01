@@ -46,7 +46,8 @@ ActiveRecord::Schema.define(version: 20200118170110) do
     t.integer  "logfiles_to_keep",                                        default: 2
     t.text     "internal_footer",                                         default: ""
     t.boolean  "include_autocrypt_header",                                default: true
-    t.boolean  "use_unencrypted_sender_addresses_in_header",              default: false
+    t.boolean  "set_reply_to_to_sender",                                  default: false
+    t.boolean  "munge_from",                                              default: false
   end
 
   create_table "subscriptions", force: :cascade do |t|

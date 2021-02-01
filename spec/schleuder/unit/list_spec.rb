@@ -8,7 +8,7 @@ describe Schleuder::List do
       :receive_admin_only, :keep_msgid, :bounces_drop_all,
       :bounces_notify_admins, :deliver_selfsent, :include_list_headers,
       :include_list_headers, :include_openpgp_header, :forward_all_incoming_to_admins,
-      :use_unencrypted_sender_addresses_in_header
+      :set_reply_to_to_sender, :munge_from,
   ].freeze
 
   it "has a valid factory" do
@@ -47,7 +47,8 @@ describe Schleuder::List do
   it { is_expected.to respond_to :language }
   it { is_expected.to respond_to :forward_all_incoming_to_admins }
   it { is_expected.to respond_to :logfiles_to_keep }
-  it { is_expected.to respond_to :use_unencrypted_sender_addresses_in_header }
+  it { is_expected.to respond_to :set_reply_to_to_sender }
+  it { is_expected.to respond_to :munge_from }
 
   it "is invalid when email is nil" do
     # Don't use factory here because we'd run into List.listdir expecting email to not be nil.
@@ -209,10 +210,10 @@ describe Schleuder::List do
        :bounces_drop_all, :bounces_drop_on_headers, :bounces_notify_admins, :deliver_selfsent,
        :forward_all_incoming_to_admins, :headers_to_meta, :include_list_headers,
        :include_openpgp_header, :internal_footer, :keep_msgid, :keywords_admin_notify, :keywords_admin_only,
-       :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :openpgp_header_preference,
+       :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :munge_from, :openpgp_header_preference,
        :public_footer, :receive_admin_only, :receive_authenticated_only, :receive_encrypted_only,
        :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,
-       :subject_prefix, :subject_prefix_in, :subject_prefix_out, :use_unencrypted_sender_addresses_in_header
+       :set_reply_to_to_sender, :subject_prefix, :subject_prefix_in, :subject_prefix_out,   
       ]
     end
 
@@ -864,23 +865,23 @@ describe Schleuder::List do
     end
   end
 
-  describe "#use_unencrypted_sender_addresses_in_header" do
+  describe "#set_reply_to_to_sender" do
     it "is disabled by default" do
       list = create(:list)
-      expect(list.use_unencrypted_sender_addresses_in_header).to be(false)
+      expect(list.set_reply_to_to_sender).to be(false)
       teardown_list_and_mailer(list)
     end
   
-    it "does not leak any mail address when disabled" do
-      list = create(:list, use_unencrypted_sender_addresses_in_header: false)
+    it "does not set reply_to mail address when disabled" do
+      list = create(:list, set_reply_to_to_sender: false)
       key_material = File.read("spec/fixtures/default_list_key.txt")
       sub, msgs = list.subscribe("admin@example.org", nil, true, true, key_material)
       sub, msgs = list.subscribe("user1@example.org", nil, false, true, key_material)
       sub, msgs = list.subscribe("user2@example.org", nil, false, true, key_material)
       mail = Mail.new
       mail.to = list.email
-      mail.from = 'something@localhost'
-      mail.subject = 'Something'
+      mail.from = "something@localhost"
+      mail.subject = "Something"
       mail.body = "Some content"
   
       Schleuder::Runner.new().run(mail.to_s, list.email)
@@ -899,8 +900,67 @@ describe Schleuder::List do
       teardown_list_and_mailer(list)
     end
   
-    it "sets reply-to to senders address and from to munched version when enabled" do
-      list = create(:list, use_unencrypted_sender_addresses_in_header: true)
+    it "sets reply-to to senders from-address when enabled" do
+      list = create(:list, set_reply_to_to_sender: true)
+      key_material = File.read("spec/fixtures/default_list_key.txt")
+      sub, msgs = list.subscribe("admin@example.org", nil, true, true, key_material)
+      sub, msgs = list.subscribe("user1@example.org", nil, false, true, key_material)
+      sub, msgs = list.subscribe("user2@example.org", nil, false, true, key_material)
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = "something@localhost"
+      mail.subject = "Something"
+      mail.body = "Some content"
+  
+      Schleuder::Runner.new().run(mail.to_s, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+  
+      expect(messages.size).to be(3)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
+      expect(messages[0].reply_to).to eql(mail.from)
+      expect(messages[1].reply_to).to eql(mail.from)
+      expect(messages[2].reply_to).to eql(mail.from)
+  
+      teardown_list_and_mailer(list)
+    end
+
+    it "prefers reply_to of the sender over from when existing" do
+      list = create(:list, set_reply_to_to_sender: true)
+      key_material = File.read("spec/fixtures/default_list_key.txt")
+      sub, msgs = list.subscribe("admin@example.org", nil, true, true, key_material)
+      sub, msgs = list.subscribe("user1@example.org", nil, false, true, key_material)
+      sub, msgs = list.subscribe("user2@example.org", nil, false, true, key_material)
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'something@localhost'
+      mail.subject = 'Something'
+      mail.body = 'Some content'
+      mail.reply_to = 'abc@def.de'
+  
+      Schleuder::Runner.new().run(mail.to_s, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+  
+      expect(messages.size).to be(3)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
+      expect(messages[0].reply_to).to eql(mail.reply_to)
+      expect(messages[1].reply_to).to eql(mail.reply_to)
+      expect(messages[2].reply_to).to eql(mail.reply_to)
+  
+      teardown_list_and_mailer(list)
+    end
+  end
+
+  describe "#munge_from" do
+    it "is disabled by default" do
+      list = create(:list)
+      expect(list.munge_from).to be(false)
+      teardown_list_and_mailer(list)
+    end
+  
+    it "does not munge from address when disabled" do
+      list = create(:list, munge_from: false)
       key_material = File.read("spec/fixtures/default_list_key.txt")
       sub, msgs = list.subscribe("admin@example.org", nil, true, true, key_material)
       sub, msgs = list.subscribe("user1@example.org", nil, false, true, key_material)
@@ -918,13 +978,36 @@ describe Schleuder::List do
       expect(messages.size).to be(3)
       expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
       expect(messages[0].from).to eql([list.email])
-      expect(messages[0].reply_to).to eql(mail.from)
       expect(messages[1].from).to eql([list.email])
-      expect(messages[1].reply_to).to eql(mail.from)
       expect(messages[2].from).to eql([list.email])
-      expect(messages[2].reply_to).to eql(mail.from)
+  
+      teardown_list_and_mailer(list)
+    end
+  
+    it "sets from to munched version when enabled" do
+      list = create(:list, munge_from: true)
+      key_material = File.read("spec/fixtures/default_list_key.txt")
+      sub, msgs = list.subscribe("admin@example.org", nil, true, true, key_material)
+      sub, msgs = list.subscribe("user1@example.org", nil, false, true, key_material)
+      sub, msgs = list.subscribe("user2@example.org", nil, false, true, key_material)
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'something@localhost'
+      mail.subject = 'Something'
+      mail.body = "Some content"
+  
+      Schleuder::Runner.new().run(mail.to_s, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+  
+      expect(messages.size).to be(3)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org', 'user2@example.org'])
+      expect(messages[0]['from'].to_s).to eql("\"#{mail.from.first} via #{list.email}\" <#{list.email}>")
+      expect(messages[1]['from'].to_s).to eql("\"#{mail.from.first} via #{list.email}\" <#{list.email}>")
+      expect(messages[2]['from'].to_s).to eql("\"#{mail.from.first} via #{list.email}\" <#{list.email}>")
   
       teardown_list_and_mailer(list)
     end
   end
+
 end

@@ -67,14 +67,19 @@ module Schleuder
                 with: /\A[[:graph:]\s]*\z/i,
               }
 
-    # This is a usability vs security consideration. Some users find it quite
-    # confusing when they click "reply-to" and the mail client doesn't reply to the
-    # sender of the mail but the whole mailing list. For those lists it can be
+    # Some users find it quite confusing when they click "reply-to" and the mail client 
+    # doesn't reply to the sender of the mail but the whole mailing list. For those lists it can be
     # considered to set this value to true. The recipients will then receive e-mails
-    # where the "From" and the "Reply-To" header will contain the unencrypted address
+    # where the "reply-to" header will contain the unencrypted address
     # of the sender and thus reply to the sender when clicking "reply-to" in a client.
     # The default is off.
-    validates :use_unencrypted_sender_addresses_in_header, boolean: true
+    validates :set_reply_to_to_sender, boolean: true
+
+    # Some users find it confusing when the "from" does not contain the original sender
+    # but the list address. For those lists it can be considered to set the munched header.
+    # This will result in a "from"-header like this: "originalsender@original.com via list@list.com"
+    # The default is off.
+    validates :munge_from, boolean: true
 
 
     default_scope { order(:email) }
