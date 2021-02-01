@@ -41,7 +41,7 @@ describe Mail::Message do
   end
   
   Dir.glob('spec/fixtures/mails/not_bounces/*') do |filename|
-    it "does not misclassify normal messages as bounces" do
+    it "does not misclassify normal message #{filename} as bounce" do
       list = create(:list)
       mail = Mail.new(File.read(filename))
       mail = Mail.create_message_to_list(mail.to_s, 'something@localhost', list).setup
@@ -51,7 +51,7 @@ describe Mail::Message do
   end
 
   Dir.glob('spec/fixtures/mails/bounces/*') do |filename|
-    it "does not misclassify bounces as normal messages" do
+    it "does not misclassify bounce #{filename} as normal message" do
       list = create(:list)
       mail = Mail.new(File.read(filename))
       mail = Mail.create_message_to_list(mail.to_s, 'something@localhost', list).setup
