@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [3.6.0] / 2021-02-02
 
+### Added
+
+* List Option `set_reply_to_to_sender` (default: false): When enabled, the reply-to-header of the emails sent from schleuder will be set to the
+	original sender's reply-to-header. If the original sender did not supply a reply-to-header, the original from-header will be used. (#298)
+* List Option `munged_from` (default: false): When enabled, the from-header of the emails sent from schleuder will contain the original
+	sender's from-header included in the display name. To avoid DMARC issues, the from-header will stay the list's address. 
+	This results in a from-header such as: `"sender@sender.org via list@list.org" <list@list.org>`
+
 ### Fixed
 
 * Improve detection of bounces and thus fixing issues with falsely detected automatic messages. (#441)
