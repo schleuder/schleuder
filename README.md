@@ -15,6 +15,7 @@ Requirements
 * gpgme
 * sqlite3
 * openssl
+* icu
 
 *If you use Debian buster or CentOS 7, please have a look at the [installation docs](https://schleuder.org/schleuder/docs/server-admins.html#installation). We do provide packages for those platforms, which simplify the installation a lot.*
 
@@ -22,7 +23,7 @@ Requirements
 
 On systems that base on Debian 10 ("buster"), install the dependencies via
 
-    apt-get install ruby-dev gnupg2 libgpgme-dev libsqlite3-dev libssl-dev build-essential
+    apt-get install ruby-dev gnupg2 libgpgme-dev libsqlite3-dev libssl-dev build-essential libicu-dev
 
 
 We **recommend** to also run a random number generator like [haveged](http://www.issihosts.com/haveged/). This ensures Schleuder won't be blocked by lacking entropy, which otherwise might happen especially during key generation.
