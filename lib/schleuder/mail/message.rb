@@ -205,17 +205,17 @@ module Mail
       @recipient.match(/-bounce@/).present? ||
           # Empty Return-Path
           self.return_path.to_s == '<>' ||
-          # Auto-Submitted exists and does not equal 'no' and:
-          #  - no cron header is present
-          #  - no Jenkins job notification header is present
-          # as these emails have the auto-submitted header.
-          ( self['Auto-Submitted'].present? && \
-            self['Auto-Submitted'].to_s.downcase != 'no' && \
-            !self['X-Cron-Env'].present? && \
-            !self['X-Jenkins-Job'].present? && \
-            self.subject.to_s !~ /\A\*\*\* SECURITY information.*\*\*\*\Z/)
+          bounced?
     end
 
+    def bounced?
+      @bounced ||= bounce_detected? || (error_status != "unknown")
+    end
+
+    def error_status
+      @error_status ||= detect_error_code
+    end
+ 
     def keywords
       return @keywords if @keywords
 
@@ -525,6 +525,80 @@ module Mail
           "<#{string}>"
         end
       end.join(' ')
+    end
+
+    def detect_error_code
+      # Detects the error code of an email with different heuristics
+      # from: https://github.com/mailtop/bounce_email
+      
+      # Custom status codes
+      unicode_subject = self.subject.to_s
+      unicode_subject = unicode_subject.encode('utf-8') if unicode_subject.respond_to?(:encode)
+ 
+      return '97' if unicode_subject.match(/delayed/i)
+      return '98' if unicode_subject.match(/(unzulässiger|unerlaubter) anhang/i)
+      return '99' if unicode_subject.match(/auto.*reply|férias|ferias|Estarei ausente|estou ausente|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
+
+      # Feedback-Type: abuse
+      return '96' if self.to_s.match(/Feedback-Type\: abuse/i)
+
+      if self.parts[1]
+        match_parts = self.parts[1].body.match(/(Status:.|550 |#)([245]\.[0-9]{1,3}\.[0-9]{1,3})/)
+        code = match_parts[2] if match_parts
+        return code if code
+      end
+
+      # Now try getting it from correct part of tmail
+      code = detect_bounce_status_code_from_text(self.body)
+      return code if code
+
+      # OK getting desperate so try getting code from entire email
+      code = detect_bounce_status_code_from_text(self.to_s)
+      code || 'unknown'
+    end
+
+    def bounce_detected?
+      # Detects bounces from different parts of the email without error status codes
+      # from: https://github.com/mailtop/bounce_email
+      return true if self.subject.to_s.match(/(returned|undelivered) mail|mail delivery( failed)?|(delivery )(status notification|failure)|failure notice|undeliver(able|ed)( mail)?|return(ing message|ed) to sender/i)
+      return true if self.subject.to_s.match(/auto.*reply|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
+      return true if self['precedence'].to_s.match(/auto.*(reply|responder|antwort)/i)
+      return true if self.from.to_s.match(/^(MAILER-DAEMON|POSTMASTER)\@/i)
+      false
+    end
+
+    def detect_bounce_status_code_from_text(text)
+      # Parses a text and uses pattern matching to determines its error status (RFC 3463)
+      # from: https://github.com/mailtop/bounce_email
+      return "5.0.0" if text.match(/Status: 5\.0\.0/i)
+      return "5.1.1" if text.match(/no such (address|user)|Recipient address rejected|User unknown|does not like recipient|The recipient was unavailable to take delivery of the message|Sorry, no mailbox here by that name|invalid address|unknown user|unknown local part|user not found|invalid recipient|failed after I sent the message|did not reach the following recipient|nicht zugestellt werden|o pode ser entregue para um ou mais/i)
+      return "5.1.2" if text.match(/unrouteable mail domain|Esta casilla ha expirado por falta de uso|I couldn't find any host named/i)
+      if text.match(/mailbox is full|Mailbox quota (usage|disk) exceeded|quota exceeded|Over quota|User mailbox exceeds allowed size|Message rejected\. Not enough storage space|user has exhausted allowed storage space|too many messages on the server|mailbox is over quota|mailbox exceeds allowed size|excedeu a quota/i)
+        return "5.2.2" if text.match(/This is a permanent error||(Status: |)5\.2\.2/i)
+        return "4.2.2"
+      end
+      return "5.1.0" if text.match(/Address rejected/)
+      return "4.1.2" if text.match(/I couldn't find any host by that name/)
+      return "4.2.0" if text.match(/not yet been delivered/i)
+      return "5.1.1" if text.match(/mailbox unavailable|No such mailbox|RecipientNotFound|not found by SMTP address lookup|Status: 5\.1\.1/i)
+      return "5.2.3" if text.match(/Status: 5\.2\.3/i) # Too messages in folder
+      return "5.4.0" if text.match(/Status: 5\.4\.0/i) # too many hops
+      return "5.4.4" if text.match(/Unrouteable address/i)
+      return "4.4.7" if text.match(/retry timeout exceeded/i)
+      return "5.2.0" if text.match(/The account or domain may not exist, they may be blacklisted, or missing the proper dns entries./i)
+      return "5.5.4" if text.match(/554 TRANSACTION FAILED/i)
+      return "4.4.1" if text.match(/Status: 4.4.1|delivery temporarily suspended|wasn't able to establish an SMTP connection/i)
+      return "5.5.0" if text.match(/550 OU\-002|Mail rejected by Windows Live Hotmail for policy reasons/i)
+      return "5.1.2" if text.match(/PERM_FAILURE: DNS Error: Domain name not found/i)
+      return "4.2.0" if text.match(/Delivery attempts will continue to be made for/i)
+      return "5.5.4" if text.match(/554 delivery error:/i)
+      return "5.1.1" if text.match(/550-5.1.1|This Gmail user does not exist/i)
+      return "5.7.1" if text.match(/5.7.1 Your message.*?was blocked by ROTA DNSBL/i) # AA added
+      return "5.7.2" if text.match(/not have permission to post messages to the group/i)
+      return "5.3.2" if text.match(/Technical details of permanent failure|Too many bad recipients/i) && (text.match(/The recipient server did not accept our requests to connect/i) || text.match(/Connection was dropped by remote host/i) || text.match(/Could not initiate SMTP conversation/i)) # AA added
+      return "4.3.2" if text.match(/Technical details of temporary failure/i) && (text.match(/The recipient server did not accept our requests to connect/i) || text.match(/Connection was dropped by remote host/i) || text.match(/Could not initiate SMTP conversation/i)) # AA added
+      return "5.0.0" if text.match(/Delivery to the following recipient failed permanently/i) # AA added
+      return '5.2.3' if text.match(/account closed|account has been disabled or discontinued|mailbox not found|prohibited by administrator|access denied|account does not exist/i)
     end
   end
 end

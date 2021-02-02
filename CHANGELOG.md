@@ -3,11 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [3.5.4] / xxx
+## [3.6.0] / 2021-02-02
 
 ### Fixed
 
+* Improve detection of bounces and thus fixing issues with falsely detected automatic messages. (#441)
 * Properly validate email addresses for subscriptions. (#483 & #484)
+
 
 ## [3.5.3] / 2020-06-13
 
