@@ -8,13 +8,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 * Improve detection of bounces and thus fixing issues with falsely detected automatic messages. (#441)
-
-
-## [3.5.4] / xxx
-
-### Fixed
-
 * Properly validate email addresses for subscriptions. (#483 & #484)
+
 
 ## [3.5.3] / 2020-06-13
 
