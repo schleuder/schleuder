@@ -3,6 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.6.0] / 2021-02-02
+
+### Fixed
+
+* Improve detection of bounces and thus fixing issues with falsely detected automatic messages. (#441)
+
+
 ## [3.5.4] / xxx
 
 ### Fixed
