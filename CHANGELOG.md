@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-* Properly validate email addresses for subscriptions. (#483)
+* Properly validate email addresses for subscriptions. (#483 & #484)
 
 ## [3.5.3] / 2020-06-13
 
