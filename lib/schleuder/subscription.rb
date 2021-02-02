@@ -86,8 +86,8 @@ module Schleuder
 
       if self.list.munge_from? && ! incoming_mail.nil? 
         # If the option "munge_from" is set to true, we will add the original senders' from-header to ours.
-        # We munch the from-header to avoid issues with DMARC.
-        mail.from = I18n.t("header_munching", from: incoming_mail.from.first, list: self.list.email, list_address: self.list.email)
+        # We munge the from-header to avoid issues with DMARC.
+        mail.from = I18n.t("header_munging", from: incoming_mail.from.first, list: self.list.email, list_address: self.list.email)
       else
         mail.from = self.list.email
       end

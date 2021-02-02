@@ -984,7 +984,7 @@ describe Schleuder::List do
       teardown_list_and_mailer(list)
     end
   
-    it "sets from to munched version when enabled" do
+    it "sets from to munged version when enabled" do
       list = create(:list, munge_from: true)
       key_material = File.read("spec/fixtures/default_list_key.txt")
       sub, msgs = list.subscribe("admin@example.org", nil, true, true, key_material)

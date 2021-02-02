@@ -77,7 +77,7 @@ module Schleuder
     validates :set_reply_to_to_sender, boolean: true
 
     # Some users find it confusing when the "from" does not contain the original sender
-    # but the list address. For those lists it can be considered to set the munched header.
+    # but the list address. For those lists it can be considered to set the munged header.
     # This will result in a "from"-header like this: "originalsender@original.com via list@list.com"
     # The default is off.
     validates :munge_from, boolean: true
