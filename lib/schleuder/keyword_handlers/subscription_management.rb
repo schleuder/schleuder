@@ -31,17 +31,17 @@ module Schleuder
         subscription, _ = subscriptions_controller.subscribe(@list.email, subscription_params, nil)
 
         if subscription.persisted?
-          t('subscribed', {
+          t('subscribed',
               email: subscription.email,
               fingerprint: subscription.fingerprint,
               admin: subscription.admin,
               delivery_enabled: subscription.delivery_enabled
-          })
+          )
         else
-          t('subscribing_failed', {
+          t('subscribing_failed',
               email: subscription.email,
               errors: subscription.errors.full_messages.join(".\n")
-          })
+          )
         end
       end
 
@@ -112,17 +112,17 @@ module Schleuder
         # I18n key: 'keyword_handlers.subscription_management.set_fingerprint_only_self'
 
         if subscription.valid?
-          t('fingerprint_set', {
+          t('fingerprint_set',
               email: subscription.email,
               fingerprint: subscription.fingerprint
-          })
+          )
         else
           # TODO: Use 'keyword_handlers.subscription_management.set_fingerprint_requires_valid_fingerprint' if fingerprint is invalid.
-          t('setting_fingerprint_failed', {
+          t('setting_fingerprint_failed',
               email: subscription.email,
               fingerprint: subscription.fingerprint,
               errors: subscription.errors.to_a.join("\n")
-          })
+          )
         end
       end
 
@@ -145,12 +145,12 @@ module Schleuder
         subscription = subscriptions_controller.update(@list.email, email, {fingerprint: ''})
 
         if subscription.valid?
-          t('fingerprint_unset', {email: subscription.email})
+          t('fingerprint_unset', email: subscription.email)
         else
-          t('unsetting_fingerprint_failed', {
+          t('unsetting_fingerprint_failed',
               email: subscription.email,
               errors: subscription.errors.to_a.join("\n")
-          })
+          )
         end
       end
     end
