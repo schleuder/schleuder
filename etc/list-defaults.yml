@@ -131,3 +131,21 @@ forward_all_incoming_to_admins: false
 # Disabling this only works for signed e-mails; any e-mail that is unsigned
 # sent to the list is treated as coming from an unknown source
 deliver_selfsent: true
+
+# Set reply-to header to original sender's reply-to? 
+# Enabling this will set the reply-to-header of emails sent by schleuder
+# to the original sender's reply-to-header. If the original sender
+# did not supply a reply-to-header, the original from-header will be used.
+# This option can enabled for improved usability since this affect
+# mail client's reply-to button to reply to the original sender instead of
+# the whole list.
+set_reply_to_to_sender: false
+
+# Munge from-header?
+# Enabling this option will add the original sender to the from-header.
+# To avoid DMARC issues, we still use the list's address as from-address.
+# However the sender's address will be included as displayed name.
+# For example: "sender@sender.org via list@list.org" <list@list.org>
+# This option can enabled for improved usability since this affect
+# mail client's displayed name.
+munge_from: false

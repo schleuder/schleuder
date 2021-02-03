@@ -265,6 +265,7 @@ en:
   encryption_states:
     encrypted: "Encrypted"
     unencrypted: "Unencrypted"
+  header_munging: "%{from} via %{list} <%{list_address}>"
 
   activerecord:
     errors:

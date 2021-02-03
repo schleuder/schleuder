@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190906194820) do
+ActiveRecord::Schema.define(version: 20200118170110) do
 
   create_table "lists", force: :cascade do |t|
     t.datetime "created_at"
@@ -46,6 +46,8 @@ ActiveRecord::Schema.define(version: 20190906194820) do
     t.integer  "logfiles_to_keep",                                        default: 2
     t.text     "internal_footer",                                         default: ""
     t.boolean  "include_autocrypt_header",                                default: true
+    t.boolean  "set_reply_to_to_sender",                                  default: false
+    t.boolean  "munge_from",                                              default: false
   end
 
   create_table "subscriptions", force: :cascade do |t|
