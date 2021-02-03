@@ -34,6 +34,10 @@ ruby:2.7:
   image: $IMAGE_REGISTRY:schleuder-ruby2.7
   <<: *test_ruby
   
+ruby:3.0:
+  image: $IMAGE_REGISTRY:schleuder-ruby3.0
+  <<: *test_ruby
+  
 changelog:
   image: $IMAGE_REGISTRY:debian-generic
   script:

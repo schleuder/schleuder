@@ -31,16 +31,16 @@ describe 'Errors' do
 
   it '::DecryptionFailed shows sensible string in response to to_s()' do
     list = create(:list)
-    expect(Errors::DecryptionFailed.new(list).to_s).to eql(t('errors.decryption_failed', { key: list.key.to_s, email: list.sendkey_address }))
+    expect(Errors::DecryptionFailed.new(list).to_s).to eql(t('errors.decryption_failed', key: list.key.to_s, email: list.sendkey_address))
   end
 
   it '::KeyAdduidFailed shows sensible string in response to to_s()' do
-    expect(Errors::KeyAdduidFailed.new('bla').to_s).to eql(t('errors.key_adduid_failed', { errmsg: 'bla' }))
+    expect(Errors::KeyAdduidFailed.new('bla').to_s).to eql(t('errors.key_adduid_failed', errmsg: 'bla'))
   end
 
   it '::KeyGenerationFailed shows sensible string in response to to_s()' do
     list = create(:list)
-    expect(Errors::KeyGenerationFailed.new(list.listdir, list.email).to_s).to eql(t('errors.key_generation_failed', {listdir: list.listdir, listname: list.email}))
+    expect(Errors::KeyGenerationFailed.new(list.listdir, list.email).to_s).to eql(t('errors.key_generation_failed', listdir: list.listdir, listname: list.email))
   end
 
   it '::ListNotFound shows sensible string in response to to_s()' do
@@ -55,17 +55,17 @@ describe 'Errors' do
 
   it '::MessageEmpty shows sensible string in response to to_s()' do
     list = create(:list)
-    expect(Errors::MessageEmpty.new(list).to_s).to eql(t('errors.message_empty', { request_address: list.request_address }))
+    expect(Errors::MessageEmpty.new(list).to_s).to eql(t('errors.message_empty', request_address: list.request_address))
   end
 
   it '::MessageTooBig shows sensible string in response to to_s()' do
     list = create(:list)
-    expect(Errors::MessageTooBig.new(list).to_s).to eql(t('errors.message_too_big', { allowed_size: list.max_message_size_kb }))
+    expect(Errors::MessageTooBig.new(list).to_s).to eql(t('errors.message_too_big', allowed_size: list.max_message_size_kb))
   end
 
   it '::TooManyKeys shows sensible string in response to to_s()' do
     list = create(:list)
-    expect(Errors::TooManyKeys.new(list.listdir, list.email).to_s).to eql(t('errors.too_many_keys', {listdir: list.listdir, listname: list.email}))
+    expect(Errors::TooManyKeys.new(list.listdir, list.email).to_s).to eql(t('errors.too_many_keys', listdir: list.listdir, listname: list.email))
   end
 end
 

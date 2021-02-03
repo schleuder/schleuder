@@ -178,17 +178,17 @@ RSpec.configure do |config|
   end
 
   def with_tmpfile(content, &blk)
-    file = Tempfile.new('temporary-file', Conf.lists_dir)
+    file = File.new(File.join(Conf.lists_dir, SecureRandom.hex(32)), 'w+')
     begin
       file.write(content)
       file.close
       yield file.path
     ensure
-      file.unlink
+      File.unlink(file)
     end
   end
 
-  def t(*args)
-    I18n.t(*args)
+  def t(key, **kwargs)
+    I18n.t(key, **kwargs)
   end
 end

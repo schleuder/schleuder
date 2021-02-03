@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Mandatory blank line: To separate keywords from email content, you *must* now insert a blank line between them.
 * Keywords for getting (new) passwords for accounts. 'X-GET-NEW-PASSWORD' sets and sends back a new password for the account of the subscribed email-address. 'X-GET-NEW-PASSWORD-FOR: subscription1@example.org' sets and sends back a new password for the account of the given email-address; this is allowed for admins only and allows to get a password for people that have no key associated with their subscription, yet.
 * Provide systemd configs for weekly key maintenance. This relies on a working systemd-timesyncd. (#422)
+* Support for Ruby 3.0.
 
 ### Changed
 
@@ -27,6 +28,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Drop deprecated X-LISTNAME keyword. (#374)
 * Downcase email addresses: Email addresses are downcased before saving.
 * Allow Jenkins job notifications to reach lists. Before, such mails were rejected due to being "auto-submitted".
+* Update the dependency 'activerecord' to version 6.0.
+* Update the dependency 'factory_bot' to version 6.0.
+* Update the dependency 'sqlite3' to version 1.4.
+* Update the dependency 'database_cleaner' to version 2.0.
 
 
 ## [3.5.3] / 2020-06-13
