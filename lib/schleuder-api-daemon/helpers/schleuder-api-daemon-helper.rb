@@ -32,7 +32,7 @@ module SchleuderApiDaemonHelper
     end
 
     def json_body(data, messages=nil)
-      json(data: data, messages: messages)
+      json(data: data.as_json, messages: messages)
     end
 
     def parsed_body
