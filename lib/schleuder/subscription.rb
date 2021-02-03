@@ -11,7 +11,9 @@ module Schleuder
     validates :fingerprint, allow_blank: true, fingerprint: true
     validates :delivery_enabled, :admin, boolean: true
 
-    before_validation { email.downcase! if email.present? }
+    before_validation {
+      self.email = Mail::Address.new(self.email).address.downcase if email.present?
+    }
 
     default_scope { order(:email) }
 
@@ -43,10 +45,10 @@ module Schleuder
       Account.find_or_initialize_by(email: email)
     end
 
-    def send_mail(mail)
+    def send_mail(mail, incoming_mail=nil)
       list.logger.debug "Preparing sending to #{self.inspect}"
 
-      mail = ensure_headers(mail)
+      mail = ensure_headers(mail, incoming_mail)
       gpg_opts = self.list.gpg_sign_options
 
       if self.key.blank?
@@ -72,9 +74,28 @@ module Schleuder
       mail.deliver
     end
 
-    def ensure_headers(mail)
+    def ensure_headers(mail, incoming_mail=nil)
       mail.to = self.email
-      mail.from = self.list.email
+      
+      if self.list.set_reply_to_to_sender? && ! incoming_mail.nil?
+        # If the option "set_reply_to_to_sender" is set to true, we will set the reply-to header 
+        # to the reply-to header given by the original email. If no reply-to header exists in the original email,
+        # the original senders email will be used as reply-to.
+        if ! incoming_mail.reply_to.nil?
+          mail.reply_to = incoming_mail.reply_to
+        else
+          mail.reply_to = incoming_mail.from
+        end
+      end
+
+      if self.list.munge_from? && ! incoming_mail.nil? 
+        # If the option "munge_from" is set to true, we will add the original senders' from-header to ours.
+        # We munge the from-header to avoid issues with DMARC.
+        mail.from = I18n.t("header_munging", from: incoming_mail.from.first, list: self.list.email, list_address: self.list.email)
+      else
+        mail.from = self.list.email
+      end
+
       mail.sender = self.list.bounce_address
       mail
     end

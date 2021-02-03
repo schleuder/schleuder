@@ -23,7 +23,18 @@ describe Schleuder::ListBuilder do
     expect(messages.values).to be_present
   end
 
-  it 'creates a listdir for the list' do
+  it 'returns an error-message if given an invalid email-address with a space' do
+    listname = "list #{rand}@example.com"
+    adminaddress = 'schleuder2@example.org'
+    adminkey = File.read('spec/fixtures/example_key.txt')
+    list, messages = ListBuilder.new({email: listname, fingerprint: nil}, adminaddress, nil, adminkey).run
+    expect(list).to be_nil
+    expect(messages).to be_an_instance_of Hash
+    expect(messages.keys).to eq ['email']
+    expect(messages.values).to be_present
+  end
+
+  it "creates a listdir for the list" do
     listname = "list-#{rand}@example.org"
     adminaddress = 'schleuder2@example.org'
     adminkey = File.read('spec/fixtures/example_key.txt')

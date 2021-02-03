@@ -1,0 +1,124 @@
+Received: from immer7-21.glei.ch ([192.168.1.91]) 	by immer12-24.glei.ch with esmtps (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)	(Exim 4.92)	id 1irm4e-0006qg-IY	for team@schleuder.org; Wed, 15 Jan 2020 18:03:20 +0100
+Received: from localhost ([127.0.0.1]) 	by immer7-21.glei.ch with esmtp (Exim 4.92.3)	id 1irm4e-0008VW-1F	for team@schleuder.org; Wed, 15 Jan 2020 18:03:20 +0100
+Received: from immer7-21.glei.ch ([127.0.0.1])	by localhost (immer7-21.glei.ch [127.0.0.1]) (amavisd-new, port 10024)	with ESMTP id BsQ6Lnw6HFJD for <team@schleuder.org>; Wed, 15 Jan 2020 18:03:14 +0100
+Received: from mailly.debian.org ([82.195.75.114]) 	by immer7-21.glei.ch with esmtps (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)	(Exim 4.92.3)	id 1irm4Y-0008UB-8q	for team@schleuder.org; Wed, 15 Jan 2020 18:03:14 +0100
+Received: from ticharich.debian.org ([2607:f8f0:614:1::1274:64]:40110)=0D=0A
+ from C=NA,ST=NA,L=Ankh Morpork,O=Debian SMTP,OU=Debian SMTP
+ CA,CN=ticharich.debian.org,EMAIL=hostmaster@ticharich.debian.org
+ (verified)=0D=0A by mailly.debian.org with esmtps
+ (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)=0D=0A (Exim 4.92)=0D=0A
+ (envelope-from <bounces+20200115-team=schleuder.org@tracker.debian.org>)=0D=0A
+ id 1irm4S-0000Ua-Eq=0D=0A for team@schleuder.org; Wed, 15 Jan 2020 17:03:08
+ +0000
+Received: from localhost ([::1]:49224 helo=ticharich.debian.org)	by ticharich.debian.org with esmtp (Exim 4.92)	(envelope-from <bounces+20200115-team=schleuder.org@tracker.debian.org>)	id 1irm4R-00088i-2J	for team@schleuder.org; Wed, 15 Jan 2020 17:03:07 +0000
+Received: from mailly.debian.org
+ ([2001:41b8:202:deb:6564:a62:52c3:4b72]:51344)=0D=0A from C=NA,ST=NA,L=Ankh
+ Morpork,O=Debian SMTP,OU=Debian SMTP
+ CA,CN=mailly.debian.org,EMAIL=hostmaster@mailly.debian.org (verified)=0D=0A by
+ ticharich.debian.org with esmtps
+ (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)=0D=0A (Exim 4.92)=0D=0A
+ (envelope-from <debbugs@buxtehude.debian.org>)=0D=0A id 1irm4Q-000886-SQ=0D=0A
+ for dispatch+schleuder@tracker.debian.org; Wed, 15 Jan 2020 17:03:06 +0000
+Received: from quantz.debian.org ([2607:f8f0:614:1::1274:73]:52730)=0D=0A from
+ C=NA,ST=NA,L=Ankh Morpork,O=Debian SMTP,OU=Debian SMTP
+ CA,CN=quantz.debian.org,EMAIL=hostmaster@quantz.debian.org (verified)=0D=0A by
+ mailly.debian.org with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)=0D=0A
+ (Exim 4.92)=0D=0A (envelope-from <debbugs@buxtehude.debian.org>)=0D=0A id
+ 1irm4P-0000U6-Dj=0D=0A for dispatch+schleuder@tracker.debian.org; Wed, 15 Jan
+ 2020 17:03:05 +0000
+Received: from qa by quantz.debian.org with local (Exim 4.92)	(envelope-from <debbugs@buxtehude.debian.org>)	id 1irm4O-00028a-4N	for dispatch+schleuder@tracker.debian.org; Wed, 15 Jan 2020 17:03:04 +0000
+Received: from buxtehude.debian.org ([2607:f8f0:614:1::1274:39]:51042)=0D=0A
+ from C=NA,ST=NA,L=Ankh Morpork,O=Debian SMTP,OU=Debian SMTP
+ CA,CN=buxtehude.debian.org,EMAIL=hostmaster@buxtehude.debian.org
+ (verified)=0D=0A by quantz.debian.org with esmtps
+ (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)=0D=0A (Exim 4.92)=0D=0A
+ (envelope-from <debbugs@buxtehude.debian.org>)=0D=0A id 1irm4O-00027y-2S=0D=0A
+ for schleuder@packages.qa.debian.org; Wed, 15 Jan 2020 17:03:04 +0000
+Received: from debbugs by buxtehude.debian.org with local (Exim 4.92)	(envelope-from <debbugs@buxtehude.debian.org>)	id 1irm4N-0007aH-MJ; Wed, 15 Jan 2020 17:03:03 +0000
+Received: via spool by 948980-submitter@bugs.debian.org id=U948980.157910757827991          (code U ref 948980); Wed, 15 Jan 2020 17:03:02 +0000
+Received: (at 948980-submitter) by bugs.debian.org; Wed, 15 Jan 2020 16:59:38 +0000
+Received: from mailly.debian.org
+ ([2001:41b8:202:deb:6564:a62:52c3:4b72]:55084)=0D=0A from C=NA,ST=NA,L=Ankh
+ Morpork,O=Debian SMTP,OU=Debian SMTP
+ CA,CN=mailly.debian.org,EMAIL=hostmaster@mailly.debian.org (verified)=0D=0A by
+ buxtehude.debian.org with esmtps
+ (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)=0D=0A (Exim 4.92)=0D=0A
+ (envelope-from <noreply@salsa.debian.org>)=0D=0A id 1irm14-0007HD-1p=0D=0A for
+ 948980-submitter@bugs.debian.org; Wed, 15 Jan 2020 16:59:38 +0000
+Received: from godard.debian.org ([209.87.16.44]:52232)=0D=0A from
+ C=NA,ST=NA,L=Ankh Morpork,O=Debian SMTP,OU=Debian SMTP
+ CA,CN=clientcerts/godard.debian.org,EMAIL=hostmaster@clientcerts/godard.debian.org
+ (verified)=0D=0A by mailly.debian.org with esmtps
+ (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)=0D=0A (Exim 4.92)=0D=0A
+ (envelope-from <noreply@salsa.debian.org>)=0D=0A id 1irm12-0000MR-EO=0D=0A for
+ 948980-submitter@bugs.debian.org; Wed, 15 Jan 2020 16:59:36 +0000
+Received: by godard.debian.org (Postfix, from userid 3510)	id D6CD1A0EC0; Wed, 15 Jan 2020 16:59:34 +0000
+Resent-Date: Wed, 15 Jan 2020 17:03:02 +0000
+Resent-From: Debian BTS <debbugs@buxtehude.debian.org>
+Resent-To: Georg Faerber <georg@debian.org>
+Resent-Message-ID: <handler.948980.U948980.157910757827991@bugs.debian.org>
+Date: Wed, 15 Jan 2020 16:59:34 +0000
+From: Georg Faerber <noreply@salsa.debian.org>
+Sender: noreply@salsa.debian.org
+Reply-To: Georg Faerber <noreply@salsa.debian.org>, 
+ 948980-quiet@bugs.debian.org
+To: 948980-submitter@bugs.debian.org
+Message-ID: <5e1f44f6c9fc2_37682ab64d19cbc48283@godard.mail>
+References: <20200115150418.GH26536@debian>
+Subject: Bug#948980: marked as pending in schleuder
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: amavisd-new at glei.ch
+X-Loop: owner@bugs.debian.org
+Original-Sender: noreply@salsa.debian.org
+X-Loop: owner@bugs.debian.org
+X-Debian-PR-Message: report 948980
+X-Debian-PR-Package: schleuder
+X-Debian-PR-Keywords: 
+X-Debian-PR-Source: schleuder
+X-Spam-Bayes: score:0.0000 Tokens: new, 16; hammy, 107; neutral, 24; spammy,
+ 6. spammytokens:0.999-1--H*RT:sk:noreply,
+ 0.993-1--HAuto-Submitted:auto-generated, 0.958-+--H*r:sk:noreply,
+ 0.950-+--H*F:U*noreply, 0.919-+--H*rp:U*noreply
+ hammytokens:0.000-+--sk:salsa.d, 0.000-+--sk:salsad,
+ 0.000-+--UD:salsa.debian.org, 0.000-+--salsadebianorg,
+ 0.000-+--salsa.debian.org
+Auto-Submitted: auto-generated
+Delivered-To: schleuder@packages.qa.debian.org
+Delivered-To: dispatch+schleuder@tracker.debian.org
+X-Loop: dispatch@tracker.debian.org
+X-Distro-Tracker-Keyword: bts
+X-Distro-Tracker-Package: schleuder
+List-Id: <schleuder.tracker.debian.org>
+X-Debian: tracker.debian.org
+X-Debian-Package: schleuder
+X-PTS-Package: schleuder
+X-PTS-Keyword: bts
+Precedence: list
+List-Unsubscribe: <mailto:control@tracker.debian.org?body=unsubscribe%20schleuder>
+
+Control: tag -1 pending
+
+Hello,
+
+Bug #948980 in schleuder reported by you has been fixed in the
+Git repository and is awaiting an upload. You can see the commit
+message below and you can check the diff of the fix at:
+
+https://salsa.debian.org/ruby-team/schleuder/commit/d88717ad33d773736929d9d3ecb0eaace0779c1f
+
+------------------------------------------------------------------------
+debian/patches: Add patch to add List-Id header to admin notifications
+
+Closes: #948980
+------------------------------------------------------------------------
+
+(this message was generated automatically)
+-- 
+Greetings
+
+https://bugs.debian.org/948980
+
+

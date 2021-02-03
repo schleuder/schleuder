@@ -89,12 +89,12 @@ code-coverage:
   only:
     - branches@schleuder/schleuder
   variables:
-    DEPLOY_BASE: dev/code-coverage 
+    DEPLOY_BASE: dev/code-coverage
     GIT_STRATEGY: none
   allow_failure: true
   stage: static
   <<: *limit_non_release_branches
-  
+
 rubocop:
   image: $IMAGE_REGISTRY:debian-generic
   script:
