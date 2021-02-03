@@ -122,7 +122,7 @@ describe 'protected subject' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nx-list-keys\nx-stop"
+    mail.body = "x-list-name: #{list.email}\nx-list-keys"
     protected_headers = Mail::Part.new do
       body 'Subject: protected'
       content_type 'text/rfc822-headers; protected-headers=v1'

@@ -11,12 +11,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-* 'X-STOP': To use any keyword, you *must* now also use the new keyword 'X-STOP' to mark where to stop looking for keywords. This enables looking for keyword arguments in multiple lines, e.g. for X-RESEND with long, wrapped lines.
+* Mandatory blank line: To separate keywords from email content, you *must* now insert a blank line between them.
 * Keywords for getting (new) passwords for accounts. 'X-GET-NEW-PASSWORD' sets and sends back a new password for the account of the subscribed email-address. 'X-GET-NEW-PASSWORD-FOR: subscription1@example.org' sets and sends back a new password for the account of the given email-address; this is allowed for admins only and allows to get a password for people that have no key associated with their subscription, yet.
 * Provide systemd configs for weekly key maintenance. This relies on a working systemd-timesyncd. (#422)
 
 ### Changed
 
+* Keyword arguments are now also looked for in the following lines, until a blank line or a new keyword-line is encountered.
 * Drop support for Ruby 2.3 and 2.4, require Ruby 2.5. (TODO: Check again if still valid before release.)
 * Drop support for GPG 2.0, require GPG 2.2.
 * Drop support to migrate lists from version 2. This includes pin_keys code, which looked for subscriptions without an associated key, and tried to find a distinctly matching key. Originally, this was implemented to help with a shortcoming of code which handled version 2 to version 3 migration. (#411)
