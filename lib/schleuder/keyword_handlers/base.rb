@@ -54,9 +54,9 @@ module Schleuder
         I18n.t('errors.not_permitted_for_subscribers', keyword: keyword)
       end
 
-      def t(key, args={})
+      def t(key, **kwargs)
         underscored_name = self.class.name.demodulize.underscore
-        I18n.t("keyword_handlers.#{underscored_name}.#{key}", args)
+        I18n.t("keyword_handlers.#{underscored_name}.#{key}", **kwargs)
       end
     end
   end
