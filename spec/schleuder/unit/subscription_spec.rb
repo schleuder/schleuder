@@ -50,6 +50,15 @@ describe Schleuder::Subscription do
     expect(subscription.errors.messages[:email]).to include('is not a valid email address')
   end
 
+  it 'formats email address when email begins with a space' do
+    list = create(:list)
+    subscription = build(:subscription, list_id: list.id, email: " foo@bar.org")
+
+    expect(subscription).to be_valid
+    expect(subscription.email).to be_eql('foo@bar.org')
+    expect(subscription.errors.messages[:email]).to be_blank
+  end
+
   it 'is valid when fingerprint is empty' do
     list = create(:list)
     subscription = build(:subscription, list_id: list.id, fingerprint: '')

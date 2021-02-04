@@ -67,6 +67,9 @@
     "send_encrypted_only": {
       "type": "boolean"
     },
+    "set_reply_to_to_sender": {
+      "type": "boolean"
+    },
     "receive_encrypted_only": {
       "type": "boolean"
     },
@@ -105,6 +108,9 @@
     },
     "max_message_size_kb": {
       "type": "integer"
+    },
+    "munge_from": {
+      "type": "boolean"
     },
     "language": {
       "type": "string"

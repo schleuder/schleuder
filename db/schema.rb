@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_06_194820) do
+ActiveRecord::Schema.define(version: 2020_01_18_170110) do
 
   create_table "accounts", force: :cascade do |t|
     t.string "email", null: false
@@ -52,6 +52,8 @@ ActiveRecord::Schema.define(version: 2019_09_06_194820) do
     t.text "subscriber_permissions", default: "{ \"view-subscriptions\": true, \"add-subscriptions\": false, \"delete-subscriptions\": false, \"view-keys\": true, \"add-keys\": true, \"delete-keys\": false, \"view-list-config\": false, \"resend-encrypted\": true, \"resend-unencrypted\": true }"
     t.boolean "deliver_selfsent", default: true
     t.boolean "include_autocrypt_header", default: true
+    t.boolean "set_reply_to_to_sender", default: false
+    t.boolean "munge_from", default: false
   end
 
   create_table "subscriptions", force: :cascade do |t|
