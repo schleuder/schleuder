@@ -3,6 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+### Changed
+
+* Allow to use the latest version of the gem `mail-gpg`. Our specs had been failing with versions > 0.4.2, but we found out it was our specs' fault.
+
+
 ## [3.6.0] / 2021-02-07
 
 ### Added

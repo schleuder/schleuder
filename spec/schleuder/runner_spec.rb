@@ -281,7 +281,7 @@ describe Schleuder::Runner do
 
         expect(Mail::TestMailer.deliveries.size).to eq 1
         expect(message.to).to include('expired@example.org')
-        expect(message.to_s).to include("You missed an email from ")
+        expect(message.first_plaintext_part.decoded).to include("You missed an email from ")
         expect(signature_fingerprints).to eq([list.fingerprint])
 
         teardown_list_and_mailer(list)
@@ -296,7 +296,7 @@ describe Schleuder::Runner do
         message = Mail::TestMailer.deliveries.first
 
         expect(message.to).to eq ['admin@example.org']
-        expect(message.to_s).to include("You missed an email from #{list.email} ")
+        expect(message.first_plaintext_part.decoded).to include("You missed an email from #{list.email} ")
 
         teardown_list_and_mailer(list)
     end
@@ -353,9 +353,14 @@ describe Schleuder::Runner do
         message = Mail::TestMailer.deliveries.first
         content_part = message.parts.first
 
-        expect(content_part.parts.last.content_transfer_encoding).to eql('quoted-printable')
-        expect(content_part.parts.last.body.encoded).to include('=3D86')
-        expect(content_part.parts.last.body.encoded).not_to include('=86')
+        if content_part.parts.last.content_transfer_encoding == 'quoted-printable'
+          expect(content_part.parts.last.encoded).to include('bug=3D86')
+          expect(content_part.parts.last.encoded).not_to include('bug=86')
+          expect(content_part.parts.last.decoded).to include('bug=86')
+        else
+          expect(content_part.parts.last.encoded).not_to include('bug=3D86')
+          expect(content_part.parts.last.decoded).to include('bug=86')
+        end
 
         teardown_list_and_mailer(list)
       end
@@ -384,9 +389,14 @@ describe Schleuder::Runner do
         message = Mail::TestMailer.deliveries.first
         content_part = message.parts.first
 
-        expect(content_part.parts.last.content_transfer_encoding).to eql('quoted-printable')
-        expect(content_part.parts.last.body.encoded).to include('=3D86')
-        expect(content_part.parts.last.body.encoded).not_to include('=86')
+        if content_part.parts.last.content_transfer_encoding == 'quoted-printable'
+          expect(content_part.parts.last.encoded).to include('bug=3D86')
+          expect(content_part.parts.last.encoded).not_to include('bug=86')
+          expect(content_part.parts.last.decoded).to include('bug=86')
+        else
+          expect(content_part.parts.last.encoded).not_to include('bug=3D86')
+          expect(content_part.parts.last.decoded).to include('bug=86')
+        end
 
         teardown_list_and_mailer(list)
       end

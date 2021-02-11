@@ -48,7 +48,7 @@ describe "running filters" do
       exchange = Mail.read(mails.first)
 
       expect(exchange.to).to eql(["admin@example.org"])
-      expect(exchange.body.to_s).to include("foo\n")
+      expect(exchange.parts.first.parts.last.decoded).to include("foo\n")
 
       stop_smtp_daemon
     end
@@ -71,7 +71,7 @@ describe "running filters" do
       exchange = Mail.read(mails.first)
 
       expect(exchange.to).to eql(["admin@example.org"])
-      expect(exchange.body.to_s).to include("bla-vla")
+      expect(exchange.parts.first.parts.last.decoded).to include("bla-vla")
 
       stop_smtp_daemon
     end
