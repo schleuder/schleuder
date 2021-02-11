@@ -1936,11 +1936,11 @@ EOS
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("Resent: Unencrypted to someone@example.org")
-    expect(message.parts[1].body.to_s.force_encoding(message.parts[1].charset)).to eql(content_body.encode(message.parts[1].charset))
+    expect(message.parts[1].decoded.force_encoding(message.parts[1].charset)).to eql(content_body.encode(message.parts[1].charset))
     expect(resent_message.to).to include("someone@example.org")
     expect(resent_message.to_s).not_to include("Resent: Unencrypted to someone@example.org")
-    expect(resent_message.parts[0].body.to_s).to eql(content_body.encode(resent_message.parts[0].charset))
-    expect(resent_message.parts[1].body.to_s).to eql(list.public_footer.to_s)
+    expect(resent_message.parts[0].decoded).to eql(content_body.encode(resent_message.parts[0].charset))
+    expect(resent_message.parts[1].decoded).to eql(list.public_footer.to_s)
 
     teardown_list_and_mailer(list)
   end
@@ -1978,10 +1978,10 @@ EOS
 
     expect(message.to).to eql(['schleuder@example.org'])
     expect(message.to_s).to include("Resent: Unencrypted to someone@example.org")
-    expect(message.parts[1].body.to_s.force_encoding(message.parts[1].charset)).to eql(content_body.encode(message.parts[1].charset))
+    expect(message.parts[1].decoded.force_encoding(message.parts[1].charset)).to eql(content_body.encode(message.parts[1].charset))
     expect(resent_message.to).to include("someone@example.org")
     expect(resent_message.to_s).not_to include("Resent: Unencrypted to someone@example.org")
-    expect(resent_message.parts[0].body.to_s).to eql(content_body.encode(resent_message.parts[0].charset))
+    expect(resent_message.parts[0].decoded).to eql(content_body.encode(resent_message.parts[0].charset))
 
     teardown_list_and_mailer(list)
   end

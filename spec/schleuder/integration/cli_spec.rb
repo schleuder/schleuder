@@ -200,12 +200,12 @@ describe 'cli' do
       Cli.new.refresh_keys
       mail = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
 
-      expect(mail.to_s).to include("Refreshing all keys from the keyring of list #{list.email} resulted in this")
+      expect(mail.first_plaintext_part.decoded).to include("Refreshing all keys from the keyring of list #{list.email} resulted in this")
       if GPGME::Ctx.sufficient_gpg_version?('2.1')
-        expect(mail.to_s).to include("keyserver refresh failed:")
+        expect(mail.first_plaintext_part.decoded).to include("keyserver refresh failed:")
       else
         # The wording differs slightly among versions.
-        expect(mail.to_s).to match(/gpgkeys: .* error .* connect/)
+        expect(mail.first_plaintext_part.decoded).to match(/gpgkeys: .* error .* connect/)
       end
 
       teardown_list_and_mailer(list)
