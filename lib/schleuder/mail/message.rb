@@ -24,7 +24,9 @@ module Mail
     # Message#initialize.
     def setup
       if self.encrypted?
-        new = self.decrypt(verify: true)
+        # Specify 'loopback'-pinentry-mode to ensure that gnupg never-ever
+        # tries to interactively ask for a passphrase.
+        new = self.decrypt(verify: true, pinentry_mode: GPGME::PINENTRY_MODE_LOOPBACK)
         # Test if there's a signed multipart inside the ciphertext
         # ("encapsulated" format of pgp/mime).
         if encapsulated_signed?(new)
