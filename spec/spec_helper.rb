@@ -9,9 +9,8 @@ end
 # Check env if we want to run code coverage analysis
 if ENV['CHECK_CODE_COVERAGE'] == 'true'
   require 'simplecov'
-  require 'simplecov-console'
-  SimpleCov::Formatter::Console.table_options = {max_width: 400}
-  SimpleCov.formatter = SimpleCov::Formatter::Console
+  require 'simplecov-html'
+  SimpleCov.formatter = SimpleCov::Formatter::HTMLFormatter
   SimpleCov.start do
     add_filter %r{^/vendor/}
     add_filter %r{^/spec/}
