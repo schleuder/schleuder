@@ -25,10 +25,10 @@ module GPGME
           [import_status.fpr, nil]
         end
       when 0
-        [nil, "The given key material did not contain any keys!"]
+        [nil, 'The given key material did not contain any keys!']
       else
         # TODO: report import-stati of the keys?
-        [nil, "The given key material contained more than one key, could not determine which fingerprint to use. Please set it manually!"]
+        [nil, 'The given key material contained more than one key, could not determine which fingerprint to use. Please set it manually!']
       end
     end
 
@@ -78,8 +78,8 @@ module GPGME
     end
 
     def self.check_gpg_version
-      if ! sufficient_gpg_version?('2.0')
-        $stderr.puts "Error: GnuPG version >= 2.0 required.\nPlease install it and/or provide the path to the binary via the environment-variable GPGBIN.\nExample: GPGBIN=/opt/gpg2/bin/gpg ..."
+      if ! sufficient_gpg_version?('2.2')
+        $stderr.puts "Error: GnuPG version >= 2.2 required.\nPlease install it and/or provide the path to the binary via the environment-variable GPGBIN.\nExample: GPGBIN=/opt/gpg2/bin/gpg ..."
         exit 1
       end
     end
@@ -95,10 +95,7 @@ module GPGME
         sleep rand(1.0..5.0)
         refresh_key(key.fingerprint).presence
       end
-      # TODO: drop version check once we killed gpg 2.0 support.
-      if GPGME::Ctx.sufficient_gpg_version?('2.1')
-        `gpgconf --kill dirmngr`
-      end
+      `gpgconf --kill dirmngr`
       output.compact.join("\n")
     end
 
@@ -110,6 +107,8 @@ module GPGME
         # Return filtered error messages. Include gpgkeys-messages from stdout
         # (gpg 2.0 does that), which could e.g. report a failure to connect to
         # the keyserver.
+        # TODO: Revisit this once we don't do network access via GPG
+        # anymore.
         res = [
           refresh_key_filter_messages(gpgerr),
           refresh_key_filter_messages(gpgout).grep(/^gpgkeys: /)
@@ -118,8 +117,7 @@ module GPGME
         # we better kill dirmngr, so it hopefully won't suffer
         # from the same error during the next run.
         # See #309 for background
-        # TODO: drop version check once we killed gpg 2.0 support.
-        if !res.empty? && GPGME::Ctx.sufficient_gpg_version?('2.1')
+        if !res.empty?
           `gpgconf --kill dirmngr`
         end
         res.join("\n")
@@ -158,7 +156,7 @@ module GPGME
         # restricted to keyservers.
         "#{keyserver_arg} --auto-key-locate keyserver --locate-key #{input}"
       else
-        [nil, I18n.t("fetch_key.invalid_input")]
+        [nil, I18n.t('fetch_key.invalid_input')]
       end
     end
 
@@ -166,8 +164,8 @@ module GPGME
       import_states = translate_import_data(gpgoutput)
       strings = import_states.map do |fingerprint, states|
         key = find_distinct_key(fingerprint)
-        I18n.t(locale_key, { key_oneline: key.oneline,
-                             states: states.to_sentence })
+        I18n.t(locale_key, key_summary: key.summary,
+                           states: states.to_sentence)
       end
       strings
     end
@@ -182,7 +180,7 @@ module GPGME
         states = []
 
         if import_status == 0
-          states << I18n.t("import_states.unchanged")
+          states << I18n.t('import_states.unchanged')
         else
           IMPORT_FLAGS.each do |text, int|
             if (import_status & int) > 0
@@ -213,7 +211,7 @@ module GPGME
       errors = []
       output = []
       base_cmd = gpg_engine.file_name
-      base_args = "--no-greeting --no-permission-warning --quiet --armor --trust-model always --no-tty --command-fd 0 --status-fd 1"
+      base_args = '--no-greeting --no-permission-warning --quiet --armor --trust-model always --no-tty --command-fd 0 --status-fd 1'
       cmd = [base_cmd, base_args, args].flatten.join(' ')
       Open3.popen3(cmd) do |stdin, stdout, stderr, thread|
         if block_given?
@@ -231,24 +229,6 @@ module GPGME
       raise 'Need gpg in $PATH or in $GPGBIN'
     end
 
-    def self.gpgcli_expect(args)
-      gpgcli(args) do |stdin, stdout, stderr|
-        counter = 0
-        while line = stdout.gets rescue nil
-          counter += 1
-          if counter > 1042
-            return "Too many input-lines from gpg, something went wrong"
-          end
-          output, error = yield(line.chomp)
-          if output == false
-            return error
-          elsif output
-            stdin.puts output
-          end
-        end
-      end
-    end
-
     def self.spawn_daemon(name, args)
       delete_daemon_socket(name)
       cmd = "#{name} #{args} --daemon > /dev/null 2>&1"
@@ -258,7 +238,7 @@ module GPGME
     end
 
     def self.delete_daemon_socket(name)
-      path = File.join(ENV["GNUPGHOME"], "S.#{name}")
+      path = File.join(ENV['GNUPGHOME'], "S.#{name}")
       if File.exist?(path)
         File.delete(path)
       end
@@ -268,7 +248,7 @@ module GPGME
       if Conf.keyserver.present?
         "--keyserver #{Conf.keyserver}"
       else
-        ""
+        ''
       end
     end
 

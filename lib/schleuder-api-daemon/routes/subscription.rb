@@ -3,9 +3,9 @@ class SchleuderApiDaemon < Sinatra::Base
 
   namespace '/subscriptions' do
     get '.json' do
-      filterkeys = Subscription.configurable_attributes + [:list_id, :email]
+      filterkeys = Subscription.configurable_attributes + ['list_id', 'email']
       filter = params.select do |param|
-        filterkeys.include?(param.to_sym)
+        filterkeys.include?(param)
       end
 
       logger.debug "Subscription filter: #{filter.inspect}"
@@ -43,7 +43,7 @@ class SchleuderApiDaemon < Sinatra::Base
           client_error(sub, 422)
         end
       rescue ActiveRecord::RecordNotUnique
-        logger.error "Already subscribed"
+        logger.error 'Already subscribed'
         status 422
         json errors: {email: ['is already subscribed']}
       end
@@ -70,7 +70,7 @@ class SchleuderApiDaemon < Sinatra::Base
       # For an already existing subscription, only update fingerprint if a
       # new one has been selected from the upload.
       if fingerprint.present?
-        args["fingerprint"] = fingerprint
+        args['fingerprint'] = fingerprint
       end
       if sub.update(args)
         200

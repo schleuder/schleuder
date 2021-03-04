@@ -1,6 +1,6 @@
 ENV['SCHLEUDER_ENV'] ||= 'test'
 ENV['SCHLEUDER_CONFIG'] = 'spec/schleuder.yml'
-ENV["SCHLEUDER_LIST_DEFAULTS"] = "etc/list-defaults.yml"
+ENV['SCHLEUDER_LIST_DEFAULTS'] = 'etc/list-defaults.yml'
 if ENV['USE_BUNDLER'] != 'false'
   require 'bundler/setup'
   Bundler.setup
@@ -24,6 +24,8 @@ require 'factory_bot'
 require 'net/http'
 require 'fileutils'
 require 'socket'
+require 'securerandom'
+require 'byebug'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -50,7 +52,7 @@ RSpec.configure do |config|
   end
 
   config.after(:each) do |example|
-    FileUtils.rm_rf(Dir["spec/gnupg/pubring.gpg~"])
+    FileUtils.rm_rf(Dir['spec/gnupg/pubring.gpg~'])
     # gpgconf --kill might hang indefinitely in IPv6-only environments.
     `pkill -f "#{Conf.lists_dir}" || true`
   end
@@ -71,7 +73,7 @@ RSpec.configure do |config|
   end
 
   def cleanup_gnupg_home
-    ENV["GNUPGHOME"] = nil
+    ENV['GNUPGHOME'] = nil
     FileUtils.rm_rf Schleuder::Conf.lists_dir
   end
 
@@ -87,8 +89,8 @@ RSpec.configure do |config|
       `printf "disable-ipv4\nno-use-tor" > "#{listdir}/dirmngr.conf"`
     end
 
-    pid = Process.spawn('spec/sks-mock.rb', [:out, :err] => ["/tmp/sks-mock.log", 'w'])
-    uri = URI.parse("http://localhost:9999/status")
+    pid = Process.spawn('spec/sks-mock.rb', [:out, :err] => ['/tmp/sks-mock.log', 'w'])
+    uri = URI.parse('http://localhost:9999/status')
     attempts = 25
     # Use the following env var to increase the time to sleep between
     # each attempt, for example if building the Debian package
@@ -176,18 +178,18 @@ RSpec.configure do |config|
     ciphertext.reject { |line| line.match(/^\[GNUPG:\]/) }.join
   end
 
-  def with_tmpfile(content,&blk)
-    file = Tempfile.new('temporary-file',Conf.lists_dir)
+  def with_tmpfile(content, &blk)
+    file = File.new(File.join(Conf.lists_dir, SecureRandom.hex(32)), 'w+')
     begin
       file.write(content)
       file.close
       yield file.path
     ensure
-      file.unlink
+      File.unlink(file)
     end
   end
 
-  def t(*args)
-    I18n.t(*args)
+  def t(key, **kwargs)
+    I18n.t(key, **kwargs)
   end
 end

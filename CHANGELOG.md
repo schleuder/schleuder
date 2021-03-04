@@ -3,12 +3,31 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## [4.0.0] / 2021-XX-XX
+
+### Added
+
+* Mandatory blank line: To separate keywords from email content, you *must* now insert a blank line between them.
+* Provide systemd configs for weekly key maintenance. This relies on a working systemd-timesyncd. (#422)
+* Support for Ruby 3.0.
 
 ### Changed
 
+* Keyword arguments are now also looked for in the following lines, until a blank line or a new keyword-line is encountered.
 * Allow to use the latest version of the gem `mail-gpg`. Our specs had been failing with versions > 0.4.2, but we found out it was our specs' fault.
 * Change the way we force gpg to never-ever interactively ask for a passphrase. This should fix problems with specific combinations of GnuPG and GPGME.
+* Drop support for Ruby 2.1, 2.2, 2.3 and 2.4, require Ruby 2.5.
+* Drop support for GPG 2.0, require GPG 2.2.
+* Drop support to migrate lists from version 2. This includes pin_keys code, which looked for subscriptions without an associated key, and tried to find a distinctly matching key. Originally, this was implemented to help with a shortcoming of code which handled version 2 to version 3 migration. (#411)
+* "Plugins" are now called "keyword handlers", and they are implemented differently. If you use custom plugins you have to rewrite them (see an included keyword handler for implementation hints, it's rather simple). If you don't, this change doesn't affect you. One positive effect of this: if a message contains an unknown keyword, no keyword is being handled but the sender is sent an error message; thus we avoid half-handled messages.
+* The key-attribute `oneline` has been renamed to `summary`. This affects also the http API.
+* Allow only fingerprints as argument to X-DELETE-KEY. We want to reference keys only by fingerprint, if possible (as we do with other keywords already).
+* Drop deprecated X-LISTNAME keyword. (#374)
+* Downcase email addresses: Email addresses are downcased before saving.
+* Update the dependency 'activerecord' to version 6.1.
+* Update the dependency 'factory_bot' to version 6.0.
+* Update the dependency 'sqlite3' to version 1.4.
+* Update the dependency 'database_cleaner' to version 2.0.
 
 
 ## [3.6.0] / 2021-02-07

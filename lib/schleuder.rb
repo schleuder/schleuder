@@ -17,6 +17,8 @@ require 'open3'
 # Require mandatory libs. The database-layer-lib is required below.
 require 'mail-gpg'
 require 'active_record'
+require 'active_support'
+require 'active_support/core_ext/string'
 
 # An extra from mail-gpg
 require 'hkp'
@@ -48,10 +50,9 @@ require 'schleuder/version'
 require 'schleuder/logger_notifications'
 require 'schleuder/logger'
 require 'schleuder/listlogger'
-require 'schleuder/plugin_runners/base'
-require 'schleuder/plugin_runners/list_plugins_runner'
-require 'schleuder/plugin_runners/request_plugins_runner'
-Dir["#{libdir}/schleuder/plugins/*.rb"].each do |file|
+require 'schleuder/keyword_handlers_runner'
+require 'schleuder/keyword_handlers/base'
+Dir["#{libdir}/schleuder/keyword_handlers/*.rb"].each do |file|
   require file
 end
 require 'schleuder/filters_runner'
@@ -64,10 +65,10 @@ require 'schleuder/list_builder'
 require 'schleuder/subscription'
 
 # Setup
-ENV["SCHLEUDER_CONFIG"] ||= '/etc/schleuder/schleuder.yml'
-ENV["SCHLEUDER_LIST_DEFAULTS"] ||= '/etc/schleuder/list-defaults.yml'
-ENV["SCHLEUDER_ENV"] ||= 'production'
-ENV["SCHLEUDER_ROOT"] = rootdir.to_s
+ENV['SCHLEUDER_CONFIG'] ||= '/etc/schleuder/schleuder.yml'
+ENV['SCHLEUDER_LIST_DEFAULTS'] ||= '/etc/schleuder/list-defaults.yml'
+ENV['SCHLEUDER_ENV'] ||= 'production'
+ENV['SCHLEUDER_ROOT'] = rootdir.to_s
 
 GPGME::Ctx.set_gpg_path_from_env
 GPGME::Ctx.check_gpg_version

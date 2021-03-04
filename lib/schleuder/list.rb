@@ -29,14 +29,14 @@ module Schleuder
         :keywords_admin_notify do |record, attrib, value|
           value.each do |word|
             if word !~ /\A[a-z_-]+\z/i
-              record.errors.add(attrib, I18n.t("errors.invalid_characters"))
+              record.errors.add(attrib, I18n.t('errors.invalid_characters'))
             end
           end
         end
     validates_each :bounces_drop_on_headers do |record, attrib, value|
           value.each do |key, val|
             if key.to_s !~ /\A[a-z-]+\z/i || val.to_s !~ /\A[[:graph:]]+\z/i
-              record.errors.add(attrib, I18n.t("errors.invalid_characters"))
+              record.errors.add(attrib, I18n.t('errors.invalid_characters'))
             end
           end
         end
@@ -108,10 +108,6 @@ module Schleuder
       subscriptions.where(admin: true)
     end
 
-    def subscriptions_without_fingerprint
-      subscriptions.without_fingerprint
-    end
-
     def key(fingerprint=self.fingerprint)
       keys(fingerprint).first
     end
@@ -122,17 +118,6 @@ module Schleuder
 
     def keys(identifier=nil, secret_only=nil)
       gpg.find_keys(identifier, secret_only)
-    end
-
-    # TODO: find better name for this method. It does more than the current
-    # name suggests (filtering for capability).
-    def distinct_key(identifier)
-      keys = keys(identifier).select { |key| key.usable_for?(:encrypt) }
-      if keys.size == 1
-        return keys.first
-      else
-        return nil
-      end
     end
 
     def import_key(importable)
@@ -193,19 +178,19 @@ module Schleuder
       end
 
       text = ''
-      expiring.each do |key,days|
-        text << I18n.t('key_expires', {
+      expiring.each do |key, days|
+        text << I18n.t('key_expires',
                           days: days,
-                          key_oneline: key.oneline
-                      })
+                          key_summary: key.summary
+                      )
         text << "\n"
       end
 
-      unusable.each do |key,usability_issue|
-        text << I18n.t('key_unusable', {
+      unusable.each do |key, usability_issue|
+        text << I18n.t('key_unusable',
                           usability_issue: usability_issue,
-                          key_oneline: key.oneline
-                      })
+                          key_summary: key.summary
+                      )
         text << "\n"
       end
       text
@@ -217,19 +202,6 @@ module Schleuder
 
     def fetch_keys(input)
       gpg.fetch_key(input)
-    end
-
-    def pin_keys
-      updated_emails = subscriptions_without_fingerprint.collect do |subscription|
-        key = distinct_key(subscription.email)
-        if key
-          subscription.update(fingerprint: key.fingerprint)
-          "#{subscription.email}: #{key.fingerprint}"
-        else
-          nil
-        end
-      end
-      updated_emails.compact.join("\n")
     end
 
     def self.by_recipient(recipient)
@@ -368,7 +340,7 @@ module Schleuder
     end
 
     def send_to_subscriptions(mail, incoming_mail=nil)
-      logger.debug "Sending to subscriptions."
+      logger.debug 'Sending to subscriptions.'
       mail.add_internal_footer!
       self.subscriptions.each do |subscription|
         begin

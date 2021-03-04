@@ -60,6 +60,7 @@ en:
       not_writable: is not writable
       not_readable: is not readable
     keyword_admin_only: The keyword '%{keyword}' may only be used by list-admin.
+    unknown_keyword: The given keyword '%{keyword}' is unknown. Please check its spelling or the documentation.
     key_generation_failed: Generating the OpenPGP key pair for %{listname} failed for unknown reasons. Please check the list-directory ('%{listdir}') and the log-files.
     key_adduid_failed: "Adding a user-ID to the OpenPGP key failed with this message:\n%{errmsg}"
     too_many_keys: "Error: In %{listdir} there's more than one matching OpenPGP-key for %{listname}. Please delete all but one."
@@ -73,14 +74,24 @@ en:
     too_many_matching_keys: |
       Too many matching keys for '%{input}':
       %{key_strings}
-  plugins:
-    unknown_keyword: Unknown keyword '%{keyword}'.
-    plugin_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
-    keyword_admin_notify_request: "%{signer} sent the keyword '%{keyword}' with the values '%{arguments}' and received this response:"
-    keyword_admin_notify_request_without_arguments: "%{signer} sent the keyword '%{keyword}' and received this response:"
-    keyword_admin_notify_lists: "%{signer} used the keyword '%{keyword}' with the values '%{arguments}' in a message sent to the list."
-    keyword_admin_notify_lists_without_arguments: "%{signer} used the keyword '%{keyword}' in a message sent to the list."
+  keyword_handlers:
+    handler_failed: Running keyword '%{keyword}' caused an unknown error. System-admins have been notified.
+    keyword_admin_notify:
+      request: |
+        %{sender} sent this keyword:
+
+        %{keyword}: %{arguments}
+
+
+        ...and received this response:
+
+        %{response}
+      list: |
+        %{sender} sent this keyword to the list:
+
+        %{keyword}: %{arguments}
     key_management:
+      key_not_found: "Error: No key found with this fingerprint: '%{fingerprint}'."
       deleted: |
         This key was deleted:
         %{key_string}
@@ -91,13 +102,13 @@ en:
       key_import_status:
         imported: |
           This key was newly added:
-          %{key_oneline}
+          %{key_summary}
         updated: |
           This key was updated:
-          %{key_oneline}
+          %{key_summary}
         unchanged: |
           This key was not changed:
-          %{key_oneline}
+          %{key_summary}
         error: |
           The key with this fingerprint could not be added due to an unknown error:
           %{fingerprint} 
@@ -124,6 +135,7 @@ en:
 
         Or, to fetch a key keys by URL:
         X-FETCH-KEY: https://example.org/keys/mykey.asc
+      no_content_found: Your message did not contain any attachments nor text content. Therefore no key could be imported.
     resend:
       not_resent_no_keys: Resending to <%{email}> failed (%{all_keys} keys found, of which %{usable_keys} can be used. Unencrypted sending not allowed).
       not_resent_encrypted_no_keys: Resending as encrypted email to <%{email}> failed (%{all_keys} keys found, of which %{usable_keys} can be used).
@@ -181,6 +193,10 @@ en:
 
         To remove a fingerprint you can use the keyword 'UNSET-FINGERPRINT'
       unset_fingerprint_only_self: Only admins may remove fingerprints of subscriptions other than their own.
+      fingerprint_unset: Fingerprint for %{email} removed.
+      unsetting_fingerprint_failed: |
+        Removing fingerprint for %{email} failed:
+        %{errors}.
       unset_fingerprint_requires_arguments: |
         Error: You did not send any arguments for the keyword 'UNSET-FINGERPRINT'
 
@@ -189,10 +205,6 @@ en:
 
         As an admin to unset your own fingerprint you must additionally pass the argument force. E.g.:
         X-UNSET-FINGERPRINT: adminsubscription2@hostname force
-      fingerprint_unset: Fingerprint for %{email} removed.
-      unsetting_fingerprint_failed: |
-        Removing fingerprint for %{email} failed:
-        %{errors}.
       subscribe_requires_arguments: |
         Error: You did not send any arguments for the keyword 'SUBSCRIBE'.
 
@@ -209,7 +221,9 @@ en:
         X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 true false
 
         If you omit the optional arguments, the subscription has no key assigned, is not an admin, and has the delivery of list-emails enabled.
-    signatures_attached: Find the signatures attached.
+    sign_this:
+      signatures_attached: Find the signatures attached.
+      no_content_found: Your message did not contain any attachments nor text content. Therefore nothing could be signed.
     list_management:
       no_logfile: No logfile could be found for %{listname}. (This might be caused by a high log-level and the absence of errors.)
       logfile_attached: The logfile for %{listname} is attached.
@@ -232,21 +246,19 @@ en:
   check_keys_intro: "Please take care of these keys for list %{email}."
   key_expires: |
     This key expires in %{days} days:
-    %{key_oneline}
+    %{key_summary}
   key_unusable: |
     This key is %{usability_issue}:
-    %{key_oneline}
+    %{key_summary}
   missed_message_due_to_unusable_key: "You missed an email from %{list_email} because your subscription isn't associated with a (usable) OpenPGP key. Please fix this."
   refresh_keys: Keys update
   refresh_keys_intro: "Refreshing all keys from the keyring of list %{email} resulted in this:"
-  pin_keys: Keys pinning
-  pin_keys_intro: "While checking all subscriptions of list %{email} we were pinning a matching key for the following subscriptions:"
   key_updated: |
     This key was updated (%{states}):
-    %{key_oneline}
+    %{key_summary}
   key_fetched: |
     This key was fetched (%{states}):
-    %{key_oneline}
+    %{key_summary}
   import_states:
     unchanged: unchanged
     new_key: new key

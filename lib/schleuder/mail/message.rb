@@ -57,7 +57,7 @@ module Mail
       end
 
       # Delete the protected headers which might leak information.
-      if new.parts.first && new.parts.first.content_type == "text/rfc822-headers; protected-headers=v1"
+      if new.parts.first && new.parts.first.content_type == 'text/rfc822-headers; protected-headers=v1'
         new.parts.shift
       end
 
@@ -84,7 +84,7 @@ module Mail
 
       if self.protected_headers_subject.present?
         new_part = Mail::Part.new
-        new_part.content_type = "text/rfc822-headers; protected-headers=v1"
+        new_part.content_type = 'text/rfc822-headers; protected-headers=v1'
         new_part.body = "Subject: #{self.subject}\n"
         clean.add_part new_part
       end
@@ -143,7 +143,7 @@ module Mail
       when 1
         signatures.first
       else
-        raise "Multiple signatures found! Cannot handle!"
+        raise 'Multiple signatures found! Cannot handle!'
       end
     end
 
@@ -163,8 +163,10 @@ module Mail
     # subscription-assigned fingerprints are (should be) the ones of the
     # primary keys, so we need to look up the key.
     def signing_key
-      if signature.present?
-        @signing_key ||= list.keys(signature.fpr).first
+      @signing_key ||= begin
+        if signature.present?
+          list.keys(signature.fpr).first
+        end
       end
     end
 
@@ -211,7 +213,7 @@ module Mail
     end
 
     def bounced?
-      @bounced ||= bounce_detected? || (error_status != "unknown")
+      @bounced ||= bounce_detected? || (error_status != 'unknown')
     end
 
     def error_status
@@ -226,23 +228,8 @@ module Mail
         return []
       end
 
-      @keywords = []
-      look_for_keywords = true
-      lines = part.decoded.lines.map do |line|
-        # TODO: Find multiline arguments (add-key). Currently add-key has to
-        # read the whole body and hope for the best.
-        if look_for_keywords && (m = line.match(/^x-([^:\s]*)[:\s]*(.*)/i))
-          command = m[1].strip.downcase
-          arguments = m[2].to_s.strip.downcase.split(/[,; ]{1,}/)
-          @keywords << [command, arguments]
-          nil
-        else
-          if look_for_keywords && line.match(/\S+/i)
-            look_for_keywords = false
-          end
-          line
-        end
-      end
+      @keywords, lines = extract_keywords(part.decoded.lines)
+      new_body = lines.join
 
       # Work around problems with re-encoding the body. If we delete the
       # content-transfer-encoding prior to re-assigning the body, and let Mail
@@ -251,7 +238,6 @@ module Mail
       part.content_transfer_encoding = nil
 
       # Set the right charset on the now parsed body
-      new_body = lines.compact.join
       part.charset = new_body.encoding.to_s
       part.body = new_body
 
@@ -294,19 +280,19 @@ module Mail
         if signing_key.present?
           signature_state = signature.to_s
         else
-          signature_state = I18n.t("signature_states.unknown", fingerprint: self.signature.fingerprint)
+          signature_state = I18n.t('signature_states.unknown', fingerprint: self.signature.fingerprint)
         end
       else
-        signature_state = I18n.t("signature_states.unsigned")
+        signature_state = I18n.t('signature_states.unsigned')
       end
       signature_state
     end
 
     def encryption_state
       if was_encrypted?
-        encryption_state = I18n.t("encryption_states.encrypted")
+        encryption_state = I18n.t('encryption_states.encrypted')
       else
-        encryption_state = I18n.t("encryption_states.unencrypted")
+        encryption_state = I18n.t('encryption_states.unencrypted')
       end
       encryption_state
     end
@@ -362,7 +348,7 @@ module Mail
         self['List-Help'] = '<https://schleuder.org/>'
 
         postmsg = if list.receive_admin_only
-                    "NO (Admins only)"
+                    'NO (Admins only)'
                   elsif list.receive_authenticated_only
                     "<mailto:#{list.email}> (Subscribers only)"
                   else
@@ -439,7 +425,6 @@ module Mail
       end
     end
 
-
     def attach_list_key!(list)
       filename = "#{list.email}.asc"
       self.add_file({
@@ -452,6 +437,40 @@ module Mail
     end
 
     private
+
+
+    def extract_keywords(content_lines)
+      keywords = []
+      in_keyword_block = false
+      found_blank_line = false
+      content_lines.each_with_index do |line, i|
+        if match = line.match(/^x-([^:\s]*)[:\s]*(.*)/i)
+          keyword = match[1].strip.downcase
+          arguments = match[2].to_s.strip.downcase.split(/[,; ]{1,}/)
+          keywords << [keyword, arguments]
+          in_keyword_block = true
+
+          # Set this line to nil to have it stripped from the message.
+          content_lines[i] = nil
+        elsif line.blank? && keywords.any?
+          # Look for blank lines after the first keyword had been found.
+          # These might mark the end of the keywords-block — unless more keywords follow.
+          found_blank_line = true
+          # Swallow the line: before the actual content begins we want to drop blank lines.
+          content_lines[i] = nil
+          # Stop interpreting the following line as argument to the previous keyword.
+          in_keyword_block = false
+        elsif in_keyword_block == true
+          # Interpret line as arguments to the previous keyword.
+          keywords[-1][-1] += line.downcase.strip.split(/[,; ]{1,}/)
+          content_lines[i] = nil
+        elsif found_blank_line
+          # Any line that isn't blank and does not start with "x-" stops the keyword parsing.
+          break
+        end
+      end
+      [keywords, content_lines.compact]
+    end
 
     # mail.signed? throws an error if it finds
     # pgp boundaries, so we must use the Mail::Gpg
@@ -482,7 +501,7 @@ module Mail
     end
 
     def _add_subject_prefix(suffix)
-      attrib = "subject_prefix"
+      attrib = 'subject_prefix'
       if suffix
         attrib << "_#{suffix}"
       end
@@ -542,7 +561,7 @@ module Mail
       return '99' if unicode_subject.match(/auto.*reply|férias|ferias|Estarei ausente|estou ausente|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
 
       # Feedback-Type: abuse
-      return '96' if self.to_s.match(/Feedback-Type\: abuse/i)
+      return '96' if self.to_s.match(/Feedback-Type: abuse/i)
 
       if self.parts[1]
         match_parts = self.parts[1].body.match(/(Status:.|550 |#)([245]\.[0-9]{1,3}\.[0-9]{1,3})/)
@@ -565,41 +584,41 @@ module Mail
       return true if self.subject.to_s.match(/(returned|undelivered) mail|mail delivery( failed)?|(delivery )(status notification|failure)|failure notice|undeliver(able|ed)( mail)?|return(ing message|ed) to sender/i)
       return true if self.subject.to_s.match(/auto.*reply|vacation|vocation|(out|away).*office|on holiday|abwesenheits|autorespond|Automatische|eingangsbestätigung/i)
       return true if self['precedence'].to_s.match(/auto.*(reply|responder|antwort)/i)
-      return true if self.from.to_s.match(/^(MAILER-DAEMON|POSTMASTER)\@/i)
+      return true if self.from.to_s.match(/^(MAILER-DAEMON|POSTMASTER)@/i)
       false
     end
 
     def detect_bounce_status_code_from_text(text)
       # Parses a text and uses pattern matching to determines its error status (RFC 3463)
       # from: https://github.com/mailtop/bounce_email
-      return "5.0.0" if text.match(/Status: 5\.0\.0/i)
-      return "5.1.1" if text.match(/no such (address|user)|Recipient address rejected|User unknown|does not like recipient|The recipient was unavailable to take delivery of the message|Sorry, no mailbox here by that name|invalid address|unknown user|unknown local part|user not found|invalid recipient|failed after I sent the message|did not reach the following recipient|nicht zugestellt werden|o pode ser entregue para um ou mais/i)
-      return "5.1.2" if text.match(/unrouteable mail domain|Esta casilla ha expirado por falta de uso|I couldn't find any host named/i)
+      return '5.0.0' if text.match(/Status: 5\.0\.0/i)
+      return '5.1.1' if text.match(/no such (address|user)|Recipient address rejected|User unknown|does not like recipient|The recipient was unavailable to take delivery of the message|Sorry, no mailbox here by that name|invalid address|unknown user|unknown local part|user not found|invalid recipient|failed after I sent the message|did not reach the following recipient|nicht zugestellt werden|o pode ser entregue para um ou mais/i)
+      return '5.1.2' if text.match(/unrouteable mail domain|Esta casilla ha expirado por falta de uso|I couldn't find any host named/i)
       if text.match(/mailbox is full|Mailbox quota (usage|disk) exceeded|quota exceeded|Over quota|User mailbox exceeds allowed size|Message rejected\. Not enough storage space|user has exhausted allowed storage space|too many messages on the server|mailbox is over quota|mailbox exceeds allowed size|excedeu a quota/i)
-        return "5.2.2" if text.match(/This is a permanent error||(Status: |)5\.2\.2/i)
-        return "4.2.2"
+        return '5.2.2' if text.match(/This is a permanent error||(Status: |)5\.2\.2/i)
+        return '4.2.2'
       end
-      return "5.1.0" if text.match(/Address rejected/)
-      return "4.1.2" if text.match(/I couldn't find any host by that name/)
-      return "4.2.0" if text.match(/not yet been delivered/i)
-      return "5.1.1" if text.match(/mailbox unavailable|No such mailbox|RecipientNotFound|not found by SMTP address lookup|Status: 5\.1\.1/i)
-      return "5.2.3" if text.match(/Status: 5\.2\.3/i) # Too messages in folder
-      return "5.4.0" if text.match(/Status: 5\.4\.0/i) # too many hops
-      return "5.4.4" if text.match(/Unrouteable address/i)
-      return "4.4.7" if text.match(/retry timeout exceeded/i)
-      return "5.2.0" if text.match(/The account or domain may not exist, they may be blacklisted, or missing the proper dns entries./i)
-      return "5.5.4" if text.match(/554 TRANSACTION FAILED/i)
-      return "4.4.1" if text.match(/Status: 4.4.1|delivery temporarily suspended|wasn't able to establish an SMTP connection/i)
-      return "5.5.0" if text.match(/550 OU\-002|Mail rejected by Windows Live Hotmail for policy reasons/i)
-      return "5.1.2" if text.match(/PERM_FAILURE: DNS Error: Domain name not found/i)
-      return "4.2.0" if text.match(/Delivery attempts will continue to be made for/i)
-      return "5.5.4" if text.match(/554 delivery error:/i)
-      return "5.1.1" if text.match(/550-5.1.1|This Gmail user does not exist/i)
-      return "5.7.1" if text.match(/5.7.1 Your message.*?was blocked by ROTA DNSBL/i) # AA added
-      return "5.7.2" if text.match(/not have permission to post messages to the group/i)
-      return "5.3.2" if text.match(/Technical details of permanent failure|Too many bad recipients/i) && (text.match(/The recipient server did not accept our requests to connect/i) || text.match(/Connection was dropped by remote host/i) || text.match(/Could not initiate SMTP conversation/i)) # AA added
-      return "4.3.2" if text.match(/Technical details of temporary failure/i) && (text.match(/The recipient server did not accept our requests to connect/i) || text.match(/Connection was dropped by remote host/i) || text.match(/Could not initiate SMTP conversation/i)) # AA added
-      return "5.0.0" if text.match(/Delivery to the following recipient failed permanently/i) # AA added
+      return '5.1.0' if text.match(/Address rejected/)
+      return '4.1.2' if text.match(/I couldn't find any host by that name/)
+      return '4.2.0' if text.match(/not yet been delivered/i)
+      return '5.1.1' if text.match(/mailbox unavailable|No such mailbox|RecipientNotFound|not found by SMTP address lookup|Status: 5\.1\.1/i)
+      return '5.2.3' if text.match(/Status: 5\.2\.3/i) # Too messages in folder
+      return '5.4.0' if text.match(/Status: 5\.4\.0/i) # too many hops
+      return '5.4.4' if text.match(/Unrouteable address/i)
+      return '4.4.7' if text.match(/retry timeout exceeded/i)
+      return '5.2.0' if text.match(/The account or domain may not exist, they may be blacklisted, or missing the proper dns entries./i)
+      return '5.5.4' if text.match(/554 TRANSACTION FAILED/i)
+      return '4.4.1' if text.match(/Status: 4.4.1|delivery temporarily suspended|wasn't able to establish an SMTP connection/i)
+      return '5.5.0' if text.match(/550 OU-002|Mail rejected by Windows Live Hotmail for policy reasons/i)
+      return '5.1.2' if text.match(/PERM_FAILURE: DNS Error: Domain name not found/i)
+      return '4.2.0' if text.match(/Delivery attempts will continue to be made for/i)
+      return '5.5.4' if text.match(/554 delivery error:/i)
+      return '5.1.1' if text.match(/550-5.1.1|This Gmail user does not exist/i)
+      return '5.7.1' if text.match(/5.7.1 Your message.*?was blocked by ROTA DNSBL/i) # AA added
+      return '5.7.2' if text.match(/not have permission to post messages to the group/i)
+      return '5.3.2' if text.match(/Technical details of permanent failure|Too many bad recipients/i) && (text.match(/The recipient server did not accept our requests to connect/i) || text.match(/Connection was dropped by remote host/i) || text.match(/Could not initiate SMTP conversation/i)) # AA added
+      return '4.3.2' if text.match(/Technical details of temporary failure/i) && (text.match(/The recipient server did not accept our requests to connect/i) || text.match(/Connection was dropped by remote host/i) || text.match(/Could not initiate SMTP conversation/i)) # AA added
+      return '5.0.0' if text.match(/Delivery to the following recipient failed permanently/i) # AA added
       return '5.2.3' if text.match(/account closed|account has been disabled or discontinued|mailbox not found|prohibited by administrator|access denied|account does not exist/i)
     end
   end

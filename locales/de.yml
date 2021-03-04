@@ -35,15 +35,15 @@ de:
       <%{sendkey_email}>.
     message_unsigned: Emails an diese Adresse müssen mit einem OpenPGP-Schlüssel signiert sein.
     message_signature_unknown: |
-      Emails an diese Adresse müssen mit dem OpenPGP-Schlüssel signiert sein, der für
-      dein Abo eingetragen ist. Wenn du nicht weisst, welcher Schlüssel das ist, frage
+      Emails an diese Adresse müssen mit dem OpenPGP-Schlüssel signiert sein, der 
+      deiner Mitgliedschaft zugewiesen ist. Wenn du nicht weisst, welcher Schlüssel das ist, frage
       die Administrator/innen. Die erreichst du per Email an
       <%{owner_email}>.
       (Vorzugsweise verschlüssele die Email mit dem Schlüssel dieser Adresse:
       %{list_fingerprint}).
     message_unencrypted: Emails an diese Adresse müssen OpenPGP-konform verschlüsselt sein.
-    message_unauthenticated: Emails an diese Adresse müssen verschlüsselt und mit einem OpenPGP-Schlüssel signiert sein, der für ein Abo eingetragen ist.
-    message_sender_not_subscribed: Nur Absender mit Abo dürfen Emails an diese Adresse schicken.
+    message_unauthenticated: Emails an diese Adresse müssen verschlüsselt und mit einem OpenPGP-Schlüssel signiert sein, der für eine Mitgliedschaft eingetragen ist.
+    message_sender_not_subscribed: Nur Absender, die als Mitglied eingetragen sind, dürfen Emails an diese Adresse schicken.
     message_not_from_admin: Nur Admins dürfen Emails an diese Adresse schicken.
     message_empty: |
       Deine Email enthielt keinen Text, daher wurde sie nicht über die Liste verteilt.
@@ -60,6 +60,7 @@ de:
       not_writable: ist nicht beschreibbar
       not_readable: ist nicht lesbar
     keyword_admin_only: Das Schlüsselwort '%{keyword}' darf nur von Listen-Admins verwendet werden.
+    unknown_keyword: Das verwendete Schlüsselwort '%{input}' ist unbekannt. Bitte prüfe seine Schreibweise oder die Dokumentation.
     key_generation_failed: Das Erzeugen des OpenPGP-Schlüsselpaares für %{listname} ist aus unbekannten Gründen fehlgeschlagen. Bitte prüfe das Listen-Verzeichnis ('%{listdir}') und die Log-Dateien.
     key_adduid_failed: "Das Hinzufügen einer User-ID zum OpenPGP-Schlüssel ist mit folgender Meldung fehlgeschlagen:\n%{errmsg}"
     too_many_keys: "Fehler: In %{listdir} existieren mehrere OpenPGP-Schlüssel für %{listname}. Bitte lösche alle bis auf einen."
@@ -73,27 +74,37 @@ de:
     too_many_matching_keys: |
       Zu viele Schlüssel gefunden für '%{input}':
       %{key_strings}
-  plugins:
-    unknown_keyword: Unbekanntes Schlüsselwort '%{keyword}'.
-    plugin_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
-    keyword_admin_notify_request: "%{signer} schickte das Schlüsselwort '%{keyword}' mit den Werten '%{arguments}' und erhielt dies als Antwort:"
-    keyword_admin_notify_request_without_arguments: "%{signer} schickte das Schlüsselwort '%{keyword}' und erhielt dies als Antwort:"
-    keyword_admin_notify_lists: "%{signer} benutzte das Schlüsselwort '%{keyword}' mit den Werten '%{arguments}' in einer Email an die Liste."
-    keyword_admin_notify_lists_without_arguments: "%{signer} benutzte das Schlüsselwort '%{keyword}' in einer Email an die Liste."
+  keyword_handlers:
+    handler_failed: Das Schlüsselwort '%{keyword}' verursachte einen unbekannten Fehler. Die System-Administratoren wurden benachrichtigt.
+    keyword_admin_notify:
+      request: |
+        %{sender} benutzte dieses Schlüsselwort:
+
+        %{keyword}: %{arguments}
+
+
+        ...und erhielt dies als Antwort:
+
+        {response}
+      list: |
+        %{sender} schickte dieses Schlüsselwort an die Liste:
+
+        %{keyword}: %{arguments}
     key_management:
+      key_not_found: "Fehler: Keinen Schlüssel mit Fingerabdruck '%{fingerprint}' gefunden."
       deleted: "Gelöscht: %{key_string}"
       not_deletable: "Darf nicht gelöscht werden: %{key_string}"
       no_imports: In deiner Email konnten keine Schlüssel gefunden werden. :(
       key_import_status:
         imported: |
           Dieser Schlüssel wurde neu hinzugefügt:
-          %{key_oneline}
+          %{key_summary}
         updated: |
           Dieser Schlüssel wurde aktualisiert:
-          %{key_oneline}
+          %{key_summary}
         unchanged: |
           Dieser Schlüssel wurde nicht verändert:
-          %{key_oneline}
+          %{key_summary}
         error: |
           Der Schlüssel mit diesem Fingerabdruck konnte aus unbekanntem Grund nicht hinzugefügt werden:
           %{fingerprint} 
@@ -120,6 +131,7 @@ de:
 
         Oder, um einen Schlüssel per HTTP von einem Server zu laden:
         X-FETCH-KEY: https://example.org/keys/mykey.asc
+      no_content_found: Deine Email enthielt keine Anhänge und keinen Text-Inhalt, daher konnte kein Schlüssel importiert werden.
     resend:
       not_resent_no_keys: Resending an <%{email}> fehlgeschlagen (%{all_keys} Schlüssel gefunden, davon %{usable_keys} nutzbar. Unverschlüsseltes Senden verboten).
       not_resent_encrypted_no_keys: Verschlüsseltes Resending an <%{email}> fehlgeschlagen (%{all_keys} Schlüssel gefunden, davon %{usable_keys} nutzbar).
@@ -128,26 +140,26 @@ de:
       unencrypted_to: Unverschlüsselt an
       invalid_recipient: "Ungültige Emailadresse für resend: %{address}"
     subscription_management:
-      forbidden: "Fehler: Du bist nicht berechtigt, das Abo für %{email} zu löschen."
-      is_not_subscribed: Kein Abo für %{email} gefunden.
-      unsubscribed: Abo für %{email} wurde gelöscht.
+      forbidden: "Fehler: Du bist nicht berechtigt, die Mitgliedschaft von %{email} zu beenden."
+      is_not_subscribed: Keine Mitgliedschaft von %{email} gefunden.
+      unsubscribed: Die Mitgliedschaft von %{email} wurde gelöscht.
       unsubscribing_failed: |
-        Abo für %{email} nicht gelöscht:
+        Mitgliedschaft von %{email} nicht gelöscht:
         %{errors}
       cannot_unsubscribe_last_admin: |
-        %{email} ist das einzige admin-Abo für diese Liste, daher kann es nicht gelöscht werden.
+        %{email} ist die einzige admin-Mitgliedschaft für diese Liste, daher darf sie nicht gelöscht werden.
       subscribed: |
-        Abo für %{email} mit diesen Werten eingetragen:
+        Mitgliedschaft von %{email} mit diesen Werten eingetragen:
 
         Fingerabdruck: %{fingerprint}
         Admin? %{admin}
         Email-Zustellung aktiv? %{delivery_enabled}
       subscribing_failed: |
-        Abo für %{email} nicht eingetragen:
+        Die Mitgliedschaft von %{email} konnte aufgrund eines Fehlers nicht eingetragen werden:
 
         %{errors}.
-      list_of_subscriptions: "Abos:\n"
-      set_fingerprint_only_self: Nur admins dürfen den Fingerabdruck für andere Abos festlegen.
+      list_of_subscriptions: "Mitgliedschaften:\n"
+      set_fingerprint_only_self: Nur admins dürfen den Fingerabdruck für andere Mitgliedschaften festlegen.
       fingerprint_set: Fingerabdruck für %{email} auf %{fingerprint} gesetzt.
       setting_fingerprint_failed: |
         Fingerabdruck für %{email} konnte nicht auf %{fingerprint} gesetzt werden:
@@ -176,7 +188,7 @@ de:
         X-SET-FINGERPRINT: subscription2@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
 
         Um einen Fingerprint zu entfernen kannst du das Schlüsselwort 'UNSET-FINGERPRINT' verwenden.
-      unset_fingerprint_only_self: Nur admins dürfen den Fingerabdruck für andere Abos festlegen.
+      unset_fingerprint_only_self: Nur admins dürfen den Fingerabdruck für andere Mitgliedschaften löschen.
       fingerprint_unset: Fingerabdruck für %{email} wurde entfernt.
       unsetting_fingerprint_failed: |
         Fingerabdruck für %{email} konnte nicht entfernt werden:
@@ -195,17 +207,19 @@ de:
         Mindestens ein Wert ist nötig, drei weitere sind optional. Bspw.:
         X-SUBSCRIBE: new-subscription@hostname
 
-        Oder, um den Schlüssel für das neue Abo zuzuweisen:
+        Oder, um den Schlüssel der neuen Mitgliedschaft zuzuweisen:
         X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
 
-        Oder, um den Schlüssel zuzuweisen, und das Abo zum admin zu machen:
+        Oder, um den Schlüssel zuzuweisen, und die Mitgliedschaft als admin einzutragen:
         X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 true
 
-        Oder, um den Schlüssel zuzuweisen, das Abo zum admin zu machen, und die Zustellung von Listen-Emails für dieses Abo abzuschalten:
+        Oder, um den Schlüssel zuzuweisen, die Mitgliedschaft als admin einzutragen, und die Zustellung von Listen-Emails für diese Mitgliedschaft abzuschalten:
         X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 true false
 
-        Wenn du die optionalen Werte weglässt hat das Abo keinen Schlüssel zugewiesen, ist nicht admin, und hat die Zustellung von Listen-Email aktiviert.
-    signatures_attached: Die Signaturen hängen an.
+        Wenn du die optionalen Werte weglässt hat die Mitgliedschaft keinen Schlüssel zugewiesen, ist nicht admin, und hat die Zustellung von Listen-Email aktiviert.
+    sign_this:
+      signatures_attached: Die Signaturen hängen an.
+      no_content_found: Deine Email enthielt keine Anhänge und keinen Text-Inhalt, daher konnte nichts signiert werden.
     list_management:
       no_logfile: Keine Log-Datei für %{listname} gefunden. (Das kann an einem hohem Log-Level und der Abwesenheit von Fehlern liegen.)
       logfile_attached: Die Log-Datei für %{listname} hängt an.
@@ -228,21 +242,19 @@ de:
   check_keys_intro: "Bitte kümmere dich um die folgenden Schlüssel für Liste %{email}."
   key_expires: |
     Dieser Schlüssel läuft in %{days} Tagen ab:
-    %{key_oneline}
+    %{key_summary}
   key_unusable: |
     Dieser Schlüssel ist %{usability_issue}:
-    %{key_oneline}
-  missed_message_due_to_unusable_key: "Du hast eine Email von %{list_email} verpasst weil mit deinem Abo kein (benutzbarer) OpenPGP-Schlüssel verknüpft ist. Bitte kümmere dich darum."
+    %{key_summary}
+  missed_message_due_to_unusable_key: "Du hast eine Email von %{list_email} verpasst weil deiner Mitgliedschaft kein (benutzbarer) OpenPGP-Schlüssel zugewiesen ist. Bitte kümmere dich darum."
   refresh_keys: Schlüsselaktualisierung
   refresh_keys_intro: "Die Aktualisierung aller Schlüssel des Schlüsselrings für Liste %{email} ergab dies:"
-  pin_keys: Schlüsselpinning
-  pin_keys_intro: "Die Überprüfung aller Abos der Liste %{email} ergab, dass wir für folgende Abos einen Schlüssel zur Verwendung festgelegt haben:"
   key_updated: |
     Dieser Schlüssel wurde aktualisiert (%{states}):
-    %{key_oneline}
+    %{key_summary}
   key_fetched: |
     Dieser Schlüssel wurde geholt (%{states}):
-    %{key_oneline}
+    %{key_summary}
   import_states:
     unchanged: unverändert
     new_key: neuer Schlüssel

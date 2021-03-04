@@ -23,7 +23,7 @@ module SchleuderApiDaemonHelper
         if params[:list_id].present?
           id_or_email = params[:list_id]
         else
-          client_error "Parameter list_id is required"
+          client_error 'Parameter list_id is required'
         end
       end
       if is_an_integer?(id_or_email)
@@ -41,7 +41,7 @@ module SchleuderApiDaemonHelper
       else
         # Email
         if params[:list_id].blank?
-          client_error "Parameter list_id is required when using email as identifier for subscriptions."
+          client_error 'Parameter list_id is required when using email as identifier for subscriptions.'
         else
           sub = list.subscriptions.where(email: id_or_email).first
         end
@@ -103,7 +103,7 @@ module SchleuderApiDaemonHelper
         expiry: key.expires,
         generated_at: key.generated_at,
         primary_uid: key.primary_uid.uid,
-        oneline: key.oneline,
+        summary: key.summary,
         trust_issues: key.usability_issue
       }
       if include_keydata

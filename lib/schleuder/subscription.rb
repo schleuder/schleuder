@@ -4,26 +4,26 @@ module Schleuder
 
     validates :list_id, inclusion: {
                           in: -> (id) { List.pluck(:id) },
-                          message: "must refer to an existing list"
+                          message: 'must refer to an existing list'
                         }
-    validates :email, presence: true, email: true, uniqueness: {scope: :list_id}
+    validates :email, presence: true, email: true
+    validates :email, uniqueness: { scope: :list_id, case_sensitive: true }
     validates :fingerprint, allow_blank: true, fingerprint: true
     validates :delivery_enabled, :admin, boolean: true
 
     before_validation {
       self.email = Mail::Address.new(self.email).address
+      self.email.downcase! if self.email.present?
     }
 
     default_scope { order(:email) }
-
-    scope :without_fingerprint, -> { where(fingerprint: [nil,'']) }
 
     def to_s
       email
     end
 
     def self.configurable_attributes
-      [:fingerprint, :admin, :delivery_enabled]
+      ['fingerprint', 'admin', 'delivery_enabled']
     end
 
     def fingerprint=(arg)
@@ -38,7 +38,7 @@ module Schleuder
       # TODO: make key-related methods a concern, so we don't have to go
       # through the list and neither re-implement the methods here.
       # Prefix '0x' to force GnuPG to match only hex-values, not UIDs.
-      list.keys("0x#{self.fingerprint}").first
+      @key ||= list.keys("0x#{self.fingerprint}").first
     end
 
     def send_mail(mail, incoming_mail=nil)
@@ -52,7 +52,7 @@ module Schleuder
           notify_of_missed_message(:absent)
           return false
         else
-          list.logger.warn "Sending plaintext because no key is present!"
+          list.logger.warn 'Sending plaintext because no key is present!'
         end
       elsif ! self.key.usable?
         if self.list.send_encrypted_only?
@@ -87,7 +87,7 @@ module Schleuder
       if self.list.munge_from? && ! incoming_mail.nil? 
         # If the option "munge_from" is set to true, we will add the original senders' from-header to ours.
         # We munge the from-header to avoid issues with DMARC.
-        mail.from = I18n.t("header_munging", from: incoming_mail.from.first, list: self.list.email, list_address: self.list.email)
+        mail.from = I18n.t('header_munging', from: incoming_mail.from.first, list: self.list.email, list_address: self.list.email)
       else
         mail.from = self.list.email
       end
@@ -100,7 +100,7 @@ module Schleuder
       self.list.logger.warn "Not sending to #{self.email}: key is unusable because it is #{reason} and sending plain text not allowed"
       mail = ensure_headers(Mail.new)
       mail.subject = I18n.t('notice')
-      mail.body = I18n.t("missed_message_due_to_unusable_key", list_email: self.list.email) + I18n.t('errors.signoff')
+      mail.body = I18n.t('missed_message_due_to_unusable_key', list_email: self.list.email) + I18n.t('errors.signoff')
       mail.gpg self.list.gpg_sign_options
       mail.deliver
     end
@@ -112,6 +112,5 @@ module Schleuder
     def delete_key
       list.delete_key(self.fingerprint)
     end
-
   end
 end
