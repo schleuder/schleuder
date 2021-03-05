@@ -627,6 +627,10 @@ components:
               type: boolean
             bounces_notify_admins:
               type: boolean
+            deliver_selfsent:
+              type: boolean
+            include_autocrypt_header:
+              type: boolean
             include_list_headers:
               type: boolean
             include_openpgp_header:
@@ -698,6 +702,10 @@ components:
         bounces_drop_all:
           type: boolean
         bounces_notify_admins:
+          type: boolean
+        deliver_selfsent:
+          type: boolean
+        include_autocrypt_header:
           type: boolean
         include_list_headers:
           type: boolean

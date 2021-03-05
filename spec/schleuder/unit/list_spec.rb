@@ -3,12 +3,22 @@ require "spec_helper"
 describe Schleuder::List do
   BOOLEAN_LIST_ATTRIBUTES =
     [
-      :send_encrypted_only, :receive_encrypted_only, :receive_signed_only,
-      :receive_authenticated_only, :receive_from_subscribed_emailaddresses_only,
-      :receive_admin_only, :keep_msgid, :bounces_drop_all,
-      :bounces_notify_admins, :deliver_selfsent, :include_list_headers,
-      :include_list_headers, :include_openpgp_header, :forward_all_incoming_to_admins,
-      :set_reply_to_to_sender, :munge_from
+      :bounces_drop_all,
+      :bounces_notify_admins,
+      :deliver_selfsent,
+      :forward_all_incoming_to_admins,
+      :include_autocrypt_header,
+      :include_list_headers,
+      :include_openpgp_header,
+      :keep_msgid,
+      :munge_from,
+      :receive_admin_only,
+      :receive_authenticated_only,
+      :receive_encrypted_only,
+      :receive_from_subscribed_emailaddresses_only,
+      :receive_signed_only,
+      :send_encrypted_only,
+      :set_reply_to_to_sender,
     ].freeze
 
   it "has a valid factory" do
@@ -41,6 +51,7 @@ describe Schleuder::List do
   it { is_expected.to respond_to :bounces_drop_all }
   it { is_expected.to respond_to :bounces_notify_admins }
   it { is_expected.to respond_to :deliver_selfsent }
+  it { is_expected.to respond_to :include_autocrypt_header }
   it { is_expected.to respond_to :include_list_headers }
   it { is_expected.to respond_to :include_openpgp_header }
   it { is_expected.to respond_to :max_message_size_kb }
@@ -210,14 +221,37 @@ describe Schleuder::List do
   describe ".configurable_attributes" do
     it "returns an array that contains the configurable attributes" do
       expect(Schleuder::List.configurable_attributes).to eq [
-        :bounces_drop_all, :bounces_drop_on_headers, :bounces_notify_admins, :deliver_selfsent,
-        :forward_all_incoming_to_admins, :headers_to_meta, :include_list_headers,
-        :include_openpgp_header, :internal_footer, :keep_msgid, :key_auto_import_from_email, :keywords_admin_notify,
-        :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :munge_from, :openpgp_header_preference,
-        :public_footer, :receive_admin_only, :receive_authenticated_only, :receive_encrypted_only,
-        :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,
-        :set_reply_to_to_sender, :subject_prefix, :subject_prefix_in,
-        :subject_prefix_out, :subscriber_permissions,
+        :bounces_drop_all,
+        :bounces_drop_on_headers,
+        :bounces_notify_admins,
+        :deliver_selfsent,
+        :forward_all_incoming_to_admins,
+        :headers_to_meta,
+        :include_autocrypt_header,
+        :include_list_headers,
+        :include_openpgp_header,
+        :internal_footer,
+        :keep_msgid,
+        :key_auto_import_from_email, 
+        :keywords_admin_notify,
+        :language,
+        :log_level,
+        :logfiles_to_keep,
+        :max_message_size_kb,
+        :munge_from,
+        :openpgp_header_preference,
+        :public_footer,
+        :receive_admin_only,
+        :receive_authenticated_only,
+        :receive_encrypted_only,
+        :receive_from_subscribed_emailaddresses_only,
+        :receive_signed_only,
+        :send_encrypted_only,
+        :set_reply_to_to_sender,
+        :subject_prefix,
+        :subject_prefix_in,
+        :subject_prefix_out,
+        :subscriber_permissions,
       ]
     end
 

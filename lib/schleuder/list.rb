@@ -21,6 +21,7 @@ module Schleuder
         :bounces_drop_all,
         :deliver_selfsent,
         :bounces_notify_admins,
+        :include_autocrypt_header,
         :include_list_headers,
         :include_openpgp_header,
         :forward_all_incoming_to_admins,
