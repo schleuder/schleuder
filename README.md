@@ -1,4 +1,4 @@
-Schleuder, version 3
+Schleuder
 ======================================
 
 Schleuder is a gpg-enabled mailing list manager with resending-capabilities. Subscribers can communicate encrypted (and pseudonymously) among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.
