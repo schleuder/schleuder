@@ -146,7 +146,7 @@ describe 'lists via api' do
       get '/lists.json'
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)['data']).to eql([list1.email, list2.email])
+      expect(JSON.parse(last_response.body)['data'].sort).to eql([list1.email, list2.email].sort)
     end
   end
 
