@@ -2439,7 +2439,7 @@ Error: Resending to <bla@foo> failed (0 keys found, of which 0 can be used.
     }
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
-    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2474,7 +2474,7 @@ Error: Resending to <bla@foo> failed (0 keys found, of which 0 can be used.
     }
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
-    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend: someone@example.org\n\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
@@ -2510,7 +2510,7 @@ Error: Resending to <bla@foo> failed (0 keys found, of which 0 can be used.
     }
     mail.gpg(gpg_opts)
     content_body = "Hello again!\n"
-    mail.body = "x-list-name: #{list.email}\nX-resend: bla@foo\nx-stop\n#{content_body}"
+    mail.body = "x-list-name: #{list.email}\nX-resend: bla@foo\n\n#{content_body}"
     mail.deliver
 
     encrypted_mail = Mail::TestMailer.deliveries.first
