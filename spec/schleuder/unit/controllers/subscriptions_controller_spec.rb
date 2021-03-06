@@ -100,7 +100,7 @@ describe Schleuder::SubscriptionsController do
 
       configurable_attributes = SubscriptionsController.new(account).get_configurable_attributes
 
-      expect(configurable_attributes).to eq [:fingerprint, :admin, :delivery_enabled]
+      expect(configurable_attributes).to eq ['fingerprint', 'admin', 'delivery_enabled']
     end
   end
 
