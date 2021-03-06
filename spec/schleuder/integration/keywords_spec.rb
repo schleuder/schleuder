@@ -2527,7 +2527,7 @@ Error: Resending to <bla@foo> failed (0 keys found, of which 0 can be used.
     expect(Mail::TestMailer.deliveries.size).to eql(2)
     expect(resent_message.to).to eql(['bla@foo'])
     expect(resent_message.content_type).to match(/^multipart\/encrypted.*application\/pgp-encrypted/)
-    expect(message.first_plaintext_part.body.to_s).to include('Resent: Encrypted to bla@foo (87E65ED2081AE3D16BE4F0A5EBDBE899251F2412)')
+    expect(message.first_plaintext_part.body.to_s).to include("Resent: Encrypted to\n  bla@foo (87E65ED2081AE3D16BE4F0A5EBDBE899251F2412)")
 
     teardown_list_and_mailer(list)
   end
