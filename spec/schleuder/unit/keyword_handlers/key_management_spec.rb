@@ -32,6 +32,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       mail.list = create(:list)
       keymaterial1 = File.read('spec/fixtures/example_key.txt')
       keymaterial2 = File.read('spec/fixtures/bla_foo_key.txt')
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.body = "#{keymaterial1}\nsome text\n#{keymaterial2}\n--\nthis is a signature"
       mail.to_s
 
@@ -124,6 +126,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
         :content_transfer_encoding => 'quoted-printable',
         :content => File.read('spec/fixtures/example_key.txt')
       }
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.to_s
 
       list_keys = mail.list.keys
