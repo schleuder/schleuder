@@ -1,65 +1,75 @@
 require 'spec_helper'
 
 describe 'RemoveKeywordsAdminOnly ' do
-  let(:migrations) { ActiveRecord::Migration[5.2].new.migration_context.migrations }
   let(:migration_under_test) { 20190222014121 }
   let(:previous_migration) { 20190222014120 }
+  let(:schema_migration) { ActiveRecord::Base.connection.schema_migration }
+  let(:migrator) { ActiveRecord::MigrationContext.new("./db/migrate", schema_migration) }
 
   after(:each) do
-    ActiveRecord::Migrator.new(:up, migrations).migrate
+    ActiveRecord::Base.connection.schema_cache.clear!
+    migrator.up
   end
 
   describe 'up' do
+    it 'migrates as expected' do
+      migrator.down(previous_migration)
+      expect(migrator.current_version).to eql(previous_migration)
+
+      migrator.up(migration_under_test)
+      expect(migrator.current_version).to eql(migration_under_test)
+    end
+
     it 'translates admin-only:add-key to subscriber_permissions' do
-      ActiveRecord::Migrator.new(:down, migrations, previous_migration).migrate
+      migrator.down(previous_migration)
       list_klass = create_list_klass
       mylist = list_klass.create(keywords_admin_only: %w[add-key])
 
-      ActiveRecord::Migrator.new(:up, migrations, migration_under_test).migrate
+      migrator.up(migration_under_test)
       mylist.reload
 
       expect(mylist.subscriber_permissions).to eql({'view-subscriptions'=>true, 'add-subscriptions'=>true, 'delete-subscriptions'=>true, 'view-keys'=>true, 'add-keys'=>false, 'delete-keys'=>true, 'view-list-config'=>true, 'resend-encrypted'=>true, 'resend-unencrypted'=>true})
     end
 
     it 'translates admin-only:resend configuration to subscriber_permissions' do
-      ActiveRecord::Migrator.new(:down, migrations, previous_migration).migrate
+      migrator.down(previous_migration)
       list_klass = create_list_klass
       mylist = list_klass.create(keywords_admin_only: %w[resend])
 
-      ActiveRecord::Migrator.new(:up, migrations, migration_under_test).migrate
+      migrator.up(migration_under_test)
       mylist.reload
 
       expect(mylist.subscriber_permissions).to eql({'view-subscriptions'=>true, 'add-subscriptions'=>true, 'delete-subscriptions'=>true, 'view-keys'=>true, 'add-keys'=>true, 'delete-keys'=>true, 'view-list-config'=>true, 'resend-encrypted'=>true, 'resend-unencrypted'=>false})
     end
 
     it 'translates admin-only:resend-encrypted-only configuration to subscriber_permissions' do
-      ActiveRecord::Migrator.new(:down, migrations, previous_migration).migrate
+      migrator.down(previous_migration)
       list_klass = create_list_klass
       mylist = list_klass.create(keywords_admin_only: %w[resend-encrypted-only])
 
-      ActiveRecord::Migrator.new(:up, migrations, migration_under_test).migrate
+      migrator.up(migration_under_test)
       mylist.reload
 
       expect(mylist.subscriber_permissions).to eql({'view-subscriptions'=>true, 'add-subscriptions'=>true, 'delete-subscriptions'=>true, 'view-keys'=>true, 'add-keys'=>true, 'delete-keys'=>true, 'view-list-config'=>true, 'resend-encrypted'=>false, 'resend-unencrypted'=>true})
     end
 
     it 'translates admin-only:resend,resend-encrypted-only configuration to subscriber_permissions' do
-      ActiveRecord::Migrator.new(:down, migrations, previous_migration).migrate
+      migrator.down(previous_migration)
       list_klass = create_list_klass
       mylist = list_klass.create(keywords_admin_only: %w[resend resend-encrypted-only])
 
-      ActiveRecord::Migrator.new(:up, migrations, migration_under_test).migrate
+      migrator.up(migration_under_test)
       mylist.reload
 
       expect(mylist.subscriber_permissions).to eql({'view-subscriptions'=>true, 'add-subscriptions'=>true, 'delete-subscriptions'=>true, 'view-keys'=>true, 'add-keys'=>true, 'delete-keys'=>true, 'view-list-config'=>true, 'resend-encrypted'=>false, 'resend-unencrypted'=>false})
     end
 
     it 'translates admin-only:resend-cc-encrypted-only,resend-unencrypted configuration to subscriber_permissions' do
-      ActiveRecord::Migrator.new(:down, migrations, previous_migration).migrate
+      migrator.down(previous_migration)
       list_klass = create_list_klass
       mylist = list_klass.create(keywords_admin_only: %w[resend-cc-encrypted-only resend-unencrypted])
 
-      ActiveRecord::Migrator.new(:up, migrations, migration_under_test).migrate
+      migrator.up(migration_under_test)
       mylist.reload
 
       expect(mylist.subscriber_permissions).to eql({'view-subscriptions'=>true, 'add-subscriptions'=>true, 'delete-subscriptions'=>true, 'view-keys'=>true, 'add-keys'=>true, 'delete-keys'=>true, 'view-list-config'=>true, 'resend-encrypted'=>false, 'resend-unencrypted'=>false})
@@ -68,11 +78,11 @@ describe 'RemoveKeywordsAdminOnly ' do
 
   describe 'down' do
     it 'translates add-keys:false to keywords_admin_only' do
-      ActiveRecord::Migrator.new(:up, migrations, migration_under_test).migrate
+      migrator.up(migration_under_test)
       list_klass = create_list_klass
       mylist = list_klass.create(subscriber_permissions: { 'add-keys': false })
 
-      ActiveRecord::Migrator.new(:down, migrations, previous_migration).migrate
+      migrator.down(previous_migration)
       list_klass = create_list_klass
       mylist = list_klass.find(mylist.id)
 
@@ -80,11 +90,11 @@ describe 'RemoveKeywordsAdminOnly ' do
     end
 
     it 'translates resend-encrypted:false to keywords_admin_only' do
-      ActiveRecord::Migrator.new(:up, migrations, migration_under_test).migrate
+      migrator.up(migration_under_test)
       list_klass = create_list_klass
       mylist = list_klass.create(subscriber_permissions: { 'resend-encrypted': false })
 
-      ActiveRecord::Migrator.new(:down, migrations, previous_migration).migrate
+      migrator.down(previous_migration)
       list_klass = create_list_klass
       mylist = list_klass.find(mylist.id)
 
@@ -92,11 +102,11 @@ describe 'RemoveKeywordsAdminOnly ' do
     end
 
     it 'translates resend-unencrypted:false to keywords_admin_only' do
-      ActiveRecord::Migrator.new(:up, migrations, migration_under_test).migrate
+      migrator.up(migration_under_test)
       list_klass = create_list_klass
       mylist = list_klass.create(subscriber_permissions: { 'resend-unencrypted': false })
 
-      ActiveRecord::Migrator.new(:down, migrations, previous_migration).migrate
+      migrator.down(previous_migration)
       list_klass = create_list_klass
       mylist = list_klass.find(mylist.id)
 
