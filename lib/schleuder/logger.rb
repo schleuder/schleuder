@@ -7,11 +7,7 @@ module Schleuder
   class Logger < Syslog::Logger
     include LoggerNotifications
     def initialize
-      if RUBY_VERSION.to_f < 2.1
-        super('Schleuder')
-      else
-        super('Schleuder', Syslog::LOG_MAIL)
-      end
+      super('Schleuder', Syslog::LOG_MAIL)
       # We need some sender-address different from the superadmin-address.
       @from = "#{`whoami`.chomp}@#{`hostname`.chomp}"
       @adminaddresses = Conf.superadmin
