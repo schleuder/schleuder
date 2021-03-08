@@ -4,13 +4,7 @@ module Schleuder
   class Conf
     include Singleton
 
-    # since the regexp got only included into stdlib 2.2
-    # TODO: remove once 2.1 support dropped
-    if RUBY_VERSION < '2.2'
-      EMAIL_REGEXP = /\A[a-zA-Z0-9.!\#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\z/
-    else
-      EMAIL_REGEXP = URI::MailTo::EMAIL_REGEXP
-    end
+    EMAIL_REGEXP = URI::MailTo::EMAIL_REGEXP
     # TODO: drop v3 keys and only accept length of 40
     FINGERPRINT_REGEXP = /\A(0x)?[a-f0-9]{32}([a-f0-9]{8})?\z/i
 
