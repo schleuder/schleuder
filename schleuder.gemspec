@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.metadata = {
     'homepage_uri'      => 'https://schleuder.org/',
     'documentation_uri' => 'https://schleuder.org/docs/',
-    'changelog_uri'     => 'https://0xacab.org/schleuder/schleuder/blob/master/CHANGELOG.md',
+    'changelog_uri'     => 'https://0xacab.org/schleuder/schleuder/blob/main/CHANGELOG.md',
     'source_code_uri'   => 'https://0xacab.org/schleuder/schleuder/',
     'bug_tracker_uri'   => 'https://0xacab.org/schleuder/schleuder/issues',
     'mailing_list_uri'  => 'https://lists.nadir.org/mailman/listinfo/schleuder-announce/',

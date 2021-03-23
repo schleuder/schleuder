@@ -4,7 +4,7 @@ Contributing
 To contribute please follow this workflow:
 
 1. Talk to us! E.g. create an issue about your idea or problem.
-2. Fork the repository and work in a meaningful named branch that is based off of our "master".
+2. Fork the repository and work in a meaningful named branch that is based off of our "main".
 3. Enable CI: In your fork, go to Settings -> CI / CD -> Expand next to Runners settings -> Enable shared Runners.
 4. Commit in rather small chunks but don't split depending code across commits. Please write sensible commit messages.
 5. Please add tests for your feature or bugfix.
@@ -48,7 +48,7 @@ To start with the actual development, we first have to get the schleuder system 
 	```
 3. Clone and install schleuder-cli:
 	```
-	wget https://0xacab.org/schleuder/schleuder-cli/raw/master/gems/schleuder-cli-0.1.0.gem.sig && gpg --verify schleuder-cli-0.1.0.gem.sig
+	wget https://0xacab.org/schleuder/schleuder-cli/raw/main/gems/schleuder-cli-0.1.0.gem.sig && gpg --verify schleuder-cli-0.1.0.gem.sig
 	gem install schleuder-cli-0.1.0.gem
 	```
 4. Configure schleuder-cli:
