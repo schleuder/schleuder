@@ -3,8 +3,7 @@ Schleuder
 
 Schleuder is a gpg-enabled mailing list manager with resending-capabilities. Subscribers can communicate encrypted (and pseudonymously) among themselves, receive emails from non-subscribers and send emails to non-subscribers via the list.
 
-Version 3 of schleuder is a complete rewrite, which aims to be more robust, flexible, and internationalized. It
-also provides an API for the optional web interface called [schleuder-web](https://0xacab.org/schleuder/schleuder-web).
+It aims to be robust, flexible, internationalized and also provides an API for the optional web interface called [schleuder-web](https://0xacab.org/schleuder/schleuder-web).
 
 For more details see <https://schleuder.org/docs/>.
 
