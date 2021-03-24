@@ -120,7 +120,7 @@ end
 
 desc 'Build and sign a tarball'
 task :build_tarball do
-  `git archive --format tar.gz --prefix "#{@tagname}/" -o #{@filename_tarball} master`
+  `git archive --format tar.gz --prefix "#{@tagname}/" -o #{@filename_tarball} main`
 end
 
 desc 'Describe manual release-tasks'
