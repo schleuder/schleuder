@@ -3,6 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.1] / 2021-05-FIXME
+
+### Fixed
+
+* `x-add-key` is able to handle attached binary key material. (#495)
+
+
 ## [4.0.0] / 2021-03-04
 
 ### Added

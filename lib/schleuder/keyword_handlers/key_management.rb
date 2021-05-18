@@ -125,7 +125,7 @@ module Schleuder
 
       def import_keys_from_attachments
         @mail.attachments.map do |attachment|
-          import_from_string(attachment.body.to_s)
+          import_from_string(attachment.body.raw_source)
         end
       end
 

@@ -12,7 +12,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
   end
 
   context '.add_key' do
-    it 'imports a key from inline material' do
+    it 'imports a key from inline ascii-armored material' do
       mail = Mail.new
       mail.list = create(:list)
       mail.body = File.read('spec/fixtures/example_key.txt')
@@ -25,7 +25,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
     end
 
-    it 'imports from an inline mix of key and non-key material' do
+    it 'imports from an inline mix of ascii-armored key and non-key material' do
       mail = Mail.new
       mail.list = create(:list)
       keymaterial1 = File.read('spec/fixtures/example_key.txt')
@@ -40,7 +40,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       expect(mail.list.keys.size).to eql(list_keys.size + 2)
     end
 
-    it 'imports a key from attached material' do
+    it 'imports a key from attached acsii-armored material' do
       mail = Mail.new
       mail.list = create(:list)
       mail.add_file('spec/fixtures/example_key.txt')
@@ -53,7 +53,24 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
     end
 
-    it 'imports from attached quoted-printable key-material (as produced by Thunderbird)' do
+    it 'imports a key from attached quoted-printable binary material' do
+      mail = Mail.new
+      mail.list = create(:list)
+      mail.attachments['example_key_binary.txt'] = {
+        :content_type => '"application/pgp-keys"; name="example_key_binary.txt"',
+        :content_transfer_encoding => 'quoted-printable',
+        :content => File.open('spec/fixtures/example_key_binary.txt', 'rb', &:read)
+      }
+      mail.to_s
+
+      list_keys = mail.list.keys
+      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+
+      expect(output).to eql("This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n")
+      expect(mail.list.keys.size).to eql(list_keys.size + 1)
+    end
+
+    it 'imports from attached quoted-printable ascii-armored key-material (as produced by Thunderbird)' do
       mail = Mail.new
       mail.list = create(:list)
       mail.attachments['example_key.txt'] = {
@@ -70,7 +87,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
     end
 
-    it 'ignores body if an attachment is present' do
+    it 'ignores body if an ascii-armored attachment is present' do
       mail = Mail.new
       mail.list = create(:list)
       mail.body = 'blabla'
