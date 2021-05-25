@@ -50,7 +50,7 @@ changelog:
       allow_failure: true
   script:
     # Ensure we work with the latest state
-    - git fetch origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME:$CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - git fetch --depth=1 https://0xacab.org/schleuder/schleuder.git/ $CI_MERGE_REQUEST_TARGET_BRANCH_NAME:$CI_MERGE_REQUEST_TARGET_BRANCH_NAME
     # Compare the target and current branch using their common ancestors
     # to check if the changelog was edited
     - if git diff --exit-code --quiet $CI_MERGE_REQUEST_TARGET_BRANCH_NAME...HEAD -- CHANGELOG.md; then
