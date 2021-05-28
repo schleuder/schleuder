@@ -159,7 +159,7 @@ module GPGME
       errors = []
       output = []
       base_cmd = gpg_engine.file_name
-      base_args = '--no-greeting --no-permission-warning --quiet --armor --trust-model always --no-tty --command-fd 0 --status-fd 1'
+      base_args = '--no-greeting --quiet --armor --trust-model always --no-tty --command-fd 0 --status-fd 1'
       cmd = [base_cmd, base_args, args].flatten.join(' ')
       Open3.popen3(cmd) do |stdin, stdout, stderr, thread|
         if block_given?
@@ -171,6 +171,16 @@ module GPGME
         errors = stderr.readlines
         exitcode = thread.value.exitstatus
       end
+
+      # Don't treat warnings as errors but log them.
+      errors = errors.map do |line|
+        if line.match?(/gpg: WARNING: (unsafe permissions on homedir|using insecure memory)/i)
+          Schleuder.logger.warn(line)
+          nil
+        else
+          line
+        end
+      end.compact
 
       [errors, output, exitcode]
     rescue Errno::ENOENT
