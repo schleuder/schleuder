@@ -44,6 +44,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rack-test', '~> 1'
   s.add_development_dependency 'rubocop', '~> 1'
   s.add_development_dependency 'byebug', '~> 10'
+  s.add_runtime_dependency 'gpgme', '~> 2.0', '>= 2.0.19' # Explicitly include to force a version.
   if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6.0')
     s.add_development_dependency 'irb'
   end
