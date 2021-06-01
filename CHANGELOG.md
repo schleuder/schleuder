@@ -3,6 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased / XXX
+
+### Changed
+
+* Remove the dependency on bigdecimal, since updating activerecord we don't need it anymore.
+
+
 ## [4.0.1] / 2021-05-18
 
 ### Fixed
