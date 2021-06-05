@@ -7,6 +7,9 @@ require_relative "lib/#{project}.rb"
 @filename_gem = "#{@tagname}.gem"
 @filename_tarball = "#{@tagname}.tar.gz"
 
+# Make ActiveRecord's tasks usable for us (without this, those tasks try to run
+# in the "default_env" environment, which is not configured).
+ENV['RACK_ENV'] ||= ENV['SCHLEUDER_ENV']
 load 'active_record/railties/databases.rake'
 
 # Configure ActiveRecord
