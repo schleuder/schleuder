@@ -6,6 +6,7 @@
 Encoding.default_external = Encoding::UTF_8
 
 # Stdlib
+require 'etc'
 require 'fileutils'
 require 'singleton'
 require 'yaml'
