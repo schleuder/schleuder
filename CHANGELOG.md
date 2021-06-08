@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 * Remove the dependency on bigdecimal, since updating activerecord we don't need it anymore.
+* Removed the dependency on the executables `hostname` and `whoami`.
 
 
 ## [4.0.1] / 2021-05-18
