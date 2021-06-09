@@ -229,21 +229,6 @@ module GPGME
       raise 'Need gpg in $PATH or in $GPGBIN'
     end
 
-    def self.spawn_daemon(name, args)
-      delete_daemon_socket(name)
-      cmd = "#{name} #{args} --daemon > /dev/null 2>&1"
-      if ! system(cmd)
-        return [false, "#{name} exited with code #{$?}"]
-      end
-    end
-
-    def self.delete_daemon_socket(name)
-      path = File.join(ENV['GNUPGHOME'], "S.#{name}")
-      if File.exist?(path)
-        File.delete(path)
-      end
-    end
-
     def keyserver_arg
       if Conf.keyserver.present?
         "--keyserver #{Conf.keyserver}"
