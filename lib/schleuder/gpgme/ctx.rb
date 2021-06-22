@@ -7,6 +7,7 @@ module GPGME
       'new_subkeys' => 8
     }
 
+    # TODO: refactor with code in import_from_string()
     def keyimport(keydata)
       self.import_keys(GPGME::Data.new(keydata))
       result = self.import_result
@@ -47,6 +48,7 @@ module GPGME
       end
     end
 
+    # TODO: from this method, only the "cleaning" (better would be: "normalizing") is used.
     def clean_and_classify_input(input)
       case input
       when /.*?([^ <>]+@[^ <>]+).*?/
@@ -86,6 +88,25 @@ module GPGME
 
     def self.gpg_engine
       GPGME::Engine.info.find {|e| e.protocol == GPGME::PROTOCOL_OpenPGP }
+    end
+
+    def import_from_string(locale_key, input)
+      # Import through gpgcli so we can use import-filter. GPGME still does
+      # not provide that feature (as of summer 2021): <https://dev.gnupg.org/T4721> :(
+      gpgerr, gpgout, exitcode = self.class.gpgcli("#{import_filter_arg} --import") do |stdin, stdout, stderr|
+        # Wrap this into a block because gpg breaks the pipe if it encounters invalid data.
+        begin
+          stdin.puts input
+        rescue Errno::EPIPE
+        end
+        stdin.close
+        stdout.readlines
+      end
+      if exitcode > 0
+        RuntimeError.new(gpgerr.join("\n"))
+      else
+        translate_output(locale_key, gpgout).join("\n")
+      end
     end
 
     def refresh_keys(keys)
