@@ -3,16 +3,19 @@ require 'spec_helper'
 describe 'cli' do
   context '#refresh_keys' do
     it 'updates keys from the keyserver' do
+      resp1 = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/default_list_key.txt'))
+      Typhoeus.stub(/by-fingerprint\/59C71FB38AEE22E091C78259D06350440F759BD3/).and_return(resp1)
+      resp2 = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/expired_key_extended.txt'))
+      Typhoeus.stub(/by-fingerprint\/98769E8A1091F36BD88403ECF71A3F8412D83889/).and_return(resp2)
+      resp3 = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/olduid_key_with_newuid.txt'))
+      Typhoeus.stub(/by-fingerprint\/6EE51D78FD0B33DE65CCF69D2104E20E20889F66/).and_return(resp3)
+
       list = create(:list)
       list.subscribe('admin@example.org', nil, true)
       list.import_key(File.read('spec/fixtures/expired_key.txt'))
       list.import_key(File.read('spec/fixtures/olduid_key.txt'))
 
-      with_sks_mock(list.listdir) do
-        Cli.new.refresh_keys
-        dirmngr_pid = `pgrep -a dirmngr | grep #{list.listdir}`.split(' ', 2).first
-        expect(dirmngr_pid).to be_nil
-      end
+      Cli.new.refresh_keys
       mail = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
 
       b = mail.first_plaintext_part.body.to_s
@@ -22,7 +25,15 @@ describe 'cli' do
 
       teardown_list_and_mailer(list)
     end
+
     it 'updates keys from the keyserver for only a specific list' do
+      resp1 = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/default_list_key.txt'))
+      Typhoeus.stub(/by-fingerprint\/59C71FB38AEE22E091C78259D06350440F759BD3/).and_return(resp1)
+      resp2 = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/expired_key_extended.txt'))
+      Typhoeus.stub(/by-fingerprint\/98769E8A1091F36BD88403ECF71A3F8412D83889/).and_return(resp2)
+      resp3 = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/olduid_key_with_newuid.txt'))
+      Typhoeus.stub(/by-fingerprint\/6EE51D78FD0B33DE65CCF69D2104E20E20889F66/).and_return(resp3)
+
       list1 = create(:list)
       list2 = create(:list)
       [list1, list2].each do |list|
@@ -31,9 +42,7 @@ describe 'cli' do
         list.import_key(File.read('spec/fixtures/olduid_key.txt'))
       end
 
-      with_sks_mock(list1.listdir) do
-        Cli.new.refresh_keys list1.email
-      end
+      Cli.new.refresh_keys list1.email
       mail = Mail::TestMailer.deliveries.find { |message| message.to == [list1.admins.first.email] }
 
       b = mail.first_plaintext_part.body.to_s
@@ -46,6 +55,13 @@ describe 'cli' do
     end
 
     it 'reports errors from refreshing keys' do
+      resp1 = Typhoeus::Response.new(code: 404, body: 'Not Found')
+      Typhoeus.stub(/by-fingerprint\/59C71FB38AEE22E091C78259D06350440F759BD3/).and_return(resp1)
+      Typhoeus.stub(/search=59C71FB38AEE22E091C78259D06350440F759BD3/).and_return(resp1)
+      resp2 = Typhoeus::Response.new(code: 503, body: 'Internal Server Error')
+      Typhoeus.stub(/by-fingerprint\/98769E8A1091F36BD88403ECF71A3F8412D83889/).and_return(resp2)
+      Typhoeus.stub(/search=98769E8A1091F36BD88403ECF71A3F8412D83889/).and_return(resp2)
+
       list = create(:list)
       list.subscribe('admin@example.org', nil, true)
       list.import_key(File.read('spec/fixtures/expired_key.txt'))
@@ -54,17 +70,16 @@ describe 'cli' do
       mail = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
 
       expect(mail.first_plaintext_part.decoded).to include("Refreshing all keys from the keyring of list #{list.email} resulted in this")
-      if GPGME::Ctx.sufficient_gpg_version?('2.1')
-        expect(mail.first_plaintext_part.decoded).to include('keyserver refresh failed:')
-      else
-        # The wording differs slightly among versions.
-        expect(mail.first_plaintext_part.decoded).to match(/gpgkeys: .* error .* connect/)
-      end
+      expect(mail.first_plaintext_part.decoded).to include("Error: No key could be found for '59C71FB38AEE22E091C78259D06350440F759BD3'.")
+      expect(mail.first_plaintext_part.decoded).to include('Error while fetching data from the internet: Internal Server Error')
 
       teardown_list_and_mailer(list)
     end
 
     it 'warns about file system permissions if it was run as root' do
+      resp = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/default_list_key.txt'))
+      Typhoeus.stub(/by-fingerprint\/59C71FB38AEE22E091C78259D06350440F759BD3/).and_return(resp)
+
       expect(Process).to receive(:euid).and_return(0)
       list = create(:list)
 
