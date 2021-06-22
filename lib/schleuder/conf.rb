@@ -49,6 +49,11 @@ module Schleuder
       @config ||= load_config(ENV['SCHLEUDER_CONFIG'])
     end
 
+    def reload!
+      @config = nil
+      config
+    end
+
     def self.lists_dir
       instance.config['lists_dir']
     end
