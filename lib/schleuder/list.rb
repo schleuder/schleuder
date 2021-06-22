@@ -201,7 +201,11 @@ module Schleuder
     end
 
     def fetch_keys(input)
-      gpg.fetch_key(input)
+      key_fetcher.fetch(input)
+    end
+
+    def key_fetcher
+      @key_fetcher ||= KeyFetcher.new(self)
     end
 
     def self.by_recipient(recipient)

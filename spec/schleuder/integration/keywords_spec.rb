@@ -1256,6 +1256,9 @@ describe 'user sends keyword' do
   end
 
   it 'x-fetch-key with email address' do
+    key = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/expired_key_extended.txt'))
+    Typhoeus.stub(/by-email\/admin%40example.org/).and_return(key)
+
     list = create(:list)
     list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     list_keys_num = list.keys.size
@@ -1276,11 +1279,9 @@ describe 'user sends keyword' do
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock(list.listdir) do
-      begin
-        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-      rescue SystemExit
-      end
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
@@ -1292,6 +1293,10 @@ describe 'user sends keyword' do
   end
 
   it 'x-fetch-key with unknown email-address' do
+    resp = Typhoeus::Response.new(code: 404, body: 'Not found')
+    Typhoeus.stub(/by-email\/something%40localhost/).and_return(resp)
+    Typhoeus.stub(/search=something%40localhost/).and_return(resp)
+
     list = create(:list)
     list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     list_keys_num = list.keys.size
@@ -1312,22 +1317,23 @@ describe 'user sends keyword' do
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock(list.listdir) do
-      begin
-        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-      rescue SystemExit
-      end
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(list.keys.size).to eql(list_keys_num)
-    expect(message.to_s).to include('Fetching something@localhost did not succeed')
+    expect(message.to_s).to include("Error: No key could be found for 'something@localhost'.")
 
     teardown_list_and_mailer(list)
   end
 
   it 'x-fetch-key with URL' do
+    resp = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/expired_key_extended.txt'))
+    Typhoeus.stub(/keys\/example.asc/).and_return(resp)
+    
     list = create(:list)
     list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     list_keys_num = list.keys.size
@@ -1342,19 +1348,16 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
+    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: http://somehost/keys/example.asc"
+    mail.deliver
+
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
 
 
-    with_sks_mock(list.listdir) do |baseurl|
-      begin
-        mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: #{baseurl}/keys/example.asc"
-        mail.deliver
-
-        encrypted_mail = Mail::TestMailer.deliveries.first
-        Mail::TestMailer.deliveries.clear
-
-        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-      rescue SystemExit
-      end
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
@@ -1366,6 +1369,9 @@ describe 'user sends keyword' do
   end
 
   it 'x-fetch-key with invalid URL' do
+    resp = Typhoeus::Response.new(code: 404, body: 'Not found')
+    Typhoeus.stub(/foo/).and_return(resp)
+
     list = create(:list)
     list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     list_keys_num = list.keys.size
@@ -1380,32 +1386,31 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    # Make `url` appear in this scope, we set the real value in the next block.
-    url = nil
+    url = 'http://somehost/foo'
+    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: #{url}"
+    mail.deliver
 
-    with_sks_mock(list.listdir) do |baseurl|
-      begin
-        url = "#{baseurl}/foo"
-        mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: #{url}"
-        mail.deliver
+    encrypted_mail = Mail::TestMailer.deliveries.first
+    Mail::TestMailer.deliveries.clear
 
-        encrypted_mail = Mail::TestMailer.deliveries.first
-        Mail::TestMailer.deliveries.clear
-
-        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-      rescue SystemExit
-      end
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(list.keys.size).to eql(list_keys_num)
-    expect(message.to_s).to include("Fetching #{url} did not succeed")
+    expect(message.to_s).to include("Error: There's nothing at <#{url}> (404 Not Found).")
 
     teardown_list_and_mailer(list)
   end
 
   it 'x-fetch-key with unknown fingerprint' do
+    resp = Typhoeus::Response.new(code: 404, body: 'Not found')
+    Typhoeus.stub(/by-fingerprint\/0000000000000000000000000000000000000000/).and_return(resp)
+    Typhoeus.stub(/search=0x0000000000000000000000000000000000000000/).and_return(resp)
+
     list = create(:list)
     list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     list_keys_num = list.keys.size
@@ -1426,22 +1431,22 @@ describe 'user sends keyword' do
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock(list.listdir) do
-      begin
-        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-      rescue SystemExit
-      end
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
 
     expect(list.keys.size).to eql(list_keys_num)
-    expect(message.to_s).to include('Fetching 0x0000000000000000000000000000000000000000 did not succeed')
-
+    expect(message.to_s).to include("Error: No key could be found for '0x0000000000000000000000000000000000000000'.")
     teardown_list_and_mailer(list)
   end
 
   it 'x-fetch-key with fingerprint' do
+    resp = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/expired_key_extended.txt'))
+    Typhoeus.stub(/by-fingerprint\/98769E8A1091F36BD88403ECF71A3F8412D83889/).and_return(resp)
+
     list = create(:list)
     list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     list_keys_num = list.keys.size
@@ -1462,11 +1467,9 @@ describe 'user sends keyword' do
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock(list.listdir) do
-      begin
-        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-      rescue SystemExit
-      end
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
@@ -1478,6 +1481,9 @@ describe 'user sends keyword' do
   end
 
   it 'x-fetch-key with fingerprint of unchanged key' do
+    resp = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/default_list_key.txt'))
+    Typhoeus.stub(/by-fingerprint\/59C71FB38AEE22E091C78259D06350440F759BD3/i).and_return(resp)
+
     list = create(:list)
     list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', true)
     list_keys_num = list.keys.size
@@ -1498,11 +1504,9 @@ describe 'user sends keyword' do
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock(list.listdir) do
-      begin
-        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-      rescue SystemExit
-      end
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup
@@ -1534,11 +1538,9 @@ describe 'user sends keyword' do
     encrypted_mail = Mail::TestMailer.deliveries.first
     Mail::TestMailer.deliveries.clear
 
-    with_sks_mock(list.listdir) do
-      begin
-        Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
-      rescue SystemExit
-      end
+    begin
+      Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
+    rescue SystemExit
     end
     raw = Mail::TestMailer.deliveries.find { |message| message.to == [list.admins.first.email] }
     message = Mail.create_message_to_list(raw.to_s, list.request_address, list).setup

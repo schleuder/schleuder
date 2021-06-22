@@ -510,13 +510,13 @@ describe Schleuder::List do
 
   context '#fetch_keys' do
     it 'fetches one key by fingerprint' do
+      resp = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/expired_key_extended.txt'))
+      Typhoeus.stub(/by-fingerprint\/98769E8A1091F36BD88403ECF71A3F8412D83889/).and_return(resp)
+       
       list = create(:list)
       list.subscribe('admin@example.org', nil, true)
-      output = ''
 
-      with_sks_mock(list.listdir) do
-        output = list.fetch_keys('98769E8A1091F36BD88403ECF71A3F8412D83889')
-      end
+      output = list.fetch_keys('98769E8A1091F36BD88403ECF71A3F8412D83889')
 
       expect(output).to eql("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
 
@@ -524,13 +524,13 @@ describe Schleuder::List do
     end
 
     it 'fetches one key by URL' do
+      resp = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/expired_key_extended.txt'))
+      Typhoeus.stub(/keys\/example.asc/).and_return(resp)
+
       list = create(:list)
       list.subscribe('admin@example.org', nil, true)
-      output = ''
 
-      with_sks_mock(list.listdir) do |baseurl|
-        output = list.fetch_keys("#{baseurl}/keys/example.asc")
-      end
+      output = list.fetch_keys('http://somehost/keys/example.asc')
 
       expect(output).to eql("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
 
@@ -538,13 +538,13 @@ describe Schleuder::List do
     end
 
     it 'fetches one key by email address' do
+      resp = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/expired_key_extended.txt'))
+      Typhoeus.stub(/by-email\/admin%40example.org/).and_return(resp)
+
       list = create(:list)
       list.subscribe('admin@example.org', nil, true)
-      output = ''
 
-      with_sks_mock(list.listdir) do
-        output = list.fetch_keys('admin@example.org')
-      end
+      output = list.fetch_keys('admin@example.org')
 
       expect(output).to eql("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
 
@@ -552,14 +552,14 @@ describe Schleuder::List do
     end
 
     it 'does not import non-self-signatures' do
+      resp = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/openpgp-keys/public-key-with-third-party-signature.txt'))
+      Typhoeus.stub(/by-fingerprint\/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412/).and_return(resp)
+
       list = create(:list)
       list.delete_key('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
       list.subscribe('admin@example.org', nil, true)
-      output = ''
 
-      with_sks_mock(list.listdir) do
-        output = list.fetch_keys('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
-      end
+      output = list.fetch_keys('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
 
       # GPGME apparently does not show signatures correctly in some cases, so we better use gpgcli.
       signature_output = list.gpg.class.gpgcli(['--list-sigs', '87E65ED2081AE3D16BE4F0A5EBDBE899251F2412'])[1].grep(/0F759BD3.*schleuder@example.org/)
