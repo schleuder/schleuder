@@ -265,8 +265,6 @@ en:
     new_uids: new user-IDs
     new_subkeys: new subkeys
     new_signatures: new signatures
-  fetch_key:
-    invalid_input: "Invalid input. Allowed are: URLs, OpenPGP-fingerprints, or email-addresses."
   key_fetcher:
     invalid_input: "Invalid input. Allowed are: URLs, OpenPGP-fingerprints, or email-addresses."
     not_found: "Error: No key could be found for '%{input}'."
