@@ -178,14 +178,6 @@ module GPGME
       raise 'Need gpg in $PATH or in $GPGBIN'
     end
 
-    def keyserver_arg
-      if Conf.keyserver.present?
-        "--keyserver #{Conf.keyserver}"
-      else
-        ''
-      end
-    end
-
     def import_filter_arg
       %{ --import-filter drop-sig='sig_created_d > 0000-00-00'}
     end
