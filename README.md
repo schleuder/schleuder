@@ -15,6 +15,7 @@ Requirements
 * sqlite3
 * openssl
 * icu
+* libcurl
 
 *If you use Debian buster, CentOS 7 or Archlinux, please have a look at the [installation docs](https://schleuder.org/schleuder/docs/server-admins.html#installation). We do provide packages for those platforms, which simplify the installation a lot.*
 

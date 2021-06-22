@@ -9,10 +9,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Drop support for Ruby 2.5 and 2.6, require Ruby 2.7 or later.
 * The default umask now is `0077`, allowing access to newly created files and directories only for the owner. It is configurable in `schleuder.yml`.
+* Drop using dirmngr, use custom code to fetch keys from keyservers.
 
 ### Added
 
- * The umask is configurable in `schleuder.yml`.
+* The umask is configurable in `schleuder.yml`.
+* New dependency: libcurl and gem "typhoeus" (for networking).
+* Lookup keys on a VKS keyserver (e.g. keys.openpgp.org) before the SKS keyserver.
+* Configure a proxy to make HTTP requests (e.g. when fetching keys) through. This supports socks5(h) in order to route traffic through TOR.
 
 
 ## [4.0.3] / 2022-04-12
