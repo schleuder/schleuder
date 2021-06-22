@@ -16,7 +16,7 @@ module Schleuder
       'filters_dir' => '/usr/local/lib/schleuder/filters',
       'log_level' => 'warn',
       'superadmin' => 'root@localhost',
-      'keyserver' => 'hkp://pool.sks-keyservers.net',
+      'sks_keyserver' => 'http://pool.sks-keyservers.net',
       'smtp_settings' => {
         'address' => 'localhost',
         'port' => 25,
@@ -125,9 +125,10 @@ module Schleuder
       settings
     end
 
-    def self.keyserver
-      instance.config['keyserver']
+    def self.sks_keyserver
+      instance.config['sks_keyserver']
     end
+
 
     private
 
