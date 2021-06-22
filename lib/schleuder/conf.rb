@@ -16,6 +16,7 @@ module Schleuder
       'filters_dir' => '/usr/local/lib/schleuder/filters',
       'log_level' => 'warn',
       'superadmin' => 'root@localhost',
+      'vks_keyserver' => 'https://keys.openpgp.org',
       'sks_keyserver' => 'http://pool.sks-keyservers.net',
       'smtp_settings' => {
         'address' => 'localhost',
@@ -123,6 +124,10 @@ module Schleuder
         end
       end
       settings
+    end
+
+    def self.vks_keyserver
+      instance.config['vks_keyserver']
     end
 
     def self.sks_keyserver

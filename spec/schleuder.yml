@@ -7,6 +7,7 @@ listlogs_dir: <%= ENV["SCHLEUDER_TMP_DIR"] || '/tmp/schleuder-test/' %>
 keyword_handlers_dir: 'spec/custom_keyword_handlers'
 smtp_settings:
   port: 2523
+vks_keyserver: http://vkshost
 sks_keyserver: http://skshost
 api:
   tls_cert_file: 'spec/schleuder-certificate.pem'
