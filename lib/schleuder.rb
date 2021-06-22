@@ -23,9 +23,6 @@ require 'active_support'
 require 'active_support/core_ext/string'
 require 'typhoeus'
 
-# An extra from mail-gpg
-require 'hkp'
-
 # Load schleuder
 libdir = Pathname.new(__FILE__).dirname.realpath
 rootdir = libdir.dirname
