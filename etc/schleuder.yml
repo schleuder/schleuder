@@ -21,17 +21,13 @@ filters_dir: /usr/local/lib/schleuder/filters
 # How verbose should Schleuder log to syslog? (list-specific messages are written to the list's log-file).
 log_level: warn
 
-# Which keyserver to refresh keys from (used by `schleuder refresh_keys`, meant
-# to be run from cron or systemd weekly).
-# If you have gnupg 2.1, we strongly suggest to use a hkps-keyserver:
-#keyserver: hkps://hkps.pool.sks-keyservers.net
-# If you have gnupg 2.1 and TOR running locally, use a onion-keyserver:
-#keyserver: hkp://jirk5u4osbsr34t5.onion
-# If you have an OS-wide defined keyserver, specify a blank value to have that
-# one used:
-#keyserver: 
-# The default works for all supported versions of gnupg:
-keyserver: pool.sks-keyservers.net
+# Which traditional keyserver to fetch keys from?
+# This server must support the SKS API.
+# To disable lookup via this type of keyserver, set this to a blank value.
+# Note: This must include the procotol scheme (e.g. "https://").
+# Beware: Only specify https here if the server does use a commonly accepted
+#         TLS certificate. Most servers of the SKS-pool do not!
+sks_keyserver: http://pool.sks-keyservers.net
 
 # Who is maintaining the overall schleuder installation and should be
 # notified about severe problems with lists.
