@@ -18,6 +18,7 @@ module Schleuder
       'superadmin' => 'root@localhost',
       'vks_keyserver' => 'https://keys.openpgp.org',
       'sks_keyserver' => 'http://pool.sks-keyservers.net',
+      'http_proxy' => '',
       'smtp_settings' => {
         'address' => 'localhost',
         'port' => 25,
@@ -134,6 +135,9 @@ module Schleuder
       instance.config['sks_keyserver']
     end
 
+    def self.http_proxy
+      instance.config['http_proxy']
+    end
 
     private
 
