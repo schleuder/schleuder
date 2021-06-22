@@ -35,6 +35,11 @@ vks_keyserver: https://keys.openpgp.org
 #         TLS certificate. Most servers of the SKS-pool do not!
 sks_keyserver: http://pool.sks-keyservers.net
 
+# Should Schleuder use a proxy for HTTP requests (to fetch OpenPGP keys)?
+# To route HTTP requests via Tor set up a local Tor daemon and enter e.g.
+# socks5h://127.0.0.1:9050 (for a typical Tor service).
+#http_proxy:
+
 # Who is maintaining the overall schleuder installation and should be
 # notified about severe problems with lists.
 # This address should be a postmaster-like account, especially it should
