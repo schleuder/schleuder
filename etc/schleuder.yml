@@ -21,6 +21,12 @@ filters_dir: /usr/local/lib/schleuder/filters
 # How verbose should Schleuder log to syslog? (list-specific messages are written to the list's log-file).
 log_level: warn
 
+# Which verifying keyserver to fetch keys from?
+# This server must support the VKS API.
+# To disable lookup via this type of keyserver, set this to a blank value.
+# Note: This must include the procotol scheme (e.g. "https://").
+vks_keyserver: https://keys.openpgp.org
+
 # Which traditional keyserver to fetch keys from?
 # This server must support the SKS API.
 # To disable lookup via this type of keyserver, set this to a blank value.
