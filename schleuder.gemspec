@@ -40,6 +40,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'sqlite3', '~> 1.4.2'
   s.add_runtime_dependency 'thin', '~> 1'
   s.add_runtime_dependency 'thor', '~> 0'
+  s.add_runtime_dependency 'typhoeus', '~> 1.4'
   s.add_development_dependency 'byebug', '~> 10'
   s.add_development_dependency 'database_cleaner', '~> 2.0'
   s.add_development_dependency 'factory_bot', '~> 6.0'

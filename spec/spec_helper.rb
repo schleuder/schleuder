@@ -59,6 +59,10 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with(:truncation)
   end
 
+  config.before(:each) do
+    Typhoeus::Expectation.clear
+  end
+
   config.around(:each) do |example|
     Mail::TestMailer.deliveries.clear
     DatabaseCleaner.cleaning do
@@ -86,6 +90,9 @@ RSpec.configure do |config|
   Mail.defaults do
     delivery_method :test
   end
+
+  # Block all unstubbed connections
+  Typhoeus::Config.block_connection = true
 
   def cleanup_gnupg_home
     ENV['GNUPGHOME'] = nil

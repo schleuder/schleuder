@@ -267,6 +267,12 @@ en:
     new_signatures: new signatures
   fetch_key:
     invalid_input: "Invalid input. Allowed are: URLs, OpenPGP-fingerprints, or email-addresses."
+  key_fetcher:
+    invalid_input: "Invalid input. Allowed are: URLs, OpenPGP-fingerprints, or email-addresses."
+    not_found: "Error: No key could be found for '%{input}'."
+    url_not_found: "Error: There's nothing at <%{url}> (404 Not Found)."
+    general_error: "Error while fetching data from the internet: %{error}"
+    import_error: "Error while importing the fetched data: %{error}"
   pseudoheaders:
     scrubbed_message: This message included invalid characters, which might have been removed to be able to process the message properly.
     stripped_html_from_multialt: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.
