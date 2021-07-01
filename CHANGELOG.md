@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Drop using dirmngr, use custom code to fetch keys from keyservers.
 * Upgrade Active Record to version 7
 * Check email address for `receive_from_subscribed_emailaddresses_only` in lower case letters to avoid wrong rejections.
+* `mail-gpg` is no longer a dependency. We included the relevant parts of its code into our own code base to avoid problems with surprising decisions from upstream.
 
 ### Added
 

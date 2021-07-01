@@ -1,3 +1,6 @@
+require 'schleuder/mail/gpg/delivery_handler'
+require 'schleuder/mail/gpg/verify_result_attribute'
+
 module Mail
   # creates a Mail::Message likes schleuder
   def self.create_message_to_list(msg, recipient, list)
@@ -13,11 +16,14 @@ module Mail
 
   # TODO: Test if subclassing breaks integration of mail-gpg.
   class Message
+    include Mail::Gpg::VerifyResultAttribute #for Mail::Gpg
+
     attr_accessor :recipient
     attr_accessor :original_message
     attr_accessor :list
     attr_accessor :protected_headers_subject
     attr_writer :dynamic_pseudoheaders
+    attr_accessor :raise_encryption_errors # for Mail::Gpg
 
     # TODO: This should be in initialize(), but I couldn't understand the
     # strange errors about wrong number of arguments when overriding
@@ -435,6 +441,78 @@ module Mail
       self.attachments[filename].content_description = 'OpenPGP public key'
       true
     end
+
+    # turn on gpg encryption / set gpg options.
+    #
+    # options are:
+    #
+    # encrypt: encrypt the message. defaults to true
+    # sign: also sign the message. false by default
+    # sign_as: UIDs to sign the message with
+    #
+    # See Mail::Gpg methods encrypt and sign for more
+    # possible options
+    #
+    # mail.gpg encrypt: true
+    # mail.gpg encrypt: true, sign: true
+    # mail.gpg encrypt: true, sign_as: "other_address@host.com"
+    #
+    # sign-only mode is also supported:
+    # mail.gpg sign: true
+    # mail.gpg sign_as: 'jane@doe.com'
+    #
+    # To turn off gpg encryption use:
+    # mail.gpg false
+    #
+    def gpg(options = nil)
+      case options
+      when nil
+        @gpg
+      when false
+        @gpg = nil
+        if Mail::Gpg::DeliveryHandler == delivery_handler
+          self.delivery_handler = nil
+        end
+        nil
+      else
+        self.raise_encryption_errors = true if raise_encryption_errors.nil?
+        @gpg = options
+        self.delivery_handler ||= Mail::Gpg::DeliveryHandler
+        nil
+      end
+    end
+
+    # true if this mail is encrypted
+    def encrypted?
+      Mail::Gpg.encrypted?(self)
+    end
+
+    # returns the decrypted mail object.
+    #
+    # pass verify: true to verify signatures as well. The gpgme verification
+    # result will be available via decrypted_mail.verify_result
+    def decrypt(options = {})
+      Mail::Gpg.decrypt(self, options)
+    end
+
+    # true if this mail is signed (but not encrypted)
+    def signed?
+      Mail::Gpg.signed?(self)
+    end
+
+    # verify signatures. returns a new mail object with signatures removed and
+    # populated verify_result.
+    #
+    # verified = signed_mail.verify()
+    # verified.signature_valid?
+    # signers = mail.signatures.map{|sig| sig.from}
+    #
+    # use import_missing_keys: true in order to try to fetch and import
+    # unknown keys for signature validation
+    def verify(options = {})
+      Mail::Gpg.verify(self, options)
+    end
+
 
     private
 

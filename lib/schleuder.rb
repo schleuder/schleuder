@@ -18,7 +18,8 @@ require 'socket'
 require 'base64'
 
 # Require mandatory libs. The database-layer-lib is required below.
-require 'mail-gpg'
+require 'mail'
+require 'gpgme'
 require 'active_record'
 require 'active_support'
 require 'active_support/core_ext/string'
@@ -33,8 +34,6 @@ $:.unshift libdir
 require 'schleuder/mail/parts_list.rb'
 require 'schleuder/mail/message.rb'
 require 'schleuder/mail/gpg.rb'
-require 'schleuder/mail/gpg/encrypted_part.rb'
-require 'schleuder/mail/gpg/sign_part.rb'
 require 'schleuder/gpgme/import_status.rb'
 require 'schleuder/gpgme/key.rb'
 require 'schleuder/gpgme/sub_key.rb'
