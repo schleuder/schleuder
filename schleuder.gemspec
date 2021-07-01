@@ -30,7 +30,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'charlock_holmes', '~> 0.7.6'
   s.add_runtime_dependency 'gpgme', '~> 2.0', '>= 2.0.19' # Explicitly include to force a version.
   s.add_runtime_dependency 'mail', '~> 2.7.1'
-  s.add_runtime_dependency 'mail-gpg', '~> 0.3'
   if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.1.0')
     s.add_runtime_dependency 'net-smtp', '~> 0.3.1'
   end
