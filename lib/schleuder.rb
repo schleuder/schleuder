@@ -32,7 +32,7 @@ $:.unshift libdir
 require 'schleuder/mail/parts_list.rb'
 require 'schleuder/mail/message.rb'
 require 'schleuder/mail/gpg.rb'
-require 'schleuder/mail/encrypted_part.rb'
+require 'schleuder/mail/gpg/encrypted_part.rb'
 require 'schleuder/mail/gpg/sign_part.rb'
 require 'schleuder/gpgme/import_status.rb'
 require 'schleuder/gpgme/key.rb'
