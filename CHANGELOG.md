@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased / XXX
 
+### Fixed
+
+* Fixed the verification of "encapsulated" PGP/MIME-messages as sent e.g. by KMail.
+
+
 ### Changed
 
 * Remove the dependency on bigdecimal, since updating activerecord we don't need it anymore.
