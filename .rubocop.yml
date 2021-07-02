@@ -4,6 +4,7 @@ AllCops:
   Exclude:
     - 'db/**/*'
     - 'vendor/**/*'
+    - 'lib/schleuder/mail/gpg/sign_part.rb'
 
 Style/StringLiterals:
   Enabled: true
