@@ -299,5 +299,18 @@ describe Mail::Message do
       expect(m.body.to_s).to eql("tralafiti\n")
     end
   end
+
+  it 'verifies an encapsulated (signed-then-encrypted) message' do
+    list = create(:list, fingerprint: '7EDF3336CB8BC6D15D461DB5FFF7A04251E7D112')
+    list.import_key(File.read('spec/fixtures/openpgp-keys/encapsulated-list.sec'))
+    list.import_key(File.read('spec/fixtures/openpgp-keys/encapsulated-sender.pub'))
+    list.subscribe('admin@example.org', '9F29CA4CF1A47561492C0737C7A5457A35C50082', true)
+    msg = File.read('spec/fixtures/mails/encapsulated.eml')
+    mail = Mail.create_message_to_list(msg, list.request_address, list)
+
+    result = mail.setup
+
+    expect(result.was_validly_signed?).to be(true)
+  end
 end
 
