@@ -6,6 +6,7 @@
 Encoding.default_external = Encoding::UTF_8
 
 # Stdlib
+require 'etc'
 require 'fileutils'
 require 'singleton'
 require 'yaml'
@@ -13,6 +14,7 @@ require 'pathname'
 require 'syslog/logger'
 require 'logger'
 require 'open3'
+require 'socket'
 
 # Require mandatory libs. The database-layer-lib is required below.
 require 'mail-gpg'
