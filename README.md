@@ -16,20 +16,9 @@ Requirements
 * openssl
 * icu
 
-*If you use Debian buster or CentOS 7, please have a look at the [installation docs](https://schleuder.org/schleuder/docs/server-admins.html#installation). We do provide packages for those platforms, which simplify the installation a lot.*
-
-*🛈 A note regarding Ubuntu: All Ubuntu versions up to and including 17.10 don't meet the requirements with their packaged versions of gnupg! To run Schleuder on Ubuntu you currently have to install a more recent version of gnupg manually. Only Ubuntu 18.04 ("bionic") provides modern enough versions of Schleuder's requirements.*
-
-On systems that base on Debian 10 ("buster"), install the dependencies via
-
-    apt-get install ruby-dev gnupg2 libgpgme-dev libsqlite3-dev libssl-dev build-essential libicu-dev
-
+*If you use Debian buster, CentOS 7 or Archlinux, please have a look at the [installation docs](https://schleuder.org/schleuder/docs/server-admins.html#installation). We do provide packages for those platforms, which simplify the installation a lot.*
 
 We **recommend** to also run a random number generator like [haveged](http://www.issihosts.com/haveged/). This ensures Schleuder won't be blocked by lacking entropy, which otherwise might happen especially during key generation.
-
-On Debian based systems, install it via
-
-    apt-get install haveged
 
 
 Additionally these **rubygems** are required (will be installed automatically unless present):
