@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased / XXX
 
+
+## [4.0.2] / 2021-07-31
+
 ### Fixed
 
 * Fixed the verification of "encapsulated" PGP/MIME-messages as sent e.g. by KMail.
