@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased / XXX
 
+### Fixed
+
+* Since ActiveRecord >= 6.0, the SQLite3 connection adapter relies on boolean serialization to use 1 and 0, but does not natively recognize 't' and 'f' as booleans were previously serialized. Accordingly, handle conversion via a database migration of both column defaults and stored data provided by a user. (#505)
+
 
 ## [4.0.2] / 2021-07-31
 
