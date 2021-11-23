@@ -11,12 +11,12 @@ de:
         invalid: "enthält nicht druckbare Zeichen"
       public_footer:
         invalid: "enthält nicht druckbare Zeichen"
-    invalid_email: "ist keine valide E-Mail-Adresse"
-    invalid_fingerprint: "ist kein valider OpenPGP-Fingerabdruck"
-    list_fingerprint_missing: "Fingerabdruck der Liste ist nicht gesetzt, kann nicht arbeiten! (In `%{listdir}`.)"
-    list_key_missing: "Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten! (In `%{listdir}`.)"
-    list_secret_key_missing: "Geheimer Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht arbeiten! (In `%{listdir}`.)"
-    list_admins_missing: "List hat keine Admins konfiguriert, kann nicht arbeiten! (In `%{listdir}`.)"
+    invalid_email: "ist keine gültige E-Mail-Adresse"
+    invalid_fingerprint: "ist kein gültiger OpenPGP-Fingerabdruck"
+    list_fingerprint_missing: "Fingerabdruck der Liste ist nicht gesetzt, kann nicht verarbeiten! (In `%{listdir}`.)"
+    list_key_missing: "Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht verarbeiten! (In `%{listdir}`.)"
+    list_secret_key_missing: "Geheimer Schlüssel der Liste nicht im Schlüsselring gefunden, kann nicht verarbeiten! (In `%{listdir}`.)"
+    list_admins_missing: "List hat keine Admins konfiguriert, kann nicht verarbeiten! (In `%{listdir}`.)"
     fatalerror: |
       Es ist ein schwerwiegender Fehler aufgetreten. Administratoren wurden benachrichtigt.
       Bitte versuche es später noch ein Mal.
@@ -37,7 +37,7 @@ de:
     message_signature_unknown: |
       Emails an diese Adresse müssen mit dem OpenPGP-Schlüssel signiert sein, der 
       deiner Mitgliedschaft zugewiesen ist. Wenn du nicht weisst, welcher Schlüssel das ist, frage
-      die Administrator/innen. Die erreichst du per Email an
+      die Administrator/innen. Diese erreichst du per Email an
       <%{owner_email}>.
       (Vorzugsweise verschlüssele die Email mit dem Schlüssel dieser Adresse:
       %{list_fingerprint}).
@@ -147,7 +147,7 @@ de:
         Mitgliedschaft von %{email} nicht gelöscht:
         %{errors}
       cannot_unsubscribe_last_admin: |
-        %{email} ist die einzige admin-Mitgliedschaft für diese Liste, daher darf sie nicht gelöscht werden.
+        %{email} ist die einzige Admin-Mitgliedschaft für diese Liste, daher darf sie nicht gelöscht werden.
       subscribed: |
         Mitgliedschaft von %{email} mit diesen Werten eingetragen:
 
@@ -159,7 +159,7 @@ de:
 
         %{errors}.
       list_of_subscriptions: "Mitgliedschaften:\n"
-      set_fingerprint_only_self: Nur admins dürfen den Fingerabdruck für andere Mitgliedschaften festlegen.
+      set_fingerprint_only_self: Nur Admins dürfen den Fingerabdruck für andere Mitgliedschaften festlegen.
       fingerprint_set: Fingerabdruck für %{email} auf %{fingerprint} gesetzt.
       setting_fingerprint_failed: |
         Fingerabdruck für %{email} konnte nicht auf %{fingerprint} gesetzt werden:
@@ -172,7 +172,7 @@ de:
         Benötigt werden ein oder zwei Werte, bspw.:
         X-SET-FINGERPRINT: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
 
-        oder (als admin):
+        oder (als Admin):
         X-SET-FINGERPRINT: subscription2@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
 
         Wobei der Fingerprint in der gesamten Länge (40 Zeichen) angegeben werden muss. Optional mit 0x als Präfix.
@@ -184,11 +184,11 @@ de:
         Benötigt werden ein oder zwei Werte, bspw.:
         X-SET-FINGERPRINT: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
 
-        oder (als admin):
+        oder (als Admin):
         X-SET-FINGERPRINT: subscription2@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
 
         Um einen Fingerprint zu entfernen kannst du das Schlüsselwort 'UNSET-FINGERPRINT' verwenden.
-      unset_fingerprint_only_self: Nur admins dürfen den Fingerabdruck für andere Mitgliedschaften löschen.
+      unset_fingerprint_only_self: Nur Admins dürfen den Fingerabdruck für andere Mitgliedschaften löschen.
       fingerprint_unset: Fingerabdruck für %{email} wurde entfernt.
       unsetting_fingerprint_failed: |
         Fingerabdruck für %{email} konnte nicht entfernt werden:
@@ -199,7 +199,7 @@ de:
         Benötigt werden ein Wert, bspw.:
         X-UNSET-FINGERPRINT: subscription2@hostname
 
-        Als admin musst du um deinen eigenen Fingerabdruck zu entfernen, noch zusätzlich das Argument force mitgeben. bspw.:
+        Als Admin musst du um deinen eigenen Fingerabdruck zu entfernen, noch zusätzlich das Argument force mitgeben. bspw.:
         X-UNSET-FINGERPRINT: adminsubscription2@hostname force
       subscribe_requires_arguments: |
         Fehler: Du hast zu dem Schlüsselwort 'SUBSCRIBE' keinen Wert angegeben.
@@ -210,13 +210,13 @@ de:
         Oder, um den Schlüssel der neuen Mitgliedschaft zuzuweisen:
         X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
 
-        Oder, um den Schlüssel zuzuweisen, und die Mitgliedschaft als admin einzutragen:
+        Oder, um den Schlüssel zuzuweisen, und die Mitgliedschaft als Admin einzutragen:
         X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 true
 
-        Oder, um den Schlüssel zuzuweisen, die Mitgliedschaft als admin einzutragen, und die Zustellung von Listen-Emails für diese Mitgliedschaft abzuschalten:
+        Oder, um den Schlüssel zuzuweisen, die Mitgliedschaft als Admin einzutragen, und die Zustellung von Listen-Emails für diese Mitgliedschaft abzuschalten:
         X-SUBSCRIBE: new-subscription@hostname 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 true false
 
-        Wenn du die optionalen Werte weglässt hat die Mitgliedschaft keinen Schlüssel zugewiesen, ist nicht admin, und hat die Zustellung von Listen-Email aktiviert.
+        Wenn du die optionalen Werte weglässt hat die Mitgliedschaft keinen Schlüssel zugewiesen, ist nicht Admin, und hat die Zustellung von Listen-Email aktiviert.
     sign_this:
       signatures_attached: Die Signaturen hängen an.
       no_content_found: Deine Email enthielt keine Anhänge und keinen Text-Inhalt, daher konnte nichts signiert werden.
