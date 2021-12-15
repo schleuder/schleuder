@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased / XXX
 
+### Fixed
+
+* Since ActiveRecord >= 6.0, the SQLite3 connection adapter relies on boolean serialization to use 1 and 0, but does not natively recognize 't' and 'f' as booleans were previously serialized. Accordingly, handle conversion via a database migration of both column defaults and stored data provided by a user. (#505)
+* Similar, due to ActiveRecord >= 6.0, it seems it's necessary to handle limits of string columns explicitly. Accordingly, handle this via a migration to add these limits to the relevant columns. This has been an upstream issue for quite some time, see https://github.com/rails/rails/issues/19001 for details.
+
 
 ## [4.0.2] / 2021-07-31
 
