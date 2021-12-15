@@ -67,6 +67,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
         :content_transfer_encoding => 'quoted-printable',
         :content => File.open('spec/fixtures/example_key_binary.pgp', 'rb', &:read)
       }
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.to_s
 
       list_keys = mail.list.keys
