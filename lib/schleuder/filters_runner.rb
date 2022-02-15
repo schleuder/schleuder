@@ -13,11 +13,7 @@ module Schleuder
           list.logger.debug "Calling filter #{cmd}"
           response = Filters.send(cmd, list, mail)
           if stop?(response)
-            if bounce?(response, mail)
-              return response
-            else
-              return nil
-            end
+            return response
           end
         end
         nil
@@ -30,31 +26,6 @@ module Schleuder
       private
       def stop?(response)
         response.kind_of?(StandardError)
-      end
-
-      def bounce?(response, mail)
-        if list.bounces_drop_all
-          list.logger.debug 'Dropping bounce as configurated'
-          notify_admins(I18n.t('.bounces_drop_all'), mail.original_message)
-          return false
-        end
-
-        list.bounces_drop_on_headers.each do |key, value|
-          if mail[key].to_s.match(/#{value}/i)
-            list.logger.debug "Incoming message header key '#{key}' matches value '#{value}': dropping the bounce."
-            notify_admins(I18n.t('.bounces_drop_on_headers', key: key, value: value), mail.original_message)
-            return false
-          end
-        end
-
-        list.logger.debug 'Bouncing message'
-        true
-      end
-
-      def notify_admins(reason, original_message)
-        if list.bounces_notify_admins?
-          list.logger.notify_admin reason, original_message, I18n.t('notice')
-        end
       end
 
       def load_filters
