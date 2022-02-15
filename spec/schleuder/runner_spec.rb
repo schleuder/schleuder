@@ -527,6 +527,39 @@ describe Schleuder::Runner do
 
       teardown_list_and_mailer(list)
     end
+
+    context 'with bounces_drop_all set to true' do
+      it 'drops all bounces when bounces_notify_admins is set to false' do
+        # receive_encrypted_only = true to trigger a bounce
+        list = create(:list, receive_encrypted_only: true, bounces_drop_all: true, bounces_notify_admins: false)
+        list.subscribe('admin@example.org', nil, true)
+        list.subscribe('notadmin@example.org', nil, false)
+        mail = File.read('spec/fixtures/mails/plain/thunderbird.eml')
+
+        error = Schleuder::Runner.new().run(mail, list.email)
+
+        expect(Mail::TestMailer.deliveries.length).to eq 0
+        expect(error).to be_blank
+
+        teardown_list_and_mailer(list)
+      end
+      
+      it 'notifies admins about bounces when bounces_notify_admins is set to true' do
+        # receive_encrypted_only = true to trigger a bounce
+        list = create(:list, receive_encrypted_only: true, bounces_drop_all: true, bounces_notify_admins: true)
+        list.subscribe('admin@example.org', nil, true)
+        list.subscribe('notadmin@example.org', nil, false)
+        mail = File.read('spec/fixtures/mails/plain/thunderbird.eml')
+
+        error = Schleuder::Runner.new().run(mail, list.email)
+ 
+        expect(Mail::TestMailer.deliveries.length).to eq 1
+        expect(Mail::TestMailer.deliveries.first.to).to eq ['admin@example.org']
+        expect(error).to be_blank
+
+        teardown_list_and_mailer(list)
+      end
+    end
   end
   context 'after keyword parsing' do
     it 'falls back to default charset per RFC if none is set' do

@@ -40,25 +40,25 @@ describe Schleuder::Filters::Runner do
       expect(pre_filters.run(mail)).to eql(error)
       expect(Mail::TestMailer.deliveries.first).to be_nil
     end
-    it 'stops on a StandardError and will notify admins' do
+    it 'stops on a StandardError and returns error even with bounces_drop_all' do
       mail = Mail.new
       error = StandardError.new
       pre_filters.list.bounces_drop_all = true
       expect(Schleuder::Filters).to_not receive(:dummy)
       expect(Schleuder::Filters).to receive(:stop).once { error }
       expect(pre_filters).to receive(:filters).and_return(['stop', 'dummy'])
-      expect(pre_filters.run(mail)).to be_nil
-      expect(Mail::TestMailer.deliveries.first).to_not be_nil
+      expect(pre_filters.run(mail)).to_not be_nil
+      expect(Mail::TestMailer.deliveries.first).to be_nil
     end
-    it 'stops on a StandardError and will notify on headers match' do
+    it 'stops on a StandardError and returns error even on headers match' do
       mail = Mail.new
       error = StandardError.new
       mail['X-SPAM-FLAG'] = 'TRUE'
       expect(Schleuder::Filters).to_not receive(:dummy)
       expect(Schleuder::Filters).to receive(:stop).once { error }
       expect(pre_filters).to receive(:filters).and_return(['stop', 'dummy'])
-      expect(pre_filters.run(mail)).to be_nil
-      expect(Mail::TestMailer.deliveries.first).to_not be_nil
+      expect(pre_filters.run(mail)).to_not be_nil
+      expect(Mail::TestMailer.deliveries.first).to be_nil
     end
   end
   context 'loading filters' do
