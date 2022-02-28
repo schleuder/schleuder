@@ -132,7 +132,7 @@ module Schleuder
       def shellexec(cmd)
         result = `#{cmd} 2>&1`
         if $?.exitstatus > 0
-          exit $?.exitstatus
+          fatal result, $?.exitstatus
         end
         result
       end
