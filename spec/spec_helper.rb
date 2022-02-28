@@ -177,6 +177,30 @@ RSpec.configure do |config|
     ciphertext.reject { |line| line.match(/^\[GNUPG:\]/) }.join
   end
 
+  def capture_output
+    orig_stdout = $stdout
+    $stdout = StringIO.new
+    orig_stderr = $stderr
+    $stderr = StringIO.new
+    exitcode = nil
+
+    begin
+      yield
+    rescue SystemExit => exc
+      exitcode = exc.status
+    end
+
+    $stdout.rewind
+    output = $stdout.read
+    $stderr.rewind
+    errors = $stderr.read
+    # Cleanup
+    $stderr = orig_stderr
+    $stdout = orig_stdout
+
+    [output, errors, exitcode]
+  end
+
   def with_tmpfile(content, &blk)
     file = File.new(File.join(Conf.lists_dir, SecureRandom.hex(32)), 'w+')
     begin
