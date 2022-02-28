@@ -68,9 +68,13 @@ describe 'cli' do
       expect(Process).to receive(:euid).and_return(0)
       list = create(:list)
 
-      expect do
+      output, errors, exitcode = capture_output do
         Cli.new.refresh_keys(list.email)
-      end.to output(/^Warning: this process was run as root/).to_stdout
+      end
+
+      expect(errors).to eql('')
+      expect(exitcode).to be(nil)
+      expect(output).to match(/^Warning: this process was run as root/)
     end
   end
 
@@ -80,22 +84,25 @@ describe 'cli' do
       tmp_filename = "#{dbfile}.tmp"
       File.rename(dbfile, tmp_filename)
       IO.write(dbfile, 'bla')
-      begin
+      
+      _, _, exitcode = capture_output do
         Cli.new.install
-      rescue SystemExit => exc
       end
 
-      expect(exc).to be_present
-      expect(exc.status).to eql(1)
+      expect(exitcode).to eql(1)
       File.rename(tmp_filename, dbfile)
     end
 
     it 'warns about file system permissions if it was run as root' do
       expect(Process).to receive(:euid).and_return(0)
 
-      expect do
+      output, errors, exitcode = capture_output do
         Cli.new.install
-      end.to output(/^Warning: this process was run as root/).to_stdout
+      end
+
+      expect(errors).to eql('')
+      expect(exitcode).to be(nil)
+      expect(output).to match(/^Warning: this process was run as root/)
     end
   end
 
@@ -111,9 +118,11 @@ describe 'cli' do
     it 'warns about file system permissions if it was run as root' do
       expect(Process).to receive(:euid).and_return(0)
 
-      expect do
+      output, errors, exitcode = capture_output do
         Cli.new.check_keys
-      end.to output(/^Warning: this process was run as root/).to_stdout
+      end
+
+      expect(output).to match(/^Warning: this process was run as root/)
     end
   end
 end
