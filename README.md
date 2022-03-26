@@ -9,7 +9,7 @@ For more details see <https://schleuder.org/docs/>.
 
 Requirements
 ------------
-* ruby >=2.5
+* ruby >=2.7
 * gnupg >=2.2
 * gpgme
 * sqlite3

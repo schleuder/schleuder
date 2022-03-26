@@ -26,20 +26,13 @@ workflow:
     - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:init
     - CHECK_CODE_COVERAGE=true eatmydata bundle exec rspec --format documentation
 
-ruby:2.5:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.5
-  <<: *test_ruby
-ruby:2.6:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.6
+ruby:2.7:
+  image: $IMAGE_REGISTRY:schleuder-ruby2.7
   <<: *test_ruby
   artifacts:
     expire_in: 1 day
     paths:
       - coverage
-ruby:2.7:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.7
-  <<: *test_ruby
-  
 ruby:3.0:
   image: $IMAGE_REGISTRY:schleuder-ruby3.0
   <<: *test_ruby
@@ -132,7 +125,7 @@ schema-up-to-date:
   stage: static
 
 bundler:audit:
-  image: ruby:2.5
+  image: ruby:2.7
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
   script:
