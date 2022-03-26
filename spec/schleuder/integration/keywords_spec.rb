@@ -1342,14 +1342,16 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: http://localhost:9999/keys/example.asc"
-    mail.deliver
 
-    encrypted_mail = Mail::TestMailer.deliveries.first
-    Mail::TestMailer.deliveries.clear
 
-    with_sks_mock(list.listdir) do
+    with_sks_mock(list.listdir) do |baseurl|
       begin
+        mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: #{baseurl}/keys/example.asc"
+        mail.deliver
+
+        encrypted_mail = Mail::TestMailer.deliveries.first
+        Mail::TestMailer.deliveries.clear
+
         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
       rescue SystemExit
       end
@@ -1378,15 +1380,18 @@ describe 'user sends keyword' do
       sign_as: list.admins.first.fingerprint
     }
     mail.gpg(gpg_opts)
-    url = 'http://localhost:9999/foo'
-    mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: #{url}"
-    mail.deliver
+    # Make `url` appear in this scope, we set the real value in the next block.
+    url = nil
 
-    encrypted_mail = Mail::TestMailer.deliveries.first
-    Mail::TestMailer.deliveries.clear
-
-    with_sks_mock(list.listdir) do
+    with_sks_mock(list.listdir) do |baseurl|
       begin
+        url = "#{baseurl}/foo"
+        mail.body = "x-list-name: #{list.email}\nX-fetch-KEY: #{url}"
+        mail.deliver
+
+        encrypted_mail = Mail::TestMailer.deliveries.first
+        Mail::TestMailer.deliveries.clear
+
         Schleuder::Runner.new().run(encrypted_mail.to_s, list.request_address)
       rescue SystemExit
       end

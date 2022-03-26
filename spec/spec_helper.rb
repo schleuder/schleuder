@@ -16,13 +16,22 @@ if ENV['CHECK_CODE_COVERAGE'] == 'true'
     add_filter %r{^/spec/}
   end
 end
+
+require 'socket'
+# This must be set before require'ing schleuder, because the ENV variable is
+# used in <spec/schleuder.yml>.
+# Find the first local IP address that is not a loopback address. We use this
+# for our sks-mock, which can't use "localhost" because docker, and can't use a
+# static loopback address because we need it to run on IPv4-only and IPv6-only
+# hosts.
+ENV['LOCAL_IP_ADDR'] = Socket.ip_address_list.find{ |a| !a.ipv4_loopback? && !a.ipv6_loopback? }.ip_address
+
 require 'schleuder'
 require 'schleuder/cli'
 require 'database_cleaner'
 require 'factory_bot'
 require 'net/http'
 require 'fileutils'
-require 'socket'
 require 'securerandom'
 require 'byebug'
 
@@ -81,15 +90,19 @@ RSpec.configure do |config|
   end
 
   def with_sks_mock(listdir)
+    # Make dirmngr disable its own, internal resolver, which apparently has
+    # problems with keyserver-URLs containing local IPs.
+    `printf "standard-resolver\n" > "#{listdir}/dirmngr.conf"`
     # Do we deal with an IPv6-only environment?
     # If so, handle dirmngr specifically so it's able to cope with it.
     # No idea what's the relation in regards to 'no-use-tor', but it helps.
     if ! Socket.ip_address_list.find { |ai| ai.ipv4? && ai.ipv4_loopback? }
-      `printf "disable-ipv4\nno-use-tor" > "#{listdir}/dirmngr.conf"`
+      `printf "disable-ipv4\nno-use-tor\n" >> "#{listdir}/dirmngr.conf"`
     end
 
-    pid = Process.spawn('spec/sks-mock.rb', [:out, :err] => ['/tmp/sks-mock.log', 'w'])
-    uri = URI.parse('http://localhost:9999/status')
+    pid = Process.spawn("spec/sks-mock.rb #{ENV['LOCAL_IP_ADDR']}", [:out, :err] => ['/tmp/sks-mock.log', 'w'])
+    sks_base_url = "http://#{ENV['LOCAL_IP_ADDR']}:9999"
+    uri = URI.parse("#{sks_base_url}/status")
     attempts = 25
     # Use the following env var to increase the time to sleep between
     # each attempt, for example if building the Debian package
@@ -106,7 +119,7 @@ RSpec.configure do |config|
       end
     end
 
-    yield
+    yield sks_base_url
 
     Process.kill 'TERM', pid
     Process.wait pid

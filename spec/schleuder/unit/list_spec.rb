@@ -528,8 +528,8 @@ describe Schleuder::List do
       list.subscribe('admin@example.org', nil, true)
       output = ''
 
-      with_sks_mock(list.listdir) do
-        output = list.fetch_keys('http://localhost:9999/keys/example.asc')
+      with_sks_mock(list.listdir) do |baseurl|
+        output = list.fetch_keys("#{baseurl}/keys/example.asc")
       end
 
       expect(output).to match(/This key was fetched \(new key\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
