@@ -35,6 +35,7 @@ class SchleuderApiDaemon < Sinatra::Base
     set :server, :thin
     set :port, Schleuder::Conf.api['port'] || 4443
     set :bind, Schleuder::Conf.api['host'] || 'localhost'
+    set :public_folder, File.join(__dir__, '../public')
     set :raise_errors, false
     if settings.development?
       set :logging, Logger::DEBUG
