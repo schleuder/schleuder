@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Schleuder ★ </title>
+		<script type="module" src='./index.js'></script>
+    <link rel="icon" href="./images/favicon.ico">
+    <link rel='stylesheet' href='./css/index.css'>
+	</head>
+	<body>
+    <div id="header">
+      <div id='big-name'><a href="#">Schleuder</a></div>
+    </div>
+    <div id='noti-fiers'></div>
+
+    <img class="loading-icon" src="./images/loading2.gif" alt="">
+
+    <template id='listsIndex'>
+      <div class="listsIndex">
+        <div class="list-menu">
+          <div class="pageheadline">My lists</div>
+        </div>
+
+        <h1>Lists</h1>
+        <ul>
+          <template class='lists-listing' data-foreach='lists'>
+            <li><a href='#lists/{email}/subscriptions'>{email}</a></li>
+          </template>
+        </ul>
+      </div>
+    </template>
+
+    <template id='subscription'>
+      <div class="subscription">
+        <h1>{email}</h1>
+        <p>Admin? {adminYesNo}</p>
+      </div>
+    </template>
+
+    <template id='keysIndex'>
+      <div class="keysIndex">
+        <h1>Keys on {listname}</h1>
+        <ul>
+          <template data-foreach="keys">
+            <li class="{cssClass}"><a href='#lists/{listname}/keys/{fingerprint}'>{key_summary}</a></li>
+          </template>
+        </ul>
+      </div>
+    </template>
+
+    <template id='keysShow'>
+      <div class="keysShow">
+        <h1>Key {fingerprint}</h1>
+        <code>{key_summary}</code>
+      </div>
+    </template>
+
+	</body>
+</html>
