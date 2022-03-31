@@ -16,10 +16,13 @@ module SchleuderApiDaemonHelper
 
     def authenticate!
       # Be careful to use path_info() — it can be changed by other filters!
-      return if request.path_info == '/status.json'
+      return if request.path_info == '/status.json' || request.path_info.slice(0, 4) == '/web'
       if ! valid_credentials?
+        puts 'invalid!'
         headers['WWW-Authenticate'] = 'Basic realm="Schleuder API Daemon"'
         halt 401, json({ error: 'Not authorized' })
+      else
+        puts 'valid!'
       end
     end
 

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Schleuder Web</title>
+		<script type="module" src='./index.js'></script>
+    <link rel="icon" href="./favicon.ico">
+    <link rel='stylesheet' href='./index.css'>
+	</head>
+	<body>
+    <div id="header">
+      <div id='big-name'>Schleuder Web</div>
+      <div id='user-menu' hidden>
+        <div id='user-emailaddress'>{emailaddress}</div>
+        <a class='mylists-link' href='#lists'>My lists</a>
+        <a class='logout-link' href='#logout'>Logout</a>
+      </div>
+    </div>
+    <div id='notifier' class="" hidden></div>
+
+    <template id='lists'>
+      <h1>Lists</h1>
+      <ul>
+        <template class='lists-listing' for='lists'>
+          <li><a href='#lists/{email}/subscriptions'>{email}</a></li>
+        </template>
+      </ul>
+    </template>
+
+    <template id='subscription'>
+      <h1>Subscription of {email} to {listname}</h1>
+      <p>Admin? {adminYesNo}</p>
+    </template>
+
+    <template id='subscriptions'>
+      <h1>Subscriptions of {listname}</h1>
+      <p><a href='#lists/{listname}/keys'>keys</a></p>
+      <ul>
+        <template for='subscriptions'>
+          <li class="{adminCssClass}"><a href='#lists/{listname}/subscriptions/{email}'>{email}</a></li>
+        </template>
+      </ul>
+    </template>
+
+    <template id='keysIndex'>
+      <h1>Keys on {listname}</h1>
+      <ul>
+        <template for="keys">
+          <li class="{cssClass}"><a href='#lists/{listname}/keys/{fingerprint}'>{key_summary}</a></li>
+        </template>
+      </ul>
+    </template>
+
+    <template id='keysShow'>
+      <h1>Key {fingerprint}</h1>
+      <ul>
+        <li>Summary: {key_summary}</li>
+      </ul>
+    </template>
+
+	  <div id='login' hidden>
+      <form>
+        <label>
+          Email address:
+          <input type='email' id='emailaddress' required />
+        </label>
+        <label>
+          Password:
+          <input type='password' id='password' required />
+        </label>
+        <div class='hidden errormsg' id='login-error'>Login failed, please check your input!</div>
+        <button type='submit'>Login</button>
+      </form>
+	  </div>
+
+	</body>
+</html>

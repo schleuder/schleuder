@@ -1,0 +1,35 @@
+body {
+  margin: 2rem;
+  box-sizing: border-box;
+}
+
+#header {
+  display: flex;
+  width: 100%;
+}
+
+#big-name {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+  flex-grow: 1;
+}
+
+#header-logout {
+  text-align: right;
+}
+
+label {
+  display: block;
+}
+
+.hidden {
+  display: none;
+}
+
+.error {
+  color: red;
+}
+
+.notice {
+  color: green;
+}
