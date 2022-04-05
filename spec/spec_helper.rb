@@ -33,7 +33,10 @@ require 'factory_bot'
 require 'net/http'
 require 'fileutils'
 require 'securerandom'
-require 'byebug'
+
+if ENV['USE_BYEBUG'] != 'false'
+  require 'byebug'
+end
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
