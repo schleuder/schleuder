@@ -31,7 +31,13 @@ module Schleuder
       end
 
       error = run_filters('pre')
-      return error if error
+      if error
+        if bounce?(error, @mail)
+          return error
+        else
+          return nil
+        end
+      end
 
       begin
         # This decrypts, verifies, etc.
@@ -48,7 +54,13 @@ module Schleuder
       end
 
       error = run_filters('post')
-      return error if error
+      if error
+        if bounce?(error, @mail)
+          return error
+        else
+          return nil
+        end
+      end
 
       if ! @mail.was_validly_signed?
         logger.debug 'Message was not validly signed, adding subject_prefix_in'
@@ -85,16 +97,34 @@ module Schleuder
       @list
     end
 
-    def run_filters(filter_type)
-      error = filters_runner(filter_type).run(@mail)
-      if error
-        if list.bounces_notify_admins?
-          text = "#{I18n.t('.bounces_notify_admins')}\n\n#{error}"
-          # TODO: raw_source is mostly blank?
-          logger.notify_admin text, @mail.original_message, I18n.t('notice')
-        end
-        return error
+    def notify_admins(reason, original_message)
+      if list.bounces_notify_admins
+        list.logger.notify_admin reason, original_message, I18n.t('notice')
       end
+    end
+
+    def bounce?(response, mail)
+      if list.bounces_drop_all
+        list.logger.debug 'Dropping bounce as configurated'
+        notify_admins(I18n.t('.bounces_drop_all'), mail.original_message)
+        return false
+      end
+
+      list.bounces_drop_on_headers.each do |key, value|
+        if mail[key].to_s.match(/#{value}/i)
+          list.logger.debug "Incoming message header key '#{key}' matches value '#{value}': dropping the bounce."
+          notify_admins(I18n.t('.bounces_drop_on_headers', key: key, value: value), mail.original_message)
+          return false
+        end
+      end
+
+      list.logger.debug 'Bouncing message'
+      notify_admins("#{I18n.t('.bounces_notify_admins')}\n\n#{response}", mail.original_message)
+      true
+    end
+
+    def run_filters(filter_type)
+      filters_runner(filter_type).run(@mail)
     end
 
     def filters_runner(filter_type)
