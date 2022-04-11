@@ -9,6 +9,8 @@ import State from './state.js';
 
 export default class Router {
   static start() {
+    this.loadingIcon = document.getElementById('loading-icon');
+    this.loadingIcon.hide();
     this.elemCache = new Map();
     // TODO: Check on load if we have valid credentials.
     // TODO: Maybe use session ticket from API (after implementing it in API...)
@@ -18,6 +20,7 @@ export default class Router {
 
   static async route(urlPath, msg, msgKlass='notice') {
     try {
+      this.loadingIcon.show();
       if (urlPath) {
         console.debug(`pushing '#${urlPath}' to history`);
         history.pushState({}, urlPath, `#${urlPath}`);
@@ -59,6 +62,8 @@ export default class Router {
     } catch (exc) {
       console.error(exc);
       Notifier.show('error', 'An unexpected problem occurred, please try again later');
+    } finally {
+      this.loadingIcon.hide();
     }
   }
 
