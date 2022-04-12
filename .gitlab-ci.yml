@@ -119,6 +119,18 @@ spec-filenames:
       fi
   stage: static
 
+spec-hardcoded-key-expiry-dates:
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+      changes:
+        - spec/schleuder/**/*
+        - spec/schleuder-api-daemon/**/*
+  script:
+    # '!' is used to invert the exit code, to let it fail in case matching lines are found; without, it wouldn't.
+    # However, this character is reserved in YAML files, accordingly, invoke a subshell via '(...)'.
+    - '( ! grep --include "*_spec.rb" --only-matching --perl-regexp --recursive "\[expired\: \d{4}-\d{2}-\d{2}\]" spec/ )'
+  stage: static
+
 schema-up-to-date:
   rules:
     - if: $CI_MERGE_REQUEST_IID
