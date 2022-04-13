@@ -38,6 +38,10 @@ if ENV['USE_BYEBUG'] != 'false'
   require 'byebug'
 end
 
+# Forcing a specific timezone and locale because some tests match on dates and strings.
+ENV['TZ'] = 'Europe/Berlin'
+ENV['LANG'] = 'en_US.UTF-8'
+
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
