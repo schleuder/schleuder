@@ -24,7 +24,7 @@ workflow:
   script:
     - eatmydata bundle install --jobs $(nproc)
     - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:init
-    - CHECK_CODE_COVERAGE=true eatmydata bundle exec rspec
+    - CHECK_CODE_COVERAGE=true eatmydata bundle exec rspec --format documentation
 
 ruby:2.5:
   image: $IMAGE_REGISTRY:schleuder-ruby2.5
