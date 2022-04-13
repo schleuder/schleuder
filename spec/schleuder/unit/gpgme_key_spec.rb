@@ -16,7 +16,7 @@ describe GPGME::Key do
 
       key = list.key
 
-      expect(key.summary).to match(/0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org \d{4}-\d{2}-\d{2}/)
+      expect(key.summary).to eql('0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06')
     end
 
     it 'displays the expected attributes for an expiring key' do
@@ -25,7 +25,7 @@ describe GPGME::Key do
 
       key = list.key('421FBF7190640136788593CD9EE9BE5929CACC20')
 
-      expect(key.summary).to match(/0x421FBF7190640136788593CD9EE9BE5929CACC20 expiringkey@example.org \d{4}-\d{2}-\d{2} \[expires: \d{4}-\d{2}-\d{2}\]/)
+      expect(key.summary).to eql('0x421FBF7190640136788593CD9EE9BE5929CACC20 expiringkey@example.org 2017-08-03 [expires: 2037-07-29]')
     end
 
     it 'displays the expected attributes for an expired key' do
@@ -34,7 +34,7 @@ describe GPGME::Key do
 
       key = list.key('98769E8A1091F36BD88403ECF71A3F8412D83889')
 
-      expect(key.summary).to match(/0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
+      expect(key.summary).to eql('0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2010-08-14]')
     end
 
     it 'displays the expected attributes for a revoked key' do
@@ -43,7 +43,7 @@ describe GPGME::Key do
 
       key = list.key('7E783CDE6D1EFE6D2409739C098AC83A4C0028E9')
 
-      expect(key.summary).to match(/0x7E783CDE6D1EFE6D2409739C098AC83A4C0028E9 paz@nadir.org \d{4}-\d{2}-\d{2} \[revoked\]/)
+      expect(key.summary).to eql('0x7E783CDE6D1EFE6D2409739C098AC83A4C0028E9 paz@nadir.org 2008-09-20 [revoked]')
     end
 
     # gpgme.rb doesn't report missing encryption-capability properly yet.
@@ -53,7 +53,7 @@ describe GPGME::Key do
 
       key = list.key('B1CD8BB15C2673C6BFD8FA4B70B2CF29E01AD53E')
 
-      expect(key.summary).to match(/0xB1CD8BB15C2673C6BFD8FA4B70B2CF29E01AD53E signonly@example.org \d{4}-\d{2}-\d{2} \[not capable of encryption\]/)
+      expect(key.summary).to eql('0xB1CD8BB15C2673C6BFD8FA4B70B2CF29E01AD53E signonly@example.org 2017-08-03 [not capable of encryption]')
     end
   end
 

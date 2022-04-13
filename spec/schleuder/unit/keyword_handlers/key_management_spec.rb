@@ -36,7 +36,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       list_keys = mail.list.keys
       output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
 
-      expect(output).to match(/^This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org \d{4}-\d{2}-\d{2}\n\n\nThis key was newly added:\n0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412 bla@foo \d{4}-\d{2}-\d{2}$/)
+      expect(output).to eql("This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n\n\nThis key was newly added:\n0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412 bla@foo 2010-03-14\n")
       expect(mail.list.keys.size).to eql(list_keys.size + 2)
     end
 
@@ -83,7 +83,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       list_keys = mail.list.keys
       output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
 
-      expect(output).to match(/^This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org \d{4}-\d{2}-\d{2}\n$/)
+      expect(output).to eql("This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n")
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
     end
 
@@ -126,7 +126,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
 
       output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
 
-      expect(output).to match(/This key was updated:\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 \[expired: 2017-01-\d{2}\]\n/)
+      expect(output).to eql("This key was updated:\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
       expect(mail.list.keys.size).to eql(list_keys.size)
     end
 
@@ -170,7 +170,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
 
       output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: ['C4D60F8833789C7CAA44496FD3FFA6613AB10ECE', '98769E8A1091F36BD88403ECF71A3F8412D83889']).delete_key
 
-      expect(output).to match(/This key was deleted:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n\n\nThis key was deleted:\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 \[expired: 2017-01-\d{2}\]\n/)
+      expect(output).to eql("This key was deleted:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n\n\nThis key was deleted:\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
       expect(mail.list.keys.size).to eql(list_keys.size - 2)
     end
 

@@ -193,8 +193,8 @@ describe GPGME::Ctx do
       with_sks_mock(list.listdir) do
         res = list.gpg.refresh_keys(list.keys)
       end
-      expect(res).to match(/This key was updated \(new signatures\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
-      expect(res).to match(/This key was updated \(new user-IDs and new signatures\):\n0x6EE51D78FD0B33DE65CCF69D2104E20E20889F66 new@example.org \d{4}-\d{2}-\d{2}/)
+      expect(res).to include("This key was updated (new signatures):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
+      expect(res).to include("This key was updated (new user-IDs and new signatures):\n0x6EE51D78FD0B33DE65CCF69D2104E20E20889F66 new@example.org 2017-03-25\n")
     end
     
     it 'reports errors from refreshing keys' do
