@@ -67,7 +67,8 @@ export default class Router {
     }
   }
 
-  static callRenderer(urlPath) {
+  // TODO: set page title
+  static async callRenderer(urlPath) {
     // Split URL into parts and filter out empty segments.
     const urlParts = urlPath.split('/').filter((part) => part);
 
@@ -78,6 +79,10 @@ export default class Router {
         return LoginController.show();
       case 'logout':
         Backend.clearCredentials();
+        this.userMenu.remove();
+        this.userMenu = undefined;
+        this.elemCache.forEach((view) => view.remove());
+        this.elemCache.clear();
         return this.route('login', 'You have been logged out!');
     }
 
@@ -86,7 +91,11 @@ export default class Router {
       return this.route('lists');
     }
 
-    this.userMenu = UserMenu.show(State.get('emailaddr'));
+    if (! this.userMenu) {
+      // Use Promise-syntax to allow code to carry on.
+      UserMenu.show(State.get('emailaddr'))
+        .then((elem) => this.userMenu = elem);
+    }
 
     // From here on we assume that urlParts[0] === 'lists'.
     switch (urlParts[1]) {
@@ -103,7 +112,7 @@ export default class Router {
             switch(urlParts[3]) {
               case undefined:
                 return SubscriptionsController.index(listname);
-              case 'fresh':
+              case 'new':
                 return SubscriptionsController.fresh(listname);
               default:
                 const email = urlParts[3];

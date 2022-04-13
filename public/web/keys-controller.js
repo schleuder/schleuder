@@ -1,21 +1,23 @@
 import BaseController from './base-controller.js';
-import Template from './template.js';
-import Backend from './backend.js';
-import './html-element.js';
 
 export default class KeysController extends BaseController {
   static async index(listname) {
-    const keys = await Backend.fetch(`/lists/${listname}/keys.json`);
-    return Template.bake('keysIndex', {listname: listname, keys: keys});
+    const instance = new this(listname);
+    const keys = await instance.get(`keys.json`);
+    for (const key of keys) {
+      key['cssClass'] = key.subscription ? 'has-subscription' : ''
+    }
+    return instance.bakeFromTemplate('keysIndex', {listname: listname, keys: keys});
   }
 
   static async fresh(listname) {
-    return Template.bake('keysFresh', {listname: listname});
+    return this.bakeFromTemplate('keysFresh', {listname: listname});
   }
 
   static async show(listname, fingerprint) {
-    const key = await Backend.fetch(`/lists/${listname}/keys/${fingerprint}.json?allDetails=true`);
-    return Template.bake('keysShow', {listname, ...key});
+    const instance = new this(listname);
+    const key = await instance.get(`keys/${fingerprint}.json?allDetails=true`);
+    return instance.bakeFromTemplate('keysShow', {listname, ...key});
   }
 
   static async download(listname, fingerprint) {

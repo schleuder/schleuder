@@ -1,56 +1,126 @@
 import './html-element.js';
 
 export default class Template {
-  static bake(idOrNode, replacements) {
-    let template;
-    if (typeof(idOrNode) === 'string') {
-      const selector = `template#${idOrNode}`;
-      template = document.querySelector(selector);
-    } else {
-      template = idOrNode;
+
+  /** @type HTMLElement */
+  elem;
+
+  /**
+   * @param {Node} node - HTML template node
+   */
+  constructor(node) {
+    if (! (node instanceof Node)) {
+      throw new Error("Need HTML Node as input");
     }
-    const fragment = template.content.cloneNode(true);
-    const wrapper = document.createElement('div');
-    wrapper.className = template.className;
-    wrapper.appendChild(fragment);
-    this.fill(wrapper, replacements);
-    template.insertAdjacentElement('afterend', wrapper);
-    return wrapper;
+    if (node.content.children.length > 1) {
+      throw new Error("Each template node needs exactly one 'root' element");
+    }
+    this.elem = node.content.firstElementChild.cloneNode(true);
   }
 
-  static fill(node, replacements) {
-    if (node.nodeName === 'TEMPLATE') {
-      if (node.attributes.for && replacements[node.attributes.for.value] instanceof Array) {
-        const items = replacements[node.attributes.for.value];
-        items.forEach((item) => Template.bake(node, {...item, ...replacements, cssClass: ''}));
+  /**
+   * @param {string} id - ID attribute of HTML template node
+   */
+  static fromId(id) {
+    const node = document.getElementById(id);
+    if (!node) {
+      throw new Error(`No element found with ID '${id}'`);
+    }
+    return new this(node);
+  }
+  
+  /**
+   * @param {Object} replacements - Key-value object containing variable replacements
+   */
+  render(replacements) {
+    replacements = replacements || {}
+    console.info({renderReplacements: replacements})
+    console.info({renderNode: this.elem})
+    return this.parse(this.elem, replacements); /** @type HTMLElement */
+  }
+
+  /**
+   * @param {Node} node - HTML node
+   * @param {Object} replacements - Key-value object containing variable replacements
+   */
+  parse(node, replacements) {
+    // if-clauses
+    if (node.dataset.if) {
+      const replacement = replacements[node.dataset.if];
+      if (this.isAbsent(replacement)) {
+        node.remove();
+        return;
       }
     }
+
+    if (node.dataset.ifNot) {
+      const replacement = replacements[node.dataset.ifNot];
+      if (! this.isAbsent(replacement)) {
+        node.remove();
+        return;
+      }
+    }
+
+    // Sub-templates
+    if (node.nodeName === 'TEMPLATE') {
+      const foreach = node.dataset.foreach;
+      if (foreach && replacements[foreach] instanceof Array) {
+        replacements[foreach].forEach((item) => {
+          console.info({templateForeach: item});
+          // Add the attributes of `item` last so they can overwrite the
+          // previous ones in case of naming collisions.
+          const elem = new this.constructor(node).render({...replacements, ...item});
+          // insertAdjacentElement() has curious effects (some parts get rendered twice, other not), thus we avoid it.
+          node.parentElement.appendChild(elem);
+        });
+        return node;
+      }
+    }
+
+    // Text or child nodes
     node.childNodes.forEach((childNode) => {
+      // Text
       if (childNode.nodeType === Node.TEXT_NODE) {
-        if (childNode.nodeValue.includes('{')) {
-          childNode.nodeValue = this.replace(childNode.nodeValue, replacements);
-        }
+        this.handleNodeValue(childNode, replacements);
       } else {
-        this.fill(childNode, replacements);
+        // Recurse into child nodes
+        console.info({recursingIntoNode: childNode})
+        this.parse(childNode, replacements);
       }
     });
+
+    // Attributes of this node
     if (node.attributes) {
       for (const attr of node.attributes) {
-        if (attr.value.includes('{')) {
-          node.setAttribute(attr.name, this.replace(attr.value, replacements));
-        }
+        this.handleNodeValue(attr, replacements);
       }
     }
+
     return node;
   }
 
-  static replace(string, replacements) {
-    return string.replace(/{(\S+?)}/g, (_, word) => {
+  /**
+   * @param {Node} node - HTML node
+   * @param {Object} replacements - Key-value object containing variable replacements
+   */
+  handleNodeValue(node, replacements) {
+    // nodeValue can be `null` for some kind of elements.
+    if (! node.nodeValue || ! node.nodeValue.includes('{')) {
+      return;
+    }
+    const newValue = node.nodeValue.replace(/{(\S+?)}/g, (_, word) => {
       if (typeof(replacements[word]) !== 'undefined') {
         return replacements[word];
       } else {
-        throw new Error(`Unavailable replacement key used in template: '${word}'`);
+        console.error(`Template replacement variable '${word}' is undefined in replacements`);
+        return "";
       }
     });
+    node.nodeValue = newValue;
+  }
+
+  isAbsent(arg) {
+    // Object.keys() works for `false`, strings and arrays, too.
+    return (typeof(arg) === 'undefined' || arg === null || arg === false || (arg !== true && Object.keys(arg).length === 0));
   }
 }

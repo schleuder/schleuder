@@ -5,20 +5,20 @@ import './html-element.js';
 
 export default class LoginController extends BaseController {
   static async show() {
-    const elem = this.elem('#login');
-    const submitBtn = elem.querySelector('#login button[type="submit"]');
+    const instance = new this();
+    const elem = instance.bakeFromTemplate('login', {});
+    const submitBtn = elem.querySelector('button[type="submit"]');
     submitBtn.addEventListener('click', (ev) => {
       ev.preventDefault();
       this.authenticate(elem);
     });
-    elem.show();
     return elem;
   }
 
   static async authenticate(elem) {
     const errorMessageElem = elem.querySelector('#login-error');
-    const emailElem = elem.querySelector("#login #emailaddress");
-    const pwElem = elem.querySelector("#login #password");
+    const emailElem = elem.querySelector("#emailaddress");
+    const pwElem = elem.querySelector("#password");
     errorMessageElem.hide();
     let email;
     let password;

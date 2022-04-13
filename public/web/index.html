@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Schleuder Web</title>
+		<title>Schleuder ★ </title>
 		<script type="module" src='./index.js'></script>
-    <link rel="icon" href="./favicon.ico">
+    <link rel="icon" href="./images/favicon.ico">
     <link rel='stylesheet' href='./index.css'>
 	</head>
 	<body>
     <div id="header">
-      <div id='big-name'>Schleuder Web</div>
-      <div id='user-menu' hidden>
-        <div id='user-emailaddress'>{emailaddress}</div>
-        <a class='mylists-link' href='#lists'>My lists</a>
-        <a class='logout-link' href='#logout'>Logout</a>
-      </div>
+      <div id='big-name'><a href="#">Schleuder</a></div>
+      <template id='user-menu'>
+        <ul class="user-menu">
+          <li class='user-emailaddress'>{emailaddress}</li>
+          <li>
+            <a class='mylists-link' href='#lists'><img src="./images/house.svg" alt="House icon" />My lists</a>
+          </li>
+          <li>
+            <a class='logout-link' href='#logout'><img src="./images/log-out.svg" alt="House icon" />Logout</a>
+          </li>
+        </ul>
+      </template>
     </div>
     <div id='notifier' class="" hidden></div>
 
@@ -21,48 +27,90 @@
       <svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0" width="64px" height="64px" viewBox="0 0 128 128" xml:space="preserve"><rect x="0" y="0" width="100%" height="100%" fill="#FFFFFF" /><g><path d="M75.4 126.63a11.43 11.43 0 0 1-2.1-22.65 40.9 40.9 0 0 0 30.5-30.6 11.4 11.4 0 1 1 22.27 4.87h.02a63.77 63.77 0 0 1-47.8 48.05v-.02a11.38 11.38 0 0 1-2.93.37z" fill="#4D994D"/><animateTransform attributeName="transform" type="rotate" from="0 64 64" to="360 64 64" dur="1000ms" repeatCount="indefinite"></animateTransform></g></svg>
     </div>
 
-    <template id='lists'>
-      <h1>Lists</h1>
-      <ul>
-        <template class='lists-listing' for='lists'>
-          <li><a href='#lists/{email}/subscriptions'>{email}</a></li>
-        </template>
-      </ul>
+    <template id='listsIndex'>
+      <div class="listsIndex">
+        <div class="list-menu">
+          <div class="pageheadline">My lists</div>
+        </div>
+
+        <h1>Lists</h1>
+        <ul>
+          <template class='lists-listing' data-foreach='lists'>
+            <li><a href='#lists/{email}/subscriptions'>{email}</a></li>
+          </template>
+        </ul>
+      </div>
+    </template>
+
+    <template id='list-menu'>
+      <div class="list-menu">
+        <div class="pageheadline">{listname}</div>
+        <ul>
+          <li data-if='subscriptionsIsCurrent'><img src="./images/people.svg" alt="Icon of two people" />Subscriptions</li>
+          <li data-if-not='subscriptionsIsCurrent'><a href='#lists/{listname}/subscriptions'><img src="./images/people.svg" alt="Icon of two people" />Subscriptions</a></li>
+          <li data-if='keysIndexIsCurrent'><img src="./images/keyring.svg" alt="Icon of a key ring" />Keys</li>
+          <li data-if-not='keysIndexIsCurrent'><a href='#lists/{listname}/keys'><img src="./images/keyring.svg" alt="Icon of a key ring" />Keys</a></li>
+          <li data-if='listOptionsIsCurrent'><img src="./images/wrench.svg" alt="Icon of a wrench" />List options</li>
+          <li data-if-not='listOptionsIsCurrent'><a href='#lists/{listname}/edit'><img src="./images/wrench.svg" alt="Icon of a wrench" />List options</a></li>
+        </ul>
+      </div>
     </template>
 
     <template id='subscription'>
-      <h1>Subscription of {email} to {listname}</h1>
-      <p>Admin? {adminYesNo}</p>
+      <div class="subscription">
+        <h1>{email}</h1>
+        <p>Admin? {adminYesNo}</p>
+      </div>
     </template>
 
     <template id='subscriptions'>
-      <h1>Subscriptions of {listname}</h1>
-      <p><a href='#lists/{listname}/keys'>keys</a></p>
-      <ul>
-        <template for='subscriptions'>
-          <li class="{adminCssClass}"><a href='#lists/{listname}/subscriptions/{email}'>{email}</a></li>
-        </template>
-      </ul>
+      <div class="subscriptions">
+        <div class="action-new"><a href="#lists/{listname}/subscriptions/new"><div class="plus-sign">+</div> New Subscription</a></div>
+        <h1>Subscribed addresses</h1>
+        <div class="cards-listing">
+          <template data-foreach='subscriptions'>
+            <div class="card">
+              <div class="card-icon"><img src="./images/person.svg" alt="Icon showing a person" /></div>
+              <div class="card-text"><a href='#lists/{listname}/subscriptions/{email}'>{email}</a></div>
+              <div class="card-info">
+                <div class="card-popup" data-if="admin">
+                  <img class="card-popup-icon" src="./images/heart.svg" />
+                  <div class="card-popup-text">This person is an admin of this list</div>
+                </div>
+                <div class="card-popup" data-if="key-missing">
+                  <img class="card-popup-icon" src="./images/key-missing.svg" />
+                  <div class="card-popup-text">
+                    <div class="warning">Warning: This address has no key selected!</div>
+                    <a href="#lists/{listname}/subscriptions/{email}/edit">Fix this</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
     </template>
 
     <template id='keysIndex'>
-      <h1>Keys on {listname}</h1>
-      <ul>
-        <template for="keys">
-          <li class="{cssClass}"><a href='#lists/{listname}/keys/{fingerprint}'>{key_summary}</a></li>
-        </template>
-      </ul>
+      <div class="keysIndex">
+        <h1>Keys on {listname}</h1>
+        <ul>
+          <template data-foreach="keys">
+            <li class="{cssClass}"><a href='#lists/{listname}/keys/{fingerprint}'>{key_summary}</a></li>
+          </template>
+        </ul>
+      </div>
     </template>
 
     <template id='keysShow'>
-      <h1>Key {fingerprint}</h1>
-      <ul>
-        <li>Summary: {key_summary}</li>
-      </ul>
+      <div class="keysShow">
+        <h1>Key {fingerprint}</h1>
+        <code>{key_summary}</code>
+      </div>
     </template>
 
-	  <div id='login' hidden>
-      <form>
+	  <template id='login'>
+      <form class='login'>
         <label>
           Email address:
           <input type='email' id='emailaddress' required />
@@ -74,7 +122,7 @@
         <div class='hidden errormsg' id='login-error'>Login failed, please check your input!</div>
         <button type='submit'>Login</button>
       </form>
-	  </div>
+	  </template>
 
 	</body>
 </html>
