@@ -61,7 +61,11 @@ export default class Router {
       }
     } catch (exc) {
       console.error(exc);
-      Notifier.show('error', 'An unexpected problem occurred, please try again later');
+      if (exc instanceof TypeError && exc.message.slice(0, 12) === 'NetworkError') {
+        Notifier.show('error', 'Could not connect to server, please check your network connection or try again later!');
+      } else {
+        Notifier.show('error', 'An unexpected problem occurred, please try again later');
+      }
     } finally {
       this.loadingIcon.hide();
     }
@@ -76,7 +80,8 @@ export default class Router {
     switch(urlParts[0]) {
       case 'login':
         Backend.clearCredentials();
-        return LoginController.show();
+        document.querySelector('form[is="login-form"]').show();
+        return true;
       case 'logout':
         Backend.clearCredentials();
         this.userMenu.remove();

@@ -1,4 +1,5 @@
 import BaseController from './base-controller.js';
+import SubscriptionEdit from './components/subscription-edit.js';
 
 export default class Subscriptions extends BaseController {
   static async index(listname) {
@@ -21,9 +22,16 @@ export default class Subscriptions extends BaseController {
   }
 
   static async fresh(listname) {
+    const instance = new this(listname);
+    return instance.bakeFromTemplate("subscriptionForm", {listname, headline: "New subscription"});
   }
 
   static async edit(listname, email) {
+    const el = document.createElement('subscription-edit');
+    el.setAttribute('listname', listname);
+    el.setAttribute('email', email);
+    document.body.appendChild(el);
+    return el;
   }
 
   static async show(listname, email) {

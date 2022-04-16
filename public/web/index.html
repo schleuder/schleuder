@@ -4,7 +4,7 @@
 		<title>Schleuder ★ </title>
 		<script type="module" src='./index.js'></script>
     <link rel="icon" href="./images/favicon.ico">
-    <link rel='stylesheet' href='./index.css'>
+    <link rel='stylesheet' href='./css/index.css'>
 	</head>
 	<body>
     <div id="header">
@@ -63,6 +63,23 @@
       </div>
     </template>
 
+    <template id='subscription-edit' hidden>
+      <div class="subscription">
+        <h1>{headline}</h1>
+        <form>
+          <fieldset>
+            <legend>Email</legend>
+            <email-input name="subscription-form-email" label="Email" required="true" />
+            <check-box name="subscription-form-delivery-enabled" label="Delivery enabled?" usage="Receive the emails sent over the list?" />
+            <check-box name="subscription-form-admin" label="Admin?" usage="May this person administer this list?" />
+          </fieldset>
+          <fieldset>
+            <legend>Key</legend>
+          </fieldset>
+        </form>
+      </div>
+    </template>
+
     <template id='subscriptions'>
       <div class="subscriptions">
         <div class="action-new"><a href="#lists/{listname}/subscriptions/new"><div class="plus-sign">+</div> New Subscription</a></div>
@@ -109,20 +126,12 @@
       </div>
     </template>
 
-	  <template id='login'>
-      <form class='login'>
-        <label>
-          Email address:
-          <input type='email' id='emailaddress' required />
-        </label>
-        <label>
-          Password:
-          <input type='password' id='password' required />
-        </label>
-        <div class='hidden errormsg' id='login-error'>Login failed, please check your input!</div>
-        <button type='submit'>Login</button>
-      </form>
-	  </template>
+	  <form is="login-form" hidden>
+      <email-input name="login-form-email" label="Email address" required="true" />
+      <password-input name="login-form-password" label="Password" required="true" />
+      <div class='error' id='login-form-error' hidden>Login failed, please check your input!</div>
+      <button type='submit'>Login</button>
+	  </form>
 
 	</body>
 </html>

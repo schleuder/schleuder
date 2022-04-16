@@ -34,8 +34,6 @@ export default class Template {
    */
   render(replacements) {
     replacements = replacements || {}
-    console.info({renderReplacements: replacements})
-    console.info({renderNode: this.elem})
     return this.parse(this.elem, replacements); /** @type HTMLElement */
   }
 
@@ -66,7 +64,6 @@ export default class Template {
       const foreach = node.dataset.foreach;
       if (foreach && replacements[foreach] instanceof Array) {
         replacements[foreach].forEach((item) => {
-          console.info({templateForeach: item});
           // Add the attributes of `item` last so they can overwrite the
           // previous ones in case of naming collisions.
           const elem = new this.constructor(node).render({...replacements, ...item});
@@ -84,7 +81,6 @@ export default class Template {
         this.handleNodeValue(childNode, replacements);
       } else {
         // Recurse into child nodes
-        console.info({recursingIntoNode: childNode})
         this.parse(childNode, replacements);
       }
     });
