@@ -31,6 +31,9 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'gpgme', '~> 2.0', '>= 2.0.19' # Explicitly include to force a version.
   s.add_runtime_dependency 'mail', '~> 2.7.1'
   s.add_runtime_dependency 'mail-gpg', '~> 0.3'
+  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.1.0')
+    s.add_runtime_dependency 'net-smtp', '~> 0.3.1'
+  end
   s.add_runtime_dependency 'rake', '>= 10.5.0'
   s.add_runtime_dependency 'sinatra', '~> 2'
   s.add_runtime_dependency 'sinatra-contrib', '~> 2'
