@@ -24,7 +24,7 @@ require 'socket'
 # for our sks-mock, which can't use "localhost" because docker, and can't use a
 # static loopback address because we need it to run on IPv4-only and IPv6-only
 # hosts.
-ENV['LOCAL_IP_ADDR'] = Socket.ip_address_list.find{ |a| !a.ipv4_loopback? && !a.ipv6_loopback? }.ip_address
+ENV['LOCAL_IP_ADDR'] ||= Socket.ip_address_list.find{ |a| !a.ipv4_loopback? && !a.ipv6_loopback? }.ip_address
 
 require 'schleuder'
 require 'schleuder/cli'
