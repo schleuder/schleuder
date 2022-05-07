@@ -206,7 +206,12 @@ describe GPGME::Ctx do
 
       # If using the "standard-resolver" and a not reachable keyserver, dirmngr
       # reports a different error message than with its internal resolver 🤦
-      expect(res).to match(/keyserver refresh failed: No keyserver available/)
+      # --
+      # As of 2022/04/16, gnupg 2.2.27-3 as shipped in Debian, reports 'unknown host'
+      # and 'connection refused', which is different from what we see in our upstream CI.
+      # Again, reasons are unclear.
+      # Given this, relax the expected error message.
+      expect(res).to match(/keyserver refresh failed:/)
     end
 
     it 'does not import non-self-signatures' do
