@@ -1,4 +1,5 @@
 import State from './state.js';
+import NotiFier from './noti-fier.js'
 
 export default class Backend {
   static storeCredentials(emailaddr, password) {
@@ -28,17 +29,23 @@ export default class Backend {
     } catch (exc) {
       this.clearCredentials();
       console.error(exc);
-      Notifier.show(exc.message);
+      NotiFier.error(exc.message);
     }
   }
 
-  static async fetch(url) {
+  static async fetch(...urlParts) {
     const headers = {};
     const credentials = State.get('c');
     if (! credentials) {
       throw new Error("No credentials in State, cannot authenticate to API!");
     }
     headers["Authorization"] = `Basic ${credentials}`;
+    let url;
+    if (urlParts.length === 1 && urlParts[0][0] === "/") {
+      url = urlParts[0]
+    } else {
+      url = ["/lists", ...urlParts].join("/") + ".json"
+    }
     console.debug(`Fetching '${url}' from API`);
     const response = await fetch(url, {headers: headers});
     let result;

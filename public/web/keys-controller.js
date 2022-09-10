@@ -1,6 +1,23 @@
 import BaseController from './base-controller.js';
 
 export default class KeysController extends BaseController {
+  static route(listname, urlParts) {
+            switch (urlParts[3]) {
+              case undefined:
+                return KeysController.index(listname);
+              case 'fresh':
+                return KeysController.fresh(listname);
+              default:
+                const fingerprint = urlParts[3];
+                switch(urlParts[4]) {
+                  case 'download':
+                    return KeysController.download(listname, fingerprint);
+                  default:
+                    return KeysController.show(listname, fingerprint);
+                }
+            }
+  }
+
   static async index(listname) {
     const instance = new this(listname);
     const keys = await instance.get(`keys.json`);

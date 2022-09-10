@@ -1,25 +1,28 @@
 import Backend from '../backend.js';
-import Router from '../router.js';
+import InputField from './input-field.js';
+import NotiFier from "../noti-fier.js"
+import {button} from "../hyper.js"
 
 export default class LoginForm extends HTMLFormElement {
   constructor() {
     super();
-    this.emailElem = this.querySelector('#login-form-email');
-    this.pwElem = this.querySelector('#login-form-password');
-    this.errorMessageElem = this.querySelector('#login-form-error');
+    this.emailField = new InputField("email", "login-form-email", "Email", null, true)
+    this.passwordField = new InputField("password", "login-form-password", "Password", null, true)
+    
+    this.append(this.emailField, this.passwordField, button({type: "submit"}, 'Login'));
     this.addEventListener('submit', (ev) => {
-      this.errorMessageElem.hide();
-      ev.preventDefault();
-      this.authenticate();
+      ev.preventDefault()
+      NotiFier.clearAll()
+      this.authenticate()
     })
   }
 
   async authenticate() {
-    if (await Backend.checkCredentials(this.emailElem.value, this.pwElem.value)) {
-      Router.route('lists');
+    if (await Backend.checkCredentials(this.emailField.value, this.passwordField.value)) {
       this.hide();
+      window.location = '#lists'
     } else {
-      this.errorMessageElem.show();
+      NotiFier.error('Login failed, please check your input!')
     }
   }
 }

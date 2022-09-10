@@ -1,0 +1,295 @@
+@import "./normalize.css";
+/*@import "./sakura.css";*/
+/*@import "./classless.css";*/
+
+:root {
+  --maincolor: #4D994D;
+  --linkcolor: #337ab7;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 18px;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 1rem 5rem 2rem 5rem;
+  padding: 0;
+  max-width: 70rem;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--linkcolor);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+#header {
+  display: flex;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+#header-logout {
+  text-align: right;
+}
+
+#big-name {
+  flex-grow: 1;
+  margin: 0 2rem 0 0;
+}
+
+#big-name  a {
+  font-size: 1.5rem;
+  color: var(--maincolor);
+  text-decoration: none;
+}
+
+.pageheadline {
+  font-size: 1.7em;
+  font-weight: 600;
+  color: var(--maincolor);
+}
+
+.pageheadline a {
+    color: var(--maincolor);
+}
+
+h1 {
+  line-height: 1.1;
+  font-weight: 500;
+  margin: 0em 0em 0.5em 0;
+  padding; 0;
+}
+
+.hidden {
+  display: none;
+}
+
+.form-hint {
+  color: grey;
+  font-size: 0.9rem;
+}
+
+.error {
+  color: red;
+}
+
+.notice {
+  color: green;
+}
+
+list-menu {
+  margin: 1rem 0 2rem;
+  padding: 0 0 0.5rem 0;
+  border-color: aliceblue;
+  border-width: 0 0 0.3rem 0;
+  border-style: solid;
+}
+
+list-menu ul {
+  list-style-type: none;
+  margin: 0.8rem 0 0 0;
+  padding: 0;
+}
+
+list-menu li {
+  display: inline-block;
+  margin: 0;
+  padding: 0 1rem 0 0;
+  font-weight: bold;
+}
+
+list-menu li img { 
+  margin: 0 0.3rem -0.3rem 0;
+  padding: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+user-menu {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+user-menu li {
+  display: inline-block;
+  padding: 0;
+  margin: 0 1rem 0 0;
+}
+
+user-menu li:last-child {
+  margin-right: 0;
+}
+
+user-menu .user-emailaddress {
+  font-weight: bold;
+}
+
+user-menu li a img {
+  margin: 0 0.3rem -0.1rem 0;
+  padding: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.card-listing {
+  margin: 3em 0;
+}
+
+.list_key {
+  index-card {
+    border-style: dashed;
+  }
+}
+
+index-card {
+  display: flex;
+  border: solid thin #ccc;
+  border-radius: 1px;
+  box-shadow: 1px 1px 0px rgba(120,120,120,0.2);
+  padding: 0.7em 1em;
+  margin: 1em;
+}
+
+card-icon {
+  margin-right: 0.5rem;
+}
+card-icon img {
+  width: 2.5rem;
+  vertical-align: middle;
+}
+
+.card-text {
+  flex-grow: 100;
+}
+
+card-icon:hover ~ .card-popup-text,
+card-icon:focus ~ .card-popup-text,
+.card-popup-text:hover,
+.card-popup-text:focus {
+  display: block;
+}
+
+card-popup {
+  display: inline-block;
+  margin: 0 0 0 .5em;
+  position: relative;
+  width: auto;
+}
+
+card-popup img.icon-person {
+    width: 25px;
+}
+
+img.card-popup-icon {
+  width: 30px;
+}
+
+
+.card-popup-text {
+  display: none;
+  position: absolute;
+  top: -1.5em;
+  right: 1.5em;
+  width: auto;
+  white-space: nowrap;
+  border: solid thin silver;
+  border-radius: 5px;
+  box-shadow: 1px 1px 0px rgba(120,120,120,0.2);
+  background: rgba(252, 252, 252, 0.9);
+  padding: 1em;
+  text-align: right;
+}
+
+.warning {
+  color: #e0872e;
+}
+
+.action-link,
+action-link {
+  float: right;
+  white-space: nowrap;
+}
+.action-link a,
+action-link a {
+  color: var(--maincolor);
+  text-decoration: none;
+}
+.action-link a .plus-sign,
+action-link a .plus-sign {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 2rem;
+  line-height: 1.6rem;
+  vertical-align: text-bottom;
+}
+
+input-field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+input-field.type-checkbox input {
+  margin: 0.5rem 0 0 0.3rem;
+  padding: 0;
+}
+
+input-field.type-checkbox label {
+  margin-left: 0.5rem;
+}
+
+input-field.type-checkbox small.usage {
+  color: grey;
+  display: block;
+}
+
+.loading-icon.view-loading {
+  position: absolute;
+  top: 6rem;
+  right: 10rem;
+}
+
+subscription-show .attribute img {
+  width: 2rem;
+  margin-right: 0.8rem;
+  vertical-align: middle;
+}
+
+img.small-icon {
+  width: 1rem;
+  margin: 0 0.4rem;
+  vertical-align: middle;
+}
+
+textarea {
+  width: 100%;
+}
+
+.key-upload-spacer {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 2.5rem;
+  color: #aaa;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+.key-upload-spacer .precedence {
+  font-size: 1.5rem;
+  color: #ddd;
+  white-space: nowrap;
+}
