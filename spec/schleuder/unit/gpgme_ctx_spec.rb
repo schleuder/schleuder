@@ -103,51 +103,45 @@ describe GPGME::Ctx do
     expect(keys.size).to eql(2)
   end
 
-  it '#clean_and_classify_input with prefixed fingerprint' do
+  it '#normalize_key_identifier with prefixed fingerprint' do
     list = create(:list)
 
-    kind, input = list.gpg.clean_and_classify_input('0x59C71FB38AEE22E091C78259D06350440F759BD3')
-    expect(kind).to eql(:fingerprint)
+    input = list.gpg.normalize_key_identifier('0x59C71FB38AEE22E091C78259D06350440F759BD3')
     expect(input).to eql('0x59C71FB38AEE22E091C78259D06350440F759BD3')
   end
 
-  it '#clean_and_classify_input with un-prefixed fingerprint' do
+  it '#normalize_key_identifier with un-prefixed fingerprint' do
     list = create(:list)
 
-    kind, input = list.gpg.clean_and_classify_input('59C71FB38AEE22E091C78259D06350440F759BD3')
-    expect(kind).to eql(:fingerprint)
+    input = list.gpg.normalize_key_identifier('59C71FB38AEE22E091C78259D06350440F759BD3')
     expect(input).to eql('0x59C71FB38AEE22E091C78259D06350440F759BD3')
   end
 
-  it '#clean_and_classify_input with bracketed email-address' do
+  it '#normalize_key_identifier with bracketed email-address' do
     list = create(:list)
 
-    kind, input = list.gpg.clean_and_classify_input('bla <bla@foo>')
-    expect(kind).to eql(:email)
+    input = list.gpg.normalize_key_identifier('bla <bla@foo>')
     expect(input).to eql('<bla@foo>')
   end
 
-  it '#clean_and_classify_input with un-bracketed email-address' do
+  it '#normalize_key_identifier with un-bracketed email-address' do
     list = create(:list)
 
-    kind, input = list.gpg.clean_and_classify_input('bla@foo')
-    expect(kind).to eql(:email)
+    input = list.gpg.normalize_key_identifier('bla@foo')
     expect(input).to eql('<bla@foo>')
   end
 
-  it '#clean_and_classify_input with URL' do
+  it '#normalize_key_identifier with URL' do
     list = create(:list)
 
-    kind, input = list.gpg.clean_and_classify_input('http://example.org/foo')
-    expect(kind).to eql(:url)
+    input = list.gpg.normalize_key_identifier('http://example.org/foo')
     expect(input).to eql('http://example.org/foo')
   end
 
-  it '#clean_and_classify_input with some string' do
+  it '#normalize_key_identifier with some string' do
     list = create(:list)
 
-    kind, input = list.gpg.clean_and_classify_input('lala')
-    expect(kind).to eql(nil)
+    input = list.gpg.normalize_key_identifier('lala')
     expect(input).to eql('lala')
   end
 
