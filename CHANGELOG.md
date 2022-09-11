@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * The default umask now is `0077`, allowing access to newly created files and directories only for the owner. It is configurable in `schleuder.yml`.
 * Drop using dirmngr, use custom code to fetch keys from keyservers.
 * Upgrade Active Record to version 7
+* Check email address for `receive_from_subscribed_emailaddresses_only` in lower case letters to avoid wrong rejections.
 
 ### Added
 
