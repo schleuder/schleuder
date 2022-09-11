@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 * Minor improvements of the German locales. 
+* Drop support for Ruby 2.5 and 2.6, require Ruby 2.7 or later.
 
 
 ### Fixed
