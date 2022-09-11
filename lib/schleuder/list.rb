@@ -350,7 +350,7 @@ module Schleuder
             next
           end
           
-          if ! self.deliver_selfsent && incoming_mail.was_validly_signed? && ( subscription == incoming_mail.signer )
+          if ! self.deliver_selfsent && incoming_mail&.was_validly_signed? && ( subscription == incoming_mail&.signer )
             logger.info "Not sending to #{subscription.email}: delivery of self sent is disabled."
             next
           end

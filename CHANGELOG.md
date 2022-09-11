@@ -14,6 +14,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
  * The umask is configurable in `schleuder.yml`.
 
+### Fixed
+
+* Fixed sending the list's key to all subscribers if `deliver_selfsent` is false.
+
 
 ## [4.0.3] / 2022-04-12
 
