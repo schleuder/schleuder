@@ -15,6 +15,7 @@ require 'syslog/logger'
 require 'logger'
 require 'open3'
 require 'socket'
+require 'base64'
 
 # Require mandatory libs. The database-layer-lib is required below.
 require 'mail-gpg'
