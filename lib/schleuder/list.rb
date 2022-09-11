@@ -204,7 +204,7 @@ module Schleuder
         key_fetcher.fetch(key.fingerprint, 'key_updated').presence
       end
       # Filter out some "noise" (if a key was unchanged, it wasn't really updated, was it?)
-      # TODO: find a better way to avoid these lines.
+      # It would be nice to prevent these "false" lines in the first place, but I don't know how.
       output.reject! do |line|
         line.match('updated \(unchanged\)')
       end
