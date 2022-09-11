@@ -10,6 +10,7 @@ module Mail
           @verify_result
         end
       end
+
       def verify_result=(result)
         @verify_result = result
       end
@@ -17,7 +18,7 @@ module Mail
       # checks validity of signatures (true / false)
       def signature_valid?
         sigs = self.signatures
-        sigs.any? && sigs.all?{|s|s.valid?}
+        sigs.any? && sigs.all?{|s| s.valid?}
       end
 
       # list of all signatures from verify_result

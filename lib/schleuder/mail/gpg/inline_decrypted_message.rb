@@ -46,10 +46,10 @@ module Mail
                   decrypted = GpgmeHelper.decrypt(part.decoded, options)
                   p.verify_result decrypted.verify_result if options[:verify]
                   p.content_type part.content_type.sub(/application\/(?:octet-stream|pgp-encrypted)/, 'application/octet-stream')
-                    .sub(/name=(?:"')?(.*)\.(?:pgp|gpg|asc)(?:"')?/, 'name="\1"')
+                                     .sub(/name=(?:"')?(.*)\.(?:pgp|gpg|asc)(?:"')?/, 'name="\1"')
                   p.content_disposition part.content_disposition.sub(/filename=(?:"')?(.*)\.(?:pgp|gpg|asc)(?:"')?/, 'filename="\1"')
                   p.content_transfer_encoding Mail::Encodings::Base64
-                  p.body Mail::Encodings::Base64::encode(decrypted.to_s)
+                  p.body Mail::Encodings::Base64.encode(decrypted.to_s)
                 else
                   body = part.body.decoded
                   if body.include?('-----BEGIN PGP MESSAGE-----')
@@ -65,7 +65,7 @@ module Mail
               end
               add_part p
             end
-          end # of multipart
+          end
         else
           decrypted = cipher_mail.body.empty? ? '' : GpgmeHelper.decrypt(cipher_mail.body.decoded, options)
           self.new do
@@ -73,7 +73,7 @@ module Mail
               header[field.name] = field.value
             end
             body decrypted.to_s
-            verify_result decrypted.verify_result if options[:verify] && '' != decrypted
+            verify_result decrypted.verify_result if options[:verify] && decrypted != ''
           end
         end
       end

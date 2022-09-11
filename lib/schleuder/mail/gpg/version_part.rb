@@ -14,7 +14,7 @@ module Mail
         content_description CONTENT_DESC
       end
       
-      def self.isVersionPart?(part)
+      def self.is_version_part?(part)
         part.mime_type == CONTENT_TYPE && part.body =~ /#{VERSION_1}/
       end
     end
