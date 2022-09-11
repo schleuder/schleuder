@@ -34,13 +34,11 @@ module GPGME
     end
 
     def find_keys(input=nil, secret_only=nil)
-      _, input = clean_and_classify_input(input)
-      keys(input, secret_only)
+      keys(normalize_key_identifier(input), secret_only)
     end
 
     def find_distinct_key(input=nil, secret_only=nil)
-      _, input = clean_and_classify_input(input)
-      keys = keys(input, secret_only)
+      keys = keys(normalize_key_identifier(input), secret_only)
       if keys.size == 1
         keys.first
       else
@@ -48,17 +46,16 @@ module GPGME
       end
     end
 
-    # TODO: from this method, only the "cleaning" (better would be: "normalizing") is used.
-    def clean_and_classify_input(input)
+    def normalize_key_identifier(input)
       case input
       when /.*?([^ <>]+@[^ <>]+).*?/
-        [:email, "<#{$1}>"]
+        "<#{$1}>"
       when /^http/
-        [:url, input]
+        input
       when Conf::FINGERPRINT_REGEXP
-        [:fingerprint, "0x#{input.gsub(/^0x/, '')}"]
+        "0x#{input.gsub(/^0x/, '')}"
       else
-        [nil, input]
+        input
       end
     end
 
