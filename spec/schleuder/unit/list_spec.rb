@@ -856,6 +856,28 @@ describe Schleuder::List do
 
       teardown_list_and_mailer(list)
     end
+  
+    it 'sends the message to subscribers if deliver_selfsent is set to false' do
+      list = create(:list, send_encrypted_only: false, deliver_selfsent: false)
+      sub, msgs = list.subscribe('admin@example.org', nil, true)
+      sub, msgs = list.subscribe('user1@example.org', nil)
+      mail = Mail.new
+      mail.to = list.email
+      mail.from = 'something@localhost'
+      mail.subject = 'Something'
+      mail.body = 'Some content'
+
+      Schleuder::Runner.new().run(mail.to_s, list.email)
+      messages = Mail::TestMailer.deliveries
+      recipients = messages.map { |m| m.to.first }.sort
+
+      expect(messages.size).to be(2)
+      expect(recipients).to eql(['admin@example.org', 'user1@example.org'])
+      expect(messages.first.parts.first.parts.last.body.to_s).to eql('Some content')
+      expect(messages.last.parts.first.parts.last.body.to_s).to eql('Some content')
+      expect(messages.first.subject).to eql('Something')
+      expect(messages.last.subject).to eql('Something')
+    end
   end
 
   describe '#set_reply_to_to_sender' do
