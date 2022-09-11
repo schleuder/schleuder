@@ -7,7 +7,9 @@ module GPGME
       'new_subkeys' => 8
     }
 
-    # TODO: refactor with code in import_from_string()
+    # This differs from import_from_string() in that it can import binary data,
+    # too, and that it returns the import-results themselves, not strings based
+    # on those results.
     def keyimport(keydata)
       self.import_keys(GPGME::Data.new(keydata))
       result = self.import_result
