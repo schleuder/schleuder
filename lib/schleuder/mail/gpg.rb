@@ -39,7 +39,7 @@ module Mail
         add_part EncryptedPart.new(cleartext_mail,
                                    options.merge({recipients: receivers}))
         content_type "multipart/encrypted; protocol=\"application/pgp-encrypted\"; boundary=#{boundary}"
-        body.preamble = options[:preamble] || "This is an OpenPGP/MIME encrypted message (RFC 2440 and 3156)"
+        body.preamble = options[:preamble] || 'This is an OpenPGP/MIME encrypted message (RFC 2440 and 3156)'
 
         if cleartext_mail.protected_headers_subject
           subject cleartext_mail.protected_headers_subject
@@ -55,7 +55,7 @@ module Mail
         add_part to_be_signed.sign(options)
 
         content_type "multipart/signed; micalg=pgp-sha1; protocol=\"application/pgp-signature\"; boundary=#{boundary}"
-        body.preamble = options[:preamble] || "This is an OpenPGP/MIME signed message (RFC 4880 and 3156)"
+        body.preamble = options[:preamble] || 'This is an OpenPGP/MIME signed message (RFC 4880 and 3156)'
       end
     end
 
@@ -67,7 +67,7 @@ module Mail
       elsif encrypted_inline?(encrypted_mail)
         decrypt_pgp_inline(encrypted_mail, options)
       else
-        raise EncodingError, "Unsupported encryption format '#{encrypted_mail.content_type}'"
+        raise EncodingError.new("Unsupported encryption format '#{encrypted_mail.content_type}'")
       end
     end
 
@@ -77,7 +77,7 @@ module Mail
       elsif signed_inline?(signed_mail)
         signature_valid_inline?(signed_mail, options)
       else
-        raise EncodingError, "Unsupported signature format '#{signed_mail.content_type}'"
+        raise EncodingError.new("Unsupported signature format '#{signed_mail.content_type}'")
       end
     end
 
@@ -95,12 +95,10 @@ module Mail
       return true if signed_mime?(mail)
       return true if signed_inline?(mail)
       if encrypted?(mail)
-        raise EncodingError, 'Unable to determine signature on an encrypted mail, use :verify option on decrypt()'
+        raise EncodingError.new('Unable to determine signature on an encrypted mail, use :verify option on decrypt()')
       end
       false
     end
-
-    private
 
     def self.construct_mail(cleartext_mail, options, &block)
       Mail.new do
@@ -117,10 +115,10 @@ module Mail
     # decrypts PGP/MIME (RFC 3156, section 4) encrypted mail
     def self.decrypt_pgp_mime(encrypted_mail, options)
       if encrypted_mail.parts.length < 2
-        raise EncodingError, "RFC 3156 mandates exactly two body parts, found '#{encrypted_mail.parts.length}'"
+        raise EncodingError.new("RFC 3156 mandates exactly two body parts, found '#{encrypted_mail.parts.length}'")
       end
-      if !VersionPart.isVersionPart? encrypted_mail.parts[0]
-        raise EncodingError, "RFC 3156 first part not a valid version part '#{encrypted_mail.parts[0]}'"
+      if !VersionPart.is_version_part? encrypted_mail.parts[0]
+        raise EncodingError.new("RFC 3156 first part not a valid version part '#{encrypted_mail.parts[0]}'")
       end
       decrypted = DecryptedPart.new(encrypted_mail.parts[1], options)
       Mail.new(decrypted.raw_source) do
@@ -150,7 +148,7 @@ module Mail
     def self.signature_valid_pgp_mime?(signed_mail, options)
       # MUST contain exactly two body parts
       if signed_mail.parts.length != 2
-        raise EncodingError, "RFC 3156 mandates exactly two body parts, found '#{signed_mail.parts.length}'"
+        raise EncodingError.new("RFC 3156 mandates exactly two body parts, found '#{signed_mail.parts.length}'")
       end
       result, verify_result = SignPart.verify_signature(signed_mail.parts[0], signed_mail.parts[1], options)
       signed_mail.verify_result = verify_result
@@ -187,25 +185,30 @@ module Mail
       end
     end
 
-
     # check if PGP/MIME encrypted (RFC 3156)
     def self.encrypted_mime?(mail)
       mail.has_content_type? &&
-        'multipart/encrypted' == mail.mime_type &&
-        'application/pgp-encrypted' == mail.content_type_parameters[:protocol]
+        mail.mime_type == 'multipart/encrypted' &&
+        mail.content_type_parameters[:protocol] == 'application/pgp-encrypted'
     end
 
     # check if inline PGP (i.e. if any parts of the mail includes
     # the PGP MESSAGE marker)
     def self.encrypted_inline?(mail)
-      return true if mail.body.to_s =~ BEGIN_PGP_MESSAGE_MARKER rescue nil
+      begin
+        return true if mail.body.to_s =~ BEGIN_PGP_MESSAGE_MARKER
+      rescue
+      end
       if mail.multipart?
         mail.parts.each do |part|
-          return true if part.body.to_s =~ BEGIN_PGP_MESSAGE_MARKER rescue nil
+          begin
+            return true if part.body.to_s =~ BEGIN_PGP_MESSAGE_MARKER
+          rescue
+          end
           return true if part.has_content_type? &&
             /application\/(?:octet-stream|pgp-encrypted)/ =~ part.mime_type &&
             /.*\.(?:pgp|gpg|asc)$/ =~ part.content_type_parameters[:name] &&
-            'signature.asc' != part.content_type_parameters[:name]
+            part.content_type_parameters[:name] != 'signature.asc'
           # that last condition above prevents false positives in case e.g.
           # someone forwards a mime signed mail including signature.
         end
@@ -216,17 +219,23 @@ module Mail
     # check if PGP/MIME signed (RFC 3156)
     def self.signed_mime?(mail)
       mail.has_content_type? &&
-        'multipart/signed' == mail.mime_type &&
-        'application/pgp-signature' == mail.content_type_parameters[:protocol]
+        mail.mime_type == 'multipart/signed' &&
+        mail.content_type_parameters[:protocol] == 'application/pgp-signature'
     end
 
     # check if inline PGP (i.e. if any parts of the mail includes
     # the PGP SIGNED marker)
     def self.signed_inline?(mail)
-      return true if mail.body.to_s =~ BEGIN_PGP_SIGNED_MESSAGE_MARKER rescue nil
+      begin
+        return true if mail.body.to_s =~ BEGIN_PGP_SIGNED_MESSAGE_MARKER
+      rescue
+      end
       if mail.multipart?
         mail.parts.each do |part|
-          return true if part.body.to_s =~ BEGIN_PGP_SIGNED_MESSAGE_MARKER rescue nil
+          begin
+            return true if part.body.to_s =~ BEGIN_PGP_SIGNED_MESSAGE_MARKER
+          rescue
+          end
         end
       end
       false

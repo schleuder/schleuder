@@ -27,7 +27,7 @@ module Mail
               end
             end
             verify_result global_verify_result
-          end # of multipart
+          end
         else
           self.new do
             signed_mail.header.fields.each do |field|

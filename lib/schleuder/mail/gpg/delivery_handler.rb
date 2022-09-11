@@ -6,7 +6,7 @@ module Mail
         if mail.gpg
           encrypted_mail = nil
           begin
-            options = TrueClass === mail.gpg ? { encrypt: true } : mail.gpg
+            options = mail.gpg.is_a?(TrueClass) ? { encrypt: true } : mail.gpg
             if options[:encrypt]
               encrypted_mail = Mail::Gpg.encrypt(mail, options)
             elsif options[:sign] || options[:sign_as]
@@ -15,7 +15,7 @@ module Mail
               # encrypt and sign are off -> do not encrypt or sign
               yield
             end
-          rescue Exception
+          rescue StandardError
             raise $! if mail.raise_encryption_errors
           end
           if encrypted_mail
@@ -29,7 +29,7 @@ module Mail
         else
           yield
         end
-      rescue Exception
+      rescue StandardError
         raise $! if mail.raise_delivery_errors
       end
 
