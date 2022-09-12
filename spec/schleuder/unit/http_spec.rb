@@ -5,9 +5,9 @@ describe Http do
     proxy_url = 'socks5h://localhost:9050'
     Conf.instance.config['http_proxy'] = proxy_url
 
-    req = Http.send(:new_request, 'http://localhost/something')
+    http = Http.new('http://localhost/something')
 
-    expect(req.options[:proxy]).to eql(proxy_url)
+    expect(http.request.options[:proxy]).to eql(proxy_url)
 
     Conf.instance.reload!
   end
