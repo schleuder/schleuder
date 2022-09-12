@@ -4,57 +4,53 @@ module Schleuder
   class NotFoundError < StandardError; end
 
   class Http
-    class << self
-      def get(url)
-        nth_attempt ||= 1
-        request_url(url)
-      rescue NetworkError => error
-        nth_attempt += 1
-        if nth_attempt < 4
-          retry
-        else
-          return error
-        end
-      end
+    attr_reader :request, :response
 
-      private
+    def initialize(url, options={})
+      @request = Typhoeus::Request.new(url, default_options.merge(options))
+    end
 
-      def request_url(url)
-        handle_response(new_request(url).run)
+    def run
+      @response = @request.run
+      if @response.success?
+        @response.body
+      elsif @response.timed_out?
+        raise_network_error(response, 'HTTP Request timed out.')
+      elsif @response.code == 404
+        NotFoundError.new
+      elsif @response.code == 0
+        # This happens e.g. if no response could be received.
+        raise_network_error(@response, 'No HTTP response received.')
+      else
+        RuntimeError.new(@response.body.to_s.presence || @response.return_message)
       end
+    end
 
-      # Use a method to generate the request object because we need that in tests.
-      def new_request(url)
-        Typhoeus::Request.new(url, default_options)
+    def self.get(url)
+      nth_attempt ||= 1
+      new(url).run
+    rescue NetworkError => error
+      nth_attempt += 1
+      if nth_attempt < 4
+        retry
+      else
+        return error
       end
+    end
 
-      def handle_response(response)
-        if response.success?
-          response.body
-        elsif response.timed_out?
-          raise_network_error(response, 'HTTP Request timed out.')
-        elsif response.code == 404
-          NotFoundError.new
-        elsif response.code == 0
-          # This happens e.g. if no response could be received.
-          raise_network_error(response, 'No HTTP response received.')
-        else
-          RuntimeError.new(response.body.to_s.presence || response.return_message)
-        end
-      end
+    private
 
-      def raise_network_error(response, fallback_msg)
-        raise NetworkError.new(
-          response.body.to_s.presence || response.return_message || fallback_msg
-        )
-      end
+    def raise_network_error(response, fallback_msg)
+      raise NetworkError.new(
+        response.body.to_s.presence || response.return_message || fallback_msg
+      )
+    end
 
-      def default_options
-        {
-          followlocation: true,
-          proxy: Conf.http_proxy.presence
-        }
-      end
+    def default_options
+      {
+        followlocation: true,
+        proxy: Conf.http_proxy.presence
+      }
     end
   end
 end
