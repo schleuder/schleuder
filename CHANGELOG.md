@@ -19,6 +19,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Lookup keys on a VKS keyserver (e.g. keys.openpgp.org) before the SKS keyserver.
 * Configure a proxy to make HTTP requests (e.g. when fetching keys) through. This supports socks5(h) in order to route traffic through TOR.
 
+### Fixed
+
+* Fixed sending the list's key to all subscribers if `deliver_selfsent` is false.
+
 
 ## [4.0.3] / 2022-04-12
 
