@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Drop support for Ruby 2.5 and 2.6, require Ruby 2.7 or later.
 * The default umask now is `0077`, allowing access to newly created files and directories only for the owner. It is configurable in `schleuder.yml`.
 * Drop using dirmngr, use custom code to fetch keys from keyservers.
+* Upgrade Active Record to version 7
 
 ### Added
 
@@ -670,4 +671,3 @@ Template, please ignore:
 ### Removed
 ### Fixed
 ### Security
-
