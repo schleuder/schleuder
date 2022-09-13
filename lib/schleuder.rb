@@ -21,9 +21,7 @@ require 'mail-gpg'
 require 'active_record'
 require 'active_support'
 require 'active_support/core_ext/string'
-
-# An extra from mail-gpg
-require 'hkp'
+require 'typhoeus'
 
 # Load schleuder
 libdir = Pathname.new(__FILE__).dirname.realpath
@@ -50,6 +48,10 @@ end
 # Load schleuder/conf before the other classes, it defines constants!
 require 'schleuder/conf'
 require 'schleuder/version'
+require 'schleuder/http'
+require 'schleuder/key_fetcher'
+require 'schleuder/vks_client'
+require 'schleuder/sks_client'
 require 'schleuder/logger_notifications'
 require 'schleuder/logger'
 require 'schleuder/listlogger'

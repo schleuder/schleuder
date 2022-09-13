@@ -16,7 +16,9 @@ module Schleuder
       'filters_dir' => '/usr/local/lib/schleuder/filters',
       'log_level' => 'warn',
       'superadmin' => 'root@localhost',
-      'keyserver' => 'hkp://pool.sks-keyservers.net',
+      'vks_keyserver' => 'https://keys.openpgp.org',
+      'sks_keyserver' => 'http://pool.sks-keyservers.net',
+      'http_proxy' => '',
       'smtp_settings' => {
         'address' => 'localhost',
         'port' => 25,
@@ -47,6 +49,11 @@ module Schleuder
 
     def config
       @config ||= load_config(ENV['SCHLEUDER_CONFIG'])
+    end
+
+    def reload!
+      @config = nil
+      config
     end
 
     def self.lists_dir
@@ -120,8 +127,16 @@ module Schleuder
       settings
     end
 
-    def self.keyserver
-      instance.config['keyserver']
+    def self.vks_keyserver
+      instance.config['vks_keyserver']
+    end
+
+    def self.sks_keyserver
+      instance.config['sks_keyserver']
+    end
+
+    def self.http_proxy
+      instance.config['http_proxy']
     end
 
     private

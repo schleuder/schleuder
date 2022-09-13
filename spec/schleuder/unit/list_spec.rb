@@ -510,13 +510,13 @@ describe Schleuder::List do
 
   context '#fetch_keys' do
     it 'fetches one key by fingerprint' do
+      resp = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/expired_key_extended.txt'))
+      Typhoeus.stub(/by-fingerprint\/98769E8A1091F36BD88403ECF71A3F8412D83889/).and_return(resp)
+       
       list = create(:list)
       list.subscribe('admin@example.org', nil, true)
-      output = ''
 
-      with_sks_mock(list.listdir) do
-        output = list.fetch_keys('98769E8A1091F36BD88403ECF71A3F8412D83889')
-      end
+      output = list.fetch_keys('98769E8A1091F36BD88403ECF71A3F8412D83889')
 
       expect(output).to eql("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
 
@@ -524,13 +524,13 @@ describe Schleuder::List do
     end
 
     it 'fetches one key by URL' do
+      resp = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/expired_key_extended.txt'))
+      Typhoeus.stub(/keys\/example.asc/).and_return(resp)
+
       list = create(:list)
       list.subscribe('admin@example.org', nil, true)
-      output = ''
 
-      with_sks_mock(list.listdir) do |baseurl|
-        output = list.fetch_keys("#{baseurl}/keys/example.asc")
-      end
+      output = list.fetch_keys('http://somehost/keys/example.asc')
 
       expect(output).to eql("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
 
@@ -538,13 +538,13 @@ describe Schleuder::List do
     end
 
     it 'fetches one key by email address' do
+      resp = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/expired_key_extended.txt'))
+      Typhoeus.stub(/by-email\/admin%40example.org/).and_return(resp)
+
       list = create(:list)
       list.subscribe('admin@example.org', nil, true)
-      output = ''
 
-      with_sks_mock(list.listdir) do
-        output = list.fetch_keys('admin@example.org')
-      end
+      output = list.fetch_keys('admin@example.org')
 
       expect(output).to eql("This key was fetched (new key):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2017-01-20]\n")
 
@@ -552,14 +552,14 @@ describe Schleuder::List do
     end
 
     it 'does not import non-self-signatures' do
+      resp = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/openpgp-keys/public-key-with-third-party-signature.txt'))
+      Typhoeus.stub(/by-fingerprint\/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412/).and_return(resp)
+
       list = create(:list)
       list.delete_key('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
       list.subscribe('admin@example.org', nil, true)
-      output = ''
 
-      with_sks_mock(list.listdir) do
-        output = list.fetch_keys('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
-      end
+      output = list.fetch_keys('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
 
       # GPGME apparently does not show signatures correctly in some cases, so we better use gpgcli.
       signature_output = list.gpg.class.gpgcli(['--list-sigs', '87E65ED2081AE3D16BE4F0A5EBDBE899251F2412'])[1].grep(/0F759BD3.*schleuder@example.org/)
@@ -1003,4 +1003,59 @@ describe Schleuder::List do
     end
   end
 
+  context '#refresh_keys' do
+    it 'updates keys from the keyserver' do
+      resp1 = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/default_list_key.txt'))
+      Typhoeus.stub(/by-fingerprint\/59C71FB38AEE22E091C78259D06350440F759BD3/).and_return(resp1)
+      resp2 = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/olduid_key_with_newuid.txt'))
+      Typhoeus.stub(/by-fingerprint\/6EE51D78FD0B33DE65CCF69D2104E20E20889F66/).and_return(resp2)
+      resp3 = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/expired_key_extended.txt'))
+      Typhoeus.stub(/by-fingerprint\/98769E8A1091F36BD88403ECF71A3F8412D83889/).and_return(resp3)
+
+      list = create(:list)
+      list.subscribe('admin@example.org', nil, true)
+      list.import_key(File.read('spec/fixtures/expired_key.txt'))
+      list.import_key(File.read('spec/fixtures/olduid_key.txt'))
+
+      res = list.refresh_keys
+
+      expect(res).to match(/This key was updated \(new signatures\):\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo \d{4}-\d{2}-\d{2} \[expired: \d{4}-\d{2}-\d{2}\]/)
+      expect(res).to match(/This key was updated \(new user-IDs and new signatures\):\n0x6EE51D78FD0B33DE65CCF69D2104E20E20889F66 new@example.org \d{4}-\d{2}-\d{2}/)
+    end
+    
+    it 'reports errors from refreshing keys' do
+      resp = Typhoeus::Response.new(code: 503, body: 'Internal server error')
+      Typhoeus.stub(/by-fingerprint/).and_return(resp)
+      Typhoeus.stub(/search=/).and_return(resp)
+
+      list = create(:list)
+      list.subscribe('admin@example.org', nil, true)
+      list.import_key(File.read('spec/fixtures/expired_key.txt'))
+
+      res = list.refresh_keys
+
+      expect(res).to match("Error while fetching data from the internet: Internal server error\nError while fetching data from the internet: Internal server error")
+    end
+
+    it 'does not import non-self-signatures' do
+      resp1 = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/openpgp-keys/public-key-with-third-party-signature.txt'))
+      Typhoeus.stub(/by-fingerprint\/87E65ED2081AE3D16BE4F0A5EBDBE899251F2412/).and_return(resp1)
+      resp2 = Typhoeus::Response.new(code: 200, body: File.read('spec/fixtures/default_list_key.txt'))
+      Typhoeus.stub(/by-fingerprint\/59C71FB38AEE22E091C78259D06350440F759BD3/).and_return(resp2)
+      
+      list = create(:list)
+      list.delete_key('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
+      list.subscribe('admin@example.org', nil, true)
+      list.import_key(File.read('spec/fixtures/bla_foo_key.txt'))
+
+      res = list.refresh_keys
+
+      # GPGME apparently does not show signatures correctly in some cases, so we better use gpgcli.
+      signature_output = list.gpg.class.gpgcli(['--list-sigs', '87E65ED2081AE3D16BE4F0A5EBDBE899251F2412'])[1].grep(/0F759BD3.*schleuder@example.org/)
+
+      expect(res).to be_empty
+      expect(signature_output).to be_empty
+    end
+
+  end
 end

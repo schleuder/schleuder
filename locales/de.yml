@@ -261,8 +261,12 @@ de:
     new_uids: neue User-IDs
     new_subkeys: neue Unterschlüssel
     new_signatures: neue Signaturen
-  fetch_key:
+  key_fetcher:
     invalid_input: "Ungültige Angabe. Gültig sind: URLs, OpenPGP-Fingerabdrücke, oder Emailadressen."
+    not_found: "Fehler: Keinen Schlüssel für '%{input}' gefunden."
+    url_not_found: "Fehler: Unter <%{url}> wurde nichts gefunden (404 Not Found)."
+    general_error: "Fehler beim Holen der Daten aus dem Netz: %{error}"
+    import_error: "Fehler beim Importieren der geholten Daten: %{error}"
   pseudoheaders:
     scrubbed_message: Diese Email enthielt ungültige Zeichen, die aus Verarbeitungsgründen möglicherweise entfernt wurden.
     stripped_html_from_multialt: Diese Email enthielt einen alternativen HTML-Teil, der PGP-Daten beinhaltete. Der HTML-Teil wurde entfernt, um die Email sauberer analysieren zu können.

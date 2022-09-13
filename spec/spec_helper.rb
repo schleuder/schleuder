@@ -17,15 +17,6 @@ if ENV['CHECK_CODE_COVERAGE'] == 'true'
   end
 end
 
-require 'socket'
-# This must be set before require'ing schleuder, because the ENV variable is
-# used in <spec/schleuder.yml>.
-# Find the first local IP address that is not a loopback address. We use this
-# for our sks-mock, which can't use "localhost" because docker, and can't use a
-# static loopback address because we need it to run on IPv4-only and IPv6-only
-# hosts.
-ENV['LOCAL_IP_ADDR'] ||= Socket.ip_address_list.find{ |a| !a.ipv4_loopback? && !a.ipv6_loopback? }.ip_address
-
 require 'schleuder'
 require 'schleuder/cli'
 require 'database_cleaner'
@@ -59,6 +50,10 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with(:truncation)
   end
 
+  config.before(:each) do
+    Typhoeus::Expectation.clear
+  end
+
   config.around(:each) do |example|
     Mail::TestMailer.deliveries.clear
     DatabaseCleaner.cleaning do
@@ -87,6 +82,9 @@ RSpec.configure do |config|
     delivery_method :test
   end
 
+  # Block all unstubbed connections
+  Typhoeus::Config.block_connection = true
+
   def cleanup_gnupg_home
     ENV['GNUPGHOME'] = nil
     FileUtils.rm_rf Schleuder::Conf.lists_dir
@@ -94,42 +92,6 @@ RSpec.configure do |config|
 
   def smtp_daemon_outputdir
     File.join(Conf.lists_dir, 'smtp-daemon-output')
-  end
-
-  def with_sks_mock(listdir)
-    # Make dirmngr disable its own, internal resolver, which apparently has
-    # problems with keyserver-URLs containing local IPs.
-    `printf "standard-resolver\n" > "#{listdir}/dirmngr.conf"`
-    # Do we deal with an IPv6-only environment?
-    # If so, handle dirmngr specifically so it's able to cope with it.
-    # No idea what's the relation in regards to 'no-use-tor', but it helps.
-    if ! Socket.ip_address_list.find { |ai| ai.ipv4? && ai.ipv4_loopback? }
-      `printf "disable-ipv4\nno-use-tor\n" >> "#{listdir}/dirmngr.conf"`
-    end
-
-    pid = Process.spawn("spec/sks-mock.rb #{ENV['LOCAL_IP_ADDR']}", [:out, :err] => ['/tmp/sks-mock.log', 'w'])
-    sks_base_url = "http://#{ENV['LOCAL_IP_ADDR']}:9999"
-    uri = URI.parse("#{sks_base_url}/status")
-    attempts = 25
-    # Use the following env var to increase the time to sleep between
-    # each attempt, for example if building the Debian package
-    ENV['SKS_MOCK_SLEEP'] ||= '1'
-    begin
-      sleep ENV['SKS_MOCK_SLEEP'].to_i
-      Net::HTTP.get(uri)
-    rescue Errno::ECONNREFUSED => exc
-      attempts -= 1
-      if attempts > 0
-        retry
-      else
-        raise "sks-mock.rb failed to start, cannot continue: #{exc}"
-      end
-    end
-
-    yield sks_base_url
-
-    Process.kill 'TERM', pid
-    Process.wait pid
   end
 
   def start_smtp_daemon
