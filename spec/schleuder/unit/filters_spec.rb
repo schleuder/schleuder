@@ -129,4 +129,59 @@ describe Schleuder::Filters do
       expect(mail.dynamic_pseudoheaders).to be_blank
     end
   end
+
+  context '.receive_from_subscribed_emailaddresses_only' do
+    it 'does not reject a message with a non-subscribed address as From-header if list.receive_from_subscribed_emailaddresses_only is not set' do
+      list = create(:list, receive_from_subscribed_emailaddresses_only: false)
+      list.subscribe('admin@example.org', nil, true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = 'outside@example.org'
+
+      result = Schleuder::Filters.receive_from_subscribed_emailaddresses_only(list, mail)
+
+      expect(result).to eql(nil)
+    end
+
+    it 'rejects a message with a non-subscribed address as From-header if list.receive_from_subscribed_emailaddresses_only is set' do
+      list = create(:list, receive_from_subscribed_emailaddresses_only: true)
+      list.subscribe('admin@example.org', nil, true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = 'outside@example.org'
+
+      result = Schleuder::Filters.receive_from_subscribed_emailaddresses_only(list, mail)
+
+      expect(result).to be_a(Errors::MessageSenderNotSubscribed)
+    end
+
+    it 'does not reject a message with a subscribed address as From-header if list.receive_from_subscribed_emailaddresses_only is set' do
+      list = create(:list, receive_from_subscribed_emailaddresses_only: true)
+      list.subscribe('admin@example.org', nil, true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = list.subscriptions.first.email
+
+      result = Schleuder::Filters.receive_from_subscribed_emailaddresses_only(list, mail)
+
+      expect(result).to eql(nil)
+    end
+
+    it 'does not reject a message with a subscribed address as From-header with different letter case if list.receive_from_subscribed_emailaddresses_only is set' do
+      list = create(:list, receive_from_subscribed_emailaddresses_only: true)
+      list.subscribe('admin@example.org', nil, true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = 'AdMin@example.org'
+
+      result = Schleuder::Filters.receive_from_subscribed_emailaddresses_only(list, mail)
+
+      expect(result).to eql(nil)
+    end
+  end
+
 end
