@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   }
   s.required_ruby_version = '>= 2.7.0'
   s.add_runtime_dependency 'activerecord', '~> 7.0'
+  s.add_runtime_dependency 'base32', '~> 0.3.4'
   s.add_runtime_dependency 'bcrypt', '~> 3.1.2'
   s.add_runtime_dependency 'charlock_holmes', '~> 0.7.6'
   s.add_runtime_dependency 'gpgme', '~> 2.0', '>= 2.0.19' # Explicitly include to force a version.

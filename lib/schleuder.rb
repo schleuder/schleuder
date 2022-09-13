@@ -24,6 +24,7 @@ require 'active_record'
 require 'active_support'
 require 'active_support/core_ext/string'
 require 'typhoeus'
+require 'base32'
 
 # Load schleuder
 libdir = Pathname.new(__FILE__).dirname.realpath
@@ -52,6 +53,7 @@ require 'schleuder/http'
 require 'schleuder/key_fetcher'
 require 'schleuder/vks_client'
 require 'schleuder/sks_client'
+require 'schleuder/wkd_client'
 require 'schleuder/logger_notifications'
 require 'schleuder/logger'
 require 'schleuder/listlogger'
