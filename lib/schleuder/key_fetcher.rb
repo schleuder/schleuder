@@ -15,16 +15,14 @@ module Schleuder
                else
                  return I18n.t('key_fetcher.invalid_input')
                end
+      if result.is_a?(NotFoundError)
+        result = NotFoundError.new(I18n.t('key_fetcher.not_found', input: input))
+      else
       interpret_fetch_result(result, locale_key)
     end
 
     def fetch_key_by_url(url)
-      case result = Schleuder::Http.get(url)
-      when NotFoundError
-        NotFoundError.new(I18n.t('key_fetcher.url_not_found', url: url))
-      else
-        result
-      end
+      Schleuder::Http.get(url)
     end
 
     def fetch_key_from_keyserver(type, input)
@@ -35,11 +33,8 @@ module Schleuder
         result = Schleuder::SksClient.get(input)
       end
 
-      case result
-      when nil
+      if result.blank?
         RuntimeError.new('No keyserver configured, cannot query anything')
-      when NotFoundError
-        NotFoundError.new(I18n.t('key_fetcher.not_found', input: input))
       else
         result
       end
@@ -50,13 +45,13 @@ module Schleuder
     def interpret_fetch_result(result, locale_key)
       case result
       when ''
-        I18n.t('key_fetcher.general_error', error: 'Empty response from server')
+        RuntimeError.new(I18n.t('key_fetcher.general_error', error: 'Empty response from server'))
       when String
         import(result, locale_key)
       when NotFoundError
-        result.to_s
+        result
       when StandardError
-        I18n.t('key_fetcher.general_error', error: result)
+        RuntimeError.new(I18n.t('key_fetcher.general_error', error: result))
       else
         raise_unexpected_error(result)
       end
@@ -66,7 +61,7 @@ module Schleuder
       result = @list.gpg.import_from_string(locale_key, input)
       case result
       when StandardError
-        I18n.t('key_fetcher.import_error', error: result)
+        RuntimeError.new(I18n.t('key_fetcher.import_error', error: result))
       when String
         result
       else

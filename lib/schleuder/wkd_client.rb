@@ -4,6 +4,9 @@ module Schleuder
       def get(emailaddr)
         urls = wkd_urls(emailaddr)
         urls.each do |url|
+          # We're trying to fetch URLs from hostnames that might not exist.
+          # Network errors are raised as exceptions, which we therefore must
+          # rescue from.
           begin
             result = new(url).run
             if ! result.is_a?(StandardError)
@@ -12,7 +15,7 @@ module Schleuder
           rescue NetworkError => error
           end
         end
-        return false
+        return NotFoundError.new
       end
 
       private
