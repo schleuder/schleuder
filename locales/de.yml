@@ -255,6 +255,7 @@ de:
   key_fetched: |
     Dieser Schlüssel wurde geholt (%{states}):
     %{key_summary}
+  auto_import_key_from_servers: Der Signier-Schlüssel wurde vom Server geholt (%{key_summary})
   import_states:
     unchanged: unverändert
     new_key: neuer Schlüssel
