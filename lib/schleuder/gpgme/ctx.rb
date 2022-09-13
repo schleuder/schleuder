@@ -7,34 +7,6 @@ module GPGME
       'new_subkeys' => 8
     }
 
-    # This differs from import_from_string() in that it can import binary data,
-    # too, and that it returns the import-results themselves, not strings based
-    # on those results.
-    def keyimport(keydata)
-      self.import_keys(GPGME::Data.new(keydata))
-      result = self.import_result
-      result.imports.map(&:set_action)
-      result
-    end
-
-    # TODO: find solution for I18n — could be a different language in API-clients than here!
-    def interpret_import_result(import_result)
-      case import_result.imports.size
-      when 1
-        import_status = import_result.imports.first
-        if import_status.action == 'error'
-          [nil, "Key #{import_status.fpr} could not be imported!"]
-        else
-          [import_status.fpr, nil]
-        end
-      when 0
-        [nil, 'The given key material did not contain any keys!']
-      else
-        # TODO: report import-stati of the keys?
-        [nil, 'The given key material contained more than one key, could not determine which fingerprint to use. Please set it manually!']
-      end
-    end
-
     def find_keys(input=nil, secret_only=nil)
       keys(normalize_key_identifier(input), secret_only)
     end
@@ -89,13 +61,13 @@ module GPGME
       GPGME::Engine.info.find {|e| e.protocol == GPGME::PROTOCOL_OpenPGP }
     end
 
-    def import_from_string(locale_key, input)
+    def import_keys(input)
       # Import through gpgcli so we can use import-filter. GPGME still does
       # not provide that feature (as of summer 2021): <https://dev.gnupg.org/T4721> :(
       gpgerr, gpgout, exitcode = self.class.gpgcli("#{import_filter_arg} --import") do |stdin, stdout, stderr|
         # Wrap this into a block because gpg breaks the pipe if it encounters invalid data.
         begin
-          stdin.puts input
+          stdin.print input
         rescue Errno::EPIPE
         end
         stdin.close
@@ -104,11 +76,12 @@ module GPGME
       if exitcode > 0
         RuntimeError.new(gpgerr.join("\n"))
       else
-        translate_output(locale_key, gpgout).join("\n")
+        gpgout
       end
     end
 
-    def translate_output(locale_key, gpgoutput)
+    # TODO: What does this return if no key could be imported?
+    def translate_import_output(locale_key, gpgoutput)
       import_states = translate_import_data(gpgoutput)
       strings = import_states.map do |fingerprint, states|
         key = find_distinct_key(fingerprint)
@@ -119,6 +92,9 @@ module GPGME
     end
 
     def translate_import_data(gpgoutput)
+      if gpgoutput.is_a?(StandardError)
+        return gpgoutput
+      end
       result = {}
       gpgoutput.grep(/IMPORT_OK/) do |import_ok|
         next if import_ok.blank?

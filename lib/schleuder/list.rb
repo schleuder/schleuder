@@ -121,14 +121,43 @@ module Schleuder
     end
 
     def import_key(importable)
-      gpg.keyimport(importable)
+      gpg.import_keys(importable)
+    end
+
+    def import_key_and_parse_output(importable)
+      result = gpg.import_keys(importable)
+      if result.is_a?(StandardError)
+        result
+      else
+        gpg.translate_import_data(result)
+      end
     end
 
     def import_key_and_find_fingerprint(key_material)
       return nil if key_material.blank?
 
-      import_result = import_key(key_material)
-      gpg.interpret_import_result(import_result)
+      result = import_key_and_parse_output(key_material)
+      if result.is_a?(StandardError)
+        return [nil, 'The given key material did not contain any keys!']
+      end
+
+      case result.keys.size
+      when 0
+        return [nil, 'The given key material did not contain any keys!']
+      when 1
+        import_states = result.values.first
+        if import_states.size > 0 
+          if import_states == [I18n.t("imports.unchanged")]
+            return [import_status.fpr, "Key #{result.keys.first} was not changed."]
+          else
+            return [import_status.fpr, nil]
+          end
+        else
+          return [nil, "Key #{import_status.fpr} could not be imported!"]
+        end
+      else
+        return [nil, 'The given key material contained more than one key, could not determine which fingerprint to use. Please set it manually!']
+      end
     end
 
     def delete_key(fingerprint)
