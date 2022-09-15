@@ -9,7 +9,7 @@ module Schleuder
                when /^http/
                  fetch_key_by_url(input)
                when Conf::EMAIL_REGEXP
-                 fetch_key_from_keyserver('email', input)
+                 fetch_key_from_wkd_or_keyserver('email', input)
                when Conf::FINGERPRINT_REGEXP
                  fetch_key_from_keyserver('fingerprint', input)
                else
@@ -22,18 +22,31 @@ module Schleuder
     end
 
     def fetch_key_by_url(url)
+      Schleuder.logger.info("Fetching #{url.inspect}")
       Schleuder::Http.get(url)
     end
 
+    def fetch_key_from_wkd_or_keyserver(type, input)
+      Schleuder.logger.info("Fetching key for #{input.inspect} from WKD")
+      result = Schleuder::WkdClient.get(input)
+      if result.is_a?(StandardError)
+        result = fetch_key_from_keyserver(type, input)
+      end
+      result
+    end
+
     def fetch_key_from_keyserver(type, input)
+      result = :none_fetched
       if Conf.vks_keyserver.present?
+        Schleuder.logger.info("Fetching key for #{input.inspect} from VKS-keyserver")
         result = Schleuder::VksClient.get(type, input)
       end
-      if (result.blank? || ! result.is_a?(String)) && Conf.sks_keyserver.present?
+      if result.is_a?(StandardError) && Conf.sks_keyserver.present?
+        Schleuder.logger.info("Fetching key for #{input.inspect} from SKS-keyserver")
         result = Schleuder::SksClient.get(input)
       end
 
-      if result.blank?
+      if result == :none_fetched
         RuntimeError.new('No keyserver configured, cannot query anything')
       else
         result
