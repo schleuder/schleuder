@@ -44,10 +44,9 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'database_cleaner', '~> 2.0'
   s.add_development_dependency 'factory_bot', '~> 6.0'
   s.add_development_dependency 'hirb', '~> 0'
-  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('2.6.0')
-    s.add_development_dependency 'irb'
-  end
+  s.add_development_dependency 'irb'
   s.add_development_dependency 'rack-test', '~> 1'
+  s.add_development_dependency 'rdoc' # Required by irb
   s.add_development_dependency 'rspec', '~> 3'
   s.add_development_dependency 'rubocop', '~> 1'
   s.add_development_dependency 'simplecov-console', '~> 0'
