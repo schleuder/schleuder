@@ -5,16 +5,23 @@ module Schleuder
     end
 
     def fetch(input, locale_key='key_fetched')
-      result = case input
-               when /^http/
-                 fetch_key_by_url(input)
-               when Conf::EMAIL_REGEXP
-                 fetch_key_from_wkd_or_keyserver('email', input)
-               when Conf::FINGERPRINT_REGEXP
-                 fetch_key_from_keyserver('fingerprint', input)
-               else
-                 return I18n.t('key_fetcher.invalid_input')
-               end
+      case input
+      when /^http/
+        result = fetch_key_by_url(input)
+      when Conf::EMAIL_REGEXP
+        result = fetch_key_from_wkd(input)
+        if result.is_a?(StandardError)
+          result = fetch_key_from_vks('email', input)
+        end
+      when Conf::FINGERPRINT_REGEXP
+        result = fetch_key_from_vks('fingerprint', input)
+        if result.is_a?(StandardError)
+          result = fetch_key_from_sks(input)
+        end
+      else
+        return I18n.t('key_fetcher.invalid_input')
+      end
+
       if result.is_a?(NotFoundError)
         result = NotFoundError.new(I18n.t('key_fetcher.not_found', input: input))
       else
@@ -26,30 +33,26 @@ module Schleuder
       Schleuder::Http.get(url)
     end
 
-    def fetch_key_from_wkd_or_keyserver(type, input)
+    def fetch_key_from_wkd(input)
       Schleuder.logger.info("Fetching key for #{input.inspect} from WKD")
-      result = Schleuder::WkdClient.get(input)
-      if result.is_a?(StandardError)
-        result = fetch_key_from_keyserver(type, input)
-      end
-      result
+      Schleuder::WkdClient.get(input)
     end
 
-    def fetch_key_from_keyserver(type, input)
-      result = :none_fetched
+    def fetch_key_from_vks(type, input)
       if Conf.vks_keyserver.present?
         Schleuder.logger.info("Fetching key for #{input.inspect} from VKS-keyserver")
-        result = Schleuder::VksClient.get(type, input)
-      end
-      if result.is_a?(StandardError) && Conf.sks_keyserver.present?
-        Schleuder.logger.info("Fetching key for #{input.inspect} from SKS-keyserver")
-        result = Schleuder::SksClient.get(input)
-      end
-
-      if result == :none_fetched
-        RuntimeError.new('No keyserver configured, cannot query anything')
+        Schleuder::VksClient.get(type, input)
       else
-        result
+        RuntimeError.new('No vks_keyserver configured, cannot fetch data')
+      end
+    end
+
+    def fetch_key_from_sks(input)
+      if Conf.sks_keyserver.present?
+        Schleuder.logger.info("Fetching key for #{input.inspect} from SKS-keyserver")
+        Schleuder::SksClient.get(input)
+      else
+        RuntimeError.new('No sks_keyserver configured, cannot fetch data')
       end
     end
 
@@ -70,6 +73,9 @@ module Schleuder
       end
     end
 
+    # TODO: Filter on import to ensure only importing keys with the wanted
+    # features. After all we're fetching content from the internet, which could
+    # be anything.
     def import(input, locale_key)
       result = @list.gpg.import_from_string(locale_key, input)
       case result
