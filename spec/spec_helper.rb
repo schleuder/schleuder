@@ -34,6 +34,8 @@ ENV['TZ'] = 'Europe/Berlin'
 ENV['LANG'] = 'en_US.UTF-8'
 
 RSpec.configure do |config|
+  config.full_backtrace = true
+
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
   end
