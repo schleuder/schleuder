@@ -30,7 +30,7 @@ if ENV['USE_BYEBUG'] != 'false'
 end
 
 # Forcing a specific timezone and locale because some tests match on dates and strings.
-ENV['TZ'] = 'Europe/Berlin'
+ENV['TZ'] = 'Etc/UTC'
 ENV['LANG'] = 'en_US.UTF-8'
 
 RSpec.configure do |config|
