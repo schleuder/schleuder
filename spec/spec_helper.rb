@@ -63,8 +63,6 @@ RSpec.configure do |config|
 
   config.after(:each) do |example|
     FileUtils.rm_rf(Dir['spec/gnupg/pubring.gpg~'])
-    # gpgconf --kill might hang indefinitely in IPv6-only environments.
-    `pkill -f "#{Conf.lists_dir}" || true`
   end
 
   config.after(:suite) do
