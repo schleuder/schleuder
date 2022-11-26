@@ -201,7 +201,7 @@ module Schleuder
       output = self.keys.shuffle.map do |key|
         # Sleep a short while to make traffic analysis less easy.
         sleep rand(1.0..5.0)
-        key_fetcher.fetch(key.fingerprint, 'key_updated').presence
+        key_fetcher.fetch_by_fingerprint(key.fingerprint, 'key_updated').presence
       end
       # Filter out some "noise" (if a key was unchanged, it wasn't really updated, was it?)
       # It would be nice to prevent these "false" lines in the first place, but I don't know how.
@@ -211,8 +211,19 @@ module Schleuder
       output.compact.join("\n")
     end
 
-    def fetch_keys(input)
-      key_fetcher.fetch(input)
+  def fetch_keys(input, locale_key)
+    result = key_fetcher.fetch(input)
+    # TODO: Filter on import to ensure only importing keys with the wanted
+    # features. After all we're fetching content from the internet, which could
+    # be anything.
+    result = @list.gpg.import_from_string(locale_key, input)
+    case result
+    when StandardError
+      RuntimeError.new(I18n.t('key_fetcher.import_error', error: result))
+    when String
+      result
+    else
+      raise "Unexpected result from KeyFetcher => #{thing.inspect}"
     end
 
     def key_fetcher

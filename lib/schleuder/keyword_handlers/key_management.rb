@@ -115,8 +115,16 @@ module Schleuder
         end
 
         @arguments.map do |argument|
-          @list.fetch_keys(argument)
-        end
+          case input
+          when /^http/
+            @list.key_fetcher.fetch_by_url(argument, 'key_fetched')
+          when Conf::EMAIL_REGEXP
+            @list.key_fetcher.fetch_by_email_address(argument, 'key_fetched')
+          when Conf::FINGERPRINT_REGEXP
+            @list.key_fetcher.fetch_by_fingerprint(argument, 'key_fetched')
+          else
+            return I18n.t('key_fetcher.invalid_input')
+          end
       end
 
 

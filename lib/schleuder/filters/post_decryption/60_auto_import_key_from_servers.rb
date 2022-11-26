@@ -7,11 +7,11 @@ module Schleuder
       # TODO: also look for key if encrypted but not signed
       repeat_verification = true
 
-      result = KeyFetcher.fetch(mail.signature.fingerprint, "auto_import_key_from_servers")
+      result = list.key_fetcher.fetch_by_fingerprint(mail.signature.fingerprint, "auto_import_key_from_servers")
       if result.is_a?(StandardError)
         mail.add_pseudoheader(:note, result.to_s)
         # TODO: only actually import if the key we found by email address is the actual signing key?
-        result = KeyFetcher.fetch(mail.from.addresses.first, "auto_import_key_from_servers")
+        result = list.key_fetcher.fetch_by_email_address(mail.from.addresses.first, "auto_import_key_from_servers")
         if result.is_a?(StandardError)
           mail.add_pseudoheader(:note, result.to_s)
           repeat_verification = false
