@@ -96,6 +96,37 @@ describe Schleuder::Filters do
       expect(mail.dynamic_pseudoheaders).to include("Note: This message included keywords and an alternating HTML-part. The\n  HTML-part was removed to prevent the disclosure of these keywords to third\n  parties.")
     end
 
+    it 'strips related-part from encapsulated multipart/alternative-part that contains keywords' do
+      list = create(:list)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = 'outside@example.org'
+
+      content_plain = "x-resend: someone@example.org\n\nblabla"
+      content_html = '<html><head></head><body><p>x-resend: someone@example.org
+                      </p><p>blabla</p></body></html>'
+
+      # this makes the message a multipart/mixed
+      mail.part :content_type => 'multipart/alternative' do |part_alter|
+        part_alter.part :content_type => 'text/plain', :body => content_plain
+        part_alter.part :content_type => 'multipart/related' do |part_related|
+          part_related.part :content_type => 'text/html', :body => content_html
+          part_related.part :content_type => 'image/png'
+        end
+      end
+
+      mail.subject = 'test'
+      mail.to_s
+
+      Schleuder::Filters.strip_html_from_alternative_if_keywords_present(list, mail)
+
+      expect(mail.parts.first[:content_type].content_type).to eql('multipart/mixed')
+      expect(mail.parts.first.parts.size).to be(1)
+      expect(mail.parts.first.parts.first[:content_type].content_type).to eql('text/plain')
+      expect(mail.parts.first.dynamic_pseudoheaders).to include("Note: This message included keywords and an alternating HTML-part. The\n  HTML-part was removed to prevent the disclosure of these keywords to third\n  parties.")
+    end
+
     it 'does NOT strip HTML-part from multipart/alternative-message that does NOT contain keywords' do
       list = create(:list)
       mail = Mail.new
