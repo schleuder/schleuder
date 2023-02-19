@@ -41,7 +41,7 @@ module Schleuder
         content_type != 'text/plain'
       end
 
-      # Note: We could instead unencapsulate it.
+      # NOTE: We could instead unencapsulate it.
       mail.content_type = 'multipart/mixed'
 
       mail.add_pseudoheader(:note, I18n.t('pseudoheaders.stripped_html_from_multialt_with_keywords'))
