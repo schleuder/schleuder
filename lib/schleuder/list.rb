@@ -1,16 +1,22 @@
 module Schleuder
-  class List < ActiveRecord::Base
+  class List < Sequel::Model
 
-    has_many :subscriptions, dependent: :destroy
-    before_destroy :delete_listdirs
+    one_to_many :subscriptions
+    plugin :association_dependencies, subscriptions: :delete
+    #TODO sequel: before_destroy :delete_listdirs
 
-    serialize :headers_to_meta, JSON
-    serialize :bounces_drop_on_headers, JSON
-    serialize :keywords_admin_only, JSON
-    serialize :keywords_admin_notify, JSON
+    plugin :serialization
+    serialize_attributes :json, :headers_to_meta, :bounces_drop_on_headers, :keywords_admin_only, :keywords_admin_notify
 
-    validates :email, presence: true, uniqueness: true, email: true
-    validates :fingerprint, presence: true, fingerprint: true
+    plugin :validation_helpers
+    def validate
+      super
+      validates_presence :email, :fingerprint
+      #TODO sequel: validate fingerprint format
+      validates_unique :email
+      #TODO sequel: validate email format
+    end
+
     validates :send_encrypted_only,
         :receive_encrypted_only,
         :receive_signed_only,

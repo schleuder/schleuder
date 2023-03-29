@@ -16,14 +16,16 @@ require 'logger'
 require 'open3'
 require 'socket'
 require 'base64'
+require 'json' # For serialization with sequel
 
 # Require mandatory libs. The database-layer-lib is required below.
 require 'mail'
 require 'gpgme'
-require 'active_record'
-require 'active_support'
-require 'active_support/core_ext/string'
 require 'typhoeus'
+
+require 'sequel/plugins/serialization'
+require 'sequel/plugins/association_dependencies'
+require 'sequel/plugins/validation_helpers'
 
 # Load schleuder
 libdir = Pathname.new(__FILE__).dirname.realpath
@@ -79,8 +81,8 @@ GPGME::Ctx.set_gpg_path_from_env
 GPGME::Ctx.check_gpg_version
 
 # TODO: Test if database is writable if sqlite.
-ActiveRecord::Base.establish_connection(Schleuder::Conf.database)
-ActiveRecord::Base.logger = Schleuder.logger
+# TODO: read Schleuder::Conf.database
+DB = Sequel.sqlite('/var/lib/schleuder/db.sqlite', loggers: Schleuder.logger)
 
 Mail.defaults do
   delivery_method :smtp, Schleuder::Conf.smtp_settings.symbolize_keys

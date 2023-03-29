@@ -1,13 +1,17 @@
 module Schleuder
-  class Subscription < ActiveRecord::Base
-    belongs_to :list
+  class Subscription < Sequel::Model
+    many_to_one :list
 
-    validates :list_id, inclusion: {
-                          in: -> (id) { List.pluck(:id) },
-                          message: 'must refer to an existing list'
-                        }
-    validates :email, presence: true, email: true
-    validates :email, uniqueness: { scope: :list_id, case_sensitive: true }
+    plugin :validation_helpers
+    def validate
+      super
+      validates_presence :email
+      #TODO sequel: validate email format
+      validates_includes List.map(:id), :list_id
+      # Uniqueness of email scoped to list_id
+      validates_unique [:list_id, :email]
+    end
+
     validates :fingerprint, allow_blank: true, fingerprint: true
     validates :delivery_enabled, :admin, boolean: true
 
@@ -16,7 +20,8 @@ module Schleuder
       self.email.downcase! if self.email.present?
     }
 
-    default_scope { order(:email) }
+    #default_scope { order(:email) }
+    #def_dataset_method(:ordered) { order(:email) }
 
     def to_s
       email
