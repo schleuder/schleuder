@@ -27,6 +27,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Fixed sending the list's key to all subscribers if `deliver_selfsent` is false.
 * Fixed importing attached keys from some emails (like e.g. Thunderbird sends them).
+* Fixed the `From:` header of notifications sent to the `superadmin` to ensure a fully qualified domain name is used.
 
 
 ## [4.0.3] / 2022-04-12
