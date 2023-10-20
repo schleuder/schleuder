@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'sinatra-contrib', '~> 3.0.2'
   s.add_runtime_dependency 'sqlite3', '~> 1.6.0'
   s.add_runtime_dependency 'thin', '~> 1'
-  s.add_runtime_dependency 'thor', '~> 0'
+  s.add_runtime_dependency 'thor', '~> 1.3'
   s.add_runtime_dependency 'typhoeus', '~> 1.4'
   s.add_development_dependency 'byebug', '~> 10'
   s.add_development_dependency 'database_cleaner', '~> 2.0'
