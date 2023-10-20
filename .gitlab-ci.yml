@@ -39,6 +39,9 @@ ruby:3.0:
 ruby:3.1:
   image: $IMAGE_REGISTRY:schleuder-ruby3.1
   <<: *test_ruby
+ruby:3.2:
+  image: $IMAGE_REGISTRY:schleuder-ruby3.2
+  <<: *test_ruby
   
 changelog:
   rules:
