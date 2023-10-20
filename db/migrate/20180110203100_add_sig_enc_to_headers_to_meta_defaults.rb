@@ -24,7 +24,7 @@ class AddSigEncToHeadersToMetaDefaults < ActiveRecord::Migration[4.2]
     # complexities of the actual class.
     Class.new(ActiveRecord::Base) do
       self.table_name = 'lists'
-      self.serialize :headers_to_meta, JSON
+      self.serialize :headers_to_meta, coder: JSON
     end
   end
 end
