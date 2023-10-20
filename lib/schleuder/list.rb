@@ -4,10 +4,10 @@ module Schleuder
     has_many :subscriptions, dependent: :destroy
     before_destroy :delete_listdirs
 
-    serialize :headers_to_meta, JSON
-    serialize :bounces_drop_on_headers, JSON
-    serialize :keywords_admin_only, JSON
-    serialize :keywords_admin_notify, JSON
+    serialize :headers_to_meta, coder: JSON
+    serialize :bounces_drop_on_headers, coder: JSON
+    serialize :keywords_admin_only, coder: JSON
+    serialize :keywords_admin_notify, coder: JSON
 
     validates :email, presence: true, uniqueness: true, email: true
     validates :fingerprint, presence: true, fingerprint: true
