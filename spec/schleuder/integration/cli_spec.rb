@@ -95,17 +95,16 @@ describe 'cli' do
 
   context '#install' do
     it 'exits if a shell-process failed' do
-      dbfile = Conf.database['database']
-      tmp_filename = "#{dbfile}.tmp"
-      File.rename(dbfile, tmp_filename)
-      IO.write(dbfile, 'bla')
+      # Rename the Rakefile instead of the DB-file, because changing the latter
+      # caused spurious errors in other tests.
+      File.rename("Rakefile", "Rakefile.tmp")
       
       _, _, exitcode = capture_output do
         Cli.new.install
       end
 
+      File.rename("Rakefile.tmp", "Rakefile")
       expect(exitcode).to eql(1)
-      File.rename(tmp_filename, dbfile)
     end
 
     it 'warns about file system permissions if it was run as root' do
