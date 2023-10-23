@@ -34,8 +34,8 @@ Gem::Specification.new do |s|
     s.add_runtime_dependency 'net-smtp', '~> 0.3.1'
   end
   s.add_runtime_dependency 'rake', '>= 10.5.0'
-  s.add_runtime_dependency 'sinatra', '~> 3.0.2'
-  s.add_runtime_dependency 'sinatra-contrib', '~> 3.0.2'
+  s.add_runtime_dependency 'sinatra', '~> 3.1.0'
+  s.add_runtime_dependency 'sinatra-contrib', '~> 3.1.0'
   s.add_runtime_dependency 'sqlite3', '~> 1.6.0'
   s.add_runtime_dependency 'thin', '~> 1'
   s.add_runtime_dependency 'thor', '~> 1.3'
