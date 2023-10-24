@@ -39,6 +39,9 @@ ruby:3.0:
 ruby:3.1:
   image: $IMAGE_REGISTRY:schleuder-ruby3.1
   <<: *test_ruby
+ruby:3.2:
+  image: $IMAGE_REGISTRY:schleuder-ruby3.2
+  <<: *test_ruby
   
 changelog:
   rules:
@@ -77,8 +80,7 @@ code-coverage:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - printf "
-      |1|ZfxGVbfwfCHlaURlet/V6y+2gjg=|/X7OweXQUnXZnGSKkvF/IpVz4n4= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPJx38PfGvaHtkSsHptiHoIQxlI3Yf0cskPNTwAQnY14\n
-      |1|8YPsezXF2SYQ7rq9U5TbDnMsVjo=|SJOodZB+8j+dO+l6YTdZ7+44XLw= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPJx38PfGvaHtkSsHptiHoIQxlI3Yf0cskPNTwAQnY14
+      |1|X3+w8orcCKSo4d2Hq38v+PWxLnU=|ZQo0TQSeK0m6RuOwvKNMkNNdE58= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMipvUM0/aLT4LXkqehXRURN5JHvhz1+9pfuIj7y7LRG
       " > ~/.ssh/known_hosts
     # Unfortunately, variable expansion doesn't work completely in
     # GitLab. Therefore, a bit code duplication in the following code.

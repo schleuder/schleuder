@@ -109,7 +109,8 @@ module Schleuder
         end
       end
 
-      if ActiveRecord::SchemaMigration.table_exists?
+      # If the table for lists exists we assume the DB has been initialized before.
+      if List.table_exists?
         say shellexec("cd #{root_dir} && rake db:migrate")
       else
         say shellexec("cd #{root_dir} && rake db:init")

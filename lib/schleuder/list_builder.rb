@@ -122,7 +122,7 @@ module Schleuder
     end
 
     def create_or_test_dir(dir)
-      if File.exists?(dir)
+      if File.exist?(dir)
         if ! File.directory?(dir)
           raise Errors::ListdirProblem.new(dir, :not_a_directory)
         end
