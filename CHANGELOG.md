@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 * Drop support for Ruby 2.5 and 2.6, require Ruby 2.7 or later.
+* Drop the default SKS keyserver. You can still specify your own, but by default now only keys.openpgp.org will be used to fetch keys by email address.
 * The default umask now is `0077`, allowing access to newly created files and directories only for the owner. It is configurable in `schleuder.yml`.
 * Don't suppress gpg's warnings about permissions and insecure memory, but log them in case they occur. (#496)
 * Drop using dirmngr, use custom code to fetch keys from keyservers.

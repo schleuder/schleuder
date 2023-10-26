@@ -29,11 +29,14 @@ vks_keyserver: https://keys.openpgp.org
 
 # Which traditional keyserver to fetch keys from?
 # This server must support the SKS API.
-# To disable lookup via this type of keyserver, set this to a blank value.
+# Please consider that public SKS servers don't verify any upload, the keys
+# they deliver should not be trusted without additional verification. This is
+# important if you e.g. allow keys to be fetched automatically, or by email
+# address.
 # Note: This must include the procotol scheme (e.g. "https://").
 # Beware: Only specify https here if the server does use a commonly accepted
 #         TLS certificate. Most servers of the SKS-pool do not!
-sks_keyserver: http://pool.sks-keyservers.net
+sks_keyserver: 
 
 # Should Schleuder use a proxy for HTTP requests (to fetch OpenPGP keys)?
 # To route HTTP requests via Tor set up a local Tor daemon and enter e.g.
