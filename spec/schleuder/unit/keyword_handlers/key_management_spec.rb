@@ -115,6 +115,20 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
     end
 
+    it 'imports from attached quoted-printable key-material (as produced by Thunderbird 115)' do
+      encrypted_email = Mail.read('spec/fixtures/mails/thunderbird-115.2.3-macos-xaddkey-attachment.eml')
+      encrypted_email.list = create(:list, fingerprint: '421C19AF8B9C33B8B62D76EBDB2F7E271D773073')
+      encrypted_email.list.import_key(File.read('spec/fixtures/openpgpkey_421C19AF8B9C33B8B62D76EBDB2F7E271D773073.sec'))
+      mail = encrypted_email.setup
+      mail.to_s
+
+      list_keys = mail.list.keys
+      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+
+      expect(output).to eql("This key was newly added:\n0x769B651054DB697FEB26E408717574BD0A6591ED paz@schleuder.org 2018-10-16 [expires: 2024-03-16]\n")
+      expect(mail.list.keys.size).to eql(list_keys.size + 1)
+    end
+
     it 'ignores body if an ascii-armored attachment is present' do
       mail = Mail.new
       mail.list = create(:list)
