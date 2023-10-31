@@ -56,10 +56,10 @@ describe Schleuder::KeywordHandlers::KeyManagement do
     it 'imports a key from attached quoted-printable binary material' do
       mail = Mail.new
       mail.list = create(:list)
-      mail.attachments['example_key_binary.txt'] = {
-        :content_type => '"application/pgp-keys"; name="example_key_binary.txt"',
+      mail.attachments['example_key_binary.pgp'] = {
+        :content_type => '"application/pgp-keys"; name="example_key_binary.pgp"',
         :content_transfer_encoding => 'quoted-printable',
-        :content => File.open('spec/fixtures/example_key_binary.txt', 'rb', &:read)
+        :content => File.open('spec/fixtures/example_key_binary.pgp', 'rb', &:read)
       }
       mail.to_s
 
