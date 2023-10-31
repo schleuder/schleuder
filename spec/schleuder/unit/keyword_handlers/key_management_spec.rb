@@ -70,6 +70,34 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
     end
 
+    it 'imports a key from attached binary material (without specified encoding)' do
+      mail = Mail.new
+      mail.list = create(:list)
+      mail.add_file('spec/fixtures/example_key_binary.pgp')
+
+      list_keys = mail.list.keys
+      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+
+      expect(output).to eql("This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n")
+      expect(mail.list.keys.size).to eql(list_keys.size + 1)
+    end
+
+    it 'imports a key from attached explicitly base64-encoded binary material' do
+      mail = Mail.new
+      mail.list = create(:list)
+      mail.attachments['example_key_binary.pgp'] = {
+        :mime_type => 'application/pgp-keys',
+        :content_transfer_encoding => 'base64',
+        :content => Base64.encode64(File.binread('spec/fixtures/example_key_binary.pgp'))
+      }
+
+      list_keys = mail.list.keys
+      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+
+      expect(output).to eql("This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n")
+      expect(mail.list.keys.size).to eql(list_keys.size + 1)
+    end
+
     it 'imports from attached quoted-printable ascii-armored key-material (as produced by Thunderbird)' do
       mail = Mail.new
       mail.list = create(:list)
