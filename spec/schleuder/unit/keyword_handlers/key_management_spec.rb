@@ -98,7 +98,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
     end
 
-    it 'imports from attached quoted-printable ascii-armored key-material (as produced by Thunderbird)' do
+    it 'imports from attached quoted-printable ascii-armored key-material' do
       mail = Mail.new
       mail.list = create(:list)
       mail.attachments['example_key.txt'] = {
