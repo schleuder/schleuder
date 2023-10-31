@@ -57,7 +57,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       mail = Mail.new
       mail.list = create(:list)
       mail.attachments['example_key_binary.pgp'] = {
-        :content_type => '"application/pgp-keys"; name="example_key_binary.pgp"',
+        :mime_type => 'application/pgp-keys',
         :content_transfer_encoding => 'quoted-printable',
         :content => File.open('spec/fixtures/example_key_binary.pgp', 'rb', &:read)
       }
@@ -102,7 +102,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       mail = Mail.new
       mail.list = create(:list)
       mail.attachments['example_key.txt'] = {
-        :content_type => '"application/pgp-keys"; name="example_key.txt"',
+        :mime_type => 'application/pgp-keys',
         :content_transfer_encoding => 'quoted-printable',
         :content => File.read('spec/fixtures/example_key.txt')
       }
