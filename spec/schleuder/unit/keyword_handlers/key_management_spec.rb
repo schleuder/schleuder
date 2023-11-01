@@ -98,6 +98,20 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
     end
 
+    it 'imports from attached quoted-printable binary key-material (as produced by Mutt 2.0.5)' do
+      encrypted_email = Mail.read('spec/fixtures/mails/mutt-2.0.5-linux-xaddkey-attachment-binary.eml')
+      encrypted_email.list = create(:list, fingerprint: '421C19AF8B9C33B8B62D76EBDB2F7E271D773073')
+      encrypted_email.list.import_key(File.read('spec/fixtures/openpgpkey_421C19AF8B9C33B8B62D76EBDB2F7E271D773073.sec'))
+      mail = encrypted_email.setup
+      mail.to_s
+
+      list_keys = mail.list.keys
+      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+
+      expect(output).to eql("This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n")
+      expect(mail.list.keys.size).to eql(list_keys.size + 1)
+    end
+
     it 'imports from attached quoted-printable ascii-armored key-material' do
       mail = Mail.new
       mail.list = create(:list)
