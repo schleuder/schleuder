@@ -56,10 +56,10 @@ describe Schleuder::KeywordHandlers::KeyManagement do
     it 'imports a key from attached quoted-printable binary material' do
       mail = Mail.new
       mail.list = create(:list)
-      mail.attachments['example_key_binary.txt'] = {
-        :content_type => '"application/pgp-keys"; name="example_key_binary.txt"',
+      mail.attachments['example_key_binary.pgp'] = {
+        :mime_type => 'application/pgp-keys',
         :content_transfer_encoding => 'quoted-printable',
-        :content => File.open('spec/fixtures/example_key_binary.txt', 'rb', &:read)
+        :content => File.open('spec/fixtures/example_key_binary.pgp', 'rb', &:read)
       }
       mail.to_s
 
@@ -70,11 +70,53 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
     end
 
-    it 'imports from attached quoted-printable ascii-armored key-material (as produced by Thunderbird)' do
+    it 'imports a key from attached binary material (without specified encoding)' do
+      mail = Mail.new
+      mail.list = create(:list)
+      mail.add_file('spec/fixtures/example_key_binary.pgp')
+
+      list_keys = mail.list.keys
+      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+
+      expect(output).to eql("This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n")
+      expect(mail.list.keys.size).to eql(list_keys.size + 1)
+    end
+
+    it 'imports a key from attached explicitly base64-encoded binary material' do
+      mail = Mail.new
+      mail.list = create(:list)
+      mail.attachments['example_key_binary.pgp'] = {
+        :mime_type => 'application/pgp-keys',
+        :content_transfer_encoding => 'base64',
+        :content => Base64.encode64(File.binread('spec/fixtures/example_key_binary.pgp'))
+      }
+
+      list_keys = mail.list.keys
+      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+
+      expect(output).to eql("This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n")
+      expect(mail.list.keys.size).to eql(list_keys.size + 1)
+    end
+
+    it 'imports from attached quoted-printable binary key-material (as produced by Mutt 2.0.5)' do
+      encrypted_email = Mail.read('spec/fixtures/mails/mutt-2.0.5-linux-xaddkey-attachment-binary.eml')
+      encrypted_email.list = create(:list, fingerprint: '421C19AF8B9C33B8B62D76EBDB2F7E271D773073')
+      encrypted_email.list.import_key(File.read('spec/fixtures/openpgpkey_421C19AF8B9C33B8B62D76EBDB2F7E271D773073.sec'))
+      mail = encrypted_email.setup
+      mail.to_s
+
+      list_keys = mail.list.keys
+      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+
+      expect(output).to eql("This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n")
+      expect(mail.list.keys.size).to eql(list_keys.size + 1)
+    end
+
+    it 'imports from attached quoted-printable ascii-armored key-material' do
       mail = Mail.new
       mail.list = create(:list)
       mail.attachments['example_key.txt'] = {
-        :content_type => '"application/pgp-keys"; name="example_key.txt"',
+        :mime_type => 'application/pgp-keys',
         :content_transfer_encoding => 'quoted-printable',
         :content => File.read('spec/fixtures/example_key.txt')
       }
@@ -84,6 +126,20 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
 
       expect(output).to eql("This key was newly added:\n0xC4D60F8833789C7CAA44496FD3FFA6613AB10ECE schleuder2@example.org 2016-12-12\n")
+      expect(mail.list.keys.size).to eql(list_keys.size + 1)
+    end
+
+    it 'imports from attached quoted-printable key-material (as produced by Thunderbird 115)' do
+      encrypted_email = Mail.read('spec/fixtures/mails/thunderbird-115.2.3-macos-xaddkey-attachment.eml')
+      encrypted_email.list = create(:list, fingerprint: '421C19AF8B9C33B8B62D76EBDB2F7E271D773073')
+      encrypted_email.list.import_key(File.read('spec/fixtures/openpgpkey_421C19AF8B9C33B8B62D76EBDB2F7E271D773073.sec'))
+      mail = encrypted_email.setup
+      mail.to_s
+
+      list_keys = mail.list.keys
+      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+
+      expect(output).to eql("This key was newly added:\n0x769B651054DB697FEB26E408717574BD0A6591ED paz@schleuder.org 2018-10-16 [expires: 2024-03-16]\n")
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
     end
 
