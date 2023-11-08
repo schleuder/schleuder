@@ -37,10 +37,13 @@ module SchleuderApiDaemonHelper
 
     def parsed_body
       @parsed_body ||= begin
-          b = JSON.parse(request.body.read)
-          logger.debug "parsed body: #{b.inspect}"
-          b
-        end
+                         b = JSON.parse(request.body.read)
+                         logger.debug { "parsed body: #{b.inspect}" }
+                         b
+                       rescue JSON::ParserError => exc
+                         logger.error "Error while parsing request.body as JSON: #{exc}"
+                         {}
+                       end
     end
 
     def server_error(msg)
