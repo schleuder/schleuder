@@ -84,13 +84,16 @@ class SchleuderApiDaemon < Sinatra::Base
   end
 
   error do
+    # TODO: send less errors to client. Currently also "uninitialized constant"-errors etc. are revealed.
     exc = env['sinatra.error']
     logger.error "Error: #{env['sinatra.error'].message}"
     case exc
     when Errno::EACCES
       server_error(exc.message)
-    else
+    when ActiveRecord
       client_error(exc.to_s)
+    else
+      server_error("Unexpected error")
     end
   end
 
