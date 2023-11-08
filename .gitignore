@@ -11,3 +11,4 @@ coverage/
 /*.tar.gz.sig
 Gemfile.lock
 spec/list-defaults.yml
+tags
