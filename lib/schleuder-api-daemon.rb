@@ -3,6 +3,8 @@
 # Make sinatra use production as default-environment
 ENV['RACK_ENV'] ||= 'production'
 
+PUBLIC_ROUTES = []
+
 $LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
 require 'sinatra/base'
 require 'sinatra/json'
