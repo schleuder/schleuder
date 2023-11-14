@@ -12,7 +12,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * The default umask now is `0077`, allowing access to newly created files and directories only for the owner. It is configurable in `schleuder.yml`.
 * Don't suppress gpg's warnings about permissions and insecure memory, but log them in case they occur. (#496)
 * Drop using dirmngr, use custom code to fetch keys from keyservers.
-* Upgrade Active Record to version 7.1
+* Upgrade Active Record to version 7.1.
+* Upgrade mail to 2.8.1.
 * Check email address for `receive_from_subscribed_emailaddresses_only` in lower case letters to avoid wrong rejections.
 * `mail-gpg` is no longer a dependency. We included the relevant parts of its code into our own code base to avoid problems with surprising decisions from upstream.
 
