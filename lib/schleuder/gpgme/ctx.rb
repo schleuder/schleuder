@@ -7,8 +7,8 @@ module GPGME
       'new_subkeys' => 8
     }
 
-    # This differs from import_from_string() in that it can import binary data,
-    # too, and that it returns the import-results themselves, not strings based
+    # This differs from import_filtered() in that it doesn't filter the keys at
+    # all, and that it returns the import-results themselves, not strings based
     # on those results.
     def keyimport(keydata)
       self.import_keys(GPGME::Data.new(keydata))
@@ -89,13 +89,13 @@ module GPGME
       GPGME::Engine.info.find {|e| e.protocol == GPGME::PROTOCOL_OpenPGP }
     end
 
-    def import_from_string(input)
+    def import_filtered(input)
       # Import through gpgcli so we can use import-filter. GPGME still does
-      # not provide that feature (as of summer 2021): <https://dev.gnupg.org/T4721> :(
+      # not provide that feature (as of summer 2023): <https://dev.gnupg.org/T4721> :(
       gpgerr, gpgout, exitcode = self.class.gpgcli("#{import_filter_arg} --import") do |stdin, stdout, stderr|
         # Wrap this into a block because gpg breaks the pipe if it encounters invalid data.
         begin
-          stdin.puts input
+          stdin.print input
         rescue Errno::EPIPE
         end
         stdin.close

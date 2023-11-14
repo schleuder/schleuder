@@ -63,7 +63,7 @@ module Schleuder
     end
 
     def import(input, locale_key)
-      result = @list.gpg.import_from_string(input)
+      result = @list.gpg.import_filtered(input)
       case result
       when StandardError
         I18n.t('key_fetcher.import_error', error: result)
