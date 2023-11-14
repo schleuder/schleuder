@@ -52,6 +52,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec', '~> 3'
   s.add_development_dependency 'rubocop', '~> 1'
   s.add_development_dependency 'simplecov-console', '~> 0'
+  s.add_development_dependency 'timecop', '~> 0.9.8'
   s.post_install_message = "
 
     Please consider additionally installing schleuder-cli (allows to
