@@ -63,14 +63,22 @@ module Schleuder
     end
 
     def import(input, locale_key)
-      result = @list.gpg.import_from_string(locale_key, input)
+      result = @list.gpg.import_from_string(input)
       case result
       when StandardError
         I18n.t('key_fetcher.import_error', error: result)
-      when String
-        result
+      when Hash
+        translate_output(locale_key, result).join("\n")
       else
         raise_unexpected_error(result)
+      end
+    end
+
+    def translate_output(locale_key, import_states)
+      import_states.map do |fingerprint, states|
+        key = @list.gpg.find_distinct_key(fingerprint)
+        I18n.t(locale_key, key_summary: key.summary,
+                           states: states.to_sentence)
       end
     end
 
