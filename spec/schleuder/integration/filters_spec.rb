@@ -154,4 +154,120 @@ describe 'running filters' do
       stop_smtp_daemon
     end
   end
+
+  context('.key_auto_import_from_autocrypt_header') do
+    it('successfully validates a signature, whose previously unknown key is in the autocrypt-header') do
+      list = create(:list, send_encrypted_only: false, key_auto_import_from_email: true)
+      list.subscribe('me@localhost', nil, true)
+      tmp_gnupg_home = Dir.mktmpdir
+      ENV['GNUPGHOME'] = tmp_gnupg_home
+      gpg = GPGME::Ctx.new
+      gpg.keyimport(File.read('spec/fixtures/openpgp-keys/FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A-abcde_example_org.sec'))
+      keyblock = gpg.find_keys('FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A').first.export(armor: true).read
+      keydata_base64 = Base64.encode64(keyblock).gsub("\n", '')
+      mail = Mail.new
+      mail.from = 'abcde@example.org'
+      mail.body = 'something'
+      mail.to = list.email
+      mail.header['Autocrypt'] = "addr=schleuder@example.org; prefer-encrypt=mutual; keydata=#{keydata_base64}"
+      mail.gpg({
+        encrypt: false,
+        sign: true,
+        sign_as: 'FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A'
+      })
+      mail.deliver
+
+      expect(list.keys('FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A').size).to eql(0)
+
+      signed_email = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+      Schleuder::Runner.new.run(signed_email.to_s, list.email)
+      mail_to_subscriber = Mail::TestMailer.deliveries.first
+
+      pseudoheaders_part = mail_to_subscriber.parts.first.parts.first
+      expect(list.keys('FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A').size).to eql(1)
+      expect(pseudoheaders_part.body.to_s).to include("Note: This key was newly added from this email:\n  0xFB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A")
+      expect(pseudoheaders_part.body.to_s).to include('Sig: Good signature from 4286EE574B92FA0A abcde <abcde@example.org>')
+    ensure
+      FileUtils.remove_entry(tmp_gnupg_home)
+    end
+  end
+
+  context('.key_auto_import_from_attachments') do
+    it('successfully validates a signature, whose previously unknown key is attached') do
+      list = create(:list, send_encrypted_only: false, key_auto_import_from_email: true)
+      list.subscribe('me@localhost', nil, true)
+      tmp_gnupg_home = Dir.mktmpdir
+      ENV['GNUPGHOME'] = tmp_gnupg_home
+      gpg = GPGME::Ctx.new
+      gpg.keyimport(File.read('spec/fixtures/openpgp-keys/FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A-abcde_example_org.sec'))
+      keyblock = gpg.find_keys('FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A').first.export(armor: true).read
+      mail = Mail.new
+      mail.from = 'abcde@example.org'
+      mail.body = 'something'
+      mail.to = list.email
+      mail.add_file({filename: 'abcde.asc', content: keyblock, mime_type: 'application/pgp-keys'})
+      mail.gpg({
+        encrypt: false,
+        sign: true,
+        sign_as: 'FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A'
+      })
+      mail.deliver
+
+      expect(list.keys('FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A').size).to eql(0)
+
+      signed_email = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+      Schleuder::Runner.new.run(signed_email.to_s, list.email)
+      mail_to_subscriber = Mail::TestMailer.deliveries.first
+
+      pseudoheaders_part = mail_to_subscriber.parts.first.parts.first
+      expect(list.keys('FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A').size).to eql(1)
+      expect(pseudoheaders_part.body.to_s).to include("Note: This key was newly added from this email:\n  0xFB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A")
+      expect(pseudoheaders_part.body.to_s).to include('Sig: Good signature from 4286EE574B92FA0A abcde <abcde@example.org>')
+    ensure
+      FileUtils.remove_entry(tmp_gnupg_home)
+    end
+
+    it('successfully validates a signature, whose previously unknown key is attached, from an encrypted+signed message') do
+      list = create(:list, send_encrypted_only: false, key_auto_import_from_email: true)
+      list.subscribe('me@localhost', nil, true)
+      list_key = list.key.export
+      tmp_gnupg_home = Dir.mktmpdir
+      ENV['GNUPGHOME'] = tmp_gnupg_home
+      gpg = GPGME::Ctx.new
+      gpg.keyimport(File.read('spec/fixtures/openpgp-keys/FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A-abcde_example_org.sec'))
+      mail = Mail.new
+      mail.from = 'abcde@example.org'
+      mail.body = 'something'
+      mail.to = list.email
+      keyblock = gpg.find_keys('FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A').first.export(armor: true).read
+      mail.add_file({filename: 'abcde.asc', content: keyblock, mime_type: 'application/pgp-keys'})
+      gpg.keyimport(list_key)
+      mail.gpg({
+        encrypt: true,
+        keys: {list.email => list.fingerprint},
+        sign: true,
+        sign_as: 'FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A'
+      })
+      mail.deliver
+
+      ENV['GNUPGHOME'] = list.listdir
+      expect(list.keys('FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A').size).to eql(0)
+
+      signed_email = Mail::TestMailer.deliveries.first
+      Mail::TestMailer.deliveries.clear
+      Schleuder::Runner.new.run(signed_email.to_s, list.email)
+      mail_to_subscriber = Mail::TestMailer.deliveries.first
+
+      pseudoheaders_part = mail_to_subscriber.parts.first.parts.first
+      expect(list.keys('FB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A').size).to eql(1)
+      expect(pseudoheaders_part.body.to_s).to include("Note: This key was newly added from this email:\n  0xFB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A")
+      expect(pseudoheaders_part.body.to_s).to include('Enc: Encrypted')
+      expect(pseudoheaders_part.body.to_s).to include('Sig: Good signature from 4286EE574B92FA0A abcde <abcde@example.org>')
+    ensure
+      FileUtils.remove_entry(tmp_gnupg_home)
+    end
+  end
+
 end

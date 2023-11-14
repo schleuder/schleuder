@@ -89,10 +89,10 @@ module GPGME
       GPGME::Engine.info.find {|e| e.protocol == GPGME::PROTOCOL_OpenPGP }
     end
 
-    def import_filtered(input)
+    def import_filtered(input, gpg_extra_arg='')
       # Import through gpgcli so we can use import-filter. GPGME still does
       # not provide that feature (as of summer 2023): <https://dev.gnupg.org/T4721> :(
-      gpgerr, gpgout, exitcode = self.class.gpgcli("#{import_filter_arg} --import") do |stdin, stdout, stderr|
+      gpgerr, gpgout, exitcode = self.class.gpgcli("#{import_filter_arg} #{gpg_extra_arg} --import") do |stdin, stdout, stderr|
         # Wrap this into a block because gpg breaks the pipe if it encounters invalid data.
         begin
           stdin.print input

@@ -69,12 +69,14 @@ describe Schleuder::Filters::Runner do
         'forward_all_incoming_to_admins',
         'send_key',
         'fix_exchange_messages',
-        'strip_html_from_alternative'
+        'strip_html_from_alternative',
+        'key_auto_import_from_autocrypt_header'
       ]
       expect(post_filters.filters).to eq [
         'request',
         'max_message_size',
         'forward_to_owner',
+        'key_auto_import_from_attachments',
         'receive_admin_only',
         'receive_authenticated_only',
         'receive_signed_only',
@@ -91,12 +93,14 @@ describe Schleuder::Filters::Runner do
         'example',
         'send_key',
         'fix_exchange_messages',
-        'strip_html_from_alternative'
+        'strip_html_from_alternative',
+        'key_auto_import_from_autocrypt_header'
       ]
       expect(post_filters.filters).to eq [
         'request',
         'max_message_size',
         'forward_to_owner',
+        'key_auto_import_from_attachments',
         'receive_admin_only',
         'receive_authenticated_only',
         'receive_signed_only',
@@ -113,13 +117,15 @@ describe Schleuder::Filters::Runner do
         'forward_all_incoming_to_admins',
         'send_key',
         'fix_exchange_messages',
-        'strip_html_from_alternative'
+        'strip_html_from_alternative',
+        'key_auto_import_from_autocrypt_header'
       ]
       expect(post_filters.filters).to eq [
         'post_example',
         'request',
         'max_message_size',
         'forward_to_owner',
+        'key_auto_import_from_attachments',
         'receive_admin_only',
         'receive_authenticated_only',
         'receive_signed_only',
@@ -138,12 +144,14 @@ describe Schleuder::Filters::Runner do
         'send_key',
         'fix_exchange_messages',
         'strip_html_from_alternative',
+        'key_auto_import_from_autocrypt_header',
         'late_example'
       ]
       expect(post_filters.filters).to eq [
         'request',
         'max_message_size',
         'forward_to_owner',
+        'key_auto_import_from_attachments',
         'receive_admin_only',
         'receive_authenticated_only',
         'receive_signed_only',
