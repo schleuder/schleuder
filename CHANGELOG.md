@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Upgrade mail to 2.8.1.
 * Check email address for `receive_from_subscribed_emailaddresses_only` in lower case letters to avoid wrong rejections.
 * `mail-gpg` is no longer a dependency. We included the relevant parts of its code into our own code base to avoid problems with surprising decisions from upstream.
+* The API now returns a detailed list of imported keys, so users can get earlier hints if the uploaded key e.g. was expired.
 
 ### Added
 

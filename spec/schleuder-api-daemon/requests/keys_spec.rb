@@ -62,6 +62,7 @@ describe 'keys via api' do
         expect(last_response.status).to be 401
       }.to change{ @list.keys.length }.by 0
     end
+
     it 'does list keys with authentication' do
       authorize!
       parameters = {'list_id' => @list.id, 'keymaterial' => File.read('spec/fixtures/bla_foo_key.txt') }
@@ -70,6 +71,44 @@ describe 'keys via api' do
         expect(last_response.status).to be 200
       }.to change{ @list.keys.length }.by 1
       @list.delete_key('0xEBDBE899251F2412')
+    end
+
+    it 'returns json with key details about imported keys' do
+      authorize!
+      keymaterial = [File.read('spec/fixtures/expired_key.txt'), File.read('spec/fixtures/bla_foo_key.txt')].join("\n")
+      parameters = {'list_id' => @list.id, 'keymaterial' => keymaterial}
+      post '/keys.json', parameters.to_json
+      result = JSON.parse(last_response.body)
+
+      expect(result).to be_a(Hash)
+      keys = result['keys']
+      expect(keys).to be_a(Array)
+      expect(keys.size).to eq(2)
+
+      expect(keys[0]).to be_a(Hash)
+      expect(keys[0]['import_action']).to eq('imported')
+      expect(keys[0]['fingerprint']).to eq('98769E8A1091F36BD88403ECF71A3F8412D83889')
+      expect(keys[0]['summary']).to eq('0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2010-08-14]')
+
+      expect(keys[1]).to be_a(Hash)
+      expect(keys[1]['import_action']).to eq('imported')
+      expect(keys[1]['fingerprint']).to eq('87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
+      expect(keys[1]['summary']).to eq('0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412 bla@foo 2010-03-14')
+
+      @list.delete_key('0x98769E8A1091F36BD88403ECF71A3F8412D83889')
+      @list.delete_key('0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412')
+    end
+
+    it 'returns json with empty array in case of useless input' do
+      authorize!
+      parameters = {'list_id' => @list.id, 'keymaterial' => 'something something'}
+      post '/keys.json', parameters.to_json
+      result = JSON.parse(last_response.body)
+
+      expect(result).to be_a(Hash)
+      keys = result['keys']
+      expect(keys).to be_a(Array)
+      expect(keys.size).to eq(0)
     end
   end
 
