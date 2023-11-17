@@ -23,7 +23,7 @@ require 'gpgme'
 require 'active_record'
 require 'active_support'
 require 'active_support/core_ext/string'
-require 'typhoeus'
+require 'httpx'
 
 # Load schleuder
 libdir = Pathname.new(__FILE__).dirname.realpath
