@@ -104,7 +104,7 @@ module GPGME
       if exitcode > 0
         RuntimeError.new(gpgerr.join("\n"))
       else
-        import_states = translate_import_data(gpgout)
+        translate_import_data(gpgout)
       end
     end
 
