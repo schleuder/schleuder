@@ -23,7 +23,8 @@ module Schleuder
         :bounces_notify_admins,
         :include_list_headers,
         :include_openpgp_header,
-        :forward_all_incoming_to_admins, boolean: true
+        :forward_all_incoming_to_admins,
+        :key_auto_import_from_email, boolean: true
     validates_each :headers_to_meta,
         :keywords_admin_only,
         :keywords_admin_notify do |record, attrib, value|

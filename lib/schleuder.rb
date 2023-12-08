@@ -39,6 +39,7 @@ require 'schleuder/gpgme/key.rb'
 require 'schleuder/gpgme/sub_key.rb'
 require 'schleuder/gpgme/ctx.rb'
 require 'schleuder/gpgme/user_id.rb'
+require 'schleuder/gpgme/key_extractor'
 
 # The Code[tm]
 require 'schleuder/errors/base'
@@ -68,6 +69,7 @@ require 'schleuder/runner'
 require 'schleuder/list'
 require 'schleuder/list_builder'
 require 'schleuder/subscription'
+require 'schleuder/email_key_importer'
 
 # Setup
 ENV['SCHLEUDER_CONFIG'] ||= '/etc/schleuder/schleuder.yml'

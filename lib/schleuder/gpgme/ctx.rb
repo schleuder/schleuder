@@ -7,8 +7,8 @@ module GPGME
       'new_subkeys' => 8
     }
 
-    # This differs from import_from_string() in that it can import binary data,
-    # too, and that it returns the import-results themselves, not strings based
+    # This differs from import_filtered() in that it doesn't filter the keys at
+    # all, and that it returns the import-results themselves, not strings based
     # on those results.
     def keyimport(keydata)
       self.import_keys(GPGME::Data.new(keydata))
@@ -89,13 +89,13 @@ module GPGME
       GPGME::Engine.info.find {|e| e.protocol == GPGME::PROTOCOL_OpenPGP }
     end
 
-    def import_from_string(locale_key, input)
+    def import_filtered(input, gpg_extra_arg='')
       # Import through gpgcli so we can use import-filter. GPGME still does
-      # not provide that feature (as of summer 2021): <https://dev.gnupg.org/T4721> :(
-      gpgerr, gpgout, exitcode = self.class.gpgcli("#{import_filter_arg} --import") do |stdin, stdout, stderr|
+      # not provide that feature (as of summer 2023): <https://dev.gnupg.org/T4721> :(
+      gpgerr, gpgout, exitcode = self.class.gpgcli("#{import_filter_arg} #{gpg_extra_arg} --import") do |stdin, stdout, stderr|
         # Wrap this into a block because gpg breaks the pipe if it encounters invalid data.
         begin
-          stdin.puts input
+          stdin.print input
         rescue Errno::EPIPE
         end
         stdin.close
@@ -104,18 +104,8 @@ module GPGME
       if exitcode > 0
         RuntimeError.new(gpgerr.join("\n"))
       else
-        translate_output(locale_key, gpgout).join("\n")
+        translate_import_data(gpgout)
       end
-    end
-
-    def translate_output(locale_key, gpgoutput)
-      import_states = translate_import_data(gpgoutput)
-      strings = import_states.map do |fingerprint, states|
-        key = find_distinct_key(fingerprint)
-        I18n.t(locale_key, key_summary: key.summary,
-                           states: states.to_sentence)
-      end
-      strings
     end
 
     def translate_import_data(gpgoutput)

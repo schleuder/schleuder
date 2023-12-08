@@ -49,6 +49,7 @@ describe Schleuder::List do
   it { is_expected.to respond_to :logfiles_to_keep }
   it { is_expected.to respond_to :set_reply_to_to_sender }
   it { is_expected.to respond_to :munge_from }
+  it { is_expected.to respond_to :key_auto_import_from_email }
 
   it 'is invalid when email is nil' do
     # Don't use factory here because we'd run into List.listdir expecting email to not be nil.
@@ -209,10 +210,10 @@ describe Schleuder::List do
       expect(Schleuder::List.configurable_attributes).to eq [
        :bounces_drop_all, :bounces_drop_on_headers, :bounces_notify_admins, :deliver_selfsent,
        :forward_all_incoming_to_admins, :headers_to_meta, :include_list_headers,
-       :include_openpgp_header, :internal_footer, :keep_msgid, :keywords_admin_notify, :keywords_admin_only,
-       :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :munge_from, :openpgp_header_preference,
-       :public_footer, :receive_admin_only, :receive_authenticated_only, :receive_encrypted_only,
-       :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,
+       :include_openpgp_header, :internal_footer, :keep_msgid, :key_auto_import_from_email, :keywords_admin_notify,
+       :keywords_admin_only, :language, :log_level, :logfiles_to_keep, :max_message_size_kb, :munge_from,
+       :openpgp_header_preference, :public_footer, :receive_admin_only, :receive_authenticated_only,
+       :receive_encrypted_only, :receive_from_subscribed_emailaddresses_only, :receive_signed_only, :send_encrypted_only,
        :set_reply_to_to_sender, :subject_prefix, :subject_prefix_in, :subject_prefix_out,   
       ]
     end

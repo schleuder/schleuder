@@ -513,6 +513,12 @@ module Mail
       Mail::Gpg.verify(self, options)
     end
 
+    def repeat_validation!
+      new = self.original_message.dup.setup
+      self.verify_result = new.verify_result
+      @signatures = new.signatures
+      dynamic_pseudoheaders << new.dynamic_pseudoheaders
+    end
 
     private
 

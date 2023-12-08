@@ -20,6 +20,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+* Optionally import selected keys from Autocrypt-headers and attachments of incoming emails, configurable for each list. See the code comment in `list-defaults.yml` for details.
 * The umask is configurable in `schleuder.yml`.
 * New dependency: libcurl and gem "typhoeus" (for networking).
 * Lookup keys on a VKS keyserver (e.g. keys.openpgp.org) before the SKS keyserver.

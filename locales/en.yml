@@ -271,6 +271,13 @@ en:
     url_not_found: "Error: There's nothing at <%{url}> (404 Not Found)."
     general_error: "Error while fetching data from the internet: %{error}"
     import_error: "Error while importing the fetched data: %{error}"
+  email_key_importer:
+    key_already_present: "The list already knows a different key for this email's sender address, therefore the key from this email was not added."
+    import_error: "Error while importing key %{fingerprint} from this email: %{import_states}."
+    technical_error: "Unexpected technical error while importing key from this email."
+    key_added: "This key was newly added from this email: %{key_summary}."
+    key_unchanged: "This key was unchanged from this email: %{key_summary}."
+    key_updated: "This key was updated from this email: %{key_summary}."
   pseudoheaders:
     scrubbed_message: This message included invalid characters, which might have been removed to be able to process the message properly.
     stripped_html_from_multialt: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.
