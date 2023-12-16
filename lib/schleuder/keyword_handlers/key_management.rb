@@ -15,7 +15,7 @@ module Schleuder
             import_key_from_body
           else
             @list.logger.debug 'Found no attachments and an empty body - sending error message'
-            I18n.t('keyword_handlers.key_management.no_content_found')
+            return I18n.t('keyword_handlers.key_management.no_content_found')
           end
 
         import_stati = results.compact.collect(&:imports).flatten
