@@ -55,3 +55,4 @@ export const icon = (name, attribs) => html('img', {src: `./images/${name}.svg`,
 export const keyUploadFile = () => html('div', {class: "key-upload-file"}, html("label", "Upload a new key file", html("input", {id: "key-upload-file", type: "file"})))
 export const keyUploadText = () => html('div', {class: "key-upload-text"}, html("label", "Paste a new key as text", html("textarea", {id: "key-upload-text"})))
 export const keyUploadSpacer = () => html('div', {class: "key-upload-spacer"}, "or", html("div", {class: "precedence"}, "↑ precedence"))
+export const svgObject = (name, content) => object({type: "image/svg+xml", data: `./images/${name}.svg`}, content);
