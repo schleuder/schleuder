@@ -257,5 +257,18 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       expect(output).to eql("Error: You did not send any arguments for the keyword 'DELETE-KEY'.\n\nOne is required, more are optional, e.g.:\nX-DELETE-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3\n\nOr, to delete multiple keys at once:\nX-DELETE-KEY: 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3 a-subscription@hostname\n\nThe matching keys will be deleted only if the argument matches them distinctly.\n")
       expect(mail.list.keys.size).to eql(list_keys.size)
     end
+
+    it 'returns a string as error message if input message has no content' do
+      mail = Mail.new
+      mail.list = create(:list)
+      mail.body = ''
+      mail.to_s
+
+      list_keys = mail.list.keys
+      output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
+
+      expect(output).to eql('Your message did not contain any attachments nor text content. Therefore no key could be imported.')
+      expect(mail.list.keys.size).to eql(list_keys.size)
+    end
   end
 end
