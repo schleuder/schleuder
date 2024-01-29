@@ -202,7 +202,7 @@ de:
         Als Admin musst du um deinen eigenen Fingerabdruck zu entfernen, noch zusätzlich das Argument force mitgeben. bspw.:
         X-UNSET-FINGERPRINT: adminsubscription2@hostname force
       subscribe_requires_arguments: |
-        Fehler: Du hast zu dem Schlüsselwort 'SUBSCRIBE' keinen Wert angegeben.
+        Fehler: Du hast zu dem Schlüsselwort 'SUBSCRIBE' keine passenden Werte angegeben.
 
         Mindestens ein Wert ist nötig, drei weitere sind optional. Bspw.:
         X-SUBSCRIBE: new-subscription@hostname
