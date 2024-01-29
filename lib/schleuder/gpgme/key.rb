@@ -82,7 +82,7 @@ module GPGME
     end
 
     def self.valid_fingerprint?(fp)
-      fp =~ Schleuder::Conf::FINGERPRINT_REGEXP
+      fp.present? && fp.match?(Schleuder::Conf::FINGERPRINT_REGEXP)
     end
   end
 end
