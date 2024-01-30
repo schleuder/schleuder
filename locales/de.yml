@@ -25,6 +25,9 @@ de:
 
       Freundliche Grüße,
       Dein Schleuder-System.
+
+      (Wenn du Hilfe brauchst lies bitte die Dokumentation <https://schleuder.org/schleuder/docs/>
+      (auf englisch) oder frage deine Listen- oder System-Admins.)
     decryption_failed: |
       Deine Email konnnte nicht entschlüsselt werden.
       Emails an diese Adresse müssen mit diesem Schlüssel verschlüsselt werden:

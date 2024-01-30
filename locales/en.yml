@@ -25,6 +25,9 @@ en:
 
       Kind regards,
       Your Schleuder system.
+
+      (If you need help please read the documentation <https://schleuder.org/schleuder/docs/>
+      or ask your list- or server-admins.)
     decryption_failed: |
       Decrypting your message failed.
       Messages to this address must be encrypted with the following key:
