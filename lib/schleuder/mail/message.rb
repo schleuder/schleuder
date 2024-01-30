@@ -160,7 +160,12 @@ module Mail
     def signer
       @signer ||= begin
         if signing_key.present?
-          list.subscriptions.where(fingerprint: signing_key.fingerprint).first
+          # Look for a subcsription that matches the sending address, in case
+          # there're multiple subscriptions for the same key. As a fallback use
+          # the first subscription found.
+          sender_email = self.from.to_s.downcase
+          subscriptions = list.subscriptions.where(fingerprint: signing_key.fingerprint)
+          subscriptions.where(email: sender_email).first || subscriptions.first
         end
       end
     end
