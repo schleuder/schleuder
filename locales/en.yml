@@ -25,6 +25,9 @@ en:
 
       Kind regards,
       Your Schleuder system.
+
+      (If you need help please read the documentation <https://schleuder.org/schleuder/docs/>
+      or ask your list- or server-admins.)
     decryption_failed: |
       Decrypting your message failed.
       Messages to this address must be encrypted with the following key:
@@ -250,7 +253,12 @@ en:
   key_unusable: |
     This key is %{usability_issue}:
     %{key_summary}
-  missed_message_due_to_unusable_key: "You missed an email from %{list_email} because your subscription isn't associated with a (usable) OpenPGP key. Please fix this."
+  missed_message_due_to_unusable_key: |
+    You missed an email from %{list_email} because your subscription isn't associated with a (usable) OpenPGP key. Please fix this.
+
+    To do that you can use the keyword X-SET-FINGERPRINT, see <https://schleuder.org/schleuder/docs/subscribers.html#special-keywords> for further explanation.
+
+    If "schleuder-web" has been setup for this host you might also use your browser (your list- or system-admins can tell you that).
   refresh_keys: Keys update
   refresh_keys_intro: "Refreshing all keys from the keyring of list %{email} resulted in this:"
   key_updated: |

@@ -25,6 +25,9 @@ de:
 
       Freundliche Grüße,
       Dein Schleuder-System.
+
+      (Wenn du Hilfe brauchst lies bitte die Dokumentation <https://schleuder.org/schleuder/docs/>
+      (auf englisch) oder frage deine Listen- oder System-Admins.)
     decryption_failed: |
       Deine Email konnnte nicht entschlüsselt werden.
       Emails an diese Adresse müssen mit diesem Schlüssel verschlüsselt werden:
@@ -246,7 +249,12 @@ de:
   key_unusable: |
     Dieser Schlüssel ist %{usability_issue}:
     %{key_summary}
-  missed_message_due_to_unusable_key: "Du hast eine Email von %{list_email} verpasst weil deiner Mitgliedschaft kein (benutzbarer) OpenPGP-Schlüssel zugewiesen ist. Bitte kümmere dich darum."
+  missed_message_due_to_unusable_key: |
+    Du hast eine Email von %{list_email} verpasst weil deiner Mitgliedschaft kein (benutzbarer) OpenPGP-Schlüssel zugewiesen ist. Bitte kümmere dich darum.
+
+    Das kannst du mit dem Schlüsselwort X-SET-FINGERPRINT tun. Siehe <https://schleuder.org/schleuder/docs/subscribers.html#special-keywords> (englisch) für Details.
+
+    Falls "schleuder-web" für dieses SChleuder-System eingerichtet wurde kannst du es auch über den Browser lösen (das wissen deine Listen- oder System-Admins).
   refresh_keys: Schlüsselaktualisierung
   refresh_keys_intro: "Die Aktualisierung aller Schlüssel des Schlüsselrings für Liste %{email} ergab dies:"
   key_updated: |

@@ -93,7 +93,8 @@ describe 'KeywordHandlersRunner' do
 
     output = KeywordHandlersRunner.run(mail: mail, list: list, type: :request)
 
-    expect(output).to eql(["The keyword 'list-subscriptions' may only be used by list-admin.\n\nKind regards,\nYour Schleuder system.\n"])
+    expect(output.length).to be(1)
+    expect(output.first).to include("The keyword 'list-subscriptions' may only be used by list-admin.")
     expect(Mail::TestMailer.deliveries.count).to be(0)
   end
 end

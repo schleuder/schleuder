@@ -33,6 +33,7 @@ vks_keyserver: https://keys.openpgp.org
 # they deliver should not be trusted without additional verification. This is
 # important if you e.g. allow keys to be fetched automatically, or by email
 # address.
+# This keyserver is queried only if the vks_keyserver didn't have a key.
 # Note: This must include the procotol scheme (e.g. "https://").
 # Beware: Only specify https here if the server does use a commonly accepted
 #         TLS certificate. Most servers of the SKS-pool do not!
