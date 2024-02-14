@@ -17,6 +17,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Check email address for `receive_from_subscribed_emailaddresses_only` in lower case letters to avoid wrong rejections.
 * `mail-gpg` is no longer a dependency. We included the relevant parts of its code into our own code base to avoid problems with surprising decisions from upstream.
 * The API now returns a detailed list of imported keys, so users can get earlier hints if the uploaded key e.g. was expired.
+* In reply to a x-keyword, if the signing key is used by multiple subscriptions, in order to find the address to reply to, Schleuder now looks for a subscription that has an email matching the incoming From-header. As a fallback the first subscription using the siging key is used (as before).
 
 ### Added
 

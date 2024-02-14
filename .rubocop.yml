@@ -9,6 +9,9 @@ AllCops:
 Metrics/BlockLength:
   Max: 2700
 
+Metrics/ClassLength:
+  Max: 500
+
 Style/StringLiterals:
   Enabled: true
 
