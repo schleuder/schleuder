@@ -22,9 +22,25 @@ module Schleuder
           while @arguments.first.present? && @arguments.first.match(/^(0x)?[a-f0-9]+$/i)
             fingerprint << @arguments.shift.downcase
           end
-          # Use possibly remaining args as flags.
-          adminflag = @arguments.shift.to_s.downcase.presence
-          deliveryflag = @arguments.shift.to_s.downcase.presence
+          # If the collected values aren't a valid fingerprint, then the input
+          # didn't conform with what this code expects, and then the other
+          # values shouldn't be used.
+          unless GPGME::Key.valid_fingerprint?(fingerprint)
+            return I18n.t('keyword_handlers.subscription_management.subscribe_requires_arguments')
+          end
+          if @arguments.present?
+            # Use possibly remaining args as flags.
+            adminflag = @arguments.shift.to_s.downcase.presence
+            unless ['true', 'false'].include?(adminflag)
+              return I18n.t('keyword_handlers.subscription_management.subscribe_requires_arguments')
+            end
+            if @arguments.present?
+              deliveryflag = @arguments.shift.to_s.downcase.presence
+              unless ['true', 'false'].include?(deliveryflag)
+                return I18n.t('keyword_handlers.subscription_management.subscribe_requires_arguments')
+              end
+            end
+          end
         end
 
         sub, _ = @list.subscribe(email, fingerprint, adminflag, deliveryflag)

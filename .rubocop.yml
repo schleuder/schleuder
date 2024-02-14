@@ -6,6 +6,9 @@ AllCops:
     - 'vendor/**/*'
     - 'lib/schleuder/mail/gpg/sign_part.rb'
 
+Metrics/BlockLength:
+  Max: 2700
+
 Style/StringLiterals:
   Enabled: true
 
