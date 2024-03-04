@@ -389,14 +389,14 @@ module Schleuder
     end
 
     def delete_listdirs
-      if File.exists?(self.listdir)
+      if File.exist?(self.listdir)
         FileUtils.rm_rf(self.listdir, secure: true)
         Schleuder.logger.info "Deleted #{self.listdir}"
       end
       # If listlogs_dir is different from lists_dir, the logfile still exists
       # and needs to be deleted, too.
       logfile_dir = File.dirname(self.logfile)
-      if File.exists?(logfile_dir)
+      if File.exist?(logfile_dir)
         FileUtils.rm_rf(logfile_dir, secure: true)
         Schleuder.logger.info "Deleted #{logfile_dir}"
       end
