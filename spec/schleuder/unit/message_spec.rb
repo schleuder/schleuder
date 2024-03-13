@@ -339,6 +339,82 @@ describe Mail::Message do
       expect(keywords).to eql([['something', ['first', 'second', 'end', 'third']], ['somethingelse', ['ok']]])
       expect(m.body.to_s).to eql("tralafiti\n")
     end
+
+    it 'ignores empty lines before keywords' do
+      string = <<~EOS
+
+
+        x-something: first
+        third
+        x-somethingelse: ok
+
+
+
+        tralafiti
+      EOS
+      m = Mail.new
+      m.body = string
+      m.to_s
+
+      keywords = m.keywords
+
+      expect(keywords).to eql([['something', ['first', 'third']], ['somethingelse', ['ok']]])
+      expect(m.body.to_s).to eql("tralafiti\n")
+    end
+
+    it 'stops looking for keywords when the first line is already email content' do
+      string = <<~EOS
+        Please ignore this message, i am trying to debug a possible schleuder
+        bug.
+
+        Here is a schleuder keyword command in the middle of the message text:
+
+        X-LIST-NAME: foo@example.org
+        X-ATTACH-LISTKEY:
+        -----BEGIN PGP PUBLIC KEY BLOCK-----
+
+        nothing to see here.
+
+        And here is some followup text.
+
+      EOS
+      m = Mail.new
+      m.body = string
+      m.to_s
+
+      keywords = m.keywords
+
+      expect(keywords).to eql([])
+      expect(m.body.to_s).to include("X-LIST-NAME: foo@example.org\nX-ATTACH-LISTKEY:\n-----BEGIN PGP PUBLIC KEY BLOCK-----")
+    end
+
+    it 'stops looking for keywords when already the first line is blank followed by email content' do
+      string = <<~EOS
+
+
+        Please ignore this message, i am trying to debug a possible schleuder
+        bug.
+
+        Here is a schleuder keyword command in the middle of the message text:
+
+        X-LIST-NAME: foo@example.org
+        X-ATTACH-LISTKEY:
+        -----BEGIN PGP PUBLIC KEY BLOCK-----
+
+        nothing to see here.
+
+        And here is some followup text.
+
+      EOS
+      m = Mail.new
+      m.body = string
+      m.to_s
+
+      keywords = m.keywords
+
+      expect(keywords).to eql([])
+      expect(m.body.to_s).to include("X-LIST-NAME: foo@example.org\nX-ATTACH-LISTKEY:\n-----BEGIN PGP PUBLIC KEY BLOCK-----")
+    end
   end
 
   it 'verifies an encapsulated (signed-then-encrypted) message' do
