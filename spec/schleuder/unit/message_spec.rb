@@ -228,7 +228,13 @@ describe Mail::Message do
 
   context '.keywords' do
     it 'stops looking for keywords when a blank line that is not followed by another keyword is met' do
-      string = "x-something: bla\nx-somethingelse: ok\n\nsomething\nx-toolate: tralafiti\n"
+      string = <<~EOS
+        x-something: bla
+        x-somethingelse: ok
+      
+        something
+        x-toolate: tralafiti
+      EOS
       m = Mail.new
       m.body = string
       m.to_s
@@ -240,7 +246,14 @@ describe Mail::Message do
     end
 
     it 'reads multiple lines as keyword arguments' do
-      string = "x-something: first\nsecond\nthird\nx-somethingelse: ok\n\ntralafiti\n"
+      string = <<~EOS
+        x-something: first
+        second
+        third
+        x-somethingelse: ok
+
+        tralafiti
+      EOS
       m = Mail.new
       m.body = string
       m.to_s
@@ -252,7 +265,13 @@ describe Mail::Message do
     end
 
     it 'takes the whole rest of the body as keyword argument if blank lines are present' do
-      string = "x-something: first\nsecond\nthird\nok\ntralafiti\n"
+      string = <<~EOS
+        x-something: first
+        second
+        third
+        ok
+        tralafiti
+      EOS
       m = Mail.new
       m.body = string
       m.to_s
@@ -264,7 +283,14 @@ describe Mail::Message do
     end
 
     it 'drops empty lines in keyword arguments parsing' do
-      string = "x-something: first\nthird\n\nx-somethingelse: ok\n\ntralafiti\n"
+      string = <<~EOS
+        x-something: first
+        third
+
+        x-somethingelse: ok
+
+        tralafiti
+      EOS
       m = Mail.new
       m.body = string
       m.to_s
@@ -276,7 +302,15 @@ describe Mail::Message do
     end
 
     it 'drops multiple empty lines between keywords and content' do
-      string = "x-something: first\nthird\nx-somethingelse: ok\n\n\n\ntralafiti\n"
+      string = <<~EOS
+        x-something: first
+        third
+        x-somethingelse: ok
+
+
+
+        tralafiti
+      EOS
       m = Mail.new
       m.body = string
       m.to_s
@@ -288,7 +322,14 @@ describe Mail::Message do
     end
 
     it 'splits lines into words and downcases them in keyword arguments' do
-      string = "x-something: first\nSECOND     end\nthird\nx-somethingelse: ok\n\ntralafiti\n"
+      string = <<~EOS
+        x-something: first
+        SECOND     end
+        third
+        x-somethingelse: ok
+
+        tralafiti
+      EOS
       m = Mail.new
       m.body = string
       m.to_s
@@ -297,6 +338,82 @@ describe Mail::Message do
 
       expect(keywords).to eql([['something', ['first', 'second', 'end', 'third']], ['somethingelse', ['ok']]])
       expect(m.body.to_s).to eql("tralafiti\n")
+    end
+
+    it 'ignores empty lines before keywords' do
+      string = <<~EOS
+
+
+        x-something: first
+        third
+        x-somethingelse: ok
+
+
+
+        tralafiti
+      EOS
+      m = Mail.new
+      m.body = string
+      m.to_s
+
+      keywords = m.keywords
+
+      expect(keywords).to eql([['something', ['first', 'third']], ['somethingelse', ['ok']]])
+      expect(m.body.to_s).to eql("tralafiti\n")
+    end
+
+    it 'stops looking for keywords when the first line is already email content' do
+      string = <<~EOS
+        Please ignore this message, i am trying to debug a possible schleuder
+        bug.
+
+        Here is a schleuder keyword command in the middle of the message text:
+
+        X-LIST-NAME: foo@example.org
+        X-ATTACH-LISTKEY:
+        -----BEGIN PGP PUBLIC KEY BLOCK-----
+
+        nothing to see here.
+
+        And here is some followup text.
+
+      EOS
+      m = Mail.new
+      m.body = string
+      m.to_s
+
+      keywords = m.keywords
+
+      expect(keywords).to eql([])
+      expect(m.body.to_s).to include("X-LIST-NAME: foo@example.org\nX-ATTACH-LISTKEY:\n-----BEGIN PGP PUBLIC KEY BLOCK-----")
+    end
+
+    it 'stops looking for keywords when already the first line is blank followed by email content' do
+      string = <<~EOS
+
+
+        Please ignore this message, i am trying to debug a possible schleuder
+        bug.
+
+        Here is a schleuder keyword command in the middle of the message text:
+
+        X-LIST-NAME: foo@example.org
+        X-ATTACH-LISTKEY:
+        -----BEGIN PGP PUBLIC KEY BLOCK-----
+
+        nothing to see here.
+
+        And here is some followup text.
+
+      EOS
+      m = Mail.new
+      m.body = string
+      m.to_s
+
+      keywords = m.keywords
+
+      expect(keywords).to eql([])
+      expect(m.body.to_s).to include("X-LIST-NAME: foo@example.org\nX-ATTACH-LISTKEY:\n-----BEGIN PGP PUBLIC KEY BLOCK-----")
     end
   end
 
