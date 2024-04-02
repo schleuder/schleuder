@@ -26,9 +26,6 @@ workflow:
     - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:init
     - CHECK_CODE_COVERAGE=true eatmydata bundle exec rspec --format documentation
 
-ruby:3.0:
-  image: $IMAGE_REGISTRY:schleuder-ruby3.0
-  <<: *test_ruby
 ruby:3.1:
   image: $IMAGE_REGISTRY:schleuder-ruby3.1
   <<: *test_ruby
