@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
     'bug_tracker_uri'   => 'https://0xacab.org/schleuder/schleuder/issues',
     'mailing_list_uri'  => 'https://lists.nadir.org/mailman/listinfo/schleuder-announce/',
   }
-  s.required_ruby_version = '>= 2.7.0'
+  s.required_ruby_version = '>= 3.1.0'
   s.add_runtime_dependency 'activerecord', '~> 7.1'
   s.add_runtime_dependency 'bcrypt', '~> 3.1.2'
   s.add_runtime_dependency 'charlock_holmes', '~> 0.7.6'
