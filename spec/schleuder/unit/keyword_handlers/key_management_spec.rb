@@ -139,7 +139,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       list_keys = mail.list.keys
       output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
 
-      expect(output).to eql("This key was newly added:\n0x769B651054DB697FEB26E408717574BD0A6591ED paz@schleuder.org 2018-10-16 [expires: 2024-03-16]\n")
+      expect(output).to eql("This key was newly added:\n0x769B651054DB697FEB26E408717574BD0A6591ED paz@schleuder.org 2018-10-16 [expired: 2024-03-16]\n")
       expect(mail.list.keys.size).to eql(list_keys.size + 1)
     end
 
