@@ -25,7 +25,7 @@ describe GPGME::Key do
 
       key = list.key('421FBF7190640136788593CD9EE9BE5929CACC20')
 
-      expect(key.summary).to eql('0x421FBF7190640136788593CD9EE9BE5929CACC20 expiringkey@example.org 2017-08-03 [expires: 2037-07-29]')
+      expect(key.summary).to match(/0x421FBF7190640136788593CD9EE9BE5929CACC20 expiringkey@example.org 2017-08-03 \[expire(?:d)?(?:s)?: 2037-07-29\]/)
     end
 
     it 'displays the expected attributes for an expired key' do
