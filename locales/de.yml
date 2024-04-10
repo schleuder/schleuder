@@ -254,7 +254,7 @@ de:
 
     Das kannst du mit dem Schlüsselwort X-SET-FINGERPRINT tun. Siehe <https://schleuder.org/schleuder/docs/subscribers.html#special-keywords> (englisch) für Details.
 
-    Falls "schleuder-web" für dieses SChleuder-System eingerichtet wurde kannst du es auch über den Browser lösen (das wissen deine Listen- oder System-Admins).
+    Falls "schleuder-web" für dieses Schleuder-System eingerichtet wurde kannst du es auch über den Browser lösen (das wissen deine Listen- oder System-Admins).
   refresh_keys: Schlüsselaktualisierung
   refresh_keys_intro: "Die Aktualisierung aller Schlüssel des Schlüsselrings für Liste %{email} ergab dies:"
   key_updated: |

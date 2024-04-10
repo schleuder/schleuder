@@ -160,7 +160,7 @@ module Mail
     def signer
       @signer ||= begin
         if signing_key.present?
-          # Look for a subcsription that matches the sending address, in case
+          # Look for a subscription that matches the sending address, in case
           # there're multiple subscriptions for the same key. As a fallback use
           # the first subscription found.
           sender_email = self.from.to_s.downcase
