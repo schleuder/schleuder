@@ -35,6 +35,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Fixed responding with an error message if an email contained only `x-add-key` but no other content.
 * Improved parsing the arguments for `x-subscribe`: now unpexected values should lead to an error message instead of being interpreted strangely.
 * Fixed not to collect keywords from emails if the email doesn't start with a keyword.
+* Fixed code that rescues from failed message delivery to subscribers (and one more occurrence) (#538).
 
 
 ## [4.0.3] / 2022-04-12
