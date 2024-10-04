@@ -82,6 +82,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       mail = Mail.new
       mail.list = create(:list)
       mail.add_file('spec/fixtures/example_key_binary.pgp')
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
 
       list_keys = mail.list.keys
       output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
@@ -98,6 +100,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
         :content_transfer_encoding => 'base64',
         :content => Base64.encode64(File.binread('spec/fixtures/example_key_binary.pgp'))
       }
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
 
       list_keys = mail.list.keys
       output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
@@ -111,6 +115,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       encrypted_email.list = create(:list, fingerprint: '421C19AF8B9C33B8B62D76EBDB2F7E271D773073')
       encrypted_email.list.import_key(File.read('spec/fixtures/openpgpkey_421C19AF8B9C33B8B62D76EBDB2F7E271D773073.sec'))
       mail = encrypted_email.setup
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.to_s
 
       list_keys = mail.list.keys
@@ -144,6 +150,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
       encrypted_email.list = create(:list, fingerprint: '421C19AF8B9C33B8B62D76EBDB2F7E271D773073')
       encrypted_email.list.import_key(File.read('spec/fixtures/openpgpkey_421C19AF8B9C33B8B62D76EBDB2F7E271D773073.sec'))
       mail = encrypted_email.setup
+      mail.list.subscribe('subscription@example.net', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
+      mail.instance_variable_set('@signing_key', mail.list.key('59C71FB38AEE22E091C78259D06350440F759BD3'))
       mail.to_s
 
       list_keys = mail.list.keys
