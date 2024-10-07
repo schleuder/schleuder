@@ -30,7 +30,7 @@ class SchleuderApiDaemon < Sinatra::Base
         if import_status.action == "error"
           messages << "The key with the fingerprint #{import_status.fingerprint} could not be imported for unknown reasons"
         else
-          key = list(requested_list_id).gpg.find_distinct_key(import_status.fingerprint)
+          key = list.gpg.find_distinct_key(import_status.fingerprint)
           if key
             keys << key_to_hash(key).merge({import_action: import_status.action})
           end
