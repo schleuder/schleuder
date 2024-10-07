@@ -330,7 +330,8 @@ describe "keys via api" do
 
     it "returns json with key details about imported keys" do
       list = create(:list)
-      authorize!
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
       keymaterial = [File.read("spec/fixtures/expired_key.txt"), File.read("spec/fixtures/bla_foo_key.txt")].join("\n")
       parameters = {"list_id" => list.id, "keymaterial" => keymaterial}
       post "/keys.json", parameters.to_json
@@ -357,7 +358,8 @@ describe "keys via api" do
 
     it "returns json with empty array in case of useless input" do
       list = create(:list)
-      authorize!
+      account = create(:account, email: subscription.email)
+      authorize!(account.email, account.set_new_password!)
       parameters = {"list_id" => list.id, "keymaterial" => "something something"}
       post "/keys.json", parameters.to_json
       result = JSON.parse(last_response.body)
