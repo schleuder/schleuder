@@ -124,6 +124,9 @@
     "internal_footer": {
       "type": ["string", "null"]
     },
+    "key_auto_import_from_email": {
+      "type": "boolean"
+    },
     "subscriber_permissions": {
       "type": "object"
     }
