@@ -106,20 +106,6 @@ de:
       key_not_found: "Fehler: Keinen Schlüssel mit Fingerabdruck '%{fingerprint}' gefunden."
       deleted: "Gelöscht: %{key_string}"
       not_deletable: "Darf nicht gelöscht werden: %{error}"
-      no_imports: In deiner Email konnten keine Schlüssel gefunden werden. :(
-      key_import_status:
-        imported: |
-          Dieser Schlüssel wurde neu hinzugefügt:
-          %{key_summary}
-        updated: |
-          Dieser Schlüssel wurde aktualisiert:
-          %{key_summary}
-        unchanged: |
-          Dieser Schlüssel wurde nicht verändert:
-          %{key_summary}
-        error: |
-          Der Schlüssel mit diesem Fingerabdruck konnte aus unbekanntem Grund nicht hinzugefügt werden:
-          %{fingerprint} 
       no_matching_keys: Keine Schlüssel enthalten '%{input}'.
       matching_keys_intro: Alle Schlüssel aus dem Schlüsselring der Liste, die '%{input}' enthalten, sind an diese Email angehängt.
       delete_key_requires_arguments: |
@@ -309,6 +295,21 @@ de:
     encrypted: "Verschlüsselt"
     unencrypted: "Unverschlüsselt"
   header_munging: "%{from} über %{list} <%{list_address}>"
+  keys_controller:
+    no_imports: In deiner Email konnten keine Schlüssel gefunden werden. :(
+    key_import_status:
+      imported: |
+        Dieser Schlüssel wurde neu hinzugefügt:
+        %{key_summary}
+      updated: |
+        Dieser Schlüssel wurde aktualisiert:
+        %{key_summary}
+      unchanged: |
+        Dieser Schlüssel wurde nicht verändert:
+        %{key_summary}
+      error: |
+        Der Schlüssel mit diesem Fingerabdruck konnte aus unbekanntem Grund nicht hinzugefügt werden:
+        %{fingerprint} 
 
   activerecord:
     errors:

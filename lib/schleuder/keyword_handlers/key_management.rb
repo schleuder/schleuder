@@ -15,29 +15,11 @@ module Schleuder
           return t("no_content_found")
         end
 
-        import_results = Array(key_material).map do |importable|
+        output = Array(key_material).map do |importable|
           keys_controller.import(@list.email, importable)
         end
-        import_stati = import_results.compact.map(&:imports).flatten
 
-        if import_stati.blank?
-          return t("no_imports")
-        end
-
-        out = []
-
-        import_stati.each do |import_status|
-          if import_status.action == "error"
-            out << t("key_import_status.error", fingerprint: import_status.fingerprint)
-          else
-            key = @list.gpg.find_distinct_key(import_status.fingerprint)
-            if key
-              out << t("key_import_status.#{import_status.action}", key_summary: key.summary)
-            end
-          end
-        end
-
-        out.join("\n\n")
+        output.flatten.join("\n\n")
       end
 
       def delete_key

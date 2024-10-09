@@ -107,20 +107,6 @@ en:
       not_deletable: |
         This key may not be deleted:
           %{error}
-      no_imports: In the message you sent us, no keys could be found. :(
-      key_import_status:
-        imported: |
-          This key was newly added:
-          %{key_summary}
-        updated: |
-          This key was updated:
-          %{key_summary}
-        unchanged: |
-          This key was not changed:
-          %{key_summary}
-        error: |
-          The key with this fingerprint could not be added due to an unknown error:
-          %{fingerprint} 
       too_many_matching_keys: |
         Too many matching keys for '%{input}':
         %{key_strings}
@@ -313,6 +299,21 @@ en:
     encrypted: "Encrypted"
     unencrypted: "Unencrypted"
   header_munging: "%{from} via %{list} <%{list_address}>"
+  keys_controller:
+    no_imports: The given key material did not contain any keys!
+    key_import_status:
+      imported: |
+        This key was newly added:
+        %{key_summary}
+      updated: |
+        This key was updated:
+        %{key_summary}
+      unchanged: |
+        This key was not changed:
+        %{key_summary}
+      error: |
+        The key with this fingerprint could not be added due to an unknown error:
+        %{fingerprint} 
 
   activerecord:
     errors:

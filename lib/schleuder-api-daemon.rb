@@ -24,6 +24,10 @@ require 'schleuder-api-daemon/helpers/schleuder-api-daemon-helper'
   end
 end
 
+I18n.load_path += Dir["#{File.expand_path(".")}/locales/*.yml"]
+I18n.enforce_available_locales = true
+I18n.default_locale = :en
+
 class SchleuderApiDaemon < Sinatra::Base
   helpers SchleuderApiDaemonHelper
 
@@ -43,6 +47,7 @@ class SchleuderApiDaemon < Sinatra::Base
     content_type :json
     authenticate!
     cast_param_values
+    set_locale
   end
 
   after do

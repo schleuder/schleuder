@@ -100,4 +100,21 @@ module SchleuderApiDaemonHelper
     def is_an_integer?(input)
       input.to_s.match(/^[0-9]+$/).present?
     end
+
+    def set_locale
+      if params[:locale].present?
+        external_input = params[:locale]
+      elsif request.env['HTTP_ACCEPT_LANGUAGE'].present?
+        external_input = request.env['HTTP_ACCEPT_LANGUAGE'].scan(/^[a-z]{2}/).first
+      end
+      if external_input.present?
+        external_locale = external_input.to_sym
+        if I18n.available_locales.include?(external_locale)
+          locale = external_locale
+        end
+      end
+      I18n.locale = locale || I18n.default_locale
+    rescue I18n::InvalidLocale # Shouldn't happen, but better safe than sorry.
+      I18n.locale = I18n.default_locale
+    end
 end

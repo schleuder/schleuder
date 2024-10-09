@@ -77,8 +77,19 @@ describe "keys via api" do
       expect(JSON.parse(last_response.body)['data'].first['subscription']).to eq nil
     end
 
-    it 'does not contain the subscription email in the response if user is not an admin' do
-      list = create(:list)
+    it 'does not contain the subscription email in the response if user is not an admin and subscribers may not view-subscriptions' do
+      list = create(:list, subscriber_permissions: {
+          'view-subscriptions' => false,
+          'add-subscriptions' => false,
+          'delete-subscriptions' => false,
+          'view-keys' => true,
+          'add-keys' => true,
+          'delete-keys' => false,
+          'view-list-config' => false,
+          'resend-encrypted' => true,
+          'resend-unencrypted' => true
+        }
+      )
       list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
       account = create(:account, email: 'schleuder@example.org')
       authorize!(account.email, account.set_new_password!)
@@ -110,8 +121,19 @@ describe "keys via api" do
       expect(JSON.parse(last_response.body)['data']['subscription']).to eq nil
     end
 
-    it 'does not contain the subscription email in the response if user is not an admin' do
-      list = create(:list)
+    it 'does not contain the subscription email in the response if user is not an admin and subscribers may not view-subscriptions' do
+      list = create(:list, subscriber_permissions: {
+          'view-subscriptions' => false,
+          'add-subscriptions' => false,
+          'delete-subscriptions' => false,
+          'view-keys' => true,
+          'add-keys' => true,
+          'delete-keys' => false,
+          'view-list-config' => false,
+          'resend-encrypted' => true,
+          'resend-unencrypted' => true
+        }
+      )
       list.subscribe('schleuder@example.org', '59C71FB38AEE22E091C78259D06350440F759BD3', false)
       account = create(:account, email: 'schleuder@example.org')
       authorize!(account.email, account.set_new_password!)
@@ -189,6 +211,8 @@ describe "keys via api" do
     end
 
     it "does check keys authorized as api_superadmin" do
+      list = create(:list)
+
       list.import_key(File.read("spec/fixtures/revoked_key.txt"))
       list.import_key(File.read("spec/fixtures/signonly_key.txt"))
       list.import_key(File.read("spec/fixtures/expired_key.txt"))
@@ -212,58 +236,71 @@ describe "keys via api" do
     it "doesn't export keys without authentication" do
       list = create(:list)
 
-      get "/keys.json?list_email=#{list.email}"
+      get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 401
     end
 
     it "doesn't list keys authorized as unassociated account" do
+      list = create(:list)
       subscription = create(:subscription, admin: true)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
 
-      get "/keys.json?list_email=#{@list.email}"
+      get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 403
-      expect(last_response.body).to eql("Not authorized")
+      expect(JSON.parse(last_response.body)).to eql({"error" => "Not authorized", "error_code" => "not_authorized"})
     end
 
     it "does list keys authorized as subscriber" do
-      subscription = create(:subscription, list_id: @list.id, admin: false)
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: false)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
 
-      get "/keys.json?list_email=#{@list.email}"
+      get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body).length).to be 1
+      response_body = JSON.parse(last_response.body)
+      expect(response_body).to be_a(Hash)
+      expect(response_body.keys).to eql(["data", "messages"])
+      expect(response_body["data"].length).to be 1
     end
 
     it "does list keys authorized as list-admin" do
-      subscription = create(:subscription, list_id: @list.id, admin: false)
+      list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: true)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
 
-      get "/keys.json?list_email=#{@list.email}"
+      get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body).length).to be 1
+      response_body = JSON.parse(last_response.body)
+      expect(response_body).to be_a(Hash)
+      expect(response_body.keys).to eql(["data", "messages"])
+      expect(response_body["data"].length).to be 1
     end
 
     it "does list keys authorized as api_superadmin" do
+      list = create(:list)
       authorize_as_api_superadmin!
 
-      get "/keys.json?list_email=#{@list.email}"
+      get "/lists/#{list.email}/keys.json"
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body).length).to be 1
+      response_body = JSON.parse(last_response.body)
+      expect(response_body).to be_a(Hash)
+      expect(response_body.keys).to eql(["data", "messages"])
+      expect(response_body["data"].length).to be 1
     end
   end
 
   context "import" do
     it "doesn't import keys without authentication" do
       list = create(:list)
-      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
+      parameters = {"keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
       expect {
         post "/lists/#{list.email}/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
         expect(last_response.status).to be 401
@@ -285,15 +322,16 @@ describe "keys via api" do
     end
 
     it "does import keys authorized as subscriber" do
+      list = create(:list)
       subscription = create(:subscription, list_id: list.id, admin: false)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
-      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
+      parameters = {"keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
 
       post "/lists/#{list.email}/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
 
       expect(last_response.status).to be 200
-      expect(JSON.parse(last_response.body)['data']['fingerprint']).to eq '87E65ED2081AE3D16BE4F0A5EBDBE899251F2412'
+      expect(JSON.parse(last_response.body)['data'][0]).to eq "This key was newly added:\n0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412 bla@foo 2010-03-14\n"
 
       list.delete_key("0xEBDBE899251F2412")
     end
@@ -303,7 +341,7 @@ describe "keys via api" do
       subscription = create(:subscription, list_id: list.id, admin: true)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
-      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
+      parameters = {"keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
       num_keys = list.keys.length
 
       post "/lists/#{list.email}/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
@@ -317,7 +355,7 @@ describe "keys via api" do
     it "does import keys authorized as api_superadmin" do
       list = create(:list)
       authorize_as_api_superadmin!
-      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
+      parameters = {"keymaterial" => File.read("spec/fixtures/bla_foo_key.txt")}
       num_keys = list.keys.length
 
       post "/lists/#{list.email}/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}
@@ -330,44 +368,25 @@ describe "keys via api" do
 
     it "returns json with key details about imported keys" do
       list = create(:list)
+      subscription = create(:subscription, list_id: list.id, admin: false)
       account = create(:account, email: subscription.email)
       authorize!(account.email, account.set_new_password!)
       keymaterial = [File.read("spec/fixtures/expired_key.txt"), File.read("spec/fixtures/bla_foo_key.txt")].join("\n")
       parameters = {"list_id" => list.id, "keymaterial" => keymaterial}
-      post "/keys.json", parameters.to_json
+      post "/lists/#{list.email}/keys.json", parameters.to_json
       result = JSON.parse(last_response.body)
 
       expect(result).to be_a(Hash)
-      keys = result["keys"]
-      expect(keys).to be_a(Array)
-      expect(keys.size).to eq(2)
+      expect(result.keys).to eql(["data", "messages"])
+      strings = result["data"]
+      expect(strings).to be_a(Array)
+      expect(strings.size).to eq(2)
 
-      expect(keys[0]).to be_a(Hash)
-      expect(keys[0]["import_action"]).to eq("imported")
-      expect(keys[0]["fingerprint"]).to eq("98769E8A1091F36BD88403ECF71A3F8412D83889")
-      expect(keys[0]["summary"]).to eq("0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2010-08-14]")
-
-      expect(keys[1]).to be_a(Hash)
-      expect(keys[1]["import_action"]).to eq("imported")
-      expect(keys[1]["fingerprint"]).to eq("87E65ED2081AE3D16BE4F0A5EBDBE899251F2412")
-      expect(keys[1]["summary"]).to eq("0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412 bla@foo 2010-03-14")
+      expect(strings.first).to eq("This key was newly added:\n0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired: 2010-08-14]\n")
+      expect(strings.last).to eq("This key was newly added:\n0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412 bla@foo 2010-03-14\n")
 
       list.delete_key("0x98769E8A1091F36BD88403ECF71A3F8412D83889")
       list.delete_key("0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412")
-    end
-
-    it "returns json with empty array in case of useless input" do
-      list = create(:list)
-      account = create(:account, email: subscription.email)
-      authorize!(account.email, account.set_new_password!)
-      parameters = {"list_id" => list.id, "keymaterial" => "something something"}
-      post "/keys.json", parameters.to_json
-      result = JSON.parse(last_response.body)
-
-      expect(result).to be_a(Hash)
-      keys = result["keys"]
-      expect(keys).to be_a(Array)
-      expect(keys.size).to eq(0)
     end
 
     it 'returns 422 and an error message when no keymaterial is provided' do
@@ -511,7 +530,7 @@ describe "keys via api" do
     it "does add key" do
       list = create(:list)
       authorize_as_api_superadmin!
-      parameters = {"list_email" => list.email, "keymaterial" => File.read("spec/fixtures/broken_utf8_uid_key.txt")}
+      parameters = {"keymaterial" => File.read("spec/fixtures/broken_utf8_uid_key.txt")}
 
       expect {
         post "/lists/#{list.email}/keys.json", parameters.to_json, {"CONTENT_TYPE" => "application/json"}

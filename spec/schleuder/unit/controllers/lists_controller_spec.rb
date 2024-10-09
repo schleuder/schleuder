@@ -67,6 +67,7 @@ describe Schleuder::ListsController do
         :include_openpgp_header,
         :internal_footer,
         :keep_msgid,
+        :key_auto_import_from_email,
         :keywords_admin_notify,
         :language,
         :log_level,

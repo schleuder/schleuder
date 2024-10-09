@@ -12,7 +12,27 @@ module Schleuder
     def import(list_email, key)
       list = get_list(list_email)
       authorize!(list, :add_keys)
-      list.import_key(key)
+      import_result = list.import_key(key)
+      messages = []
+      errors = []
+
+      import_result.imports.each do |import_status|
+        if import_status.action == "error"
+          errors << t("error", fingerprint: import_status.fingerprint)
+        else
+          key = list.gpg.find_distinct_key(import_status.fingerprint)
+          # TODO: handle error case. Shouldn't happen in theory, but who knows.
+          if key
+            messages << t("key_import_status.#{import_status.action}", key_summary: key.summary)
+          end
+        end
+      end
+
+      if messages.empty? && errors.empty?
+        errors << t("no_imports")
+      end
+
+      [messages, errors]
     end
 
     def fetch(list_email, identifier)

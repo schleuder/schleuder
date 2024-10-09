@@ -189,7 +189,8 @@ describe Schleuder::KeywordHandlers::KeyManagement do
 
       output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: key_material).add_key
 
-      expect(output).to eql('In the message you sent us, no keys could be found. :(')
+      expect(output).to eql("The given key material did not contain any keys!")
+      
       expect(mail.list.keys.size).to eql(list_keys.size)
     end
 
@@ -221,7 +222,7 @@ describe Schleuder::KeywordHandlers::KeyManagement do
 
       output = KeywordHandlers::KeyManagement.new(mail: mail, arguments: []).add_key
 
-      expect(output).to eql('In the message you sent us, no keys could be found. :(')
+      expect(output).to eql("The given key material did not contain any keys!")
       expect(mail.list.keys.size).to eql(list_keys.size)
     end
   end
