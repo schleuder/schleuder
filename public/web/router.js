@@ -14,6 +14,7 @@ import Backend from './backend.js'
 import UserMenu from './user-menu.js'
 import State from './state.js'
 import {div, ul, li, a} from './hyper.js'
+import {t} from "./translations.js"
 
 export default class Router {
   static start() {
@@ -74,9 +75,9 @@ export default class Router {
     } catch (exc) {
       console.error(exc)
       if (exc instanceof TypeError && exc.message.slice(0, 12) === 'NetworkError') {
-        NotiFier.error('Could not connect to server, please check your network connection or try again later!')
+        NotiFier.error(t("error_could_not_connect_to_server"))
       } else {
-        NotiFier.error('An unexpected problem occurred, please try again later')
+        NotiFier.error(t("error_unexpected_problem"))
       }
       this.loadingIcon.hide()
     }
@@ -164,7 +165,7 @@ export default class Router {
         }
         break;
       default:
-        return this.route("#lists", "Something went wrong, please try again", "error");
+        return this.route("#lists", t("error_unexpected_problem"), "error");
     }
     view.append(elem)
 

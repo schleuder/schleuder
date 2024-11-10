@@ -1,42 +1,31 @@
 import BaseComp from "./base-comp.js";
 import Backend from "../backend.js";
-import ActionLink from "./action-link.js";
-import IndexCard from "./index-card.js";
-import CardPopup from "./card-popup.js";
-import { div, h1, svgObject } from "../hyper.js";
+import { a, div, h1, card, cardPopup, actionNewLink } from "../hyper.js";
+import {t} from '../translations.js'
 
 export default class KeyIndex extends BaseComp {
   constructor(listname) {
     super(listname);
     this.append(
-      new ActionLink(this.urlFor(["keys", "new"]), [
-        svgObject("plus", "+"),
-        "Upload key",
-      ]),
-      h1(`Keys known to ${listname}`),
+      actionNewLink(this.urlFor(["keys", "new"]), "upload_key"),
+      h1(t("keys_known_to_list", listname)),
     );
     Backend.fetch(listname, "keys")
       .then((keys) => {
         const cards = keys.map((key) => {
-          const card = new IndexCard(
-            "key",
-            this.linkTo(key.key_summary, ["keys", key.fingerprint]),
-          );
+          const theCard = card("key", a({href: this.urlFor("keys", key.fingerprint)}, key.key_summary))
           if (key.subscription) {
-            card.append(
-              new CardPopup(
+            theCard.append(
+              cardPopup(
                 "person",
                 div([
-                  "Used by ",
-                  this.linkTo(key.subscription, [
-                    "subscriptions",
-                    key.subscription,
-                  ]),
+                  t("used_by"), 
+                  a({href: this.urlFor("subscriptions", key.subscription)}, key.subscription,)
                 ]),
               ),
             );
           }
-          return card;
+          return theCard;
         });
         this.append(div({ class: "index-cards" }, cards));
         this.finished();

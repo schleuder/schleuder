@@ -1,6 +1,5 @@
 import BaseComp from "./base-comp.js"
 import Backend from "../backend.js"
-import ActionLink from "./action-link.js"
 import { h1, p, span, icon, a } from '../hyper.js';
 
 export default class SubscriptionShow extends BaseComp {

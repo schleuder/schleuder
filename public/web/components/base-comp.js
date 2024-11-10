@@ -18,10 +18,6 @@ export default class BaseComp extends HTMLElement {
     this.loadingIcon.hide()
   }
 
-  linkTo(text, urlParts) {
-    return a({href: this.urlFor(urlParts)}, text)
-  }
-
   urlFor(...parts) {
     return ["#lists", this.listname, ...parts.flat()].filter((item) => item).join("/")
   }

@@ -1,31 +1,29 @@
 import BaseComp from "./base-comp.js"
 import Backend from "../backend.js"
-import ActionLink from "./action-link.js"
-import IndexCard from './index-card.js'
-import CardPopup from './card-popup.js'
-import {h1, div} from '../hyper.js'
+import {a, h1, div, card, cardPopup, actionNewLink} from '../hyper.js'
+import {t} from '../translations.js'
 
 export default class SubscriptionIndex extends BaseComp {
   constructor(listname) {
     super(listname)
     this.append(
-      new ActionLink(this.urlFor(["subscriptions", "new"]), "New Subscription", div({class: 'plus-sign'}, "+")),
-      h1('Subscribed addresses')
+      actionNewLink(this.urlFor(["subscriptions", "new"]), "new_subscription"),
+      h1(t('subscribed_addresses'))
     )
     Backend.fetch(listname, "subscriptions") 
       .then((subscriptions) => {
         const cards = subscriptions.map((subscription) => {
-          const card = new IndexCard('person', this.linkTo(subscription.email, ["subscriptions", subscription.email]))
+          const theCard = card('person', a({href: this.urlFor("subscriptions", subscription.email)}, subscription.email))
           if (subscription.admin) {
-            card.append(new CardPopup('heart', "This person is an admin of this list"))
+            theCard.append(cardPopup('heart', t("person_is_list_admin")))
           }
           if (! subscription.fingerprint) {
-            card.append(new CardPopup('key-missing', div({class: 'warning'}, [
-                  "Warning: This address has no key selected!",
-                  this.linkTo('Fix this', ["subscriptions", subscription.email, "edit"])
+            theCard.append(cardPopup('key-missing', div({class: 'warning'}, [
+                  t("warning_no_key"),
+                  a({href: this.urlFor("subscriptions", subscription.email, "edit")}, t("fix_this"))
                 ])))
           }
-          return card
+          return theCard
         })
         this.append(div({class: 'index-cards'}, cards))
         this.finished()

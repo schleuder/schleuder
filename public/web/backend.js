@@ -41,6 +41,7 @@ export default class Backend {
     }
     headers["Authorization"] = `Basic ${credentials}`;
     let url;
+    // Prepend '/lists/' to relative URLs.
     if (urlParts.length === 1 && urlParts[0][0] === "/") {
       url = urlParts[0]
     } else {

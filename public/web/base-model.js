@@ -7,6 +7,7 @@ export default class BaseModel {
     }
   }
 
+  // TODO: Send browser language in Accept-Language: header (to receive localized strings).
   static async _load(...urlParts) {
     const listname = urlParts[0];
     const attributes = await Backend.fetch(this._makeUrl(urlParts))

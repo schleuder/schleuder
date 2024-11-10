@@ -1,3 +1,5 @@
+import {t} from "./translations.js"
+
 export const html = (type, ...args) => {
     args = args.flat()
     let content
@@ -51,8 +53,13 @@ export const abbr = (...args) => html('abbr', ...args)
 export const small = (...args) => html('small', ...args)
 export const textarea = (...args) => html('textarea', ...args)
 
-export const icon = (name, attribs) => html('img', {src: `./images/${name}.svg`, alt: "", ...attribs})
 export const keyUploadFile = () => html('div', {class: "key-upload-file"}, html("label", "Upload a new key file", html("input", {id: "key-upload-file", type: "file"})))
 export const keyUploadText = () => html('div', {class: "key-upload-text"}, html("label", "Paste a new key as text", html("textarea", {id: "key-upload-text"})))
 export const keyUploadSpacer = () => html('div', {class: "key-upload-spacer"}, "or", html("div", {class: "precedence"}, "↑ precedence"))
+
+export const icon = (name, attribs) => html('img', {src: `./images/${name}.svg`, alt: `Icon showing ${name}`, ...attribs})
 export const svgObject = (name, content) => object({type: "image/svg+xml", data: `./images/${name}.svg`}, content);
+export const actionNewLink = (url, tr_key) => a({class: 'action-link', href: url}, [svgObject("plus", "+"), t(tr_key)])
+
+export const card = (iconName, content) => div({class: 'card'}, icon(iconName), div({class: 'card-text'}, content))
+export const cardPopup = (iconName, content) => div({class: 'card-popup'}, icon(iconName), div({class: `card-popup-text`}, content))

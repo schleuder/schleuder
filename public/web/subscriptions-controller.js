@@ -58,7 +58,7 @@ export default class SubscriptionsController extends BaseController {
     return this.makeUrl('#lists', parts);
   }
 
-  static webUrl(baseUrl, parts) {
+  static makeUrl(baseUrl, parts) {
     let url = baseUrl;
     for (const part of parts) {
       url += `/${part}`;

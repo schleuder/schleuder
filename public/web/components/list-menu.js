@@ -1,4 +1,5 @@
 import {div, ul, li, a, icon} from "../hyper.js";
+import {t} from "../translations.js";
 
 export default class ListMenu extends HTMLElement {
   constructor(listname, currentUrl) {
@@ -9,13 +10,13 @@ export default class ListMenu extends HTMLElement {
     const headline = div({class: "pageheadline"});
     this.append(headline);
     if (! listname) {
-      headline.textContent = "My lists";
+      headline.textContent = t("my_lists");
     } else {
       headline.textContent = this.listname;
       this.append(ul(
-        this.makeItem('Subscriptions', 'subscriptions', "people"),
-        this.makeItem('Keys', 'keys', "keyring"),
-        this.makeItem('List options', 'edit', "wrench")
+        this.makeItem(t("subscriptions"), 'subscriptions', "people"),
+        this.makeItem(t("keys"), 'keys', "keyring"),
+        this.makeItem(t("list_options"), 'edit', "wrench")
       ));
     }
   }
