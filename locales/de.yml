@@ -25,6 +25,9 @@ de:
 
       Freundliche Grüße,
       Dein Schleuder-System.
+
+      (Wenn du Hilfe brauchst lies bitte die Dokumentation <https://schleuder.org/schleuder/docs/>
+      (auf englisch) oder frage deine Listen- oder System-Admins.)
     decryption_failed: |
       Deine Email konnnte nicht entschlüsselt werden.
       Emails an diese Adresse müssen mit diesem Schlüssel verschlüsselt werden:
@@ -202,7 +205,7 @@ de:
         Als Admin musst du um deinen eigenen Fingerabdruck zu entfernen, noch zusätzlich das Argument force mitgeben. bspw.:
         X-UNSET-FINGERPRINT: adminsubscription2@hostname force
       subscribe_requires_arguments: |
-        Fehler: Du hast zu dem Schlüsselwort 'SUBSCRIBE' keinen Wert angegeben.
+        Fehler: Du hast zu dem Schlüsselwort 'SUBSCRIBE' keine passenden Werte angegeben.
 
         Mindestens ein Wert ist nötig, drei weitere sind optional. Bspw.:
         X-SUBSCRIBE: new-subscription@hostname
@@ -246,7 +249,12 @@ de:
   key_unusable: |
     Dieser Schlüssel ist %{usability_issue}:
     %{key_summary}
-  missed_message_due_to_unusable_key: "Du hast eine Email von %{list_email} verpasst weil deiner Mitgliedschaft kein (benutzbarer) OpenPGP-Schlüssel zugewiesen ist. Bitte kümmere dich darum."
+  missed_message_due_to_unusable_key: |
+    Du hast eine Email von %{list_email} verpasst weil deiner Mitgliedschaft kein (benutzbarer) OpenPGP-Schlüssel zugewiesen ist. Bitte kümmere dich darum.
+
+    Das kannst du mit dem Schlüsselwort X-SET-FINGERPRINT tun. Siehe <https://schleuder.org/schleuder/docs/subscribers.html#special-keywords> (englisch) für Details.
+
+    Falls "schleuder-web" für dieses Schleuder-System eingerichtet wurde kannst du es auch über den Browser lösen (das wissen deine Listen- oder System-Admins).
   refresh_keys: Schlüsselaktualisierung
   refresh_keys_intro: "Die Aktualisierung aller Schlüssel des Schlüsselrings für Liste %{email} ergab dies:"
   key_updated: |
@@ -261,8 +269,19 @@ de:
     new_uids: neue User-IDs
     new_subkeys: neue Unterschlüssel
     new_signatures: neue Signaturen
-  fetch_key:
+  key_fetcher:
     invalid_input: "Ungültige Angabe. Gültig sind: URLs, OpenPGP-Fingerabdrücke, oder Emailadressen."
+    not_found: "Fehler: Keinen Schlüssel für '%{input}' gefunden."
+    url_not_found: "Fehler: Unter <%{url}> wurde nichts gefunden (404 Not Found)."
+    general_error: "Fehler beim Holen der Daten aus dem Netz: %{error}"
+    import_error: "Fehler beim Importieren der geholten Daten: %{error}"
+  email_key_importer:
+    key_already_present: "Für die Absenderadresse dieser Email hat diese Liste schon einen anderen Schlüssel, daher wurde der Schlüssel aus dieser Email nicht hinzugefügt."
+    import_error: "Fehler beim Import von Schlüssel %{fingerprint} aus dieser Email: %{import_states}."
+    technical_error: "Beim Schlüsselimport aus dieser Email ist ein unerwarteter Fehler aufgetreten."
+    key_added: "Dieser Schlüssel wurde aus dieser Email neu hinzugefügt: %{key_summary}"
+    key_unchanged: "Dieser Schlüssel wurde aus dieser Email nicht verändert: %{key_summary}."
+    key_updated: "Dieser Schlüssel wurde aus dieser Email aktualisiert: %{key_summary}."
   pseudoheaders:
     scrubbed_message: Diese Email enthielt ungültige Zeichen, die aus Verarbeitungsgründen möglicherweise entfernt wurden.
     stripped_html_from_multialt: Diese Email enthielt einen alternativen HTML-Teil, der PGP-Daten beinhaltete. Der HTML-Teil wurde entfernt, um die Email sauberer analysieren zu können.

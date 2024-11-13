@@ -3,12 +3,45 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.0] / 2024-11-13
+
+### Changed
+
+* Require Ruby 3.1 or later, drop support for all earlier versions.
+* Drop the default SKS keyserver. You can still specify your own, but by default now only keys.openpgp.org will be used to fetch keys by email address.
+* The default umask now is `0077`, allowing access to newly created files and directories only for the owner. It is configurable in `schleuder.yml`.
+* Don't suppress gpg's warnings about permissions and insecure memory, but log them in case they occur. (#496)
+* Drop using dirmngr, use custom code to fetch keys from keyservers.
+* Upgrade Active Record to version 7.1.
+* Upgrade mail to 2.8.1.
+* Check email address for `receive_from_subscribed_emailaddresses_only` in lower case letters to avoid wrong rejections.
+* `mail-gpg` is no longer a dependency. We included the relevant parts of its code into our own code base to avoid problems with surprising decisions from upstream.
+* The API now returns a detailed list of imported keys, so users can get earlier hints if the uploaded key e.g. was expired.
+* In reply to a x-keyword, if the signing key is used by multiple subscriptions, in order to find the address to reply to, Schleuder now looks for a subscription that has an email matching the incoming From-header. As a fallback the first subscription using the siging key is used (as before).
+
+### Added
+
+* Optionally import selected keys from Autocrypt-headers and attachments of incoming emails, configurable for each list. See the code comment in `list-defaults.yml` for details.
+* The umask is configurable in `schleuder.yml`.
+* New dependency: libcurl and gem "typhoeus" (for networking).
+* Lookup keys on a VKS keyserver (e.g. keys.openpgp.org) before the SKS keyserver.
+* Configure a proxy to make HTTP requests (e.g. when fetching keys) through. This supports socks5(h) in order to route traffic through TOR.
+
+### Fixed
+
+* Fixed sending the list's key to all subscribers if `deliver_selfsent` is false.
+* Fixed importing attached keys from some emails (like e.g. Thunderbird sends them).
+* Fixed the `From:` header of notifications sent to the `superadmin` to ensure a fully qualified domain name is used.
+* Fixed responding with an error message if an email contained only `x-add-key` but no other content.
+* Improved parsing the arguments for `x-subscribe`: now unpexected values should lead to an error message instead of being interpreted strangely.
+* Fixed not to collect keywords from emails if the email doesn't start with a keyword.
+
+
 ## [4.0.3] / 2022-04-12
 
 ### Changed
 
 * Minor improvements of the German locales. 
-
 
 ### Fixed
 
@@ -655,4 +688,3 @@ Template, please ignore:
 ### Removed
 ### Fixed
 ### Security
-

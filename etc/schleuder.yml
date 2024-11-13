@@ -21,17 +21,28 @@ filters_dir: /usr/local/lib/schleuder/filters
 # How verbose should Schleuder log to syslog? (list-specific messages are written to the list's log-file).
 log_level: warn
 
-# Which keyserver to refresh keys from (used by `schleuder refresh_keys`, meant
-# to be run from cron or systemd weekly).
-# If you have gnupg 2.1, we strongly suggest to use a hkps-keyserver:
-#keyserver: hkps://hkps.pool.sks-keyservers.net
-# If you have gnupg 2.1 and TOR running locally, use a onion-keyserver:
-#keyserver: hkp://jirk5u4osbsr34t5.onion
-# If you have an OS-wide defined keyserver, specify a blank value to have that
-# one used:
-#keyserver: 
-# The default works for all supported versions of gnupg:
-keyserver: pool.sks-keyservers.net
+# Which verifying keyserver to fetch keys from?
+# This server must support the VKS API.
+# To disable lookup via this type of keyserver, set this to a blank value.
+# Note: This must include the procotol scheme (e.g. "https://").
+vks_keyserver: https://keys.openpgp.org
+
+# Which traditional keyserver to fetch keys from?
+# This server must support the SKS API.
+# Please consider that public SKS servers don't verify any upload, the keys
+# they deliver should not be trusted without additional verification. This is
+# important if you e.g. allow keys to be fetched automatically, or by email
+# address.
+# This keyserver is queried only if the vks_keyserver didn't have a key.
+# Note: This must include the procotol scheme (e.g. "https://").
+# Beware: Only specify https here if the server does use a commonly accepted
+#         TLS certificate. Most servers of the SKS-pool do not!
+sks_keyserver: 
+
+# Should Schleuder use a proxy for HTTP requests (to fetch OpenPGP keys)?
+# To route HTTP requests via Tor set up a local Tor daemon and enter e.g.
+# socks5h://127.0.0.1:9050 (for a typical Tor service).
+#http_proxy:
 
 # Who is maintaining the overall schleuder installation and should be
 # notified about severe problems with lists.
@@ -39,6 +50,13 @@ keyserver: pool.sks-keyservers.net
 # not be another schleuder list.
 # Is also used as an envelope sender of admin notifications.
 superadmin: root@localhost
+
+# Umask with which to create directories and files. The default (0077) lets
+# only the owners read them, no one else.
+# Only change this in special cases and if you know what you are doing!
+# (Be careful to retain the value type, it must not be quoted and it must start
+# with a zero!)
+umask: 0077
 
 # For these options see documentation for ActionMailer::smtp_settings, e.g. <http://api.rubyonrails.org/classes/ActionMailer/Base.html>.
 smtp_settings:

@@ -109,7 +109,8 @@ module Schleuder
         end
       end
 
-      if ActiveRecord::SchemaMigration.table_exists?
+      # If the table for lists exists we assume the DB has been initialized before.
+      if List.table_exists?
         say shellexec("cd #{root_dir} && rake db:migrate")
       else
         say shellexec("cd #{root_dir} && rake db:init")
@@ -121,6 +122,18 @@ module Schleuder
       if ! File.exist?(Conf.api['tls_cert_file']) || ! File.exist?(Conf.api['tls_key_file'])
         Schleuder::Cert.new.generate
       end
+
+      if Conf.umask == 0077
+        # The umask is set to the (new) default, let's have a look at the list-dirs.
+        list_dirs = Dir.glob("#{Conf.lists_dir}/*")
+        list_dirs.each do |list_dir|
+          perm_bits = File.stat(list_dir).mode.to_s(8)[-3..]
+          if perm_bits != '700'
+            say "WARNING: The directory '#{list_dir}' has permissions that do not match the umask as set in schleuder's config. You should probably fix that by running `chmod -R g-rwx #{list_dir}`."
+          end
+        end
+      end
+
 
       say "Schleuder has been set up. You can now create a new list using `schleuder-cli`.\nWe hope you enjoy!"
       permission_notice

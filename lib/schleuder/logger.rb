@@ -9,7 +9,7 @@ module Schleuder
     def initialize
       super('Schleuder', Syslog::LOG_MAIL)
       # We need some sender-address different from the superadmin-address.
-      @from = "#{Etc.getlogin}@#{Socket.gethostname}"
+      @from = "#{Etc.getlogin}@#{Addrinfo.getaddrinfo(Socket.gethostname, nil).first.getnameinfo.first}"
       @adminaddresses = Conf.superadmin
       @level = ::Logger.const_get(Conf.log_level.upcase)
     end

@@ -149,3 +149,19 @@ set_reply_to_to_sender: false
 # This option can enabled for improved usability since this affect
 # mail client's displayed name.
 munge_from: false
+
+# If enabled, parse Autocrypt-header and look for attached keys in incoming emails.
+# For each found key (a), check if it contains a UID matching the From-header. In
+# case it does not, skip this key and handle the next, if any.
+# Lookup fingerprint of key (a) and check if it's already present in the keyring.
+# If present, import the key (a).
+# Otherwise, check if a key, which contains a UID matching the From-header, is present
+# in the keyring.
+# If not, import the key (a).
+# Before doing any import, ensure via a filter so that only the relevant UID is
+# kept.
+# Please be aware that this might result in a newly imported key that matches a
+# subscriber's email address, which didn't originate from the subscriber (in case
+# of forged From-header). We consider this not a serious problem because that key
+# will not be used for that subscriber's emails unless it is assigned manually.
+key_auto_import_from_email: false

@@ -26,25 +26,18 @@ workflow:
     - SCHLEUDER_ENV=test SCHLEUDER_CONFIG=spec/schleuder.yml eatmydata bundle exec rake db:init
     - CHECK_CODE_COVERAGE=true eatmydata bundle exec rspec --format documentation
 
-ruby:2.5:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.5
-  <<: *test_ruby
-ruby:2.6:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.6
+ruby:3.1:
+  image: $IMAGE_REGISTRY:schleuder-ruby3.1
   <<: *test_ruby
   artifacts:
     expire_in: 1 day
     paths:
       - coverage
-ruby:2.7:
-  image: $IMAGE_REGISTRY:schleuder-ruby2.7
+ruby:3.2:
+  image: $IMAGE_REGISTRY:schleuder-ruby3.2
   <<: *test_ruby
-  
-ruby:3.0:
-  image: $IMAGE_REGISTRY:schleuder-ruby3.0
-  <<: *test_ruby
-ruby:3.1:
-  image: $IMAGE_REGISTRY:schleuder-ruby3.1
+ruby:3.3:
+  image: $IMAGE_REGISTRY:schleuder-ruby3.3
   <<: *test_ruby
   
 changelog:
@@ -84,8 +77,7 @@ code-coverage:
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - printf "
-      |1|ZfxGVbfwfCHlaURlet/V6y+2gjg=|/X7OweXQUnXZnGSKkvF/IpVz4n4= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPJx38PfGvaHtkSsHptiHoIQxlI3Yf0cskPNTwAQnY14\n
-      |1|8YPsezXF2SYQ7rq9U5TbDnMsVjo=|SJOodZB+8j+dO+l6YTdZ7+44XLw= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPJx38PfGvaHtkSsHptiHoIQxlI3Yf0cskPNTwAQnY14
+      |1|X3+w8orcCKSo4d2Hq38v+PWxLnU=|ZQo0TQSeK0m6RuOwvKNMkNNdE58= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMipvUM0/aLT4LXkqehXRURN5JHvhz1+9pfuIj7y7LRG
       " > ~/.ssh/known_hosts
     # Unfortunately, variable expansion doesn't work completely in
     # GitLab. Therefore, a bit code duplication in the following code.
@@ -132,7 +124,7 @@ schema-up-to-date:
   stage: static
 
 bundler:audit:
-  image: ruby:2.5
+  image: ruby:2.7
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
   script:

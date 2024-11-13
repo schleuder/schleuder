@@ -10,11 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_07_151309) do
-
+ActiveRecord::Schema[7.1].define(version: 2022_09_10_170110) do
   create_table "lists", force: :cascade do |t|
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "email", limit: 255
     t.string "fingerprint", limit: 255
     t.string "log_level", limit: 255, default: "warn"
@@ -47,6 +46,7 @@ ActiveRecord::Schema.define(version: 2021_11_07_151309) do
     t.boolean "include_autocrypt_header", default: true
     t.boolean "set_reply_to_to_sender", default: false
     t.boolean "munge_from", default: false
+    t.boolean "key_auto_import_from_email", default: false
   end
 
   create_table "subscriptions", force: :cascade do |t|
@@ -55,8 +55,8 @@ ActiveRecord::Schema.define(version: 2021_11_07_151309) do
     t.string "fingerprint", limit: 255
     t.boolean "admin", default: false
     t.boolean "delivery_enabled", default: true
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["email", "list_id"], name: "index_subscriptions_on_email_and_list_id", unique: true
     t.index ["list_id"], name: "index_subscriptions_on_list_id"
   end

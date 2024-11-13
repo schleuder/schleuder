@@ -4,10 +4,10 @@ module Schleuder
     has_many :subscriptions, dependent: :destroy
     before_destroy :delete_listdirs
 
-    serialize :headers_to_meta, JSON
-    serialize :bounces_drop_on_headers, JSON
-    serialize :keywords_admin_only, JSON
-    serialize :keywords_admin_notify, JSON
+    serialize :headers_to_meta, coder: JSON
+    serialize :bounces_drop_on_headers, coder: JSON
+    serialize :keywords_admin_only, coder: JSON
+    serialize :keywords_admin_notify, coder: JSON
 
     validates :email, presence: true, uniqueness: true, email: true
     validates :fingerprint, presence: true, fingerprint: true
@@ -23,7 +23,8 @@ module Schleuder
         :bounces_notify_admins,
         :include_list_headers,
         :include_openpgp_header,
-        :forward_all_incoming_to_admins, boolean: true
+        :forward_all_incoming_to_admins,
+        :key_auto_import_from_email, boolean: true
     validates_each :headers_to_meta,
         :keywords_admin_only,
         :keywords_admin_notify do |record, attrib, value|
@@ -197,11 +198,26 @@ module Schleuder
     end
 
     def refresh_keys
-      gpg.refresh_keys(self.keys)
+      # reorder keys so the update pattern is random
+      output = self.keys.shuffle.map do |key|
+        # Sleep a short while to make traffic analysis less easy.
+        sleep rand(1.0..5.0)
+        key_fetcher.fetch(key.fingerprint, 'key_updated').presence
+      end
+      # Filter out some "noise" (if a key was unchanged, it wasn't really updated, was it?)
+      # It would be nice to prevent these "false" lines in the first place, but I don't know how.
+      output.reject! do |line|
+        line.match('updated \(unchanged\)')
+      end
+      output.compact.join("\n")
     end
 
     def fetch_keys(input)
-      gpg.fetch_key(input)
+      key_fetcher.fetch(input)
+    end
+
+    def key_fetcher
+      @key_fetcher ||= KeyFetcher.new(self)
     end
 
     def self.by_recipient(recipient)
@@ -350,7 +366,7 @@ module Schleuder
             next
           end
           
-          if ! self.deliver_selfsent && incoming_mail.was_validly_signed? && ( subscription == incoming_mail.signer )
+          if ! self.deliver_selfsent && incoming_mail&.was_validly_signed? && ( subscription == incoming_mail&.signer )
             logger.info "Not sending to #{subscription.email}: delivery of self sent is disabled."
             next
           end
@@ -373,14 +389,14 @@ module Schleuder
     end
 
     def delete_listdirs
-      if File.exists?(self.listdir)
+      if File.exist?(self.listdir)
         FileUtils.rm_rf(self.listdir, secure: true)
         Schleuder.logger.info "Deleted #{self.listdir}"
       end
       # If listlogs_dir is different from lists_dir, the logfile still exists
       # and needs to be deleted, too.
       logfile_dir = File.dirname(self.logfile)
-      if File.exists?(logfile_dir)
+      if File.exist?(logfile_dir)
         FileUtils.rm_rf(logfile_dir, secure: true)
         Schleuder.logger.info "Deleted #{logfile_dir}"
       end

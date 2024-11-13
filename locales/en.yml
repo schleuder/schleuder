@@ -25,6 +25,9 @@ en:
 
       Kind regards,
       Your Schleuder system.
+
+      (If you need help please read the documentation <https://schleuder.org/schleuder/docs/>
+      or ask your list- or server-admins.)
     decryption_failed: |
       Decrypting your message failed.
       Messages to this address must be encrypted with the following key:
@@ -206,7 +209,7 @@ en:
         As an admin to unset your own fingerprint you must additionally pass the argument force. E.g.:
         X-UNSET-FINGERPRINT: adminsubscription2@hostname force
       subscribe_requires_arguments: |
-        Error: You did not send any arguments for the keyword 'SUBSCRIBE'.
+        Error: You did not send proper arguments for the keyword 'SUBSCRIBE'.
 
         At least one argument is required, three more are optional. E.g.:
         X-SUBSCRIBE: new-subscription@hostname
@@ -250,7 +253,12 @@ en:
   key_unusable: |
     This key is %{usability_issue}:
     %{key_summary}
-  missed_message_due_to_unusable_key: "You missed an email from %{list_email} because your subscription isn't associated with a (usable) OpenPGP key. Please fix this."
+  missed_message_due_to_unusable_key: |
+    You missed an email from %{list_email} because your subscription isn't associated with a (usable) OpenPGP key. Please fix this.
+
+    To do that you can use the keyword X-SET-FINGERPRINT, see <https://schleuder.org/schleuder/docs/subscribers.html#special-keywords> for further explanation.
+
+    If "schleuder-web" has been setup for this host you might also use your browser (your list- or system-admins can tell you that).
   refresh_keys: Keys update
   refresh_keys_intro: "Refreshing all keys from the keyring of list %{email} resulted in this:"
   key_updated: |
@@ -265,8 +273,19 @@ en:
     new_uids: new user-IDs
     new_subkeys: new subkeys
     new_signatures: new signatures
-  fetch_key:
+  key_fetcher:
     invalid_input: "Invalid input. Allowed are: URLs, OpenPGP-fingerprints, or email-addresses."
+    not_found: "Error: No key could be found for '%{input}'."
+    url_not_found: "Error: There's nothing at <%{url}> (404 Not Found)."
+    general_error: "Error while fetching data from the internet: %{error}"
+    import_error: "Error while importing the fetched data: %{error}"
+  email_key_importer:
+    key_already_present: "The list already knows a different key for this email's sender address, therefore the key from this email was not added."
+    import_error: "Error while importing key %{fingerprint} from this email: %{import_states}."
+    technical_error: "Unexpected technical error while importing key from this email."
+    key_added: "This key was newly added from this email: %{key_summary}."
+    key_unchanged: "This key was unchanged from this email: %{key_summary}."
+    key_updated: "This key was updated from this email: %{key_summary}."
   pseudoheaders:
     scrubbed_message: This message included invalid characters, which might have been removed to be able to process the message properly.
     stripped_html_from_multialt: This message included an alternating HTML-part that contained PGP-data. The HTML-part was removed to enable parsing the message more properly.

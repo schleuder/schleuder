@@ -29,6 +29,7 @@ FactoryBot.define do
     max_message_size_kb { 10240 }
     language { 'en' }
     forward_all_incoming_to_admins { false }
+    key_auto_import_from_email { false }
     logfiles_to_keep { 2 }
     after(:build) do |list|
       FileUtils.mkdir_p(list.listdir)

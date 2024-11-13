@@ -9,12 +9,13 @@ For more details see <https://schleuder.org/docs/>.
 
 Requirements
 ------------
-* ruby >=2.5
+* ruby >=2.7
 * gnupg >=2.2
 * gpgme
 * sqlite3
 * openssl
 * icu
+* libcurl
 
 *If you use Debian buster, CentOS 7 or Archlinux, please have a look at the [installation docs](https://schleuder.org/schleuder/docs/server-admins.html#installation). We do provide packages for those platforms, which simplify the installation a lot.*
 
@@ -36,15 +37,15 @@ Additionally these **rubygems** are required (will be installed automatically un
 Installing Schleuder
 ------------
 
-1. Download [the gem](https://schleuder.org/download/schleuder-4.0.3.gem) and [the OpenPGP-signature](https://schleuder.org/download/schleuder-4.0.3.gem.sig) and verify:
+1. Download [the gem](https://schleuder.org/download/schleuder-5.0.0.gem) and [the OpenPGP-signature](https://schleuder.org/download/schleuder-5.0.0.gem.sig) and verify:
    ```
    gpg --recv-key 0xB3D190D5235C74E1907EACFE898F2C91E2E6E1F3
-   gpg --verify schleuder-4.0.3.gem.sig
+   gpg --verify schleuder-5.0.0.gem.sig
    ```
 
 2. If all went well install the gem:
    ```
-   gem install schleuder-4.0.3.gem
+   gem install schleuder-5.0.0.gem
    ```
 
 3. Set up schleuder:
@@ -101,10 +102,6 @@ To execute the test suite run:
 
     bundle exec rspec
 
-Please note: Some of the specs use 'pgrep'. On systems that base on Debian 10 ("buster") install it via 
-
-    apt-get install procps
-
 We are working on extendig the test coverage.
 
 Contributing
@@ -134,4 +131,4 @@ GNU GPL 3.0. Please see [LICENSE.txt](LICENSE.txt).
 Alternative Download
 --------------------
 
-Alternatively to the gem-files you can download the latest release as [a tarball](https://schleuder.org/download/schleuder-4.0.3.tar.gz) and [its OpenPGP-signature](https://schleuder.org/download/schleuder-4.0.3.tar.gz.sig).
+Alternatively to the gem-files you can download the latest release as [a tarball](https://schleuder.org/download/schleuder-5.0.0.tar.gz) and [its OpenPGP-signature](https://schleuder.org/download/schleuder-5.0.0.tar.gz.sig).

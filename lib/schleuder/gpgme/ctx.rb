@@ -7,6 +7,9 @@ module GPGME
       'new_subkeys' => 8
     }
 
+    # This differs from import_filtered() in that it doesn't filter the keys at
+    # all, and that it returns the import-results themselves, not strings based
+    # on those results.
     def keyimport(keydata)
       self.import_keys(GPGME::Data.new(keydata))
       result = self.import_result
@@ -33,13 +36,11 @@ module GPGME
     end
 
     def find_keys(input=nil, secret_only=nil)
-      _, input = clean_and_classify_input(input)
-      keys(input, secret_only)
+      keys(normalize_key_identifier(input), secret_only)
     end
 
     def find_distinct_key(input=nil, secret_only=nil)
-      _, input = clean_and_classify_input(input)
-      keys = keys(input, secret_only)
+      keys = keys(normalize_key_identifier(input), secret_only)
       if keys.size == 1
         keys.first
       else
@@ -47,16 +48,16 @@ module GPGME
       end
     end
 
-    def clean_and_classify_input(input)
+    def normalize_key_identifier(input)
       case input
       when /.*?([^ <>]+@[^ <>]+).*?/
-        [:email, "<#{$1}>"]
+        "<#{$1}>"
       when /^http/
-        [:url, input]
+        input
       when Conf::FINGERPRINT_REGEXP
-        [:fingerprint, "0x#{input.gsub(/^0x/, '')}"]
+        "0x#{input.gsub(/^0x/, '')}"
       else
-        [nil, input]
+        input
       end
     end
 
@@ -88,85 +89,23 @@ module GPGME
       GPGME::Engine.info.find {|e| e.protocol == GPGME::PROTOCOL_OpenPGP }
     end
 
-    def refresh_keys(keys)
-      # reorder keys so the update pattern is random
-      output = keys.shuffle.map do |key|
-        # Sleep a short while to make traffic analysis less easy.
-        sleep rand(1.0..5.0)
-        refresh_key(key.fingerprint).presence
+    def import_filtered(input, gpg_extra_arg='')
+      # Import through gpgcli so we can use import-filter. GPGME still does
+      # not provide that feature (as of summer 2023): <https://dev.gnupg.org/T4721> :(
+      gpgerr, gpgout, exitcode = self.class.gpgcli("#{import_filter_arg} #{gpg_extra_arg} --import") do |stdin, stdout, stderr|
+        # Wrap this into a block because gpg breaks the pipe if it encounters invalid data.
+        begin
+          stdin.print input
+        rescue Errno::EPIPE
+        end
+        stdin.close
+        stdout.readlines
       end
-      `gpgconf --kill dirmngr`
-      output.compact.join("\n")
-    end
-
-    def refresh_key(fingerprint)
-      args = "#{keyserver_arg} #{import_filter_arg} --refresh-keys #{fingerprint}"
-      gpgerr, gpgout, exitcode = self.class.gpgcli(args)
-
       if exitcode > 0
-        # Return filtered error messages. Include gpgkeys-messages from stdout
-        # (gpg 2.0 does that), which could e.g. report a failure to connect to
-        # the keyserver.
-        # TODO: Revisit this once we don't do network access via GPG
-        # anymore.
-        res = [
-          refresh_key_filter_messages(gpgerr),
-          refresh_key_filter_messages(gpgout).grep(/^gpgkeys: /)
-        ].flatten.compact
-        # if there was an error that we don't filter out,
-        # we better kill dirmngr, so it hopefully won't suffer
-        # from the same error during the next run.
-        # See #309 for background
-        if !res.empty?
-          `gpgconf --kill dirmngr`
-        end
-        res.join("\n")
+        RuntimeError.new(gpgerr.join("\n"))
       else
-        lines = translate_output('key_updated', gpgout).reject do |line|
-          # Reduce the noise a little.
-          line.match(/.* \(unchanged\):$/)
-        end
-        lines.join("\n")
+        translate_import_data(gpgout)
       end
-    end
-
-    def fetch_key(input)
-      arguments, error = fetch_key_gpg_arguments_for(input)
-      return error if error
-
-      gpgerr, gpgout, exitcode = self.class.gpgcli("#{import_filter_arg} #{arguments}")
-
-      # Unfortunately gpg doesn't exit with code > 0 if `--fetch-key` fails.
-      if exitcode > 0 || gpgerr.grep(/ unable to fetch /).presence
-        "Fetching #{input} did not succeed:\n#{gpgerr.join("\n")}"
-      else
-        translate_output('key_fetched', gpgout).join("\n")
-      end
-    end
-
-    def fetch_key_gpg_arguments_for(input)
-      case input
-      when Conf::FINGERPRINT_REGEXP
-        "#{keyserver_arg} --recv-key #{input}"
-      when /^http/
-        "--fetch-key #{input}"
-      when /@/
-        # --recv-key doesn't work with email-addresses, so we use --locate-key
-        # restricted to keyservers.
-        "#{keyserver_arg} --auto-key-locate keyserver --locate-key #{input}"
-      else
-        [nil, I18n.t('fetch_key.invalid_input')]
-      end
-    end
-
-    def translate_output(locale_key, gpgoutput)
-      import_states = translate_import_data(gpgoutput)
-      strings = import_states.map do |fingerprint, states|
-        key = find_distinct_key(fingerprint)
-        I18n.t(locale_key, key_summary: key.summary,
-                           states: states.to_sentence)
-      end
-      strings
     end
 
     def translate_import_data(gpgoutput)
@@ -210,7 +149,7 @@ module GPGME
       errors = []
       output = []
       base_cmd = gpg_engine.file_name
-      base_args = '--no-greeting --no-permission-warning --quiet --armor --trust-model always --no-tty --command-fd 0 --status-fd 1'
+      base_args = '--no-greeting --quiet --armor --trust-model always --no-tty --command-fd 0 --status-fd 1'
       cmd = [base_cmd, base_args, args].flatten.join(' ')
       Open3.popen3(cmd) do |stdin, stdout, stderr, thread|
         if block_given?
@@ -223,17 +162,19 @@ module GPGME
         exitcode = thread.value.exitstatus
       end
 
+      # Don't treat warnings as errors but log them.
+      errors = errors.map do |line|
+        if line.match?(/gpg: WARNING: (unsafe permissions on homedir|using insecure memory)/i)
+          Schleuder.logger.warn(line)
+          nil
+        else
+          line
+        end
+      end.compact
+
       [errors, output, exitcode]
     rescue Errno::ENOENT
       raise 'Need gpg in $PATH or in $GPGBIN'
-    end
-
-    def keyserver_arg
-      if Conf.keyserver.present?
-        "--keyserver #{Conf.keyserver}"
-      else
-        ''
-      end
     end
 
     def import_filter_arg

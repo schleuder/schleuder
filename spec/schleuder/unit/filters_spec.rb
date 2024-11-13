@@ -160,4 +160,282 @@ describe Schleuder::Filters do
       expect(mail.dynamic_pseudoheaders).to be_blank
     end
   end
+
+  context '.receive_from_subscribed_emailaddresses_only' do
+    it 'does not reject a message with a non-subscribed address as From-header if list.receive_from_subscribed_emailaddresses_only is not set' do
+      list = create(:list, receive_from_subscribed_emailaddresses_only: false)
+      list.subscribe('admin@example.org', nil, true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = 'outside@example.org'
+
+      result = Schleuder::Filters.receive_from_subscribed_emailaddresses_only(list, mail)
+
+      expect(result).to eql(nil)
+    end
+
+    it 'rejects a message with a non-subscribed address as From-header if list.receive_from_subscribed_emailaddresses_only is set' do
+      list = create(:list, receive_from_subscribed_emailaddresses_only: true)
+      list.subscribe('admin@example.org', nil, true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = 'outside@example.org'
+
+      result = Schleuder::Filters.receive_from_subscribed_emailaddresses_only(list, mail)
+
+      expect(result).to be_a(Errors::MessageSenderNotSubscribed)
+    end
+
+    it 'does not reject a message with a subscribed address as From-header if list.receive_from_subscribed_emailaddresses_only is set' do
+      list = create(:list, receive_from_subscribed_emailaddresses_only: true)
+      list.subscribe('admin@example.org', nil, true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = list.subscriptions.first.email
+
+      result = Schleuder::Filters.receive_from_subscribed_emailaddresses_only(list, mail)
+
+      expect(result).to eql(nil)
+    end
+
+    it 'does not reject a message with a subscribed address as From-header with different letter case if list.receive_from_subscribed_emailaddresses_only is set' do
+      list = create(:list, receive_from_subscribed_emailaddresses_only: true)
+      list.subscribe('admin@example.org', nil, true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = 'AdMin@example.org'
+
+      result = Schleuder::Filters.receive_from_subscribed_emailaddresses_only(list, mail)
+
+      expect(result).to eql(nil)
+    end
+  end
+
+  context('.key_auto_import_from_autocrypt_header') do
+    it('does not import key if sender address does not match key UID, regardless of Autocrypt addr attribute') do
+      keydata_base64 = Base64.encode64(File.read('spec/fixtures/bla_foo_key.txt'))
+      list = create(:list, key_auto_import_from_email: true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = list.email
+      mail.text_part = 'bla'
+      mail.header['Autocrypt'] = "addr=#{list.email}; prefer-encrypt=mutual; keydata=#{keydata_base64}"
+      list_keys_num = list.keys.size
+
+      Schleuder::Filters.key_auto_import_from_autocrypt_header(list, mail)
+
+      expect(list.keys.size).to eql(list_keys_num)
+      expect(mail.dynamic_pseudoheaders.join("\n")).not_to include("Note: This key was newly added from this email:\n  0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412")
+    end
+
+    it('imports key and reports the change') do
+      keydata_base64 = Base64.encode64(File.read('spec/fixtures/expired_key_extended.txt'))
+      mail_from = 'schleuder <bla@foo>'
+      list = create(:list, key_auto_import_from_email: true)
+      list.import_key(File.read('spec/fixtures/expired_key.txt'))
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = mail_from
+      mail.text_part = 'bla'
+      mail.header['Autocrypt'] = "addr=#{mail_from}; prefer-encrypt=mutual; keydata=#{keydata_base64}"
+      list_keys_num = list.keys.size
+
+      Schleuder::Filters.key_auto_import_from_autocrypt_header(list, mail)
+
+      expect(list.keys.size).to eql(list_keys_num)
+      expect(mail.dynamic_pseudoheaders.join("\n")).to include("This key was updated from this email:\n  0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired:\n  2017-01-20]")
+    end
+
+    it('imports key and reports no change') do
+      keydata_base64 = File.read('spec/fixtures/schleuder_at_example_public_key_minimal_base64.txt')
+      mail_from = 'schleuder <schleuder@example.org>'
+      list = create(:list, key_auto_import_from_email: true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = mail_from
+      mail.text_part = 'bla'
+      mail.header['Autocrypt'] = "addr=#{mail_from}; prefer-encrypt=mutual; keydata=#{keydata_base64}"
+      list_keys_num = list.keys.size
+
+      Schleuder::Filters.key_auto_import_from_autocrypt_header(list, mail)
+
+      expect(list.keys.size).to eql(list_keys_num)
+      expect(mail.dynamic_pseudoheaders.join("\n")).to include("This key was unchanged from this email:\n  0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06.")
+    end
+
+    it('imports key and reports new key') do
+      keydata_base64 = Base64.encode64(File.read('spec/fixtures/bla_foo_key.txt'))
+      mail_from = 'schleuder <bla@foo>'
+      list = create(:list, key_auto_import_from_email: true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = mail_from
+      mail.text_part = 'bla'
+      mail.header['Autocrypt'] = "addr=#{mail_from}; prefer-encrypt=mutual; keydata=#{keydata_base64}"
+      list_keys_num = list.keys.size
+
+      Schleuder::Filters.key_auto_import_from_autocrypt_header(list, mail)
+
+      expect(list.keys.size).to eql(list_keys_num + 1)
+      expect(mail.dynamic_pseudoheaders.join("\n")).to include("Note: This key was newly added from this email:\n  0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412")
+    end
+
+    it('only imports the one key that matches the sender address if keydata contains more than one key') do
+      tmpdir = Dir.mktmpdir
+      keydata = `gpg --homedir #{tmpdir} --import spec/fixtures/bla_foo_key.txt spec/fixtures/example_key.txt  2>/dev/null ; gpg --homedir #{tmpdir} -a --export`
+      FileUtils.remove_entry(tmpdir)
+      keydata_base64 = Base64.encode64(keydata)
+      mail_from = 'schleuder <bla@foo>'
+      list = create(:list, key_auto_import_from_email: true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = mail_from
+      mail.text_part = 'bla'
+      mail.header['Autocrypt'] = "addr=#{list.email}; prefer-encrypt=mutual; keydata=#{keydata_base64}"
+      list_keys_num = list.keys.size
+
+      Schleuder::Filters.key_auto_import_from_autocrypt_header(list, mail)
+
+      expect(list.keys.size).to eql(list_keys_num + 1)
+      expect(mail.dynamic_pseudoheaders.join("\n")).to include("Note: This key was newly added from this email:\n  0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412")
+    end
+  end
+
+  context('.key_auto_import_from_attachments') do
+    it('does not import key if sender address does not match key UID') do
+      list = create(:list, key_auto_import_from_email: true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = list.email
+      mail.text_part = 'bla'
+      mail.add_file({
+        filename: 'something.pgp',
+        content: File.read('spec/fixtures/bla_foo_key.txt'),
+        mime_type: 'application/pgp-keys'
+      })
+      list_keys_num = list.keys.size
+
+      Schleuder::Filters.key_auto_import_from_attachments(list, mail)
+
+      expect(list.keys.size).to eql(list_keys_num)
+      expect(mail.dynamic_pseudoheaders.join("\n")).not_to include("Note: This key was newly added from this email:\n  0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412")
+    end
+
+    it('imports key and reports the change') do
+      mail_from = 'schleuder <bla@foo>'
+      list = create(:list, key_auto_import_from_email: true)
+      list.import_key(File.read('spec/fixtures/expired_key.txt'))
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = mail_from
+      mail.text_part = 'bla'
+      mail.add_file({
+        filename: 'something.pgp',
+        content: File.read('spec/fixtures/expired_key_extended.txt'),
+        mime_type: 'application/pgp-keys'
+      })
+      list_keys_num = list.keys.size
+
+      Schleuder::Filters.key_auto_import_from_attachments(list, mail)
+
+      expect(list.keys.size).to eql(list_keys_num)
+      expect(mail.dynamic_pseudoheaders.join("\n")).to include("This key was updated from this email:\n  0x98769E8A1091F36BD88403ECF71A3F8412D83889 bla@foo 2010-08-13 [expired:\n  2017-01-20]")
+    end
+
+    it('imports key and reports no change') do
+      mail_from = 'schleuder <schleuder@example.org>'
+      list = create(:list, key_auto_import_from_email: true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = mail_from
+      mail.text_part = 'bla'
+      mail.add_file({
+        filename: 'something.pgp',
+        content: File.read('spec/fixtures/schleuder_at_example_public_key.txt'),
+        mime_type: 'application/pgp-keys'
+      })
+      list_keys_num = list.keys.size
+
+      Schleuder::Filters.key_auto_import_from_attachments(list, mail)
+
+      expect(list.keys.size).to eql(list_keys_num)
+      expect(mail.dynamic_pseudoheaders.join("\n")).to include("This key was unchanged from this email:\n  0x59C71FB38AEE22E091C78259D06350440F759BD3 schleuder@example.org 2016-12-06.")
+       
+    end
+    
+
+    it('imports key and reports new key') do
+      mail_from = 'schleuder <bla@foo>'
+      list = create(:list, key_auto_import_from_email: true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = mail_from
+      mail.text_part = 'bla'
+      mail.add_file({
+        filename: 'something.pgp',
+        content: File.read('spec/fixtures/bla_foo_key.txt'),
+        mime_type: 'application/pgp-keys'
+      })
+      list_keys_num = list.keys.size
+
+      Schleuder::Filters.key_auto_import_from_attachments(list, mail)
+
+      expect(list.keys.size).to eql(list_keys_num + 1)
+      expect(mail.dynamic_pseudoheaders.join("\n")).to include("Note: This key was newly added from this email:\n  0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412")
+    end
+
+    it('does not import key if attachment has a different content-type than "application/pgp-keys"') do
+      mail_from = 'schleuder <bla@foo>'
+      list = create(:list, key_auto_import_from_email: true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = mail_from
+      mail.text_part = 'bla'
+      mail.add_file({
+        filename: 'something.pgp',
+        content: File.read('spec/fixtures/bla_foo_key.txt'),
+        mime_type: 'text/plain'
+      })
+      list_keys_num = list.keys.size
+
+      Schleuder::Filters.key_auto_import_from_attachments(list, mail)
+
+      expect(list.keys.size).to eql(list_keys_num)
+      expect(mail.dynamic_pseudoheaders.join("\n")).not_to include("Note: This key was newly added from this email:\n  0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412")
+    end
+
+    it('only imports the one key that matches the sender address if keydata contains more than one key') do
+      tmpdir = Dir.mktmpdir
+      keydata = `gpg --homedir #{tmpdir} --import spec/fixtures/bla_foo_key.txt spec/fixtures/example_key.txt  2>/dev/null ; gpg --homedir #{tmpdir} -a --export`
+      FileUtils.remove_entry(tmpdir)
+      mail_from = 'schleuder <bla@foo>'
+      list = create(:list, key_auto_import_from_email: true)
+      mail = Mail.new
+      mail.list = list
+      mail.to = list.email
+      mail.from = mail_from
+      mail.text_part = 'bla'
+      mail.add_file({filename: 'something.pgp', content: keydata, mime_type: 'application/pgp-keys'})
+      list_keys_num = list.keys.size
+
+      Schleuder::Filters.key_auto_import_from_attachments(list, mail)
+
+      expect(list.keys.size).to eql(list_keys_num + 1)
+      expect(mail.dynamic_pseudoheaders.join("\n")).to include("Note: This key was newly added from this email:\n  0x87E65ED2081AE3D16BE4F0A5EBDBE899251F2412")
+    end
+  end
 end

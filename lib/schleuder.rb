@@ -15,15 +15,15 @@ require 'syslog/logger'
 require 'logger'
 require 'open3'
 require 'socket'
+require 'base64'
 
 # Require mandatory libs. The database-layer-lib is required below.
-require 'mail-gpg'
+require 'mail'
+require 'gpgme'
 require 'active_record'
 require 'active_support'
 require 'active_support/core_ext/string'
-
-# An extra from mail-gpg
-require 'hkp'
+require 'typhoeus'
 
 # Load schleuder
 libdir = Pathname.new(__FILE__).dirname.realpath
@@ -34,13 +34,12 @@ $:.unshift libdir
 require 'schleuder/mail/parts_list.rb'
 require 'schleuder/mail/message.rb'
 require 'schleuder/mail/gpg.rb'
-require 'schleuder/mail/gpg/encrypted_part.rb'
-require 'schleuder/mail/gpg/sign_part.rb'
 require 'schleuder/gpgme/import_status.rb'
 require 'schleuder/gpgme/key.rb'
 require 'schleuder/gpgme/sub_key.rb'
 require 'schleuder/gpgme/ctx.rb'
 require 'schleuder/gpgme/user_id.rb'
+require 'schleuder/gpgme/key_extractor'
 
 # The Code[tm]
 require 'schleuder/errors/base'
@@ -50,6 +49,10 @@ end
 # Load schleuder/conf before the other classes, it defines constants!
 require 'schleuder/conf'
 require 'schleuder/version'
+require 'schleuder/http'
+require 'schleuder/key_fetcher'
+require 'schleuder/vks_client'
+require 'schleuder/sks_client'
 require 'schleuder/logger_notifications'
 require 'schleuder/logger'
 require 'schleuder/listlogger'
@@ -66,6 +69,7 @@ require 'schleuder/runner'
 require 'schleuder/list'
 require 'schleuder/list_builder'
 require 'schleuder/subscription'
+require 'schleuder/email_key_importer'
 
 # Setup
 ENV['SCHLEUDER_CONFIG'] ||= '/etc/schleuder/schleuder.yml'
@@ -88,6 +92,6 @@ I18n.load_path += Dir["#{rootdir}/locales/*.yml"]
 I18n.enforce_available_locales = true
 I18n.default_locale = :en
 
-File.umask(0027)
+File.umask(Schleuder::Conf.umask)
 
 include Schleuder

@@ -1,3 +1,6 @@
+require 'schleuder/mail/gpg/delivery_handler'
+require 'schleuder/mail/gpg/verify_result_attribute'
+
 module Mail
   # creates a Mail::Message likes schleuder
   def self.create_message_to_list(msg, recipient, list)
@@ -13,11 +16,14 @@ module Mail
 
   # TODO: Test if subclassing breaks integration of mail-gpg.
   class Message
+    include Mail::Gpg::VerifyResultAttribute #for Mail::Gpg
+
     attr_accessor :recipient
     attr_accessor :original_message
     attr_accessor :list
     attr_accessor :protected_headers_subject
     attr_writer :dynamic_pseudoheaders
+    attr_accessor :raise_encryption_errors # for Mail::Gpg
 
     # TODO: This should be in initialize(), but I couldn't understand the
     # strange errors about wrong number of arguments when overriding
@@ -154,7 +160,12 @@ module Mail
     def signer
       @signer ||= begin
         if signing_key.present?
-          list.subscriptions.where(fingerprint: signing_key.fingerprint).first
+          # Look for a subscription that matches the sending address, in case
+          # there're multiple subscriptions for the same key. As a fallback use
+          # the first subscription found.
+          sender_email = self.from.to_s.downcase
+          subscriptions = list.subscriptions.where(fingerprint: signing_key.fingerprint)
+          subscriptions.where(email: sender_email).first || subscriptions.first
         end
       end
     end
@@ -436,36 +447,109 @@ module Mail
       true
     end
 
+    # turn on gpg encryption / set gpg options.
+    #
+    # options are:
+    #
+    # encrypt: encrypt the message. defaults to true
+    # sign: also sign the message. false by default
+    # sign_as: UIDs to sign the message with
+    #
+    # See Mail::Gpg methods encrypt and sign for more
+    # possible options
+    #
+    # mail.gpg encrypt: true
+    # mail.gpg encrypt: true, sign: true
+    # mail.gpg encrypt: true, sign_as: "other_address@host.com"
+    #
+    # sign-only mode is also supported:
+    # mail.gpg sign: true
+    # mail.gpg sign_as: 'jane@doe.com'
+    #
+    # To turn off gpg encryption use:
+    # mail.gpg false
+    #
+    def gpg(options = nil)
+      case options
+      when nil
+        @gpg
+      when false
+        @gpg = nil
+        if Mail::Gpg::DeliveryHandler == delivery_handler
+          self.delivery_handler = nil
+        end
+        nil
+      else
+        self.raise_encryption_errors = true if raise_encryption_errors.nil?
+        @gpg = options
+        self.delivery_handler ||= Mail::Gpg::DeliveryHandler
+        nil
+      end
+    end
+
+    # true if this mail is encrypted
+    def encrypted?
+      Mail::Gpg.encrypted?(self)
+    end
+
+    # returns the decrypted mail object.
+    #
+    # pass verify: true to verify signatures as well. The gpgme verification
+    # result will be available via decrypted_mail.verify_result
+    def decrypt(options = {})
+      Mail::Gpg.decrypt(self, options)
+    end
+
+    # true if this mail is signed (but not encrypted)
+    def signed?
+      Mail::Gpg.signed?(self)
+    end
+
+    # verify signatures. returns a new mail object with signatures removed and
+    # populated verify_result.
+    #
+    # verified = signed_mail.verify()
+    # verified.signature_valid?
+    # signers = mail.signatures.map{|sig| sig.from}
+    #
+    # use import_missing_keys: true in order to try to fetch and import
+    # unknown keys for signature validation
+    def verify(options = {})
+      Mail::Gpg.verify(self, options)
+    end
+
+    def repeat_validation!
+      new = self.original_message.dup.setup
+      self.verify_result = new.verify_result
+      @signatures = new.signatures
+      dynamic_pseudoheaders << new.dynamic_pseudoheaders
+    end
+
     private
 
 
     def extract_keywords(content_lines)
       keywords = []
       in_keyword_block = false
-      found_blank_line = false
       content_lines.each_with_index do |line, i|
-        if match = line.match(/^x-([^:\s]*)[:\s]*(.*)/i)
+        if line.blank?
+          # Swallow the line: before the actual content or keywords block begins we want to drop blank lines.
+          content_lines[i] = nil
+          # Stop interpreting the following line as argument to the previous keyword.
+          in_keyword_block = false
+        elsif match = line.match(/^x-([^:\s]*)[:\s]*(.*)/i)
           keyword = match[1].strip.downcase
           arguments = match[2].to_s.strip.downcase.split(/[,; ]{1,}/)
           keywords << [keyword, arguments]
           in_keyword_block = true
-
           # Set this line to nil to have it stripped from the message.
           content_lines[i] = nil
-        elsif line.blank? && keywords.any?
-          # Look for blank lines after the first keyword had been found.
-          # These might mark the end of the keywords-block — unless more keywords follow.
-          found_blank_line = true
-          # Swallow the line: before the actual content begins we want to drop blank lines.
-          content_lines[i] = nil
-          # Stop interpreting the following line as argument to the previous keyword.
-          in_keyword_block = false
         elsif in_keyword_block == true
           # Interpret line as arguments to the previous keyword.
           keywords[-1][-1] += line.downcase.strip.split(/[,; ]{1,}/)
           content_lines[i] = nil
-        elsif found_blank_line
-          # Any line that isn't blank and does not start with "x-" stops the keyword parsing.
+        else
+          # Any other line stops the keyword parsing.
           break
         end
       end

@@ -1,15 +1,26 @@
 module Mail
   module Gpg
     class SignPart < Mail::Part
-      # Copied verbatim from mail-gpg v.0.4.2. This code was changed in
-      # <https://github.com/jkraemer/mail-gpg/commit/5fded41ccee4a58f848a2f8e7bd53d11236f8984>,
-      # which breaks verifying some encapsulated (signed-then-encrypted)
-      # messages. See
-      # <https://github.com/jkraemer/mail-gpg/pull/40#issue-95776382> for
-      # details.
+
+      def initialize(cleartext_mail, options = {})
+        signature = GpgmeHelper.sign(cleartext_mail.encoded, options)
+        super() do
+          body signature.to_s
+          content_type "application/pgp-signature; name=\"signature.asc\""
+          content_disposition 'attachment; filename="signature.asc"'
+          content_description 'OpenPGP digital signature'
+        end
+      end
+
+      # true if all signatures are valid
+      def self.signature_valid?(plain_part, signature_part, options = {})
+        verify_signature(plain_part, signature_part, options)[0]
+      end
+
+      # will return [success(boolean), verify_result(as returned by gpgme)]
       def self.verify_signature(plain_part, signature_part, options = {})
         if !(signature_part.has_content_type? &&
-            ('application/pgp-signature' == signature_part.mime_type))
+             ('application/pgp-signature' == signature_part.mime_type))
           return false
         end
 
@@ -19,7 +30,7 @@ module Mail
           plaintext = [ plain_part.header.raw_source,
                         "\r\n\r\n",
                         plain_part.body.raw_source
-          ].join
+                      ].join
         else
           plaintext = plain_part.encoded
         end
@@ -30,4 +41,3 @@ module Mail
     end
   end
 end
-
