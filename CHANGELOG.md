@@ -3,6 +3,13 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.1] / 2025-01-XX
+
+### Fixed
+
+* The removal of the GnuPG homedir is more reliable. Before, code might have run into issues due to time-of-check-to-time-of-use problems.
+
+
 ## [5.0.0] / 2024-11-13
 
 ### Changed

@@ -23,7 +23,7 @@ module GPGME
       end
       result
     ensure
-      FileUtils.remove_entry(ENV['GNUPGHOME'])
+      FileUtils.rm_rf(ENV['GNUPGHOME'], secure: true)
       ENV['GNUPGHOME'] = orig_gnupghome
     end
   end
