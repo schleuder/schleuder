@@ -5,7 +5,7 @@ module Schleuder
     # encapsulation. If multipart/alternative is found, remove all sub-parts
     # but the text/plain part (assuming that every multipart/alternative
     # contains exactly one text/plain). Change the content_type from
-    # mutlipart/alternative to mutlipart/mixed.
+    # multipart/alternative to multipart/mixed.
     def self.strip_html_from_alternative_if_keywords_present(list, mail)
       # Only strip the text/html-part if keywords are present
       if mail.keywords.blank? then return false end
@@ -26,8 +26,8 @@ module Schleuder
         return false
       end
 
-      # inside the mutlipart/mixed, we only care about multipart/mixed and
-      # mutlipart/alternative
+      # inside the multipart/mixed, we only care about multipart/mixed and
+      # multipart/alternative
       if content_type != 'multipart/alternative' then return false end
 
       # Inside multipart/alternative, there could be a text/html-part, or there
