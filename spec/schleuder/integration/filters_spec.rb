@@ -189,7 +189,7 @@ describe 'running filters' do
       expect(pseudoheaders_part.body.to_s).to include("Note: This key was newly added from this email:\n  0xFB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A")
       expect(pseudoheaders_part.body.to_s).to include('Sig: Good signature from 4286EE574B92FA0A abcde <abcde@example.org>')
     ensure
-      FileUtils.remove_entry(tmp_gnupg_home)
+      FileUtils.rm_rf(tmp_gnupg_home)
     end
   end
 
@@ -226,7 +226,7 @@ describe 'running filters' do
       expect(pseudoheaders_part.body.to_s).to include("Note: This key was newly added from this email:\n  0xFB18AE292FCEEBCE3BB3FBA14286EE574B92FA0A")
       expect(pseudoheaders_part.body.to_s).to include('Sig: Good signature from 4286EE574B92FA0A abcde <abcde@example.org>')
     ensure
-      FileUtils.remove_entry(tmp_gnupg_home)
+      FileUtils.rm_rf(tmp_gnupg_home)
     end
 
     it('successfully validates a signature, whose previously unknown key is attached, from an encrypted+signed message') do
@@ -266,7 +266,7 @@ describe 'running filters' do
       expect(pseudoheaders_part.body.to_s).to include('Enc: Encrypted')
       expect(pseudoheaders_part.body.to_s).to include('Sig: Good signature from 4286EE574B92FA0A abcde <abcde@example.org>')
     ensure
-      FileUtils.remove_entry(tmp_gnupg_home)
+      FileUtils.rm_rf(tmp_gnupg_home)
     end
   end
 
