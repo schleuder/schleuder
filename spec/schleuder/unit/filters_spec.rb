@@ -291,7 +291,7 @@ describe Schleuder::Filters do
     it('only imports the one key that matches the sender address if keydata contains more than one key') do
       tmpdir = Dir.mktmpdir
       keydata = `gpg --homedir #{tmpdir} --import spec/fixtures/bla_foo_key.txt spec/fixtures/example_key.txt  2>/dev/null ; gpg --homedir #{tmpdir} -a --export`
-      FileUtils.remove_entry(tmpdir)
+      FileUtils.rm_rf(tmpdir)
       keydata_base64 = Base64.encode64(keydata)
       mail_from = 'schleuder <bla@foo>'
       list = create(:list, key_auto_import_from_email: true)
@@ -421,7 +421,7 @@ describe Schleuder::Filters do
     it('only imports the one key that matches the sender address if keydata contains more than one key') do
       tmpdir = Dir.mktmpdir
       keydata = `gpg --homedir #{tmpdir} --import spec/fixtures/bla_foo_key.txt spec/fixtures/example_key.txt  2>/dev/null ; gpg --homedir #{tmpdir} -a --export`
-      FileUtils.remove_entry(tmpdir)
+      FileUtils.rm_rf(tmpdir)
       mail_from = 'schleuder <bla@foo>'
       list = create(:list, key_auto_import_from_email: true)
       mail = Mail.new
