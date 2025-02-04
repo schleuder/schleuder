@@ -32,20 +32,27 @@ module Schleuder
         errors << t("no_imports")
       end
 
+      list.maybe_notify_admins(:add_keys, current_account, response: %[#{messages.join("\n")}\n\n#{errors.join("\n")}])
+
       [messages, errors]
     end
 
     def fetch(list_email, identifier)
       list = get_list(list_email)
       authorize!(list, :add_keys)
-      list.fetch_keys(identifier)
+      result = list.fetch_keys(identifier)
+      list.maybe_notify_admins(:add_keys, current_account, response: result)
+      result
     end
 
     def check(list_email)
       list = get_list(list_email)
       authorize!(list, :check_keys)
-      list.check_keys
+      result = list.check_keys
+      list.maybe_notify_admins(:check_keys, current_account, response: result)
+      result
     end
+
 
     def find(list_email, fingerprint)
       key = get_key(list_email, fingerprint)
@@ -57,6 +64,7 @@ module Schleuder
       key = get_key(list_email, fingerprint)
       authorize!(key, :delete)
       key.delete!
+      list.maybe_notify_admins(:key_delete, current_account, response: key)
       key
     end
 

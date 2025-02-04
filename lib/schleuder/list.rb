@@ -389,6 +389,18 @@ module Schleuder
       end
     end
 
+    def maybe_notify_admins(action, account, arguments: nil, response: nil)
+      if actions_admin_notify.include?(action)
+        msg = I18n.t("actions_admin_notify.#{action}",
+                     actor: account.email,
+                     action: action,
+                     arguments: arguments,
+                     response: response
+                   )
+        logger.notify_admin(msg, nil, 'Notice')
+      end
+    end
+
     private
 
     def set_gnupg_home

@@ -37,6 +37,7 @@ class SchleuderApiDaemon < Sinatra::Base
       # Uses the superadmin as sender and From, because these messages are not
       # so important to justify revealing additional email addresses to avoid
       # bouncing bounces.
+      # TODO: Look for a subscription with the given email addresse and use its key!
       superadmin = Conf.superadmin.presence
       mail = Mail.new
       mail.to = auth_token.email
