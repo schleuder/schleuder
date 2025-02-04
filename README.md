@@ -7,6 +7,12 @@ It aims to be robust, flexible, internationalized and also provides an API for t
 
 For more details see <https://schleuder.org/docs/>.
 
+Maintainers wanted!
+-------------------
+This project needs additional maintainers. All of us in the team have hardly any time for the project anymore. We don't want Schleuder to die, and we're not dropping it right now. But for a sustainable future, Schleuder needs new humans to care for it.
+
+For details please see <https://0xacab.org/schleuder/schleuder/-/issues/540>.
+
 Requirements
 ------------
 * ruby >=2.7
