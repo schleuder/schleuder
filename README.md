@@ -49,12 +49,17 @@ Installing Schleuder
    gpg --verify schleuder-5.0.0.gem.sig
    ```
 
-2. If all went well install the gem:
+2. Install required packages to facilitiate installation of the gem
+   ```
+   apt install ruby-rubygems ruby-dev libxml2-dev ruby-bundler libsqlite3-dev libz-dev libssl-dev autoconf gcc make g++
+   ```
+
+3. If all went well install the gem:
    ```
    gem install schleuder-5.0.0.gem
    ```
 
-3. Set up schleuder:
+4. Set up schleuder:
   ```
   schleuder install
   ```
