@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 * The removal of the GnuPG homedir is more reliable. Before, code might have run into issues due to time-of-check-to-time-of-use problems.
+* Since ActiveRecord >= 7.1, the SQLite3 connection adapter relies on `Write-Ahead Logging` (`WAL`), by default, which significantly enhances read and write performance. Such performance gains aren't of concern in Schleuder environments. Besides, Postfix only supports the `delete` journal mode, which Schleuder now enforces. (#541)
 
 
 ## [5.0.0] / 2024-11-13
