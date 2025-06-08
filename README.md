@@ -51,7 +51,7 @@ Installing Schleuder
 
 2. Install required packages to facilitate installation of the gem (command tested on Deban version 12 - codename Buster)
    ```
-   apt install ruby-rubygems ruby-dev libxml2-dev ruby-bundler libsqlite3-dev libz-dev libssl-dev autoconf gcc make g++
+   apt install autoconf g++ gcc libsqlite3-dev libssl-dev libxml2-dev libz-dev make ruby-bundler ruby-dev ruby-rubygems
    ```
 
 3. If all went well install the gem:
