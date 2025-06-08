@@ -68,10 +68,10 @@ module Schleuder
             end
           else
             # Shouldn't happen, but who knows.
-            I18n.t('errors.too_many_matching_keys', {
+            I18n.t('errors.too_many_matching_keys',
                 input: argument,
                 key_strings: keys.map(&:to_s).join("\n")
-              })
+              )
           end
         end.join("\n\n")
       end
