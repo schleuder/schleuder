@@ -49,12 +49,17 @@ Installing Schleuder
    gpg --verify schleuder-5.0.0.gem.sig
    ```
 
-2. If all went well install the gem:
+2. Install required packages to facilitate installation of the gem (command tested on Deban version 12 - codename bookworm)
+   ```
+   apt install autoconf g++ gcc libsqlite3-dev libssl-dev libxml2-dev libz-dev make ruby-bundler ruby-dev ruby-rubygems
+   ```
+
+3. If all went well install the gem:
    ```
    gem install schleuder-5.0.0.gem
    ```
 
-3. Set up schleuder:
+4. Set up schleuder:
   ```
   schleuder install
   ```
