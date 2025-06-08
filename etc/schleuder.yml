@@ -74,6 +74,8 @@ database:
   production:
     adapter:  'sqlite3'
     database: /var/lib/schleuder/db.sqlite
+    pragmas:
+      journal_mode: 'delete'
     timeout: 5000
 
 api:
